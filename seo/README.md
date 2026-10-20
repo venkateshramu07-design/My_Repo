@@ -63,3 +63,10 @@ To install:
 To undo, delete the pasted block, or restore the backup from step 1.
 
 Also recommended under **Settings > Posts**: set "Max posts shown on main page" to 10 so the post list is about as long as the sidebar.
+
+## Publishing rewritten articles
+
+Rewritten posts live in `rewrites/<year>_<month>_<slug>.html`. When `apply.py` finds a rewrite for a post, it uses it as the post text. It keeps the post's original images, spaced through the article, then adds the contents box, alt text and related articles.
+
+    python3 seo/apply.py apply --only 2021/06/how-to-be-happy --dry-run
+    python3 seo/apply.py apply --only 2021/06/how-to-be-happy

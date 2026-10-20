@@ -25,6 +25,7 @@ BLOG_URL = "https://randomthoughtsever.blogspot.com/"
 API = "https://www.googleapis.com/blogger/v3"
 HERE = os.path.dirname(os.path.abspath(__file__))
 BACKUP = os.path.join(HERE, "backup")
+REWRITES = os.path.join(HERE, "rewrites")
 RELATED_START = "<!-- seo-related-start -->"
 RELATED_END = "<!-- seo-related-end -->"
 
@@ -170,12 +171,35 @@ def quote_html(s, img_tag):
             f"<blockquote><p>&ldquo;{html.escape(q)}&rdquo;</p></blockquote><p>{html.escape(body)}</p>")
 
 
+def with_rewrite(s, content):
+    """Use seo/rewrites/<slug>.html as the post text, keeping the post's own images spread through it."""
+    fn = os.path.join(REWRITES, s.replace("/", "_") + ".html")
+    if not os.path.exists(fn):
+        return content
+    new = open(fn, encoding="utf-8").read()
+    imgs = ['<div class="separator" style="clear: both; text-align: center;">' + m.group(0) + "</div>"
+            for m in re.finditer(r"(<a\b[^>]*>\s*)?<img\b[^>]*>(\s*</a>)?", content)]
+    if not imgs:
+        return new
+    # First image after the opening paragraph, the rest before evenly spaced sections.
+    new = new.replace("</p>", "</p>" + imgs[0], 1)
+    heads = [m.start() for m in re.finditer(r"<h2\b", new)]
+    rest = imgs[1:]
+    if rest and heads:
+        step = max(1, len(heads) // (len(rest) + 1))
+        spots = heads[step::step][:len(rest)]
+        for pos, img in sorted(zip(spots, rest), reverse=True):
+            new = new[:pos] + img + new[pos:]
+    return new
+
+
 def changes_for(p, posts_by_slug):
     s = slug(p["url"])
     upd = {}
     if s in PLAN:
         new_title, desc, labels = PLAN[s]
         content = strip_related(p.get("content", ""))
+        content = with_rewrite(s, content)
         content = clean(content, new_title, p["title"])
         content = demote_h1(add_alt_text(content, new_title or p["title"]))
         content += related_block(s, posts_by_slug)
