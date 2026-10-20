@@ -41,3 +41,25 @@ Every post is saved to `seo/backup/` before anything is changed, and `python3 se
 2. Store the access token as the environment variable `BLOGGER_TOKEN` in this cloud environment's settings,
    then start a new session. The token is valid for one hour.
 3. `python3 seo/apply.py backup`, then `python3 seo/apply.py apply --dry-run`, then `python3 seo/apply.py apply`.
+
+## Site redesign (`theme/redesign.xml`)
+
+A design layer over the current SoraTemplates theme. It doesn't remove any posts, pages, gadgets or URLs.
+It adds:
+- a homepage hero with search, stats and floating cards for the latest posts
+- "Explore by topic" tiles linking to the topic label pages
+- card-style post listings with full-size images
+- editorial typography (Fraunces and Inter) and a sticky, blurred header
+- a reading progress bar, reading-time label and drop cap on articles
+- styled contents and related-articles boxes, a back-to-top button, scroll-reveal motion and a dark mode toggle
+
+Animations are turned off for visitors whose system asks for reduced motion.
+
+To install:
+1. In Blogger, open **Theme**, click the arrow next to **Customise**, and choose **Backup** to download the current theme.
+2. Choose **Edit HTML**, search for `</head>` (Ctrl+F), and paste the whole contents of `theme/redesign.xml` on the line directly above it.
+3. Click **Save**.
+
+To undo, delete the pasted block, or restore the backup from step 1.
+
+Also recommended under **Settings > Posts**: set "Max posts shown on main page" to 10 so the post list is about as long as the sidebar.
