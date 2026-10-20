@@ -1,0 +1,271 @@
+<p><em>Updated 20 October 2026</em></p>
+
+<p><strong>Quick answer:</strong> A data structure is a way of organising data in a program so it can be stored, found and changed efficiently. The right choice can make code thousands of times faster and much easier to maintain. The most common ones are arrays (fast access by position), linked lists (cheap insertions), stacks and queues (ordered processing), hash tables (near-instant lookup by key), trees (sorted data and hierarchies), heaps (priorities) and graphs (networks). Choose by asking what operations your program does most: lookups, inserts, deletes, ordering or finding relationships.</p>
+
+<p>Every program, from a to-do list app to a search engine, stores and processes data. How that data is organised has a huge effect on speed, memory use and how easy the code is to understand. A list of a million customers can be searched in microseconds or in seconds depending on the structure you choose.</p>
+
+<p>This guide explains what data structures are, why they matter, how the most important ones work, how to measure their performance with Big O notation, and how to choose the right one for your project. Examples use Python, but the ideas apply to every programming language.</p>
+
+<h2>What Is a Data Structure?</h2>
+<p>A data structure is a specific way of arranging data in memory, together with the operations you can perform on it, such as adding, removing, searching and sorting. A useful analogy is a library. Books could be piled randomly on the floor, but finding a particular one would take ages. Sorting them by subject and author, with a catalogue, makes finding any book fast. Data structures are the shelving systems and catalogues of programming.</p>
+<p>Data structures are often discussed together with <strong>algorithms</strong>, the step-by-step procedures that operate on data. Computer scientist Niklaus Wirth titled a famous 1976 book <em>Algorithms + Data Structures = Programs</em>, capturing how closely the two are linked. A good algorithm on the wrong data structure can still be slow.</p>
+
+<h2>Why Data Structures Matter</h2>
+<ul>
+<li><strong>Performance:</strong> the right structure can turn an operation that takes minutes into one that takes milliseconds.</li>
+<li><strong>Scalability:</strong> code that works fine with 100 items may grind to a halt with 10 million if the structure scales poorly.</li>
+<li><strong>Memory efficiency:</strong> some structures use far more memory than others for the same data.</li>
+<li><strong>Code clarity:</strong> choosing a structure that matches the problem, like a queue for tasks waiting in line, makes code easier to read and maintain.</li>
+<li><strong>Interviews and careers:</strong> data structures are a core topic in software engineering interviews at most technology companies.</li>
+</ul>
+
+<h2>Measuring Performance: Big O Notation</h2>
+<p>Big O notation describes how the time (or memory) an operation needs grows as the amount of data, <em>n</em>, grows. It ignores constant details and focuses on the overall trend.</p>
+<table>
+<tr><th>Big O</th><th>Name</th><th>Example</th><th>With 1 million items</th></tr>
+<tr><td>O(1)</td><td>Constant</td><td>Reading an array element by index</td><td>1 step</td></tr>
+<tr><td>O(log n)</td><td>Logarithmic</td><td>Binary search in a sorted array</td><td>About 20 steps</td></tr>
+<tr><td>O(n)</td><td>Linear</td><td>Searching an unsorted list</td><td>About 1 million steps</td></tr>
+<tr><td>O(n log n)</td><td>Linearithmic</td><td>Efficient sorting (merge sort)</td><td>About 20 million steps</td></tr>
+<tr><td>O(n²)</td><td>Quadratic</td><td>Comparing every pair of items</td><td>About 1 trillion steps</td></tr>
+</table>
+<p>The difference between O(log n) and O(n), or between O(n log n) and O(n²), becomes enormous as data grows. This is why data structure choice matters so much in real systems.</p>
+
+<h2>The Most Important Data Structures</h2>
+
+<h3>1. Arrays (and Dynamic Arrays)</h3>
+<p>An array stores elements in a continuous block of memory, each identified by an index starting at 0. Python's <code>list</code>, Java's <code>ArrayList</code> and C++'s <code>vector</code> are dynamic arrays that grow automatically.</p>
+<ul>
+<li><strong>Strengths:</strong> instant access by index, O(1); memory-efficient; very fast to loop through because data sits together in memory.</li>
+<li><strong>Weaknesses:</strong> inserting or deleting in the middle requires shifting other elements, O(n); searching an unsorted array is O(n).</li>
+<li><strong>Use for:</strong> ordered collections you mostly read or add to at the end, such as a list of daily temperatures.</li>
+</ul>
+<pre><code>temps = [31, 33, 29, 35]
+print(temps[2])      # 29, instant access
+temps.append(32)     # fast, usually O(1)</code></pre>
+
+<h3>2. Linked Lists</h3>
+<p>A linked list stores elements in separate "nodes", each holding a value and a pointer to the next node. A doubly linked list also points to the previous node.</p>
+<ul>
+<li><strong>Strengths:</strong> inserting or removing a node is O(1) once you have a reference to the position, with no shifting.</li>
+<li><strong>Weaknesses:</strong> no direct access by index; finding the 500th element means walking through 499 nodes, O(n); extra memory for pointers; slower in practice due to scattered memory.</li>
+<li><strong>Use for:</strong> situations with frequent insertions and removals in the middle, such as implementing an LRU cache together with a hash table.</li>
+</ul>
+
+<h3>3. Stacks</h3>
+<p>A stack follows <strong>Last In, First Out (LIFO)</strong>, like a stack of plates: you add and remove from the top.</p>
+<ul>
+<li><strong>Operations:</strong> push (add), pop (remove) and peek, all O(1).</li>
+<li><strong>Use for:</strong> undo functionality, browser back buttons, checking balanced brackets, and tracking function calls (the "call stack").</li>
+</ul>
+<pre><code>stack = []
+stack.append("page1")
+stack.append("page2")
+stack.pop()          # "page2", the most recent</code></pre>
+
+<h3>4. Queues</h3>
+<p>A queue follows <strong>First In, First Out (FIFO)</strong>, like people waiting in line.</p>
+<ul>
+<li><strong>Operations:</strong> enqueue (add to back) and dequeue (remove from front), both O(1) with the right implementation.</li>
+<li><strong>Use for:</strong> print jobs, task scheduling, handling web requests, and breadth-first search.</li>
+</ul>
+<pre><code>from collections import deque
+q = deque()
+q.append("order1")
+q.append("order2")
+q.popleft()          # "order1", the first in</code></pre>
+<p>In Python, use <code>collections.deque</code> rather than a list for queues, because removing from the front of a list is O(n).</p>
+
+<h3>5. Hash Tables (Dictionaries and Maps)</h3>
+<p>A hash table stores key-value pairs. A <strong>hash function</strong> converts each key into an index where the value is stored, allowing near-instant lookup. Python's <code>dict</code> and <code>set</code>, Java's <code>HashMap</code> and JavaScript's <code>Map</code> and objects are hash tables.</p>
+<ul>
+<li><strong>Strengths:</strong> average O(1) insert, delete and lookup by key.</li>
+<li><strong>Weaknesses:</strong> no natural ordering for range queries; extra memory; worst-case performance degrades if many keys "collide".</li>
+<li><strong>Use for:</strong> caching, counting, removing duplicates, and looking up records by ID.</li>
+</ul>
+<pre><code>prices = {"apple": 120, "banana": 40}
+prices["mango"] = 150
+print(prices["apple"])        # 120, instant lookup
+print("grape" in prices)      # False, also instant</code></pre>
+
+<h3>6. Trees</h3>
+<p>A tree is a hierarchical structure of nodes, with a root at the top and children below. File systems, HTML documents and organisation charts are all trees.</p>
+<p>A <strong>binary search tree (BST)</strong> keeps values ordered: smaller values go left, larger go right. Searching, inserting and deleting take O(log n) in a balanced tree. Self-balancing trees such as <strong>AVL trees</strong> and <strong>red-black trees</strong> keep operations fast even in the worst case, and are used in many language libraries.</p>
+<p><strong>B-trees</strong> and B+ trees, which have many children per node, are used in databases and file systems because they minimise slow disk reads. When you add an index to a database column, you're usually creating a B-tree.</p>
+<p><strong>Tries</strong> (prefix trees) store strings character by character and power features like autocomplete and spell checking.</p>
+
+<h3>7. Heaps and Priority Queues</h3>
+<p>A heap is a tree-based structure that always keeps the smallest (min-heap) or largest (max-heap) element at the top. Getting the top element is O(1); adding or removing is O(log n).</p>
+<ul>
+<li><strong>Use for:</strong> priority queues such as hospital triage systems, task schedulers, finding the top 10 items in a large dataset, and algorithms like Dijkstra's shortest path.</li>
+</ul>
+<pre><code>import heapq
+tasks = []
+heapq.heappush(tasks, (2, "write report"))
+heapq.heappush(tasks, (1, "fix server"))
+heapq.heappop(tasks)   # (1, "fix server"), highest priority first</code></pre>
+
+<h3>8. Graphs</h3>
+<p>A graph is a set of nodes (vertices) connected by edges. Edges may have directions and weights. Social networks, road maps, airline routes and web links are all graphs.</p>
+<ul>
+<li><strong>Representations:</strong> an <strong>adjacency list</strong> (each node stores its neighbours) is efficient for sparse graphs; an <strong>adjacency matrix</strong> (a grid of connections) suits dense graphs.</li>
+<li><strong>Common algorithms:</strong> breadth-first search, depth-first search, Dijkstra's shortest path and topological sorting.</li>
+<li><strong>Use for:</strong> navigation apps, friend recommendations, network routing and dependency management in build tools.</li>
+</ul>
+
+<h3>9. Sets</h3>
+<p>A set is an unordered collection of unique items, usually implemented with a hash table. It answers "is this item present?" in O(1) on average and supports mathematical operations such as union, intersection and difference.</p>
+<pre><code>python_devs = {"asha", "ravi", "li"}
+java_devs = {"ravi", "tom"}
+print(python_devs &amp; java_devs)   # {'ravi'}, people who know both</code></pre>
+<p><strong>Use for:</strong> removing duplicates, tracking visited items in a search, and comparing groups.</p>
+
+<h3>10. Matrices and Multi-Dimensional Arrays</h3>
+<p>A matrix is a grid of values arranged in rows and columns. Images (grids of pixels), spreadsheets, game boards and the weights in machine learning models are all stored as multi-dimensional arrays. Libraries such as NumPy store them compactly and perform calculations on whole arrays at once, which is far faster than looping in plain Python.</p>
+
+<h2>Performance Cheat Sheet</h2>
+<table>
+<tr><th>Structure</th><th>Access by position</th><th>Search</th><th>Insert</th><th>Delete</th></tr>
+<tr><td>Array / dynamic array</td><td>O(1)</td><td>O(n)</td><td>O(1) at end, O(n) middle</td><td>O(n)</td></tr>
+<tr><td>Linked list</td><td>O(n)</td><td>O(n)</td><td>O(1) at known position</td><td>O(1) at known position</td></tr>
+<tr><td>Stack / queue</td><td>N/A</td><td>O(n)</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>Hash table</td><td>N/A</td><td>O(1) average</td><td>O(1) average</td><td>O(1) average</td></tr>
+<tr><td>Balanced BST</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td></tr>
+<tr><td>Heap</td><td>O(1) for top</td><td>O(n)</td><td>O(log n)</td><td>O(log n) for top</td></tr>
+</table>
+
+<h2>How to Choose the Right Data Structure</h2>
+<p>Ask these questions about your data and how your program uses it:</p>
+<ol>
+<li><strong>What operations happen most often?</strong> Lookups by key suggest a hash table; frequent "get the smallest" suggests a heap; ordered processing suggests a queue or stack.</li>
+<li><strong>Does order matter?</strong> If you need data sorted or need range queries ("all orders between 1 and 15 March"), consider a sorted array, balanced tree or database index.</li>
+<li><strong>How much data, and will it grow?</strong> For small datasets, simplicity beats cleverness. For large ones, Big O becomes critical.</li>
+<li><strong>Are there relationships between items?</strong> Hierarchies suggest trees; networks suggest graphs.</li>
+<li><strong>Do you need uniqueness?</strong> Sets automatically prevent duplicates with fast membership checks.</li>
+<li><strong>What are the memory limits?</strong> Mobile apps and embedded systems may favour compact structures.</li>
+</ol>
+
+<h2>Real-World Examples</h2>
+<table>
+<tr><th>Problem</th><th>Good data structure</th><th>Why</th></tr>
+<tr><td>Checking whether a username is taken</td><td>Hash set</td><td>Instant membership check</td></tr>
+<tr><td>Undo / redo in a text editor</td><td>Two stacks</td><td>Most recent action first</td></tr>
+<tr><td>Customer support ticket system</td><td>Queue (or priority queue)</td><td>First come, first served, or by urgency</td></tr>
+<tr><td>Autocomplete in a search box</td><td>Trie</td><td>Fast prefix matching</td></tr>
+<tr><td>Leaderboard showing top 100 players</td><td>Heap or sorted structure</td><td>Quick access to top scores</td></tr>
+<tr><td>Navigation route finding</td><td>Weighted graph</td><td>Roads as edges with distances</td></tr>
+<tr><td>Website session cache</td><td>Hash table plus linked list (LRU cache)</td><td>Fast lookup and eviction of least recently used items</td></tr>
+<tr><td>Folder structure</td><td>Tree</td><td>Natural hierarchy</td></tr>
+</table>
+
+<h2>A Practical Example: Speeding Up a Slow Program</h2>
+<p>Imagine an e-commerce system that checks whether each of 100,000 incoming orders comes from a customer on a list of 50,000 blocked accounts.</p>
+<pre><code># Slow: blocked is a list
+blocked = load_blocked_ids()          # list of 50,000 IDs
+for order in orders:                  # 100,000 orders
+    if order.customer_id in blocked:  # O(n) search each time
+        reject(order)</code></pre>
+<p>Checking membership in a list scans it item by item. That's up to 50,000 comparisons per order, potentially billions of operations in total.</p>
+<pre><code># Fast: blocked is a set
+blocked = set(load_blocked_ids())
+for order in orders:
+    if order.customer_id in blocked:  # O(1) average
+        reject(order)</code></pre>
+<p>Changing one line, converting the list to a set, reduces the work to about 100,000 quick lookups. In practice, this kind of change can turn a job that takes minutes into one that finishes in well under a second.</p>
+
+<h2>Time-Space Trade-Offs</h2>
+<p>Choosing a data structure often means balancing speed against memory. A hash table gives fast lookups but uses extra memory for its internal array. Caching results of expensive calculations, a technique called memoisation, uses memory to save time. Compressed structures save memory but may take longer to read.</p>
+<p>A classic example is the Fibonacci sequence. Calculating it recursively without storing previous results repeats the same work over and over and takes exponential time. Storing each result in a dictionary as it's calculated makes it linear:</p>
+<pre><code>from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fib(n):
+    return n if n &lt; 2 else fib(n - 1) + fib(n - 2)
+
+print(fib(90))   # instant, thanks to cached results</code></pre>
+<p>On servers with plenty of memory, trading space for speed is often worthwhile. On phones, embedded devices or when handling huge datasets, memory can become the bottleneck instead.</p>
+
+<h2>Immutable vs Mutable Structures</h2>
+<p>Some data structures can be changed after creation (mutable), such as Python lists and dictionaries. Others cannot (immutable), such as Python tuples and strings. Immutable structures are safer to share between different parts of a program and between threads, because no one can change them unexpectedly. They can also be used as dictionary keys. Functional programming languages and libraries such as React's state management encourage immutability to make programs easier to reason about and debug.</p>
+
+<h2>Data Structures and Concurrency</h2>
+<p>When several threads or processes access the same data at once, ordinary structures can become corrupted or give inconsistent results. Languages provide thread-safe alternatives, such as Python's <code>queue.Queue</code>, Java's <code>ConcurrentHashMap</code> and Go's channels. In distributed systems, message queues such as RabbitMQ and Apache Kafka extend the simple queue idea across many machines, allowing services to communicate reliably.</p>
+
+<h2>Choosing Structures in Different Languages</h2>
+<table>
+<tr><th>Concept</th><th>Python</th><th>Java</th><th>JavaScript</th><th>C++</th></tr>
+<tr><td>Dynamic array</td><td>list</td><td>ArrayList</td><td>Array</td><td>std::vector</td></tr>
+<tr><td>Hash map</td><td>dict</td><td>HashMap</td><td>Map / Object</td><td>std::unordered_map</td></tr>
+<tr><td>Hash set</td><td>set</td><td>HashSet</td><td>Set</td><td>std::unordered_set</td></tr>
+<tr><td>Queue / deque</td><td>collections.deque</td><td>ArrayDeque</td><td>Array (or a library)</td><td>std::deque</td></tr>
+<tr><td>Priority queue</td><td>heapq</td><td>PriorityQueue</td><td>Library needed</td><td>std::priority_queue</td></tr>
+<tr><td>Sorted map</td><td>Third-party (e.g. sortedcontainers)</td><td>TreeMap</td><td>Library needed</td><td>std::map</td></tr>
+</table>
+
+<h2>Common Mistakes</h2>
+<ul>
+<li><strong>Using lists for membership checks</strong> when a set or dictionary would be far faster.</li>
+<li><strong>Removing from the front of a Python list</strong> in a loop instead of using <code>deque</code>.</li>
+<li><strong>Repeatedly sorting</strong> data when a heap or sorted structure would maintain order automatically.</li>
+<li><strong>Nested loops over large datasets</strong> (O(n²)) when a hash table could make it O(n).</li>
+<li><strong>Premature optimisation:</strong> choosing complex structures for tiny datasets where simple code would be clearer and fast enough.</li>
+<li><strong>Ignoring built-in libraries:</strong> most languages provide well-tested, optimised data structures. Use them before writing your own.</li>
+</ul>
+
+<h2>Data Structures in Databases and Large Systems</h2>
+<p>Data structures don't just live in your code. They underpin the tools you use every day:</p>
+<ul>
+<li><strong>Relational databases</strong> such as PostgreSQL and MySQL use B-tree indexes to find rows quickly.</li>
+<li><strong>Key-value stores</strong> like Redis rely heavily on hash tables, sorted sets and lists.</li>
+<li><strong>Search engines</strong> use inverted indexes, mapping each word to the documents that contain it.</li>
+<li><strong>Version control</strong> systems like Git store history as a graph of commits.</li>
+<li><strong>Blockchains</strong> use linked chains of blocks and Merkle trees to verify data.</li>
+<li><strong>AI and vector databases</strong> use specialised index structures to find similar items among millions of embeddings.</li>
+</ul>
+
+<h2>How to Learn Data Structures</h2>
+<ol>
+<li><strong>Understand the concepts visually.</strong> Websites such as VisuAlgo animate how each structure works.</li>
+<li><strong>Implement them yourself</strong> once: build a linked list, stack, queue and binary search tree from scratch.</li>
+<li><strong>Learn your language's built-in tools</strong> well, such as Python's <code>list</code>, <code>dict</code>, <code>set</code>, <code>deque</code> and <code>heapq</code>.</li>
+<li><strong>Practise problems</strong> on platforms like LeetCode, HackerRank or Codeforces, starting with easy ones.</li>
+<li><strong>Read a classic text</strong> such as <em>Introduction to Algorithms</em> (Cormen, Leiserson, Rivest and Stein) or the more beginner-friendly <em>Grokking Algorithms</em> by Aditya Bhargava.</li>
+<li><strong>Apply them in projects.</strong> Build a small app, such as a task manager or route planner, and think consciously about structure choices.</li>
+</ol>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>What is the difference between a data structure and an algorithm?</h3>
+<p>A data structure organises data; an algorithm is a sequence of steps to solve a problem using that data. For example, a sorted array is a data structure, and binary search is an algorithm that uses it.</p>
+
+<h3>Which data structure is the most important to learn first?</h3>
+<p>Start with arrays and hash tables (dictionaries). Together they solve a large share of everyday programming problems. Then learn stacks, queues, trees, heaps and graphs.</p>
+
+<h3>Do I need data structures for web development?</h3>
+<p>Yes, even if you mostly use frameworks. Choosing between arrays, objects, maps and sets in JavaScript, designing database tables and indexes, and handling data efficiently all depend on data structure knowledge.</p>
+
+<h3>Are data structures important for interviews?</h3>
+<p>Very. Most technical interviews at product companies test arrays, strings, hash tables, trees, graphs and Big O analysis.</p>
+
+<h3>What is the difference between linear and non-linear data structures?</h3>
+<p>Linear structures, such as arrays, linked lists, stacks and queues, arrange elements in a sequence. Non-linear structures, such as trees and graphs, arrange elements in hierarchies or networks.</p>
+
+<h3>Is Python good for learning data structures?</h3>
+<p>Yes. Its clear syntax lets you focus on concepts. For understanding memory and pointers in depth, learning some C or C++ is also valuable.</p>
+
+<h3>When should I write my own data structure?</h3>
+<p>Rarely in everyday work. Built-in and well-known library structures are faster and better tested. Writing your own is valuable for learning, and occasionally necessary for specialised needs such as custom caches, game engines or high-performance systems.</p>
+
+<h3>What is an abstract data type?</h3>
+<p>An abstract data type (ADT) describes what operations a structure supports, without saying how it's built. A "queue" is an ADT; it can be implemented with an array, a linked list or a deque. Thinking in ADTs helps you separate what your program needs from how it's achieved.</p>
+
+<h3>How do data structures relate to AI and machine learning?</h3>
+<p>Machine learning relies heavily on arrays and matrices (often called tensors) to store data and model weights, graphs to represent neural network computations, and specialised indexes to search large collections of embeddings quickly.</p>
+
+<h3>What is amortised time complexity?</h3>
+<p>Some operations are usually fast but occasionally slow. Appending to a dynamic array is normally O(1), but sometimes the array must be resized and copied, which takes O(n). Averaged over many appends, the cost per append is still O(1), which is called amortised constant time.</p>
+
+<h2>Final Thoughts</h2>
+<p>Data structures are the foundation of efficient software. You don't need to memorise every variant, but understanding the core ones, arrays, linked lists, stacks, queues, hash tables, trees, heaps and graphs, and how their performance differs, will make you a far better programmer. Before writing code, ask what your program needs to do most often with its data, choose a structure that makes those operations fast, and let your language's built-in tools do the heavy lifting.</p>
+
+<p>If you found this guide useful, share it with someone learning to code.</p>
