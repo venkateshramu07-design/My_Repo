@@ -1,0 +1,214 @@
+<p><em>Updated 20 October 2026</em></p>
+
+<p><strong>Quick answer:</strong> Google Search works in three main stages. First, automated programs called crawlers (Googlebot) discover pages across the web. Second, Google indexes those pages, analysing their text, images and structure and storing them in a huge database. Third, when you search, ranking systems sort matching pages using hundreds of signals, including the meaning of your query, how relevant and useful each page is, its quality and trustworthiness, page experience, and context such as your location and language. Today, AI models such as BERT and MUM, and AI Overviews built on Gemini, play a major role in understanding queries and presenting answers.</p>
+
+<p>Google handles billions of searches every day and returns results in a fraction of a second. Behind that simple search box is one of the most complex systems ever built, combining massive data centres, decades of information retrieval research and modern artificial intelligence.</p>
+
+<p>This guide explains how Google's search algorithm works, from crawling to ranking, the key ranking systems and updates over the years, how AI has changed search, and what this means for anyone who wants their website to be found.</p>
+
+<h2>Stage 1: Crawling, Discovering the Web</h2>
+<p>The web has no central list of all pages, so Google has to find them. It uses automated programs called <strong>crawlers</strong> or <strong>spiders</strong>, mainly <strong>Googlebot</strong>, which:</p>
+<ul>
+<li>Start from known pages and follow links to discover new ones.</li>
+<li>Read sitemaps that website owners submit through Google Search Console.</li>
+<li>Revisit pages periodically to check for changes, more often for sites that update frequently.</li>
+<li>Render pages much like a browser, running JavaScript to see content that appears dynamically.</li>
+</ul>
+<p>Website owners can control crawling with a <strong>robots.txt</strong> file, which tells crawlers which parts of a site not to visit. Google also limits how fast it crawls each site so it doesn't overload servers, a concept known as crawl budget, which mainly matters for very large sites.</p>
+
+<h2>Stage 2: Indexing, Understanding and Storing Pages</h2>
+<p>After crawling a page, Google tries to understand what it's about and stores the information in the <strong>Google index</strong>, a database containing hundreds of billions of web pages and well over 100 million gigabytes of data, according to Google.</p>
+<p>During indexing, Google analyses:</p>
+<ul>
+<li>The text content, headings and title.</li>
+<li>Images and videos, using alt text, captions and computer vision.</li>
+<li>Structured data (schema markup) that labels things like recipes, products, reviews and events.</li>
+<li>The page's language and the regions it targets.</li>
+<li>Whether it duplicates other pages, in which case Google chooses a <strong>canonical</strong> version to show.</li>
+</ul>
+<p>Not every crawled page is indexed. Pages may be excluded if they're low quality, duplicates, blocked with a "noindex" tag, or simply not considered valuable enough to store.</p>
+
+<h3>The Inverted Index</h3>
+<p>At the heart of search engines is a data structure called an <strong>inverted index</strong>. Like the index at the back of a book, it maps each word to the documents that contain it. When you search for "floating home loan rate", Google can quickly find documents containing those terms, and related concepts, without scanning the whole web.</p>
+
+<h2>Stage 3: Ranking, Choosing the Best Results</h2>
+<p>When you search, Google identifies matching pages in its index and ranks them in an instant. Google says it uses many automated <strong>ranking systems</strong>, which consider factors in several broad groups:</p>
+
+<h3>1. Meaning of the Query</h3>
+<p>Google first tries to understand what you're looking for. Its language models interpret spelling mistakes, synonyms and context. A search for "change laptop brightness" should match pages that say "adjust screen brightness". Google also works out the type of answer you want: a quick fact, a how-to guide, local results, news, shopping or images.</p>
+
+<h3>2. Relevance</h3>
+<p>Google assesses whether pages contain information relevant to the query. Early search engines relied heavily on matching keywords; today, Google uses AI to understand whether the content actually addresses the topic, not just whether it repeats the words.</p>
+
+<h3>3. Quality</h3>
+<p>Among relevant pages, Google tries to prioritise the most helpful and reliable. Signals include whether other prominent sites link to or reference the content, whether the content shows expertise, and whether it's original and comprehensive. Google's guidelines for its human search quality raters describe this using the concept of <strong>E-E-A-T</strong>: Experience, Expertise, Authoritativeness and Trustworthiness.</p>
+
+<h3>4. Usability</h3>
+<p>When pages are similarly relevant and helpful, those that offer a better experience, such as loading quickly, working well on mobile, being secure (HTTPS) and avoiding intrusive pop-ups, may perform slightly better.</p>
+
+<h3>5. Context and Settings</h3>
+<p>Your location, language, search history and settings can influence results. "Football scores" means different things in Mumbai and Manchester. A search for "pizza near me" depends entirely on where you are.</p>
+
+<h2>PageRank: Google's Original Breakthrough</h2>
+<p>When Larry Page and Sergey Brin started Google as a Stanford research project in the late 1990s, their key innovation was <strong>PageRank</strong>. The idea: a link from one page to another is like a vote of confidence, and votes from important pages count more.</p>
+<p>Imagine a random web surfer clicking links forever. PageRank estimates how likely that surfer is to end up on each page. Pages linked from many important pages score highly. This made Google's results far better than competitors that relied mainly on keyword matching, which was easy to manipulate.</p>
+<p>PageRank is still part of Google's systems, but it's now just one of many signals. Links remain important, but Google has become much better at ignoring or discounting manipulative links bought or created to game rankings.</p>
+
+<h2>Major Algorithm Updates and Systems Over the Years</h2>
+<table>
+<tr><th>Year</th><th>Update or system</th><th>What it did</th></tr>
+<tr><td>2003</td><td>Florida</td><td>Hit sites using keyword stuffing and other spam tactics.</td></tr>
+<tr><td>2011</td><td>Panda</td><td>Demoted thin, low-quality and duplicate content, such as content farms.</td></tr>
+<tr><td>2012</td><td>Penguin</td><td>Targeted manipulative link schemes and spammy backlinks.</td></tr>
+<tr><td>2013</td><td>Hummingbird</td><td>Rebuilt the core algorithm to better understand the meaning of whole queries.</td></tr>
+<tr><td>2015</td><td>Mobile-friendly update and RankBrain</td><td>Favoured mobile-friendly pages; RankBrain used machine learning to interpret unfamiliar queries.</td></tr>
+<tr><td>2018–2019</td><td>Mobile-first indexing</td><td>Google began using the mobile version of pages for indexing and ranking.</td></tr>
+<tr><td>2019</td><td>BERT</td><td>A language model that understands words in context, especially prepositions and nuance.</td></tr>
+<tr><td>2021</td><td>MUM and page experience</td><td>A more powerful multitask AI model; Core Web Vitals introduced as a page experience signal.</td></tr>
+<tr><td>2022</td><td>Helpful content system</td><td>Aimed to reward content written for people rather than search engines.</td></tr>
+<tr><td>2024</td><td>March core update and spam policies; AI Overviews</td><td>Folded helpful content signals into core ranking, cracked down on scaled content abuse and site reputation abuse; AI Overviews rolled out widely.</td></tr>
+</table>
+<p>Google also releases several broad <strong>core updates</strong> each year, adjusting how its systems assess content overall. Rankings for many sites can rise or fall after these updates.</p>
+
+<h2>How AI Changed Google Search</h2>
+
+<h3>RankBrain (2015)</h3>
+<p>RankBrain was Google's first deep learning system in search. It helps Google connect words to concepts, so it can handle queries it has never seen before, which make up around 15% of daily searches according to Google.</p>
+
+<h3>Neural Matching</h3>
+<p>Introduced in 2018, neural matching helps Google understand fuzzier representations of concepts in queries and pages, matching a search to relevant pages even when they don't share the same words.</p>
+
+<h3>BERT (2019)</h3>
+<p>BERT (Bidirectional Encoder Representations from Transformers) reads words in relation to all the other words in a sentence. Google's example: in "2019 brazil traveler to usa need a visa", the word "to" matters. BERT helps Google understand that the person is travelling from Brazil to the USA, not the other way round.</p>
+
+<h3>MUM (2021)</h3>
+<p>The Multitask Unified Model is described by Google as far more powerful than BERT. It understands information across languages and formats, including text and images, and is used for specific applications such as improving searches about vaccines and identifying topics within videos.</p>
+
+<h3>AI Overviews and AI Mode</h3>
+<p>Since 2024, Google has shown <strong>AI Overviews</strong> at the top of many results: AI-generated summaries built with Gemini models that answer the query and link to supporting sources. Google has also introduced <strong>AI Mode</strong>, a conversational search experience for complex questions. These features change how people interact with search, since some questions are answered without a click, and they make it more important for websites to be clear, trustworthy sources that AI systems can cite.</p>
+
+<h2>Search Features Beyond Ten Blue Links</h2>
+<ul>
+<li><strong>Featured snippets:</strong> a highlighted answer extracted from a page.</li>
+<li><strong>Knowledge Panels:</strong> information boxes about people, places and organisations, drawn from Google's Knowledge Graph.</li>
+<li><strong>People Also Ask:</strong> expandable related questions.</li>
+<li><strong>Local pack:</strong> a map with nearby businesses, based on Google Business Profiles.</li>
+<li><strong>Rich results:</strong> star ratings, recipe details, event dates and more, enabled by structured data.</li>
+<li><strong>Top stories, videos, images and shopping results.</strong></li>
+</ul>
+
+<h2>The Knowledge Graph</h2>
+<p>Launched in 2012, the Knowledge Graph is Google's database of facts about entities, people, places, organisations, things, and how they relate. It allows Google to understand that "Taj Mahal" refers to a monument in Agra, built by Shah Jahan, and to answer questions directly. Google described the shift as moving from "strings to things": understanding real-world entities rather than just matching text.</p>
+
+<h2>How Google Fights Spam</h2>
+<p>Google says it detects billions of spam pages every day. Its <strong>SpamBrain</strong> system, an AI-based spam prevention system, identifies spammy sites and manipulative links. Google's spam policies prohibit practices such as:</p>
+<ul>
+<li>Keyword stuffing and hidden text.</li>
+<li>Cloaking: showing different content to users and search engines.</li>
+<li>Buying or selling links that pass ranking credit, and large-scale link schemes.</li>
+<li><strong>Scaled content abuse:</strong> mass-producing low-value pages, whether by humans or AI, mainly to manipulate rankings.</li>
+<li><strong>Site reputation abuse:</strong> publishing third-party low-quality content on a trusted site to exploit its rankings.</li>
+<li><strong>Expired domain abuse:</strong> buying old domains to host low-quality content.</li>
+</ul>
+<p>Sites that violate these policies may be demoted by automated systems or receive a <strong>manual action</strong> from Google's human reviewers, visible in Search Console.</p>
+
+<h2>Human Search Quality Raters</h2>
+<p>Google employs thousands of external <strong>search quality raters</strong> worldwide who evaluate search results according to detailed guidelines. Their ratings don't directly change rankings for specific pages. Instead, they help Google measure whether proposed algorithm changes improve results. Google also runs hundreds of thousands of experiments and live tests each year, and launches thousands of improvements to search annually.</p>
+
+<h2>What This Means for Website Owners</h2>
+<p>Google repeatedly advises creating "helpful, reliable, people-first content". In practice, that means:</p>
+<ol>
+<li><strong>Answer real questions clearly.</strong> Put the main answer near the top, then add depth.</li>
+<li><strong>Show expertise and experience.</strong> Include author information, first-hand experience, examples and sources.</li>
+<li><strong>Be comprehensive but focused.</strong> Cover a topic thoroughly in one well-organised page rather than many thin ones.</li>
+<li><strong>Use clear structure.</strong> Descriptive titles, headings, short paragraphs and lists help readers and search engines.</li>
+<li><strong>Make pages fast and mobile-friendly.</strong> Check Core Web Vitals in Search Console or PageSpeed Insights.</li>
+<li><strong>Earn genuine links</strong> by creating content others want to reference, not by buying them.</li>
+<li><strong>Use structured data</strong> where relevant to qualify for rich results.</li>
+<li><strong>Keep content up to date</strong>, especially for topics where facts change.</li>
+<li><strong>Use Google Search Console</strong> to submit sitemaps, check indexing and monitor performance.</li>
+<li><strong>Avoid shortcuts</strong> such as keyword stuffing, AI-generated pages without real value, or link schemes.</li>
+</ol>
+
+<h2>Core Web Vitals Explained</h2>
+<p>Core Web Vitals are a set of measurements Google uses to assess real-world user experience on a page:</p>
+<table>
+<tr><th>Metric</th><th>What it measures</th><th>"Good" threshold</th></tr>
+<tr><td>Largest Contentful Paint (LCP)</td><td>How quickly the main content loads</td><td>2.5 seconds or less</td></tr>
+<tr><td>Interaction to Next Paint (INP)</td><td>How quickly the page responds to taps, clicks and key presses</td><td>200 milliseconds or less</td></tr>
+<tr><td>Cumulative Layout Shift (CLS)</td><td>How much the layout jumps around while loading</td><td>0.1 or less</td></tr>
+</table>
+<p>INP replaced an older metric, First Input Delay, in March 2024. Google says page experience matters but is rarely decisive: a fast page with poor content won't outrank a slower page that answers the question much better. Still, speed improves user satisfaction, which matters for its own sake.</p>
+
+<h2>How Search Works in Under a Second</h2>
+<p>When you press Enter, a remarkable amount happens in a fraction of a second:</p>
+<ol>
+<li>Your query is sent to one of Google's data centres, chosen for speed and capacity.</li>
+<li>Language systems interpret the query, correcting spelling and identifying intent and entities.</li>
+<li>The query is split across thousands of machines, each searching a portion of the index in parallel.</li>
+<li>Candidate pages are scored by multiple ranking systems, starting with fast, broad filters and finishing with more detailed models on a smaller set.</li>
+<li>Search features such as maps, images, news or an AI Overview are assembled.</li>
+<li>The results page is sent back to your browser.</li>
+</ol>
+<p>This layered approach, cheap filters first and expensive analysis only on the most promising results, is how Google balances quality with speed at enormous scale.</p>
+
+<h2>Local Search: How Google Ranks Nearby Businesses</h2>
+<p>For searches like "dentist near me" or "best biryani in Hyderabad", Google uses its local ranking systems. Google says local results are based mainly on three factors:</p>
+<ul>
+<li><strong>Relevance:</strong> how well a business profile matches the search.</li>
+<li><strong>Distance:</strong> how far the business is from the searcher or the location in the query.</li>
+<li><strong>Prominence:</strong> how well known the business is, based on information such as reviews, links and articles.</li>
+</ul>
+<p>Businesses can improve their visibility by keeping their Google Business Profile complete and accurate, adding photos and opening hours, and responding to reviews.</p>
+
+<h2>Search on Other Engines</h2>
+<p>Google isn't the only search engine. Bing powers Microsoft's search products and supplies results to several other services, including some AI assistants. DuckDuckGo focuses on privacy, and regional search engines are popular in some countries, such as Baidu in China and Yandex in Russia. The core principles, crawling, indexing and ranking by relevance and quality, are similar across them, although their signals and features differ. Submitting your site to Bing Webmaster Tools as well as Google Search Console helps you reach users on all of them.</p>
+
+<h2>Common Myths About Google's Algorithm</h2>
+<h3>"There's a secret formula you can crack"</h3>
+<p>Google's systems use many signals that change constantly. No one outside Google knows the exact weights, and chasing tricks rarely works for long.</p>
+<h3>"More keywords means higher rankings"</h3>
+<p>Repeating keywords unnaturally can hurt rankings. Google understands synonyms and topics.</p>
+<h3>"Paying for Google Ads improves organic rankings"</h3>
+<p>Google says advertising has no influence on organic search rankings.</p>
+<h3>"Longer content always ranks better"</h3>
+<p>Length helps only if it adds value. A short page that perfectly answers a simple question can outrank a long one.</p>
+<h3>"AI-generated content is automatically penalised"</h3>
+<p>Google has said it rewards helpful content regardless of how it's produced, but mass-produced content made mainly to manipulate rankings violates its spam policies.</p>
+
+<h2>Privacy and Personalisation</h2>
+<p>Google personalises some results based on location, language and, if enabled, your search activity. You can review and control this in your Google Account under Data &amp; Privacy, including turning off personalised results or deleting search history. Most of the ranking for general queries, however, is not heavily personalised.</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>How many ranking factors does Google use?</h3>
+<p>Google has long said it uses hundreds of signals, combined in many ranking systems. It doesn't publish a complete list or their weights.</p>
+
+<h3>How long does it take for a new page to appear in Google?</h3>
+<p>It can take anywhere from a few hours to several weeks. Submitting a sitemap and requesting indexing in Search Console can help Google discover pages faster, but indexing is never guaranteed.</p>
+
+<h3>Does Google read every word on a page?</h3>
+<p>Google processes the full content of pages it indexes, though it may treat some parts, such as repeated navigation menus, as less important than the main content.</p>
+
+<h3>Do backlinks still matter?</h3>
+<p>Yes, links from relevant, reputable sites remain an important signal of authority, but quality matters far more than quantity, and manipulative links can be ignored or penalised.</p>
+
+<h3>Why do my rankings change after a Google update?</h3>
+<p>Core updates reassess content quality across the web. If rankings drop, Google suggests reviewing content for helpfulness, expertise and trustworthiness rather than looking for a quick fix.</p>
+
+<h3>How does Google decide what appears in AI Overviews?</h3>
+<p>AI Overviews draw on information from Google's index and link to pages that support the summary. Pages that clearly and accurately answer questions, and that Google's systems consider reliable, are more likely to be cited.</p>
+
+<h3>Does Google use click data to rank pages?</h3>
+<p>Google has acknowledged using information about how people interact with search results in some of its systems, and documents revealed during the US antitrust case in 2023 described systems that learn from user interactions. Exactly how this data is used is not public, and clicks alone don't determine rankings.</p>
+
+<h3>Does social media affect Google rankings?</h3>
+<p>Google has said social signals such as likes and shares are not direct ranking factors. However, content that spreads widely on social media may earn links and mentions, which can help indirectly.</p>
+
+<h3>Is SEO still worth it with AI search?</h3>
+<p>Yes. AI Overviews and AI assistants still rely on web pages as sources, and many searches still lead to clicks. Clear, well-structured, trustworthy content helps both traditional rankings and the chance of being cited by AI systems.</p>
+
+<h2>Final Thoughts</h2>
+<p>Google's algorithm has evolved from counting links and keywords into a sophisticated system powered by AI that tries to understand language, judge quality and serve the most useful answer. Its goal, in Google's words, is to organise the world's information and make it universally accessible and useful. For users, that means faster and better answers. For website owners, the most reliable strategy hasn't changed: create genuinely helpful, trustworthy content for real people, make it easy to access, and let the algorithms do the rest.</p>
+
+<p>If you found this article interesting, share it with someone curious about how the internet works.</p>
