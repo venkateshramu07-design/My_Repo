@@ -1,0 +1,232 @@
+<p><em>Updated 20 October 2026</em></p>
+
+<p><strong>Quick answer:</strong> Reconnaissance is the first phase of ethical hacking and penetration testing, in which an authorised security professional gathers information about a target organisation to understand its attack surface: domains, IP addresses, systems, technologies, people and exposed services. It comes in two forms: <strong>passive reconnaissance</strong>, using publicly available information without touching the target's systems, and <strong>active reconnaissance</strong>, interacting directly with systems, for example through network scanning. Reconnaissance must always be done with written permission and within an agreed scope. Organisations can use the same insights defensively to reduce what attackers can learn about them.</p>
+
+<p>Before a burglar breaks into a house, they might watch who comes and goes, note where the doors and windows are, and check whether there's an alarm. Cyber attackers do something similar: they collect information before attempting an attack. Ethical hackers, also called penetration testers or security testers, follow the same process with permission, to find weaknesses before criminals do.</p>
+
+<p>This guide explains what reconnaissance is, why it matters, the difference between passive and active methods, the kinds of information gathered, the legal and ethical rules involved, and how organisations can defend themselves by limiting their exposure.</p>
+
+<h2>What Is Ethical Hacking?</h2>
+<p>Ethical hacking is the authorised practice of testing computer systems, networks and applications for security weaknesses, using techniques similar to those of malicious attackers. The key difference is <strong>permission</strong>: ethical hackers work under a signed agreement that defines what they may test, when and how, and they report findings so problems can be fixed.</p>
+<p>Ethical hacking is a recognised profession. Common certifications include the Certified Ethical Hacker (CEH) from EC-Council, Offensive Security Certified Professional (OSCP), CompTIA PenTest+ and GIAC Penetration Tester (GPEN). Many organisations also run <strong>bug bounty programmes</strong>, inviting security researchers to report vulnerabilities in exchange for rewards under clear rules.</p>
+
+<h2>The Phases of Ethical Hacking</h2>
+<p>Penetration testing methodologies vary, but many describe five broad phases:</p>
+<ol>
+<li><strong>Reconnaissance:</strong> gathering information about the target.</li>
+<li><strong>Scanning and enumeration:</strong> identifying live systems, open ports, services and potential vulnerabilities.</li>
+<li><strong>Gaining access:</strong> attempting to exploit vulnerabilities, within the agreed scope.</li>
+<li><strong>Maintaining access:</strong> testing whether an attacker could persist in the environment, if permitted.</li>
+<li><strong>Analysis and reporting:</strong> documenting findings, risks and recommendations, then helping the organisation remediate.</li>
+</ol>
+<p>Frameworks such as the Penetration Testing Execution Standard (PTES), NIST Special Publication 800-115 and the OWASP Web Security Testing Guide provide structured approaches. The MITRE ATT&amp;CK framework, widely used by defenders, includes "Reconnaissance" as the first tactic in describing how real attackers operate.</p>
+
+<h2>Why Reconnaissance Matters</h2>
+<p>Reconnaissance is often considered the most important phase because everything else builds on it. Good reconnaissance:</p>
+<ul>
+<li><strong>Maps the attack surface:</strong> all the points where an attacker could try to enter, such as websites, email systems, remote access portals and cloud services.</li>
+<li><strong>Finds forgotten assets:</strong> old websites, test servers or unused domains that are no longer maintained but still online.</li>
+<li><strong>Identifies technologies:</strong> software versions and platforms that may have known vulnerabilities.</li>
+<li><strong>Reveals human risks:</strong> employee information that could be used in phishing or social engineering.</li>
+<li><strong>Focuses testing:</strong> helps testers spend their limited time on the most promising areas.</li>
+</ul>
+<p>For defenders, understanding what an outsider can learn is the first step to reducing it.</p>
+
+<h2>Passive Reconnaissance</h2>
+<p>Passive reconnaissance collects information without directly interacting with the target's systems. Because it relies on publicly available sources, it's much harder for the target to detect. This approach is closely related to <strong>open-source intelligence (OSINT)</strong>.</p>
+
+<h3>Common Sources of Passive Information</h3>
+<ul>
+<li><strong>The organisation's own website:</strong> staff names, job titles, office locations, technologies mentioned in job adverts, and contact email formats.</li>
+<li><strong>Domain registration (WHOIS) records:</strong> registrant details, registration dates and name servers, although privacy services often hide personal data.</li>
+<li><strong>DNS records:</strong> publicly visible records showing mail servers, subdomains and hosting providers.</li>
+<li><strong>Certificate transparency logs:</strong> public logs of SSL/TLS certificates, which can reveal subdomains an organisation has set up.</li>
+<li><strong>Search engines:</strong> advanced search operators can reveal publicly indexed documents, login pages or misconfigured directories.</li>
+<li><strong>Internet-wide scanning databases:</strong> services such as Shodan and Censys catalogue internet-connected devices and exposed services discovered by their own scanning.</li>
+<li><strong>Social media and professional networks:</strong> employees' posts can reveal technologies used, organisational structure and even photos of badges or office layouts.</li>
+<li><strong>Job postings:</strong> often list specific software, cloud platforms and security tools the company uses.</li>
+<li><strong>Public code repositories:</strong> code accidentally published to platforms like GitHub can expose configuration details or even credentials.</li>
+<li><strong>Data breach disclosures:</strong> public reports of previous breaches can indicate weaknesses, and responsible testers check whether staff credentials have appeared in known breaches using legitimate services designed for that purpose.</li>
+<li><strong>Archived web pages:</strong> services like the Internet Archive's Wayback Machine show older versions of websites that may contain outdated information.</li>
+</ul>
+
+<h2>Active Reconnaissance</h2>
+<p>Active reconnaissance involves interacting directly with the target's systems to gather more detailed information. Because it sends traffic to the target, it can be detected by firewalls, intrusion detection systems and security monitoring, and it must <strong>only</strong> be performed with explicit authorisation.</p>
+
+<h3>Common Active Techniques</h3>
+<ul>
+<li><strong>Network scanning:</strong> identifying which hosts are online and which ports and services they expose. Nmap is a widely used open-source tool for this.</li>
+<li><strong>Service and version detection:</strong> determining what software and versions are running, which helps identify known vulnerabilities.</li>
+<li><strong>DNS interrogation:</strong> querying DNS servers directly for records, within the agreed scope.</li>
+<li><strong>Web application mapping:</strong> exploring a website's pages, parameters and technologies to understand how it works.</li>
+<li><strong>Banner grabbing:</strong> reading information that services display when contacted, such as server software names.</li>
+<li><strong>Social engineering tests:</strong> where specifically authorised, contacting staff by phone or email to assess awareness, usually as part of a separate engagement with clear rules.</li>
+</ul>
+
+<h2>Passive vs Active Reconnaissance</h2>
+<table>
+<tr><th></th><th>Passive</th><th>Active</th></tr>
+<tr><td>Interaction with target systems</td><td>None</td><td>Direct</td></tr>
+<tr><td>Risk of detection</td><td>Very low</td><td>Moderate to high</td></tr>
+<tr><td>Level of detail</td><td>Broad, sometimes outdated</td><td>Detailed and current</td></tr>
+<tr><td>Authorisation required</td><td>Yes, as part of an engagement, and ethical limits apply</td><td>Always explicit written authorisation</td></tr>
+<tr><td>Examples</td><td>OSINT, public records, search engines</td><td>Port scanning, service detection, web mapping</td></tr>
+</table>
+
+<h2>What Information Is Gathered?</h2>
+<table>
+<tr><th>Category</th><th>Examples</th><th>Why it matters</th></tr>
+<tr><td>Network</td><td>Domains, subdomains, IP ranges, mail servers</td><td>Defines what systems are reachable</td></tr>
+<tr><td>Systems</td><td>Operating systems, web servers, open services</td><td>Reveals potential vulnerabilities</td></tr>
+<tr><td>Applications</td><td>Websites, APIs, login portals, content management systems</td><td>Common entry points for attacks</td></tr>
+<tr><td>Cloud</td><td>Cloud providers, storage services, misconfigured buckets</td><td>Misconfigurations are a frequent cause of breaches</td></tr>
+<tr><td>People</td><td>Employee names, roles, email formats</td><td>Used to assess phishing and social engineering risk</td></tr>
+<tr><td>Physical</td><td>Office locations, entry procedures</td><td>Relevant for physical security testing</td></tr>
+</table>
+
+<h2>Real-World Incidents That Show Why Reconnaissance Matters</h2>
+<p>Many well-known breaches started with attackers learning about their targets:</p>
+<ul>
+<li><strong>Target (2013):</strong> attackers reportedly gained access to the US retailer's network using credentials stolen from a third-party heating and air-conditioning vendor, then moved toward payment systems, affecting tens of millions of payment cards. Understanding a company's suppliers and their access is part of mapping the real attack surface.</li>
+<li><strong>Twitter (2020):</strong> attackers used phone-based social engineering against employees to gain access to internal tools, then took over high-profile accounts. Information about staff and internal processes helped make the deception convincing.</li>
+<li><strong>Misconfigured cloud storage:</strong> numerous incidents have exposed sensitive data because storage buckets or databases were left publicly accessible. Attackers and researchers alike regularly search for such exposed resources.</li>
+</ul>
+<p>In each case, information gathering was an early step. Organisations that regularly assess their own exposure are better placed to close gaps before they're exploited.</p>
+
+<h2>Social Engineering and the Human Attack Surface</h2>
+<p>Technology is only part of the picture. Many attacks target people, using information gathered during reconnaissance to make phishing emails, phone calls or messages more convincing. An attacker who knows a manager's name, a colleague's role and the company's email format can craft a message that looks genuine.</p>
+<p>Common social engineering techniques include:</p>
+<ul>
+<li><strong>Phishing:</strong> fraudulent emails designed to steal credentials or deliver malware.</li>
+<li><strong>Spear phishing:</strong> highly targeted phishing aimed at specific individuals.</li>
+<li><strong>Vishing:</strong> voice phishing over phone calls.</li>
+<li><strong>Pretexting:</strong> inventing a believable scenario, such as pretending to be IT support.</li>
+<li><strong>Business email compromise:</strong> impersonating executives or suppliers to request payments.</li>
+</ul>
+<p>Regular awareness training, clear verification procedures for payments and password resets, and a culture where staff feel comfortable reporting suspicious contacts are key defences.</p>
+
+<h2>What a Reconnaissance Report Includes</h2>
+<p>At the end of the reconnaissance phase, a professional tester typically documents:</p>
+<ol>
+<li><strong>Scope confirmation:</strong> the systems and domains assessed.</li>
+<li><strong>Asset inventory:</strong> discovered domains, subdomains, IP addresses and services.</li>
+<li><strong>Technology profile:</strong> identified platforms, software and versions.</li>
+<li><strong>Exposure findings:</strong> sensitive information found publicly, such as leaked documents or exposed configuration files.</li>
+<li><strong>People-related risks:</strong> publicly available staff information that could aid phishing, handled with care for privacy.</li>
+<li><strong>Prioritised risks:</strong> which findings matter most and why.</li>
+<li><strong>Recommendations:</strong> practical steps to reduce exposure.</li>
+</ol>
+<p>Clear, prioritised reporting turns information gathering into action that improves security.</p>
+
+<h2>Legal and Ethical Rules</h2>
+<p>Reconnaissance, especially active scanning, can be illegal without permission. In India, unauthorised access to computer systems is an offence under the Information Technology Act, 2000, and similar laws exist in most countries, such as the Computer Misuse Act in the UK and the Computer Fraud and Abuse Act in the US. Ethical hackers must:</p>
+<ul>
+<li><strong>Obtain written authorisation</strong> from someone with the authority to grant it.</li>
+<li><strong>Agree a clear scope:</strong> which systems, IP ranges and domains are included, and which are excluded.</li>
+<li><strong>Define rules of engagement:</strong> testing times, permitted techniques, communication channels and how to handle sensitive data.</li>
+<li><strong>Respect privacy:</strong> collect only information needed for the assessment, and handle personal data in line with laws such as India's Digital Personal Data Protection Act, 2023.</li>
+<li><strong>Avoid harm:</strong> don't disrupt services or access data beyond what's necessary.</li>
+<li><strong>Report responsibly:</strong> share findings only with the client, and follow responsible disclosure processes for vulnerabilities found in bug bounty or research contexts.</li>
+</ul>
+<p>Even passive OSINT should be used ethically. Collecting and exposing personal information about individuals, sometimes called doxxing, is harmful and may be illegal.</p>
+
+<h2>Attack Surface Management: Continuous Reconnaissance for Defenders</h2>
+<p>Modern organisations change constantly: new cloud services are launched, marketing teams create campaign websites, developers spin up test environments and acquisitions bring in unfamiliar systems. A one-off assessment quickly becomes outdated. <strong>External attack surface management (EASM)</strong> tools continuously discover and monitor internet-facing assets, alerting security teams to new or risky exposures, such as an unexpected open database port or an expired certificate.</p>
+<p>The idea is simple: if attackers are constantly performing reconnaissance against you, you should be doing it too, with the advantage of knowing which assets are supposed to exist.</p>
+
+<h2>Threat Intelligence and Reconnaissance</h2>
+<p>Security teams also study how real attackers conduct reconnaissance. Threat intelligence reports, government advisories such as those from India's CERT-In or the US CISA, and frameworks like MITRE ATT&amp;CK describe common techniques, such as searching victim-owned websites, gathering employee identities and scanning for vulnerable services. Understanding these patterns helps defenders prioritise monitoring and protection.</p>
+
+<h2>How Organisations Can Defend Against Reconnaissance</h2>
+<p>Attackers will always gather some information, but organisations can significantly reduce what's available and detect suspicious activity:</p>
+<ol>
+<li><strong>Know your attack surface:</strong> maintain an up-to-date inventory of domains, subdomains, IP addresses, cloud resources and applications. Many organisations use attack surface management tools to monitor this continuously.</li>
+<li><strong>Remove forgotten assets:</strong> decommission old websites, test servers and unused domains.</li>
+<li><strong>Minimise information exposure:</strong> avoid publishing unnecessary technical details, internal hostnames or software versions in websites, job ads and error messages.</li>
+<li><strong>Configure services securely:</strong> close unused ports, disable unnecessary services, and hide version banners where possible.</li>
+<li><strong>Secure cloud storage:</strong> regularly check for publicly accessible storage buckets and misconfigurations.</li>
+<li><strong>Scan your own code repositories</strong> for accidentally exposed secrets, and rotate any that are found.</li>
+<li><strong>Train employees:</strong> teach staff about oversharing on social media, phishing and social engineering.</li>
+<li><strong>Monitor and detect:</strong> use firewalls, intrusion detection systems and security monitoring to spot scanning and unusual activity.</li>
+<li><strong>Use multi-factor authentication</strong>, so leaked passwords alone aren't enough to gain access.</li>
+<li><strong>Commission regular penetration tests</strong> and consider a bug bounty or vulnerability disclosure programme so researchers can report issues safely.</li>
+</ol>
+
+<h2>Check Your Own Digital Footprint</h2>
+<p>Individuals can apply defensive reconnaissance thinking to their own lives:</p>
+<ul>
+<li>Search for your name, phone number and email address to see what's publicly visible.</li>
+<li>Review privacy settings on social media and limit who can see personal details.</li>
+<li>Avoid posting travel plans, home addresses, ID documents or boarding passes publicly.</li>
+<li>Check whether your email has appeared in known data breaches using reputable breach notification services, and change reused passwords.</li>
+<li>Use a password manager and enable multi-factor authentication on important accounts.</li>
+<li>Be cautious with quizzes and posts asking for details like your first school or pet's name, which are often used as security questions.</li>
+</ul>
+
+<h2>Careers in Ethical Hacking</h2>
+<p>Demand for cybersecurity professionals is high worldwide. The ISC2 Cybersecurity Workforce Study has repeatedly reported a global shortfall of several million cybersecurity workers. Roles involving reconnaissance include:</p>
+<ul>
+<li><strong>Penetration tester:</strong> tests systems and applications for vulnerabilities.</li>
+<li><strong>Red team operator:</strong> simulates realistic attacks to test an organisation's detection and response.</li>
+<li><strong>Threat intelligence analyst:</strong> researches attackers' methods and indicators.</li>
+<li><strong>OSINT analyst:</strong> gathers and analyses open-source information for security or investigations.</li>
+<li><strong>Security consultant:</strong> advises organisations on reducing risk.</li>
+</ul>
+
+<h2>A Typical Engagement Timeline</h2>
+<table>
+<tr><th>Stage</th><th>What happens</th></tr>
+<tr><td>Pre-engagement</td><td>Client and testers agree scope, objectives, rules of engagement, emergency contacts and legal authorisation.</td></tr>
+<tr><td>Passive reconnaissance</td><td>Testers gather public information to map domains, technologies and people-related risks.</td></tr>
+<tr><td>Active reconnaissance</td><td>Within scope, testers identify live systems, open services and software versions.</td></tr>
+<tr><td>Vulnerability analysis</td><td>Findings are matched against known weaknesses and misconfigurations.</td></tr>
+<tr><td>Controlled testing</td><td>Authorised attempts to confirm whether vulnerabilities are exploitable, avoiding disruption.</td></tr>
+<tr><td>Reporting</td><td>A clear report with risk ratings, evidence and recommended fixes.</td></tr>
+<tr><td>Retesting</td><td>After fixes, testers confirm that issues have been resolved.</td></tr>
+</table>
+<p>Throughout, testers keep detailed logs of their actions, so the client can distinguish authorised testing from any genuine malicious activity.</p>
+
+<h2>Ethics Beyond the Law</h2>
+<p>Being legal isn't the same as being ethical. Professional ethical hackers follow codes of conduct from bodies such as EC-Council and ISC2, which emphasise honesty, confidentiality, avoiding harm and acting in the public interest. They protect sensitive data they encounter, don't exaggerate findings to sell services, and never use their skills for personal gain at others' expense. Trust is the foundation of the profession.</p>
+
+<h2>How to Learn Reconnaissance Safely and Legally</h2>
+<ol>
+<li><strong>Learn networking fundamentals:</strong> how IP addresses, DNS, ports and protocols like HTTP work.</li>
+<li><strong>Learn Linux and basic scripting</strong>, such as Bash or Python.</li>
+<li><strong>Practise in legal labs:</strong> platforms such as TryHackMe, Hack The Box, PortSwigger Web Security Academy and OWASP's deliberately vulnerable applications provide safe, legal environments.</li>
+<li><strong>Build a home lab</strong> using virtual machines you own.</li>
+<li><strong>Join capture-the-flag (CTF) competitions</strong> to practise skills in a legal setting.</li>
+<li><strong>Study for certifications</strong> once you have a foundation.</li>
+<li><strong>Never scan or test systems you don't own or have permission to test.</strong></li>
+</ol>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>Is reconnaissance illegal?</h3>
+<p>Collecting publicly available information is generally legal, though privacy laws and ethics still apply. Active reconnaissance, such as scanning someone else's network, can be illegal without explicit permission.</p>
+
+<h3>What is the difference between reconnaissance and scanning?</h3>
+<p>Some frameworks treat scanning as part of active reconnaissance; others list it as a separate phase. Broadly, reconnaissance gathers information about the target, while scanning probes systems in more detail for open services and vulnerabilities.</p>
+
+<h3>What is OSINT?</h3>
+<p>Open-source intelligence is information gathered from publicly available sources, such as websites, public records, social media and news. It's used in security, journalism, law enforcement and research.</p>
+
+<h3>Can companies detect reconnaissance?</h3>
+<p>Passive reconnaissance is very hard to detect. Active reconnaissance, like port scanning, can often be detected by firewalls and intrusion detection systems.</p>
+
+<h3>Is ethical hacking a good career in India?</h3>
+<p>Yes. Demand for cybersecurity skills is growing across IT services, banking, government and startups. Practical skills, certifications and a strong ethical record are important.</p>
+
+<h3>What skills do I need to start in ethical hacking?</h3>
+<p>Start with networking fundamentals, Linux, basic programming or scripting, and an understanding of how web applications work. Curiosity, patience, clear writing for reports and strong ethics are just as important.</p>
+
+<h3>What is a bug bounty programme?</h3>
+<p>A bug bounty programme invites independent security researchers to find and report vulnerabilities in an organisation's systems, under published rules, in exchange for rewards. Researchers must stay within the programme's scope.</p>
+
+<h3>How often should organisations do penetration testing?</h3>
+<p>Many organisations test at least annually and after major changes, such as launching new applications or infrastructure. Regulated industries may have specific requirements.</p>
+
+<h2>Final Thoughts</h2>
+<p>Reconnaissance is the foundation of ethical hacking: you can't protect what you don't know exists. By understanding what information is publicly available and what systems are exposed, ethical hackers help organisations find and fix weaknesses before attackers exploit them. For defenders, the lesson is equally clear: reduce your attack surface, limit unnecessary information, monitor for suspicious activity and test regularly. And for anyone learning these skills, always remember the golden rule: get permission first.</p>
+
+<p>If you found this article useful, share it with someone interested in cybersecurity.</p>
