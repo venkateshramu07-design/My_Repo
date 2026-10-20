@@ -16,11 +16,7 @@ Publish (refuses anything under 3,000 words or that would lose images):
 
 ## Progress
 
-- Queue lines 1–30: rewritten and expanded to 3,000+ words, except
-  `2021/07/qualities-of-good-team-lead` (line 27, ~2,100 words), `2021/08/how-to-control-emotions` (line 29) and
-  `2021/08/how-to-manage-credit-card-loans` (line 30), which still need expanding.
-  The other 27 were republished in their 3,000+ word versions on 2026-10-20 and verified live.
-  Lines 27, 29 and 30 are still live in their earlier, shorter versions.
-- Queue lines 31–35: drafted but still short (about 1,000 words); expand before publishing.
+- Queue lines 1–35: rewritten at 3,000+ words and published (verified live on 2026-10-20).
 - Queue lines 36–153: not started.
 - `2021/06/how-to-be-happy` is live (its publish date was moved to 2026-10-20 at the owner's request).
+- Blogger API calls need `BLOGGER_TOKEN` (an OAuth Playground access token, valid for one hour).
