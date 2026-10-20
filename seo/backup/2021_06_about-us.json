@@ -1,0 +1,28 @@
+{
+ "kind": "blogger#post",
+ "id": "7970319491469471887",
+ "status": "LIVE",
+ "blog": {
+  "id": "6417357851361576411"
+ },
+ "published": "2021-06-05T15:01:00+05:30",
+ "updated": "2021-06-05T15:09:47+05:30",
+ "url": "https://randomthoughtsever.blogspot.com/2021/06/about-us.html",
+ "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/7970319491469471887",
+ "title": "About us",
+ "content": "<div><h1 style=\"text-align: center;\"><span style=\"font-size: x-large;\"><u>A</u><u>bout Us !</u></span></h1><h3 style=\"text-align: center;\"><span style=\"font-weight: normal;\"><span style=\"font-size: large;\">Hello Friends Welcome To randomthoughtsever.blogspot.com</span></span></h3><p style=\"text-align: center;\"><br /></p><p style=\"font-size: 18px;\">randomthoughtsever.blogspot.com is a Professional blogging Platform. Here we will provide you only interesting content, which you will like very much.<br /></p><p style=\"text-align: center;\"><br /></p><p style=\"font-size: 18px;\">We're dedicated to providing you the best of blogging, with a focus on dependability and random topics.<br /><br /></p><p style=\"font-size: 18px;\">We're working to turn our passion for blogging into a booming online website. We hope you enjoy our blogging as much as we enjoy offering them to you.</p><div style=\"text-align: center;\"><br /></div><div style=\"text-align: center;\"><h3>I will keep posting more important posts on my Website for all of you. Please give your support and love.</h3></div><div style=\"text-align: center;\"><h3>Thanks For Visiting Our Site</h3></div><div style=\"text-align: center;\"><a href=\"https://randomthoughtsever.blogspot.com/2021/06/contact-us.html\" target=\"_blank\"><span style=\"font-size: medium;\"><h4>Contact Us !</h4></span></a></div><p></p><p></p><p></p><p></p></div>\t",
+ "author": {
+  "id": "12851296985635952051",
+  "displayName": "Random Thoughts",
+  "url": "https://www.blogger.com/profile/12851296985635952051",
+  "image": {
+   "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+  }
+ },
+ "replies": {
+  "totalItems": "0",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/7970319491469471887/comments"
+ },
+ "readerComments": "ALLOW",
+ "etag": "\"dGltZXN0YW1wOiAxNjIyODg1OTg3MzEwCm9mZnNldDogMTk4MDAwMDAK\""
+}

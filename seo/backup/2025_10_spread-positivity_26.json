@@ -1,0 +1,34 @@
+{
+ "kind": "blogger#post",
+ "id": "1541023398124274255",
+ "status": "LIVE",
+ "blog": {
+  "id": "6417357851361576411"
+ },
+ "published": "2025-10-26T19:47:00+05:30",
+ "updated": "2025-10-26T19:47:55+05:30",
+ "url": "https://randomthoughtsever.blogspot.com/2025/10/spread-positivity_26.html",
+ "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/1541023398124274255",
+ "title": "Spread positivity ",
+ "content": "<p>&nbsp;</p><div class=\"separator\" style=\"clear: both; text-align: center;\"><a href=\"https://blogger.googleusercontent.com/img/a/AVvXsEh9bjcwk21gi8bLGXgbmDIjwb7XnJdj_q6DaswpS5HVQJvQJrbQkwUHk54KZ25GW31q6tAeFy66hgUURNUCNnsOk52dznPa0zI0DX6M_nfnJI2zo3nnHT11yBD6cJQAvV1kmZPuSr8RJL7F4yw31pSYce_kwhBANwglXhL4tleeqJ5RUgg_TM6SZG23wV6w\" style=\"margin-left: 1em; margin-right: 1em;\"><img alt=\"\" data-original-height=\"2048\" data-original-width=\"2048\" height=\"240\" src=\"https://blogger.googleusercontent.com/img/a/AVvXsEh9bjcwk21gi8bLGXgbmDIjwb7XnJdj_q6DaswpS5HVQJvQJrbQkwUHk54KZ25GW31q6tAeFy66hgUURNUCNnsOk52dznPa0zI0DX6M_nfnJI2zo3nnHT11yBD6cJQAvV1kmZPuSr8RJL7F4yw31pSYce_kwhBANwglXhL4tleeqJ5RUgg_TM6SZG23wV6w\" width=\"240\" /></a></div><br /><p></p>",
+ "author": {
+  "id": "12851296985635952051",
+  "displayName": "Random Thoughts",
+  "url": "https://www.blogger.com/profile/12851296985635952051",
+  "image": {
+   "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+  }
+ },
+ "replies": {
+  "totalItems": "0",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/1541023398124274255/comments"
+ },
+ "labels": [
+  "science",
+  "social life",
+  "world",
+  "Zen"
+ ],
+ "readerComments": "ALLOW",
+ "etag": "\"dGltZXN0YW1wOiAxNzYxNDg4Mjc1MTU2Cm9mZnNldDogMTk4MDAwMDAK\""
+}

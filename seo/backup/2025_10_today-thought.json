@@ -1,0 +1,31 @@
+{
+ "kind": "blogger#post",
+ "id": "1823229212328328341",
+ "status": "LIVE",
+ "blog": {
+  "id": "6417357851361576411"
+ },
+ "published": "2025-10-20T01:06:00+05:30",
+ "updated": "2025-10-20T01:06:40+05:30",
+ "url": "https://randomthoughtsever.blogspot.com/2025/10/today-thought.html",
+ "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/1823229212328328341",
+ "title": "Today thought",
+ "content": "<p>&nbsp;</p><div class=\"separator\" style=\"clear: both; text-align: center;\"><a href=\"https://blogger.googleusercontent.com/img/a/AVvXsEguU4qcqNc1FvYoVZSpcvWC_7A5Bbx_vwzgleOxHBmTdpb6BftsCaz-iXB0QopinRUrc_qwa6QTLJrwdPLkrU9KB2-Ls6qRKBIbhZhHTNgw1R83QpFh0bopd-AlTiMY3wwxtI4Y5YRSwvKYjYmr-YBY4T18voICKVCPNdUbLZKVZysF8gD8O442ntdFNW52\" style=\"margin-left: 1em; margin-right: 1em;\"><img alt=\"\" data-original-height=\"2048\" data-original-width=\"2048\" height=\"240\" src=\"https://blogger.googleusercontent.com/img/a/AVvXsEguU4qcqNc1FvYoVZSpcvWC_7A5Bbx_vwzgleOxHBmTdpb6BftsCaz-iXB0QopinRUrc_qwa6QTLJrwdPLkrU9KB2-Ls6qRKBIbhZhHTNgw1R83QpFh0bopd-AlTiMY3wwxtI4Y5YRSwvKYjYmr-YBY4T18voICKVCPNdUbLZKVZysF8gD8O442ntdFNW52\" width=\"240\" /></a></div><br /><p></p>",
+ "author": {
+  "id": "12851296985635952051",
+  "displayName": "Random Thoughts",
+  "url": "https://www.blogger.com/profile/12851296985635952051",
+  "image": {
+   "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+  }
+ },
+ "replies": {
+  "totalItems": "0",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/1823229212328328341/comments"
+ },
+ "labels": [
+  "Thoughts"
+ ],
+ "readerComments": "ALLOW",
+ "etag": "\"dGltZXN0YW1wOiAxNzYwOTAyNjAwNjkwCm9mZnNldDogMTk4MDAwMDAK\""
+}

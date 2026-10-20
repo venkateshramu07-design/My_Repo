@@ -18,6 +18,7 @@ import urllib.parse
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(__file__))
+from format import clean
 from plan import PLAN, QUOTE_POSTS, SITEMAP_POSTS
 
 BLOG_URL = "https://randomthoughtsever.blogspot.com/"
@@ -53,11 +54,13 @@ def token():
 
 
 def call(method, path, params=None, body=None):
+    params = dict(params or {})
+    if token():
+        # Sent as a query parameter: the environment's proxy replaces any Authorization header.
+        params["access_token"] = token()
     url = API + path + ("?" + urllib.parse.urlencode(params) if params else "")
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, method=method)
-    if token():
-        req.add_header("Authorization", "Bearer " + token())
     if data:
         req.add_header("Content-Type", "application/json")
     try:
@@ -173,6 +176,7 @@ def changes_for(p, posts_by_slug):
     if s in PLAN:
         new_title, desc, labels = PLAN[s]
         content = strip_related(p.get("content", ""))
+        content = clean(content, new_title, p["title"])
         content = demote_h1(add_alt_text(content, new_title or p["title"]))
         content += related_block(s, posts_by_slug)
         if new_title and new_title != p["title"]:

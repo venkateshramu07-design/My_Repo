@@ -1,0 +1,34 @@
+{
+ "kind": "blogger#post",
+ "id": "9039348652719781707",
+ "status": "LIVE",
+ "blog": {
+  "id": "6417357851361576411"
+ },
+ "published": "2021-06-05T14:22:00+05:30",
+ "updated": "2021-06-15T12:43:24+05:30",
+ "url": "https://randomthoughtsever.blogspot.com/2021/06/sitemap.html",
+ "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/9039348652719781707",
+ "title": "sitemap",
+ "content": "<br />&lt;script type=”text/javascript”&gt;<br />var numposts = 100;<br />var standardstyling = true;<br />function showrecentposts(json) {<br />for (var i = 0; i &lt; numposts; i++) {<br />var entry = json.feed.entry[i];<br />var posttitle = entry.title.$t;<br />var posturl;<br />if (i == json.feed.entry.length) break;<br />for (var k = 0; k &lt; entry.link.length; k++) {<br />if (entry.link[k].rel == ‘alternate’) {<br />posturl = entry.link[k].href;<br />break;&nbsp;&nbsp;&nbsp; }&nbsp;&nbsp; }<br />posttitle = posttitle.link(posturl);<br />if (standardstyling) document.write(‘&lt;li&gt;’);<br />document.write(posttitle);&nbsp; }<br />if (standardstyling) document.write(‘&lt;/li&gt;’); }<br />&lt;/script&gt;&lt;b&gt;&lt;font size=”6″&gt;Pages&lt;/font&gt;&lt;/b&gt;&lt;br /&gt;<br />&lt;ul&gt;<br />&lt;script src=”https://randomthoughtsever.blogspot.com/feeds/posts/default?orderby=published&amp;amp;alt=json-in-script&amp;amp;callback=showrecentposts&amp;amp;max-results=999″&gt;&lt;/script&gt;<br />&lt;/ul&gt;<br /><br />",
+ "author": {
+  "id": "12851296985635952051",
+  "displayName": "Random Thoughts",
+  "url": "https://www.blogger.com/profile/12851296985635952051",
+  "image": {
+   "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+  }
+ },
+ "replies": {
+  "totalItems": "0",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/9039348652719781707/comments"
+ },
+ "location": {
+  "name": "Indian Ocean",
+  "lat": -33.137551,
+  "lng": 81.826172,
+  "span": "56.62046767235769, 70.3125"
+ },
+ "readerComments": "ALLOW",
+ "etag": "\"dGltZXN0YW1wOiAxNjIzNzQxMjA0ODA3Cm9mZnNldDogMTk4MDAwMDAK\""
+}

@@ -1,0 +1,28 @@
+{
+ "kind": "blogger#post",
+ "id": "3903364206636742769",
+ "status": "LIVE",
+ "blog": {
+  "id": "6417357851361576411"
+ },
+ "published": "2021-06-05T14:31:00+05:30",
+ "updated": "2021-06-15T12:43:50+05:30",
+ "url": "https://randomthoughtsever.blogspot.com/2021/06/sitemappages.html",
+ "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/3903364206636742769",
+ "title": "sitemap_pages",
+ "content": "\n<script type=”text/javascript”>\nvar numposts = 100;\nvar standardstyling = true;\nfunction showrecentposts(json) {\nfor (var i = 0; i < numposts; i++) {\nvar entry = json.feed.entry[i];\nvar posttitle = entry.title.$t;\nvar posturl;\nif (i == json.feed.entry.length) break;\nfor (var k = 0; k < entry.link.length; k++) {\nif (entry.link[k].rel == ‘alternate’) {\nposturl = entry.link[k].href;\nbreak;    }   }\nposttitle = posttitle.link(posturl);\nif (standardstyling) document.write(‘<li>’);\ndocument.write(posttitle);  }\nif (standardstyling) document.write(‘</li>’); }\n</script><b><font size=”6″>Pages</font></b><br />\n<ul>\n<script src=”https://randomthoughtsever.blogspot.com/feeds/pages/default?orderby=published&amp;alt=json-in-script&amp;callback=showrecentposts&amp;max-results=999″></script>\n</ul>\n",
+ "author": {
+  "id": "12851296985635952051",
+  "displayName": "Random Thoughts",
+  "url": "https://www.blogger.com/profile/12851296985635952051",
+  "image": {
+   "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+  }
+ },
+ "replies": {
+  "totalItems": "0",
+  "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6417357851361576411/posts/3903364206636742769/comments"
+ },
+ "readerComments": "ALLOW",
+ "etag": "\"dGltZXN0YW1wOiAxNjIzNzQxMjMwNTM4Cm9mZnNldDogMTk4MDAwMDAK\""
+}
