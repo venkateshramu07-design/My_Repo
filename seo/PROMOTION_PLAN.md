@@ -13,7 +13,7 @@ Live site check (21 October 2026):
 | sitemap.xml | OK |
 | Article structured data (Blogger adds BlogPosting, Breadcrumb, Organization) | OK |
 | All 153 queued posts rewritten as long-form articles (3,000+ words, quick answer, FAQ, related links) | Live |
-| Site redesign (`theme/redesign.xml`) | Live |
+| Site redesign v2 (`theme/bd-redesign.js`, loaded by an HTML/JavaScript gadget) | Live (21 October 2026) |
 | 4 free calculators (SIP, EMI + prepayment, FIRE, credit card payoff), linked from 28 finance posts and the sitemap page | Live |
 | 11 interactive tools inside 24 posts (sleep cycle, inflation, lumpsum vs SIP, debt avalanche vs snowball, 401(k), time zones, habit tracker, Eisenhower matrix, live currency converter, annuity payout, BMI with Asian cut-offs); 10 more posts link to the matching calculator | Live (21 October) |
 | Post search descriptions | **Still the old comma-separated keyword lists with typos** ("postive", "awarness", "randomthougtsever"). These also appear as the text when a post is shared. The Blogger API ignores this field (tested 21 October), so it can only be changed in Blogger |
