@@ -19,6 +19,8 @@ Publish (refuses anything under 3,000 words or that would lose images):
 - Queue lines 1–39: rewritten at 3,000+ words and published (verified live on 2026-10-20).
 - Queue lines 40–149: rewritten at 3,000+ words and published in batches of 10 (verified live on 2026-10-21).
 - Line 35 (`2021/09/how-much-does-google-know-about-me`): edited version republished (verified live on 2026-10-21).
-- Queue lines 150–153: not started.
+- Queue lines 150–153: rewritten at 3,000+ words and published (verified live on 2026-10-21).
+
+All 153 queued posts are rewritten and live.
 - `2021/06/how-to-be-happy` is live (its publish date was moved to 2026-10-20 at the owner's request).
 - Blogger API calls need `BLOGGER_TOKEN` (an OAuth Playground access token, valid for one hour).
