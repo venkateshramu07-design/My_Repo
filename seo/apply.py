@@ -26,6 +26,13 @@ API = "https://www.googleapis.com/blogger/v3"
 HERE = os.path.dirname(os.path.abspath(__file__))
 BACKUP = os.path.join(HERE, "backup")
 REWRITES = os.path.join(HERE, "rewrites")
+CALCULATORS = [  # live calculator posts (seo/tools/)
+    ("SIP calculator", BLOG_URL + "2026/10/sip-calculator-estimate-your-mutual.html"),
+    ("EMI and prepayment calculator", BLOG_URL + "2026/10/home-loan-emi-calculator-with.html"),
+    ("FIRE calculator", BLOG_URL + "2026/10/fire-calculator-how-much-you-need-to.html"),
+    ("Credit card payoff calculator", BLOG_URL + "2026/10/credit-card-payoff-calculator-how-long.html"),
+]
+CALCULATOR_LABELS = {"Personal Finance", "Investing"}
 RELATED_START = "<!-- seo-related-start -->"
 RELATED_END = "<!-- seo-related-end -->"
 
@@ -140,7 +147,10 @@ def related_block(s, posts_by_slug):
     items = "".join(
         f'<li><a href="{posts_by_slug[o]["url"]}">{html.escape(PLAN[o][0] or posts_by_slug[o]["title"])}</a></li>'
         for o in picks)
-    return (f'{RELATED_START}<div class="seo-related"><h3>Related articles</h3><ul>{items}</ul>'
+    tools = ""
+    if CALCULATOR_LABELS & set(labels):
+        tools = "<p>Free calculators: " + " · ".join(f'<a href="{u}">{n}</a>' for n, u in CALCULATORS) + "</p>"
+    return (f'{RELATED_START}<div class="seo-related"><h3>Related articles</h3><ul>{items}</ul>{tools}'
             f'<p><a href="{BLOG_URL}2021/06/sitemap.html">Browse all articles by topic</a></p></div>{RELATED_END}')
 
 
@@ -153,7 +163,9 @@ def sitemap_html(posts_by_slug):
     for s, (t, _, labs) in PLAN.items():
         if labs and s in posts_by_slug:
             groups.setdefault(labs[0], []).append(s)
-    out = ["<p>Browse every article on Blog Digest, grouped by topic.</p>"]
+    out = ["<p>Browse every article on Blog Digest, grouped by topic.</p><h2>Free Calculators</h2><ul>"]
+    out += [f'<li><a href="{u}">{html.escape(n[0].upper() + n[1:])}</a></li>' for n, u in CALCULATORS]
+    out.append("</ul>")
     for lab in sorted(groups):
         out.append(f"<h2>{html.escape(lab)}</h2><ul>")
         for s in sorted(groups[lab], key=lambda x: posts_by_slug[x]["published"], reverse=True):

@@ -1,0 +1,120 @@
+<p><em>Updated 21 October 2026</em></p>
+
+<p><strong>Quick answer:</strong> Your loan EMI (equated monthly instalment) is P × r × (1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1), where P is the loan amount, r the monthly interest rate and n the number of months. A ₹50 lakh home loan at 8.5% for 20 years has an EMI of about ₹43,390 and total interest of about ₹54 lakh, more than the loan itself. Paying just ₹5,000 extra a month would clear it about 4½ years earlier and save roughly ₹14 lakh in interest. Use the free calculator below to see your own EMI and how much prepayment can save.</p>
+
+<div class="bd-calc" id="bd-emi">
+<div class="bc-grid">
+<div><label for="emi-p">Loan amount</label><input id="emi-p" type="number" min="0" step="50000" value="5000000"></div>
+<div><label for="emi-r">Interest rate (% a year)</label><input id="emi-r" type="number" min="0" max="40" step="0.05" value="8.5"></div>
+<div><label for="emi-y">Loan tenure (years)</label><input id="emi-y" type="number" min="1" max="40" step="1" value="20"></div>
+<div><label for="emi-x">Extra payment every month</label><input id="emi-x" type="number" min="0" step="1000" value="5000"></div>
+<div><label for="emi-l">One-time prepayment</label><input id="emi-l" type="number" min="0" step="10000" value="0"></div>
+<div><label for="emi-ly">Make it in year</label><input id="emi-ly" type="number" min="1" max="40" step="1" value="3"></div>
+<div><label for="emi-cur">Currency</label><select id="emi-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Monthly EMI</span><b id="emi-emi">—</b></div>
+<div class="bc-stat"><span>Total interest (no prepayment)</span><b id="emi-int">—</b><span id="emi-intw"></span></div>
+<div class="bc-stat"><span>Total interest with prepayment</span><b id="emi-int2">—</b></div>
+<div class="bc-stat bc-main"><span>Interest saved</span><b id="emi-save">—</b><span id="emi-savew"></span></div>
+<div class="bc-stat"><span>Loan paid off in</span><b id="emi-ten">—</b></div>
+<div class="bc-stat"><span>Time saved</span><b id="emi-tsave">—</b></div>
+</div>
+<div class="bc-bar"><i id="emi-bar-p" style="background:#8a93a6"></i><i id="emi-bar-i" style="background:var(--bd-accent,#e2462c)"></i></div>
+<div class="bc-legend"><span><i style="background:#8a93a6"></i>Principal</span><span><i style="background:var(--bd-accent,#e2462c)"></i>Interest (no prepayment)</span></div>
+<details><summary>Year-by-year schedule (with prepayment)</summary><div class="bc-table"><table><thead><tr><th>Year</th><th>Principal paid</th><th>Interest paid</th><th>Balance at year end</th></tr></thead><tbody id="emi-rows"></tbody></table></div></details>
+<p class="bc-note">Assumes a constant interest rate, with prepayments used to shorten the tenure while the EMI stays the same. Floating rates and lender charges will change the real figures.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-emi');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var P=C.num($('emi-p')),r=C.num($('emi-r'))/1200,n=Math.min(480,Math.max(1,Math.round(C.num($('emi-y'))*12))),X=C.num($('emi-x')),L=C.num($('emi-l')),LY=Math.max(1,Math.round(C.num($('emi-ly')))),cur=$('emi-cur').value;
+  var emi=r>0?P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1):P/n;
+  var tot=emi*n-P;
+  var b=P,m=0,ti=0,rows='',yp=0,yi=0;
+  while(b>0.005&&m<n){
+    var it=b*r,pay=Math.min(b+it,emi+X);
+    if(m===(LY-1)*12)pay=Math.min(b+it,pay+L);
+    b=b+it-pay;ti+=it;yp+=pay-it;yi+=it;m++;
+    if(m%12===0||b<=0.005){rows+='<tr><td>'+Math.ceil(m/12)+'</td><td>'+C.money(yp,cur)+'</td><td>'+C.money(yi,cur)+'</td><td>'+C.money(Math.max(b,0),cur)+'</td></tr>';yp=0;yi=0}
+  }
+  $('emi-emi').textContent=C.money(emi,cur);
+  $('emi-int').textContent=C.money(tot,cur);$('emi-intw').textContent=C.words(tot,cur);
+  $('emi-int2').textContent=C.money(ti,cur);
+  $('emi-save').textContent=C.money(tot-ti,cur);$('emi-savew').textContent=C.words(tot-ti,cur);
+  $('emi-ten').textContent=C.years(m);$('emi-tsave').textContent=C.years(n-m);
+  var pp=P+tot>0?P/(P+tot)*100:100;$('emi-bar-p').style.width=pp+'%';$('emi-bar-i').style.width=(100-pp)+'%';
+  $('emi-rows').innerHTML=rows;
+});
+})();
+</script>
+
+<h2>How to Use This EMI Calculator</h2>
+<ol>
+<li>Enter the <strong>loan amount</strong>, <strong>interest rate</strong> and <strong>tenure</strong>. The calculator shows your EMI and the total interest over the full term.</li>
+<li>Add an <strong>extra monthly payment</strong> to see how much faster you'd be debt-free and how much interest you'd save. Set it to 0 to see the loan without prepayment.</li>
+<li>Try a <strong>one-time prepayment</strong>, such as an annual bonus, and choose the year you'd make it.</li>
+<li>Open the <strong>year-by-year schedule</strong> to see how your payments split between principal and interest.</li>
+</ol>
+<p>It works for home loans, car loans, personal loans and education loans, in any currency.</p>
+
+<h2>The EMI Formula Explained</h2>
+<p><strong>EMI = P × r × (1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1)</strong></p>
+<ul>
+<li><strong>P</strong> is the loan amount (principal)</li>
+<li><strong>r</strong> is the monthly interest rate: the annual rate ÷ 12 ÷ 100. At 8.5%, r ≈ 0.00708</li>
+<li><strong>n</strong> is the number of monthly instalments: 20 years = 240</li>
+</ul>
+<p>For ₹50 lakh at 8.5% for 20 years, the EMI is about ₹43,391. Over 240 months, you'd pay about ₹1.04 crore in total, of which about ₹54 lakh is interest.</p>
+
+<h2>Why Early EMIs Are Mostly Interest</h2>
+<p>Interest is charged on the outstanding balance, which is highest at the start. In the first month of the example loan, about ₹35,400 of the ₹43,391 EMI goes to interest and only about ₹8,000 reduces the loan. As the balance falls, more of each EMI goes to principal. This is why prepaying early in a loan saves far more interest than prepaying near the end.</p>
+
+<h2>How Much Does Prepayment Save?</h2>
+<p>Using the example loan of ₹50 lakh at 8.5% for 20 years:</p>
+<ul>
+<li><strong>₹5,000 extra every month:</strong> paid off in about 15½ years instead of 20, saving roughly ₹14 lakh in interest.</li>
+<li><strong>₹10,000 extra every month:</strong> paid off in about 13 years, saving roughly ₹22 lakh.</li>
+<li><strong>A one-time ₹5 lakh prepayment in year 3:</strong> saves roughly ₹14.5 lakh and cuts more than 3½ years.</li>
+</ul>
+<p>Try these in the calculator and compare them with your own loan.</p>
+
+<h2>Prepay the Loan or Invest the Money?</h2>
+<p>This is one of the most common personal finance questions. Some guidelines:</p>
+<ul>
+<li><strong>Prepaying gives a guaranteed "return"</strong> equal to your loan interest rate, with no market risk.</li>
+<li><strong>Investing may earn more</strong> over the long term, especially in equity, but with no guarantee.</li>
+<li><strong>Tax matters.</strong> In India, home loan interest and principal may qualify for deductions under certain tax rules, which lowers the effective cost of the loan. Check the current rules for your tax regime.</li>
+<li><strong>Peace of mind counts.</strong> Many people value being debt-free, especially before retirement.</li>
+<li><strong>Keep an emergency fund first.</strong> Don't put every spare rupee into prepayment and leave yourself with no savings.</li>
+</ul>
+<p>A common middle path is to split surplus money between prepayment and investing.</p>
+
+<h2>Other Ways to Reduce Your Loan Cost</h2>
+<ul>
+<li><strong>Negotiate or switch lenders</strong> if your rate is well above current market rates. Balance transfers can save money but check fees.</li>
+<li><strong>Increase your EMI as your income grows.</strong></li>
+<li><strong>Choose the shortest tenure you can comfortably afford.</strong></li>
+<li><strong>Understand fixed vs floating rates.</strong> Our guide to <a href="https://randomthoughtsever.blogspot.com/2023/04/a-study-on-fixed-interest-vs-floating.html">fixed vs floating interest rates</a> explains the trade-offs.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+<h3>Are there charges for prepaying a home loan in India?</h3>
+<p>RBI rules don't allow banks to charge foreclosure or prepayment penalties on floating-rate home loans taken by individuals. Fixed-rate loans and other loan types may carry charges, so check your loan agreement.</p>
+<h3>Should I reduce EMI or tenure after prepaying?</h3>
+<p>Reducing tenure usually saves more interest. Reducing EMI eases monthly cash flow. This calculator assumes you keep the EMI and reduce the tenure.</p>
+<h3>Does the calculator handle floating rates?</h3>
+<p>It assumes a constant rate. If your rate changes, re-run the calculator with the new rate and the remaining balance and tenure.</p>
+<h3>What is a good EMI-to-income ratio?</h3>
+<p>Many lenders and planners suggest keeping total EMIs below about 40% to 50% of take-home pay, and lower is more comfortable.</p>
+
+<h2>Related Guides</h2>
+<ul>
+<li><a href="https://randomthoughtsever.blogspot.com/2021/09/is-floating-interest-is-good-for-house.html">Is a Floating Interest Rate Good for a Home Loan?</a></li>
+<li><a href="https://randomthoughtsever.blogspot.com/2023/04/a-study-on-fixed-interest-vs-floating.html">Fixed vs Floating Interest Rate: Which Is Better?</a></li>
+<li><a href="https://randomthoughtsever.blogspot.com/2021/08/how-to-manage-credit-card-loans.html">How to Manage Credit Card Debt Wisely</a></li>
+<li><a href="https://randomthoughtsever.blogspot.com/2021/06/financial-independence.html">Financial Independence: How to Achieve It Step by Step</a></li>
+</ul>
+<p><em>This calculator is for education only and isn't personalised financial advice. Your lender's figures may differ slightly because of rounding, fees and rate changes.</em></p>

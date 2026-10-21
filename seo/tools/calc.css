@@ -1,0 +1,24 @@
+.bd-calc{--c-ink:var(--bd-ink,#15171d);--c-muted:var(--bd-muted,#5d6271);--c-line:var(--bd-line,#e8e2d6);--c-surface:var(--bd-surface-2,#fbf9f5);--c-accent:var(--bd-accent,#e2462c);
+  border:1px solid var(--c-line);border-radius:18px;background:var(--c-surface);padding:22px;margin:1.5em 0 2em;color:var(--c-ink);font-family:var(--bd-sans,system-ui,sans-serif)}
+.bd-calc .bc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 18px}
+.bd-calc label{display:block;font-size:14px;font-weight:600;color:var(--c-muted);margin-bottom:6px}
+.bd-calc input,.bd-calc select{width:100%;box-sizing:border-box;font:600 17px/1.3 inherit;padding:10px 12px;border:1px solid var(--c-line);border-radius:10px;background:transparent;color:var(--c-ink)}
+.bd-calc input:focus,.bd-calc select:focus{outline:2px solid var(--c-accent);outline-offset:1px}
+.bd-calc .bc-check{display:flex;gap:8px;align-items:center;font-size:15px;color:var(--c-ink)}
+.bd-calc .bc-check input{width:auto}
+.bd-calc .bc-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:20px}
+.bd-calc .bc-stat{border:1px solid var(--c-line);border-radius:14px;padding:14px}
+.bd-calc .bc-stat span{display:block;font-size:13px;color:var(--c-muted)}
+.bd-calc .bc-stat b{display:block;font-size:22px;margin-top:4px;font-variant-numeric:tabular-nums;word-break:break-word}
+.bd-calc .bc-stat.bc-main b{color:var(--c-accent)}
+.bd-calc .bc-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:18px 0 6px;background:var(--c-line)}
+.bd-calc .bc-bar i{display:block;height:100%}
+.bd-calc .bc-legend{font-size:13px;color:var(--c-muted);display:flex;gap:16px;flex-wrap:wrap}
+.bd-calc .bc-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.bd-calc .bc-note{font-size:14px;color:var(--c-muted);margin:14px 0 0}
+.bd-calc details{margin-top:16px}
+.bd-calc summary{cursor:pointer;font-weight:600}
+.bd-calc .bc-table{overflow-x:auto;margin-top:10px}
+.bd-calc table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.bd-calc th,.bd-calc td{padding:7px 8px;border-bottom:1px solid var(--c-line);text-align:right;white-space:nowrap}
+.bd-calc th:first-child,.bd-calc td:first-child{text-align:left}

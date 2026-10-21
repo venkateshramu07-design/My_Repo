@@ -1,0 +1,104 @@
+<p><em>Updated 21 October 2026</em></p>
+
+<p><strong>Quick answer:</strong> A SIP (systematic investment plan) calculator estimates what a fixed monthly investment could grow to. For example, investing ₹10,000 a month for 15 years at an assumed 12% annual return would grow to about ₹50.5 lakh, of which ₹18 lakh is your own money and about ₹32.5 lakh is estimated returns. Use the free calculator below to try your own numbers, including a yearly step-up and the effect of inflation.</p>
+
+<div class="bd-calc" id="bd-sip">
+<div class="bc-grid">
+<div><label for="sip-amt">Monthly investment</label><input id="sip-amt" type="number" min="0" step="500" value="10000"></div>
+<div><label for="sip-rate">Expected return (% a year)</label><input id="sip-rate" type="number" min="0" max="40" step="0.5" value="12"></div>
+<div><label for="sip-years">Time period (years)</label><input id="sip-years" type="number" min="1" max="60" step="1" value="15"></div>
+<div><label for="sip-step">Yearly step-up (%)</label><input id="sip-step" type="number" min="0" max="50" step="1" value="0"></div>
+<div><label for="sip-infl">Inflation (% a year)</label><input id="sip-infl" type="number" min="0" max="20" step="0.5" value="6"></div>
+<div><label for="sip-cur">Currency</label><select id="sip-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Estimated value</span><b id="sip-fv">—</b><span id="sip-fvw"></span></div>
+<div class="bc-stat"><span>Total invested</span><b id="sip-inv">—</b></div>
+<div class="bc-stat"><span>Estimated returns</span><b id="sip-gain">—</b></div>
+<div class="bc-stat"><span>Value in today's money</span><b id="sip-real">—</b></div>
+</div>
+<div class="bc-bar"><i id="sip-bar-inv" style="background:#8a93a6"></i><i id="sip-bar-gain" style="background:var(--bd-accent,#e2462c)"></i></div>
+<div class="bc-legend"><span><i style="background:#8a93a6"></i>Invested</span><span><i style="background:var(--bd-accent,#e2462c)"></i>Returns</span></div>
+<details><summary>Year-by-year table</summary><div class="bc-table"><table><thead><tr><th>Year</th><th>Monthly SIP</th><th>Invested so far</th><th>Value at year end</th></tr></thead><tbody id="sip-rows"></tbody></table></div></details>
+<p class="bc-note">Estimates assume a steady return and an investment at the start of each month. Real returns vary year to year and are not guaranteed.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-sip');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var P=C.num($('sip-amt')),R=C.num($('sip-rate'))/100,Y=Math.min(60,Math.max(1,Math.round(C.num($('sip-years'))))),S=C.num($('sip-step'))/100,I=C.num($('sip-infl'))/100,cur=$('sip-cur').value;
+  var r=R/12,v=0,inv=0,amt=P,rows='';
+  for(var y=1;y<=Y;y++){
+    for(var m=0;m<12;m++){v=(v+amt)*(1+r);inv+=amt}
+    rows+='<tr><td>'+y+'</td><td>'+C.money(amt,cur)+'</td><td>'+C.money(inv,cur)+'</td><td>'+C.money(v,cur)+'</td></tr>';
+    amt*=1+S;
+  }
+  $('sip-fv').textContent=C.money(v,cur);$('sip-fvw').textContent=C.words(v,cur);
+  $('sip-inv').textContent=C.money(inv,cur);$('sip-gain').textContent=C.money(v-inv,cur);
+  $('sip-real').textContent=C.money(v/Math.pow(1+I,Y),cur);
+  var pi=v>0?inv/v*100:100;$('sip-bar-inv').style.width=pi+'%';$('sip-bar-gain').style.width=(100-pi)+'%';
+  $('sip-rows').innerHTML=rows;
+});
+})();
+</script>
+
+<h2>How to Use This SIP Calculator</h2>
+<ol>
+<li><strong>Monthly investment:</strong> the amount you plan to invest each month.</li>
+<li><strong>Expected return:</strong> the average yearly return you assume. Equity mutual funds have historically delivered higher but more volatile returns than debt funds; many people test a range, such as 8%, 10% and 12%, rather than relying on one number.</li>
+<li><strong>Time period:</strong> how many years you'll keep investing.</li>
+<li><strong>Yearly step-up:</strong> how much you'll increase your SIP each year, for example 10% as your salary rises. Leave it at 0 for a flat SIP.</li>
+<li><strong>Inflation:</strong> used to show what the final amount would be worth in today's money.</li>
+</ol>
+<p>The results update instantly. Open the year-by-year table to see how the value grows, and notice how most of the growth happens in the later years. That's compounding at work.</p>
+
+<h2>The SIP Formula</h2>
+<p>For a flat SIP invested at the start of each month, the future value is:</p>
+<p><strong>FV = P × [((1 + r)<sup>n</sup> − 1) ÷ r] × (1 + r)</strong></p>
+<ul>
+<li><strong>P</strong> is the monthly investment</li>
+<li><strong>r</strong> is the monthly rate of return (annual rate ÷ 12)</li>
+<li><strong>n</strong> is the number of months</li>
+</ul>
+<p>With ₹10,000 a month, 12% a year (r = 1% a month) and 15 years (n = 180): 1.01<sup>180</sup> ≈ 5.996, so FV ≈ 10,000 × 499.6 × 1.01 ≈ ₹50.46 lakh. The calculator uses the same approach, month by month, so it can also handle a yearly step-up.</p>
+<p>Some calculators assume the investment is made at the end of each month, which gives a slightly lower figure. Neither is wrong; they just make different assumptions.</p>
+
+<h2>Worked Examples</h2>
+<h3>The Power of Starting Early</h3>
+<p>Two friends each invest ₹5,000 a month, assuming 12% a year. One starts at 25 and invests until 60 (35 years). The other starts at 35 (25 years). Using the formula above, the first would have roughly ₹3.2 crore and the second roughly ₹95 lakh. The early starter invested ₹6 lakh more but ended up with more than three times as much, because the money had ten extra years to compound.</p>
+<h3>The Power of a Step-Up</h3>
+<p>A ₹10,000 monthly SIP for 20 years at 12% grows to about ₹1 crore. Increasing the SIP by 10% every year raises the final value to roughly ₹2 crore. Try it in the calculator: set 20 years and a 10% step-up.</p>
+<h3>Why Inflation Matters</h3>
+<p>₹50 lakh in 15 years won't buy what ₹50 lakh buys today. At 6% inflation, it would be worth about ₹21 lakh in today's money. Always check the "today's money" figure when planning goals like retirement or a child's education.</p>
+
+<h2>Tips for Getting the Most From a SIP</h2>
+<ul>
+<li><strong>Be realistic about returns.</strong> Test lower returns as well as higher ones so a weak decade doesn't derail your plan.</li>
+<li><strong>Keep investing during market falls.</strong> SIPs buy more units when prices are low, which is called rupee cost averaging. Stopping during a fall gives up that benefit.</li>
+<li><strong>Step up with your income.</strong> Even a 5% to 10% yearly increase makes a big difference.</li>
+<li><strong>Match the fund to the goal.</strong> Equity funds suit long-term goals of seven years or more; shorter goals usually need lower-risk options.</li>
+<li><strong>Watch costs.</strong> Direct plans of mutual funds have lower expense ratios than regular plans, which adds up over decades.</li>
+<li><strong>Diversify.</strong> Our guide to <a href="https://randomthoughtsever.blogspot.com/2023/04/how-to-do-portfolio-diversification-in.html">portfolio diversification</a> explains how to spread risk.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+<h3>Is the SIP calculator result guaranteed?</h3>
+<p>No. It's an estimate based on a constant return. Market-linked investments go up and down, and actual returns can be higher or lower.</p>
+<h3>What return should I assume?</h3>
+<p>There's no single right number. Many people test a range. Look at the fund category's long-term history, remember that past returns don't guarantee future ones, and be conservative for important goals.</p>
+<h3>Is SIP better than lumpsum?</h3>
+<p>It depends on whether you have a lump sum available and how comfortable you are with timing risk. Our comparison of <a href="https://randomthoughtsever.blogspot.com/2021/09/lumpsum-vs-sip-mutual-fund-which-is-best.html">lumpsum vs SIP</a> explains the trade-offs.</p>
+<h3>Can I use this calculator outside India?</h3>
+<p>Yes. Choose $, € or £ as the currency. The maths is the same for any regular monthly investment, such as a 401(k) contribution or an ISA.</p>
+<h3>How is tax handled?</h3>
+<p>The calculator shows pre-tax values. Tax on mutual fund gains depends on the fund type, holding period and current rules in your country.</p>
+
+<h2>Related Guides</h2>
+<ul>
+<li><a href="https://randomthoughtsever.blogspot.com/2021/09/lumpsum-vs-sip-mutual-fund-which-is-best.html">Lumpsum vs SIP in Mutual Funds: Which Is Better?</a></li>
+<li><a href="https://randomthoughtsever.blogspot.com/2021/07/financial-independence-retire-earlyfire.html">FIRE Movement: Financial Independence, Retire Early Explained</a></li>
+<li><a href="https://randomthoughtsever.blogspot.com/2021/07/inflation-tutorial.html">What Is Inflation? Causes, Types and Effects Explained</a></li>
+<li><a href="https://randomthoughtsever.blogspot.com/2023/08/mastering-financial-portfolio.html">Portfolio Diversification Strategies for Long-Term Success</a></li>
+</ul>
+<p><em>This calculator is for education only and isn't personalised financial advice. Mutual fund investments are subject to market risks.</em></p>
