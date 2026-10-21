@@ -71,6 +71,16 @@ The Blogger API cannot edit themes, so this step is done by hand in Blogger:
 
 To undo, delete the pasted block, or restore the backup from step 1.
 
+**Easier option (works from a phone): one-line gadget.** `theme/bd-redesign.js` is the same layer as a single
+script, built with `python3 seo/theme/build_loader.py` after editing `redesign.xml`. It also removes the first
+version's output, so the old block in the theme can stay. In Blogger, open **Layout**, click **Add a Gadget**
+in the sidebar, choose **HTML/JavaScript**, leave the title empty, paste this line and click **Save**:
+
+    <script src="https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@ccr-ee047f91-rbyv4x/seo/theme/bd-redesign.js"></script>
+
+The gadget hides its own box. jsDelivr caches the file for up to 12 hours after a change is pushed. To undo,
+delete the gadget.
+
 Also recommended under **Settings > Posts**: set "Max posts shown on main page" to 10 so the post list is about as long as the sidebar.
 
 ## Publishing rewritten articles

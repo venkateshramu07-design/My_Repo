@@ -4,7 +4,7 @@
 <link href='https://fonts.googleapis.com' rel='preconnect'/>
 <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
 <link href='https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,800;1,9..144,700&amp;family=Inter:wght@400;500;600;700&amp;display=swap' rel='stylesheet'/>
-<style id='bd-redesign'>/*<![CDATA[*/
+<style id='bd-redesign-v2'>/*<![CDATA[*/
 :root{
   --bd-bg:#f7f4ee;--bd-surface:#ffffff;--bd-surface-2:#fbf9f5;--bd-ink:#15171d;--bd-muted:#5d6271;--bd-line:#e8e2d6;
   --bd-accent:#e2462c;--bd-accent-ink:#ffffff;--bd-accent-soft:#fde8e3;--bd-gold:#f2a33a;--bd-deep:#12141b;
@@ -483,6 +483,10 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
   }
 
   function init() {
+    // Remove what the first version of this layer added, if it is still in the theme.
+    document.querySelectorAll('style#bd-redesign').forEach(function (e) { e.remove(); });
+    document.querySelectorAll('.bd-hero, .bd-topics, .bd-tools, #bd-top, #bd-progress').forEach(function (e) { e.remove(); });
+    document.querySelectorAll('.bd-reveal').forEach(function (e) { e.classList.remove('bd-reveal', 'bd-in'); e.style.transitionDelay = ''; });
     var path = location.pathname, isHome = (path === '/' || path === '') && !location.search.match(/[?&](q|updated-max|start)=/);
     var isPost = /^\/\d{4}\/\d{2}\/.+\.html$/.test(path);
 
