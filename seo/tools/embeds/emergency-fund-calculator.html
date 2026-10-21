@@ -1,0 +1,43 @@
+<div class="bd-calc" id="bd-ef">
+<p class="bc-title">Emergency fund calculator</p>
+<p class="bc-sub">Work out how big your emergency fund should be, based on your essential costs and how secure your income is.</p>
+<div class="bc-grid">
+<div><label for="ef-home">Rent or home loan EMI (monthly)</label><input id="ef-home" type="number" min="0" step="1000" value="20000"></div>
+<div><label for="ef-food">Food and household (monthly)</label><input id="ef-food" type="number" min="0" step="1000" value="12000"></div>
+<div><label for="ef-bills">Utilities, phone, transport (monthly)</label><input id="ef-bills" type="number" min="0" step="500" value="6000"></div>
+<div><label for="ef-other">Insurance, school fees, other EMIs (monthly)</label><input id="ef-other" type="number" min="0" step="500" value="7000"></div>
+<div><label for="ef-job">Income type</label><select id="ef-job"><option value="0">Stable salaried job</option><option value="2">Variable pay or commission</option><option value="4">Self-employed or freelance</option></select></div>
+<div><label for="ef-earn">Earners in the household</label><select id="ef-earn"><option value="1">One</option><option value="0">Two or more</option></select></div>
+<div><label for="ef-dep">People who depend on you</label><select id="ef-dep"><option value="0">None</option><option value="1">One or two</option><option value="2">Three or more</option></select></div>
+<div><label for="ef-ins">Health insurance</label><select id="ef-ins"><option value="0">Yes, adequate cover</option><option value="2">No or very little</option></select></div>
+<div><label for="ef-have">Emergency savings you already have</label><input id="ef-have" type="number" min="0" step="5000" value="50000"></div>
+<div><label for="ef-save">You can set aside each month</label><input id="ef-save" type="number" min="0" step="1000" value="10000"></div>
+<div><label for="ef-cur">Currency</label><select id="ef-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Essential monthly costs</span><b id="ef-mon">—</b></div>
+<div class="bc-stat"><span>Suggested cover</span><b id="ef-months">—</b></div>
+<div class="bc-stat bc-main"><span>Your emergency fund target</span><b id="ef-target">—</b><span id="ef-targetw"></span></div>
+<div class="bc-stat"><span>Still to save</span><b id="ef-gap">—</b></div>
+<div class="bc-stat bc-main"><span>Time to reach your target</span><b id="ef-time">—</b></div>
+</div>
+<div class="bc-bar"><i id="ef-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="ef-pct">0% of target</span></div>
+<p class="bc-note">The suggested months start at 3 and rise with less secure income, a single earner, dependants and missing health insurance, up to 12. It's a rule of thumb; adjust it to your circumstances.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ef');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('ef-cur').value,mon=C.num($('ef-home'))+C.num($('ef-food'))+C.num($('ef-bills'))+C.num($('ef-other'));
+  var months=Math.min(12,3+(+$('ef-job').value)+(+$('ef-earn').value)+(+$('ef-dep').value)+(+$('ef-ins').value));
+  var target=mon*months,have=C.num($('ef-have')),save=C.num($('ef-save')),gap=Math.max(0,target-have);
+  $('ef-mon').textContent=C.money(mon,cur);$('ef-months').textContent=months+' months';
+  $('ef-target').textContent=C.money(target,cur);$('ef-targetw').textContent=C.words(target,cur);
+  $('ef-gap').textContent=C.money(gap,cur);
+  $('ef-time').textContent=gap<=0?'Already there':save>0?C.years(Math.ceil(gap/save)):'Set a monthly amount';
+  var pct=target>0?Math.min(100,have/target*100):100;$('ef-bar').style.width=pct+'%';$('ef-pct').textContent=Math.round(pct)+'% of target';
+});
+})();
+</script>
