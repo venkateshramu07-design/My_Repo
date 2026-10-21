@@ -1,0 +1,41 @@
+<div class="bd-calc" id="bd-eis">
+<p class="bc-title">Eisenhower priority matrix</p>
+<p class="bc-sub">Add your tasks and mark whether each is urgent and important. The matrix tells you what to do now, schedule, delegate or drop. Your list is saved in this browser.</p>
+<div class="bc-grid">
+<div style="grid-column:1/-1"><label for="ei-task">Task</label><input id="ei-task" type="text" maxlength="80" placeholder="e.g. Finish the quarterly report"></div>
+</div>
+<div class="bc-row">
+<label class="bc-check"><input id="ei-urg" type="checkbox"> Urgent</label>
+<label class="bc-check"><input id="ei-imp" type="checkbox" checked> Important</label>
+<button type="button" class="bc-primary" id="ei-add">Add task</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px" id="ei-q"></div>
+<div class="bc-row"><button type="button" id="ei-clear">Clear finished tasks</button></div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-eis');if(!root)return;
+function $(id){return document.getElementById(id)}
+var KEY='bd-eisenhower',tasks=[];
+var stored=null;try{stored=localStorage.getItem(KEY);tasks=JSON.parse(stored||'[]')||[]}catch(e){}
+if(stored===null)tasks=[{t:'Reply to the client deadline email',u:1,i:1},{t:'Plan next week’s workouts',u:0,i:1},{t:'Answer non-essential chat messages',u:1,i:0},{t:'Scroll social media',u:0,i:0}];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){}}
+var Q=[{u:1,i:1,h:'Do now',d:'Urgent and important'},{u:0,i:1,h:'Schedule',d:'Important, not urgent'},{u:1,i:0,h:'Delegate or limit',d:'Urgent, not important'},{u:0,i:0,h:'Drop',d:'Neither urgent nor important'}];
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function draw(){
+  var html='';
+  Q.forEach(function(q,qi){
+    var items=tasks.map(function(t,k){return {t:t,k:k}}).filter(function(x){return x.t.u==q.u&&x.t.i==q.i});
+    html+='<div class="bc-stat"'+(qi===0?' style="border-color:var(--bd-accent,#e2462c)"':'')+'><b style="font-size:18px">'+q.h+'</b><span>'+q.d+'</span><ul style="margin:10px 0 0 1.1em;padding:0">'+
+      (items.length?items.map(function(x){return '<li style="margin:6px 0"><label class="bc-check" style="align-items:flex-start"><input type="checkbox" data-k="'+x.k+'"'+(x.t.done?' checked':'')+'> <span style="'+(x.t.done?'text-decoration:line-through;opacity:.6':'')+'">'+esc(x.t.t)+'</span></label></li>'}).join(''):'<li style="list-style:none;margin-left:-1.1em;color:var(--bd-muted,#5d6271)">Nothing here</li>')+'</ul></div>';
+  });
+  $('ei-q').innerHTML=html;
+}
+function add(){var v=$('ei-task').value.trim();if(!v)return;tasks.push({t:v,u:$('ei-urg').checked?1:0,i:$('ei-imp').checked?1:0});$('ei-task').value='';save();draw()}
+$('ei-add').addEventListener('click',add);
+$('ei-task').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();add()}});
+$('ei-q').addEventListener('change',function(e){var k=e.target.getAttribute('data-k');if(k!==null){tasks[+k].done=e.target.checked;save();draw()}});
+$('ei-clear').addEventListener('click',function(){tasks=tasks.filter(function(t){return !t.done});save();draw()});
+draw();
+})();
+</script>

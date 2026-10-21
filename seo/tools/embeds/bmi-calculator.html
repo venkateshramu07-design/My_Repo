@@ -1,0 +1,35 @@
+<div class="bd-calc" id="bd-bmi">
+<p class="bc-title">BMI calculator (with Asian cut-offs)</p>
+<p class="bc-sub">Body mass index is a quick screening measure, not a diagnosis. South Asians tend to develop type 2 diabetes at lower BMIs, so lower cut-offs are often used in India.</p>
+<div class="bc-grid">
+<div><label for="bm-unit">Units</label><select id="bm-unit"><option value="m">kg and cm</option><option value="i">lb and feet/inches</option></select></div>
+<div><label for="bm-w" id="bm-wl">Weight (kg)</label><input id="bm-w" type="number" min="1" step="0.5" value="70"></div>
+<div id="bm-cmbox"><label for="bm-cm">Height (cm)</label><input id="bm-cm" type="number" min="50" max="250" step="1" value="170"></div>
+<div id="bm-ftbox" style="display:none"><label for="bm-ft">Height (feet and inches)</label><div style="display:flex;gap:8px"><input id="bm-ft" type="number" min="3" max="8" step="1" value="5" aria-label="Feet"><input id="bm-in" type="number" min="0" max="11" step="1" value="7" aria-label="Inches"></div></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Your BMI</span><b id="bm-v">—</b></div>
+<div class="bc-stat"><span>WHO category</span><b id="bm-who">—</b></div>
+<div class="bc-stat"><span>Asian / Indian category</span><b id="bm-asia">—</b></div>
+<div class="bc-stat"><span>Healthy weight for your height (Asian range)</span><b id="bm-range">—</b></div>
+</div>
+<p class="bc-note">WHO: under 18.5 underweight, 18.5 to 24.9 normal, 25 to 29.9 overweight, 30 and above obese. Asian / Indian cut-offs used by Indian consensus guidelines: 18 to 22.9 normal, 23 to 24.9 overweight, 25 and above obese. BMI doesn't distinguish muscle from fat; waist size matters too. Talk to a doctor about your own risk.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-bmi');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var imp=$('bm-unit').value==='i';
+  $('bm-cmbox').style.display=imp?'none':'';$('bm-ftbox').style.display=imp?'':'none';$('bm-wl').textContent=imp?'Weight (lb)':'Weight (kg)';
+  var kg=imp?C.num($('bm-w'))*0.45359237:C.num($('bm-w')),m=imp?(C.num($('bm-ft'))*12+C.num($('bm-in')))*0.0254:C.num($('bm-cm'))/100;
+  if(!(kg>0&&m>0.5)){$('bm-v').textContent='—';return}
+  var b=kg/(m*m);
+  $('bm-v').textContent=b.toFixed(1);
+  $('bm-who').textContent=b<18.5?'Underweight':b<25?'Normal':b<30?'Overweight':'Obese';
+  $('bm-asia').textContent=b<18?'Underweight':b<23?'Normal':b<25?'Overweight':'Obese';
+  var lo=18*m*m,hi=22.9*m*m;
+  $('bm-range').textContent=imp?Math.round(lo/0.45359237)+' to '+Math.round(hi/0.45359237)+' lb':Math.round(lo)+' to '+Math.round(hi)+' kg';
+});
+})();
+</script>

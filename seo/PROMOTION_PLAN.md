@@ -15,6 +15,7 @@ Live site check (21 October 2026):
 | All 153 queued posts rewritten as long-form articles (3,000+ words, quick answer, FAQ, related links) | Live |
 | Site redesign (`theme/redesign.xml`) | Live |
 | 4 free calculators (SIP, EMI + prepayment, FIRE, credit card payoff), linked from 28 finance posts and the sitemap page | Live |
+| 11 interactive tools inside 24 posts (sleep cycle, inflation, lumpsum vs SIP, debt avalanche vs snowball, 401(k), time zones, habit tracker, Eisenhower matrix, live currency converter, annuity payout, BMI with Asian cut-offs); 10 more posts link to the matching calculator | Live (21 October) |
 | Post search descriptions | **Still the old comma-separated keyword lists with typos** ("postive", "awarness", "randomthougtsever"). These also appear as the text when a post is shared. The Blogger API ignores this field (tested 21 October), so it can only be changed in Blogger |
 | Blog description | **Still a repeated keyword list** |
 | Analytics | **Still Universal Analytics `UA-199206936-1`, which stopped recording in 2023**, so visits aren't being counted |
@@ -107,6 +108,14 @@ Use it to answer a real question, e.g. "should I prepay my home loan or invest?"
 
 **Quora**: search "SIP calculator", "how much do I need to retire early in India", "how to pay off credit card debt",
 and write a full answer with a worked example; link the matching calculator at the end.
+
+**Tools that suit wider audiences** (share the post link, not just the tool):
+- Sleep cycle calculator (`2021/06/how-to-sleep-fastly-and-peacefully`): Pinterest and Instagram ("what time should I sleep to wake at 6:30?").
+- 30-day habit tracker with printable sheet (`2024/01/how-to-be-consistent`): Pinterest, productivity subreddits, and a New Year / new month post.
+- Eisenhower matrix (`2023/10/the-importance-of-balance-on-time`): LinkedIn, with a screenshot of your own matrix.
+- Debt avalanche vs snowball planner (`2023/06/methods-to-efficiently-pay-off-credit`): answers on Reddit and Quora debt questions.
+- 401(k) calculator with employer match (`2021/10/a-comprehensive-guide-401k`): r/personalfinance answers about match ("am I leaving free money on the table?").
+- Live currency converter (`2023/11/why-currency-value-varies-with-each`): student and NRI groups; the rupee passed 90 per dollar, which is a timely hook.
 
 **WhatsApp / family groups**: the SIP calculator with a single line: "Try this: ₹5,000 a month from age 25 vs 35."
 

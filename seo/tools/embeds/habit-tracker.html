@@ -1,0 +1,53 @@
+<div class="bd-calc" id="bd-habit">
+<p class="bc-title">30-day habit tracker</p>
+<p class="bc-sub">Name one small habit, then tick off each day you do it. Your progress is saved in this browser, so you can come back tomorrow.</p>
+<div class="bc-grid">
+<div><label for="hb-name">My habit</label><input id="hb-name" type="text" maxlength="60" placeholder="e.g. Walk for 10 minutes after dinner"></div>
+<div><label for="hb-start">Start date</label><input id="hb-start" type="date"></div>
+</div>
+<div id="hb-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:8px;margin-top:16px"></div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Current streak</span><b id="hb-streak">0 days</b></div>
+<div class="bc-stat"><span>Days done</span><b id="hb-done">0 / 30</b></div>
+<div class="bc-stat"><span>Longest streak</span><b id="hb-best">0 days</b></div>
+</div>
+<div class="bc-row"><button type="button" id="hb-print">Print a paper copy</button><button type="button" id="hb-reset">Start over</button></div>
+<p class="bc-note" id="hb-msg">Missed a day? That's normal. The rule that matters is: never miss twice.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-habit');if(!root||!window.bdCalc)return;
+function $(id){return document.getElementById(id)}
+var KEY='bd-habit-tracker',st={name:'',start:'',days:[]};
+try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.days)st=s}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function iso(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+if(!st.start)st.start=iso(new Date());
+$('hb-name').value=st.name;$('hb-start').value=st.start;
+function today(){var a=st.start.split('-').map(Number),s=new Date(a[0],a[1]-1,a[2]),n=new Date();n.setHours(0,0,0,0);return Math.round((n-s)/864e5)}
+function draw(){
+  var g=$('hb-grid'),t=today(),html='';
+  for(var i=0;i<30;i++){
+    var on=st.days.indexOf(i)>=0,fut=i>t;
+    html+='<button type="button" data-d="'+i+'" aria-pressed="'+on+'" '+(fut?'disabled ':'')+'style="padding:10px 0;'+(on?'background:var(--bd-accent,#e2462c);border-color:var(--bd-accent,#e2462c);color:#fff;':'')+(i===t?'outline:2px solid var(--bd-accent,#e2462c);':'')+(fut?'opacity:.45;':'')+'">'+(on?'✓':(i+1))+'</button>';
+  }
+  g.innerHTML=html;
+  var cur=0,best=0,run=0;
+  for(var d=0;d<30;d++){if(st.days.indexOf(d)>=0){run++;best=Math.max(best,run)}else run=0}
+  for(var k=Math.min(t,29);k>=0;k--){if(st.days.indexOf(k)>=0)cur++;else if(k===t)continue;else break}
+  $('hb-streak').textContent=cur+(cur===1?' day':' days');$('hb-best').textContent=best+(best===1?' day':' days');
+  $('hb-done').textContent=st.days.length+' / 30';
+  $('hb-msg').textContent=st.days.length>=30?'30 out of 30. That’s a habit. Consider making it a little bigger.':(t>0&&t<30&&st.days.indexOf(t-1)<0&&st.days.indexOf(t)<0&&st.days.length?'You missed yesterday. Do the smallest version today so you never miss twice.':'Missed a day? That’s normal. The rule that matters is: never miss twice.');
+}
+$('hb-grid').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var d=+b.getAttribute('data-d'),i=st.days.indexOf(d);if(i>=0)st.days.splice(i,1);else st.days.push(d);save();draw()});
+$('hb-name').addEventListener('input',function(){st.name=this.value;save()});
+$('hb-start').addEventListener('change',function(){if(this.value){st.start=this.value;save();draw()}});
+$('hb-reset').addEventListener('click',function(){if(confirm('Clear your progress and start a new 30 days?')){st={name:$('hb-name').value,start:iso(new Date()),days:[]};$('hb-start').value=st.start;save();draw()}});
+$('hb-print').addEventListener('click',function(){
+  var w=window.open('','_blank');if(!w)return;var cells='';for(var i=1;i<=30;i++)cells+='<div>'+i+'</div>';
+  w.document.write('<!doctype html><meta charset="utf-8"><title>30-day habit tracker</title><style>body{font-family:system-ui,sans-serif;margin:40px}h1{font-size:22px}.g{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:24px}.g div{border:2px solid #333;border-radius:10px;height:70px;padding:6px;font-weight:600}</style><h1>My habit: '+($('hb-name').value||'________________________').replace(/</g,'&lt;')+'</h1><p>Tick a box each day you do it. Never miss twice.</p><div class="g">'+cells+'</div><p style="margin-top:30px;color:#666">randomthoughtsever.blogspot.com</p>');
+  w.document.close();w.focus();w.print();
+});
+draw();
+})();
+</script>

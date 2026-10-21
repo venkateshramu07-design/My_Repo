@@ -1,0 +1,31 @@
+<div class="bd-calc" id="bd-lump">
+<p class="bc-title">Lumpsum vs SIP calculator</p>
+<p class="bc-sub">Compare investing a sum all at once with spreading the same total as a monthly SIP over the same period.</p>
+<div class="bc-grid">
+<div><label for="lu-amt">Total amount to invest</label><input id="lu-amt" type="number" min="0" step="10000" value="600000"></div>
+<div><label for="lu-rate">Expected return (% a year)</label><input id="lu-rate" type="number" min="0" max="40" step="0.5" value="12"></div>
+<div><label for="lu-yrs">Years</label><input id="lu-yrs" type="number" min="1" max="50" step="1" value="10"></div>
+<div><label for="lu-cur">Currency</label><select id="lu-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Lumpsum invested today</span><b id="lu-fv">—</b><span id="lu-fvw"></span></div>
+<div class="bc-stat"><span id="lu-sipl">SIP of the same total</span><b id="lu-sip">—</b><span id="lu-sipw"></span></div>
+<div class="bc-stat"><span>Difference</span><b id="lu-diff">—</b></div>
+</div>
+<p class="bc-note">With a steady return, money invested earlier always has longer to grow, so lumpsum comes out ahead. Real markets don't move steadily: a SIP reduces the risk of investing everything just before a fall, and suits money you earn month by month. Both figures are estimates, not guarantees.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-lump');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var A=C.num($('lu-amt')),R=C.num($('lu-rate'))/100,Y=Math.max(1,Math.round(C.num($('lu-yrs')))),cur=$('lu-cur').value;
+  var fv=A*Math.pow(1+R,Y),n=Y*12,P=A/n,r=R/12,v=0;
+  for(var m=0;m<n;m++)v=(v+P)*(1+r);
+  $('lu-fv').textContent=C.money(fv,cur);$('lu-fvw').textContent=C.words(fv,cur);
+  $('lu-sipl').textContent='SIP of '+C.money(P,cur)+' a month for '+Y+' years';
+  $('lu-sip').textContent=C.money(v,cur);$('lu-sipw').textContent=C.words(v,cur);
+  $('lu-diff').textContent=C.money(fv-v,cur);
+});
+})();
+</script>

@@ -70,3 +70,11 @@ Rewritten posts live in `rewrites/<year>_<month>_<slug>.html`. When `apply.py` f
 
     python3 seo/apply.py apply --only 2021/06/how-to-be-happy --dry-run
     python3 seo/apply.py apply --only 2021/06/how-to-be-happy
+
+## Interactive tools
+
+Standalone calculator posts live in `tools/*.html` and are published with `python3 seo/publish_tools.py publish`.
+Widgets embedded inside existing posts live in `tools/embeds/*.html`; `EMBEDS` and `CTAS` in `apply.py` choose
+which posts get them. They are inserted before the first section whenever a post is republished with
+`publish_rewrites.py`. Non-ASCII characters inside scripts are written as `\u` escapes because Blogger
+rewrites them otherwise.

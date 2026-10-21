@@ -33,6 +33,52 @@ CALCULATORS = [  # live calculator posts (seo/tools/)
     ("Credit card payoff calculator", BLOG_URL + "2026/10/credit-card-payoff-calculator-how-long.html"),
 ]
 CALCULATOR_LABELS = {"Personal Finance", "Investing"}
+TOOLS = os.path.join(HERE, "tools")
+TOOLS_START, TOOLS_END = "<!-- seo-tools-start -->", "<!-- seo-tools-end -->"
+EMBEDS = {  # interactive widgets from seo/tools/embeds/, shown before the first section of these posts
+    "2021/06/how-to-sleep-fastly-and-peacefully": ["sleep-calculator"],
+    "2023/09/sleep-hacks-how-to-transform-your-sleep": ["sleep-calculator"],
+    "2022/01/do-these-steps-to-have-energetic-morning": ["sleep-calculator"],
+    "2021/07/inflation-tutorial": ["inflation-calculator"],
+    "2023/11/the-role-of-federal-reserve-in": ["inflation-calculator"],
+    "2021/09/lumpsum-vs-sip-mutual-fund-which-is-best": ["lumpsum-calculator"],
+    "2023/06/methods-to-efficiently-pay-off-credit": ["debt-payoff-planner"],
+    "2021/08/how-to-manage-credit-card-loans": ["debt-payoff-planner"],
+    "2021/10/a-comprehensive-guide-401k": ["401k-calculator"],
+    "2023/03/time-zones-study": ["time-zone-converter"],
+    "2024/01/how-to-be-consistent": ["habit-tracker"],
+    "2022/01/steps-to-improve-your-lifestyle": ["habit-tracker"],
+    "2023/08/bridging-gap-transforming-thoughts-into": ["habit-tracker"],
+    "2023/10/the-importance-of-balance-on-time": ["eisenhower-matrix"],
+    "2021/07/deep-work-vs-shallow-work": ["eisenhower-matrix"],
+    "2023/09/multi-tasking-and-stress-unraveling": ["eisenhower-matrix"],
+    "2023/09/understanding-impact-of-work-pressure": ["eisenhower-matrix"],
+    "2023/11/why-currency-value-varies-with-each": ["currency-converter"],
+    "2023/03/forex-study": ["currency-converter"],
+    "2023/03/how-currency-value-of-country-been": ["currency-converter"],
+    "2023/08/the-us-dollar-global-reserve-currency": ["currency-converter"],
+    "2023/09/singapore-dollar-stable-currency-in": ["currency-converter"],
+    "2021/10/the-ultimate-guide-to-annuities-what": ["annuity-calculator"],
+    "2021/06/how-to-control-diabetes": ["bmi-calculator"],
+}
+EMBED_NAMES = {"sleep-calculator": "Sleep cycle calculator", "inflation-calculator": "Inflation calculator",
+               "lumpsum-calculator": "Lumpsum vs SIP calculator", "debt-payoff-planner": "Debt payoff planner (avalanche vs snowball)",
+               "401k-calculator": "401(k) calculator with employer match", "time-zone-converter": "Time zone converter",
+               "habit-tracker": "30-day habit tracker", "eisenhower-matrix": "Eisenhower priority matrix",
+               "currency-converter": "Live currency converter", "annuity-calculator": "Annuity payout calculator",
+               "bmi-calculator": "BMI calculator with Asian cut-offs"}
+CTAS = {  # posts that point readers to a standalone calculator (index into CALCULATORS)
+    "2021/07/financial-independence-retire-earlyfire": 2, "2023/08/fire-financial-independence-retire": 2,
+    "2021/06/financial-independence": 2,
+    "2021/09/is-floating-interest-is-good-for-house": 1, "2023/04/a-study-on-fixed-interest-vs-floating": 1,
+    "2022/09/top-secrets-to-become-rich": 0, "2023/08/mastering-financial-portfolio": 0,
+    "2023/04/how-to-do-portfolio-diversification-in": 0,
+    "2023/06/methods-to-efficiently-pay-off-credit": 3, "2021/08/how-to-manage-credit-card-loans": 3,
+}
+CTA_TEXT = ["see what a monthly investment could grow to, with a yearly step-up and inflation",
+            "work out your EMI and how much prepaying would save",
+            "find your FIRE number and how many years it could take to reach it",
+            "see how long your card balance will take to clear and what a bigger payment saves"]
 RELATED_START = "<!-- seo-related-start -->"
 RELATED_END = "<!-- seo-related-end -->"
 
@@ -154,6 +200,43 @@ def related_block(s, posts_by_slug):
             f'<p><a href="{BLOG_URL}2021/06/sitemap.html">Browse all articles by topic</a></p></div>{RELATED_END}')
 
 
+def escape_scripts(content):
+    """Write non-ASCII characters inside <script> as \\u escapes; Blogger rewrites them otherwise."""
+    def esc(m):
+        return "".join(c if ord(c) < 128 else "\\u%04X" % ord(c) for c in m.group(0))
+    return re.sub(r"<script\b.*?</script>", esc, content, flags=re.S)
+
+
+def tool_assets():
+    css = open(os.path.join(TOOLS, "calc.css"), encoding="utf-8").read()
+    js = open(os.path.join(TOOLS, "calc.js"), encoding="utf-8").read()
+    return f"<style>{css}</style><script>{js}</script>"
+
+
+def tools_block(s):
+    parts = []
+    if s in CTAS:
+        name, url = CALCULATORS[CTAS[s]]
+        parts.append(f'<div class="bd-cta"><p><strong>Free tool:</strong> use our <a href="{url}">{name}</a> '
+                     f'to {CTA_TEXT[CTAS[s]]}.</p></div>')
+    for e in EMBEDS.get(s, []):
+        parts.append(open(os.path.join(TOOLS, "embeds", e + ".html"), encoding="utf-8").read())
+    if not parts:
+        return ""
+    return escape_scripts(TOOLS_START + tool_assets() + "".join(parts) + TOOLS_END)
+
+
+def add_tools(s, content):
+    content = re.sub(re.escape(TOOLS_START) + r".*?" + re.escape(TOOLS_END), "", content, flags=re.S)
+    block = tools_block(s)
+    if not block:
+        return content
+    m = re.search(r"<h2\b", content)
+    if m:
+        return content[:m.start()] + block + content[m.start():]
+    return content + block
+
+
 def strip_related(content):
     return re.sub(re.escape(RELATED_START) + r".*?" + re.escape(RELATED_END), "", content, flags=re.S)
 
@@ -163,8 +246,14 @@ def sitemap_html(posts_by_slug):
     for s, (t, _, labs) in PLAN.items():
         if labs and s in posts_by_slug:
             groups.setdefault(labs[0], []).append(s)
-    out = ["<p>Browse every article on Blog Digest, grouped by topic.</p><h2>Free Calculators</h2><ul>"]
+    out = ["<p>Browse every article on Blog Digest, grouped by topic.</p><h2>Free Calculators and Tools</h2><ul>"]
     out += [f'<li><a href="{u}">{html.escape(n[0].upper() + n[1:])}</a></li>' for n, u in CALCULATORS]
+    homes = {}
+    for s, es in EMBEDS.items():
+        for e in es:
+            homes.setdefault(e, s)
+    out += [f'<li><a href="{posts_by_slug[s]["url"]}">{html.escape(EMBED_NAMES[e])}</a></li>'
+            for e, s in sorted(homes.items(), key=lambda x: EMBED_NAMES[x[0]]) if s in posts_by_slug]
     out.append("</ul>")
     for lab in sorted(groups):
         out.append(f"<h2>{html.escape(lab)}</h2><ul>")
@@ -214,6 +303,7 @@ def changes_for(p, posts_by_slug):
         content = with_rewrite(s, content)
         content = clean(content, new_title, p["title"])
         content = demote_h1(add_alt_text(content, new_title or p["title"]))
+        content = add_tools(s, content)
         content += related_block(s, posts_by_slug)
         if new_title and new_title != p["title"]:
             upd["title"] = new_title

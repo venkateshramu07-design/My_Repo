@@ -1,0 +1,48 @@
+<div class="bd-calc" id="bd-401k">
+<p class="bc-title">401(k) calculator with employer match</p>
+<p class="bc-sub">Estimate your 401(k) balance at retirement, including your employer's matching contributions.</p>
+<div class="bc-grid">
+<div><label for="k-age">Current age</label><input id="k-age" type="number" min="18" max="75" step="1" value="30"></div>
+<div><label for="k-ret">Retirement age</label><input id="k-ret" type="number" min="19" max="80" step="1" value="65"></div>
+<div><label for="k-sal">Annual salary ($)</label><input id="k-sal" type="number" min="0" step="1000" value="70000"></div>
+<div><label for="k-bal">Current 401(k) balance ($)</label><input id="k-bal" type="number" min="0" step="1000" value="20000"></div>
+<div><label for="k-you">You contribute (% of salary)</label><input id="k-you" type="number" min="0" max="100" step="1" value="6"></div>
+<div><label for="k-match">Employer matches (% of your contribution)</label><input id="k-match" type="number" min="0" max="200" step="5" value="50"></div>
+<div><label for="k-cap">Match applies up to (% of salary)</label><input id="k-cap" type="number" min="0" max="100" step="1" value="6"></div>
+<div><label for="k-limit">Annual employee limit ($)</label><input id="k-limit" type="number" min="0" step="500" value="23500"></div>
+<div><label for="k-raise">Salary increase (% a year)</label><input id="k-raise" type="number" min="0" max="20" step="0.5" value="3"></div>
+<div><label for="k-rate">Expected return (% a year)</label><input id="k-rate" type="number" min="0" max="20" step="0.5" value="7"></div>
+<div><label for="k-inf">Inflation (% a year)</label><input id="k-inf" type="number" min="0" max="15" step="0.5" value="2.5"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Balance at retirement</span><b id="k-fv">—</b></div>
+<div class="bc-stat"><span>In today's dollars</span><b id="k-real">—</b></div>
+<div class="bc-stat"><span>Your contributions</span><b id="k-mine">—</b></div>
+<div class="bc-stat"><span>Employer contributions</span><b id="k-emp">—</b></div>
+<div class="bc-stat"><span>Investment growth</span><b id="k-gro">—</b></div>
+<div class="bc-stat"><span>Match you get this year</span><b id="k-now">—</b></div>
+</div>
+<p class="bc-note" id="k-tip"></p>
+<p class="bc-note">The default limit is the IRS employee deferral limit for 2025; it usually rises each year, and workers aged 50 and over can make extra catch-up contributions. Check the IRS website for the current figures. Results are pre-tax estimates, not guarantees.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-401k');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var age=C.num($('k-age')),ret=C.num($('k-ret')),sal=C.num($('k-sal')),b=C.num($('k-bal')),you=C.num($('k-you'))/100,mt=C.num($('k-match'))/100,cap=C.num($('k-cap'))/100,lim=C.num($('k-limit')),g=C.num($('k-raise'))/100,r=C.num($('k-rate'))/100,inf=C.num($('k-inf'))/100;
+  var yrs=Math.max(0,Math.round(ret-age)),mine=0,emp=0,start=b,first=null;
+  for(var y=0;y<yrs;y++){
+    var c=Math.min(sal*you,lim),e=Math.min(c,sal*cap)*mt;
+    if(first===null)first=e;
+    mine+=c;emp+=e;
+    b=b*(1+r)+(c+e)*(1+r/2);
+    sal*=1+g;
+  }
+  $('k-fv').textContent=C.money(b,'$');$('k-real').textContent=C.money(b/Math.pow(1+inf,yrs),'$');
+  $('k-mine').textContent=C.money(mine,'$');$('k-emp').textContent=C.money(emp,'$');$('k-gro').textContent=C.money(b-mine-emp-start,'$');
+  $('k-now').textContent=C.money(first||0,'$');
+  $('k-tip').textContent=you<cap&&mt>0?'You are contributing less than the '+Math.round(cap*100)+'% your employer will match, so you are leaving free money on the table.':'';
+});
+})();
+</script>

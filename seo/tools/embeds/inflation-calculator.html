@@ -1,0 +1,32 @@
+<div class="bd-calc" id="bd-infl">
+<p class="bc-title">Inflation calculator</p>
+<p class="bc-sub">See how inflation changes what money is worth over time.</p>
+<div class="bc-grid">
+<div><label for="in-amt">Amount today</label><input id="in-amt" type="number" min="0" step="1000" value="100000"></div>
+<div><label for="in-rate">Inflation (% a year)</label><input id="in-rate" type="number" min="0" max="50" step="0.5" value="6"></div>
+<div><label for="in-yrs">Years</label><input id="in-yrs" type="number" min="1" max="60" step="1" value="10"></div>
+<div><label for="in-cur">Currency</label><select id="in-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span id="in-l1">Future cost of the same things</span><b id="in-fut">—</b><span id="in-futw"></span></div>
+<div class="bc-stat"><span id="in-l2">What today's amount will be worth</span><b id="in-val">—</b></div>
+<div class="bc-stat"><span>Purchasing power lost</span><b id="in-lost">—</b></div>
+<div class="bc-stat"><span>Prices double in about</span><b id="in-dbl">—</b></div>
+</div>
+<p class="bc-note">Assumes a steady inflation rate. India's RBI targets 4% consumer price inflation; the US Federal Reserve targets 2%.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-infl');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var A=C.num($('in-amt')),i=C.num($('in-rate'))/100,y=Math.max(1,Math.round(C.num($('in-yrs')))),cur=$('in-cur').value,f=Math.pow(1+i,y);
+  $('in-l1').textContent='Cost in '+y+' years of what '+C.money(A,cur)+' buys today';
+  $('in-l2').textContent='What '+C.money(A,cur)+' will buy in '+y+' years, in today’s money';
+  $('in-fut').textContent=C.money(A*f,cur);$('in-futw').textContent=C.words(A*f,cur);
+  $('in-val').textContent=C.money(A/f,cur);
+  $('in-lost').textContent=(100-100/f).toFixed(1)+'%';
+  $('in-dbl').textContent=i>0?(Math.log(2)/Math.log(1+i)).toFixed(1)+' years':'Never';
+});
+})();
+</script>

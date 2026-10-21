@@ -1,0 +1,34 @@
+<div class="bd-calc" id="bd-ann">
+<p class="bc-title">Annuity payout calculator</p>
+<p class="bc-sub">Estimate the regular income a lump sum could pay for a fixed number of years, at a given interest rate.</p>
+<div class="bc-grid">
+<div><label for="an-pv">Lump sum invested</label><input id="an-pv" type="number" min="0" step="10000" value="5000000"></div>
+<div><label for="an-rate">Interest rate (% a year)</label><input id="an-rate" type="number" min="0" max="20" step="0.25" value="7"></div>
+<div><label for="an-wait">Years before payouts start</label><input id="an-wait" type="number" min="0" max="40" step="1" value="0"></div>
+<div><label for="an-yrs">Payout period (years)</label><input id="an-yrs" type="number" min="1" max="50" step="1" value="20"></div>
+<div><label for="an-freq">Paid</label><select id="an-freq"><option value="12">Monthly</option><option value="4">Quarterly</option><option value="1">Yearly</option></select></div>
+<div><label for="an-cur">Currency</label><select id="an-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Each payment</span><b id="an-pmt">—</b></div>
+<div class="bc-stat"><span>Value when payouts start</span><b id="an-start">—</b></div>
+<div class="bc-stat"><span>Total paid out</span><b id="an-tot">—</b><span id="an-totw"></span></div>
+<div class="bc-stat"><span>Interest earned</span><b id="an-int">—</b></div>
+</div>
+<p class="bc-note">This shows a fixed-term payout that uses up the full amount by the end. Life annuities from insurers pay for as long as you live and price in life expectancy, charges and their own rates, so actual quotes will differ. Annuity income is usually taxable.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ann');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var pv=C.num($('an-pv')),R=C.num($('an-rate'))/100,w=Math.max(0,C.num($('an-wait'))),y=Math.max(1,C.num($('an-yrs'))),f=+$('an-freq').value,cur=$('an-cur').value;
+  var start=pv*Math.pow(1+R,w),r=Math.pow(1+R,1/f)-1,n=Math.round(y*f);
+  var pmt=r>0?start*r/(1-Math.pow(1+r,-n)):start/n;
+  $('an-pmt').textContent=C.money(pmt,cur)+(f===12?' a month':f===4?' a quarter':' a year');
+  $('an-start').textContent=C.money(start,cur);
+  $('an-tot').textContent=C.money(pmt*n,cur);$('an-totw').textContent=C.words(pmt*n,cur);
+  $('an-int').textContent=C.money(pmt*n-pv,cur);
+});
+})();
+</script>

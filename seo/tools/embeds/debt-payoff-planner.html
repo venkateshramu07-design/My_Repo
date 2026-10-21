@@ -1,0 +1,54 @@
+<div class="bd-calc" id="bd-debt">
+<p class="bc-title">Debt payoff planner: avalanche vs snowball</p>
+<p class="bc-sub">Enter your debts and how much extra you can pay each month. The planner compares paying the highest interest rate first (avalanche) with paying the smallest balance first (snowball).</p>
+<div class="bc-table"><table>
+<thead><tr><th>Debt</th><th>Balance</th><th>Interest (% a year)</th><th>Minimum payment</th></tr></thead>
+<tbody id="db-rows"></tbody></table></div>
+<div class="bc-row"><button type="button" id="db-add">+ Add a debt</button></div>
+<div class="bc-grid" style="margin-top:14px">
+<div><label for="db-extra">Extra payment each month</label><input id="db-extra" type="number" min="0" step="500" value="5000"></div>
+<div><label for="db-cur">Currency</label><select id="db-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Avalanche: debt-free in</span><b id="db-at">—</b><span id="db-ai"></span></div>
+<div class="bc-stat"><span>Snowball: debt-free in</span><b id="db-st">—</b><span id="db-si"></span></div>
+<div class="bc-stat"><span>Minimum payments only</span><b id="db-mt">—</b><span id="db-mi"></span></div>
+</div>
+<p class="bc-note" id="db-order"></p>
+<p class="bc-note">Assumes no new borrowing, fixed rates and interest charged monthly. When a debt is cleared, its minimum payment rolls over to the next one. Credit card rates are often quoted per month: multiply by 12 for the yearly rate.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-debt');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+var seed=[['Credit card',80000,42,4000],['Personal loan',150000,14,5000],['Phone EMI',20000,16,2000]];
+function row(d){var tr=document.createElement('tr');tr.innerHTML='<td><input type="text" value="'+d[0]+'" aria-label="Debt name" style="min-width:110px"></td><td><input type="number" min="0" step="1000" value="'+d[1]+'" aria-label="Balance" style="min-width:100px"></td><td><input type="number" min="0" step="0.5" value="'+d[2]+'" aria-label="Interest rate" style="min-width:70px"></td><td><input type="number" min="0" step="100" value="'+d[3]+'" aria-label="Minimum payment" style="min-width:90px"></td>';$('db-rows').appendChild(tr);return tr}
+seed.forEach(row);
+function read(){var out=[];$('db-rows').querySelectorAll('tr').forEach(function(tr){var i=tr.querySelectorAll('input');var b=C.num(i[1]);if(b>0)out.push({n:i[0].value||'Debt',b:b,r:C.num(i[2])/1200,min:C.num(i[3])})});return out}
+function sim(debts,extra,key){
+  var d=debts.map(function(x){return {n:x.n,b:x.b,r:x.r,min:x.min}}),m=0,ti=0,order=[];
+  var budget=d.reduce(function(s,x){return s+x.min},0)+extra;
+  while(d.some(function(x){return x.b>0.5})&&m<600){
+    d.forEach(function(x){if(x.b>0){var it=x.b*x.r;x.b+=it;ti+=it}});
+    var left=budget;
+    d.forEach(function(x){if(x.b>0){var p=Math.min(x.b,x.min,left);x.b-=p;left-=p}});
+    var live=d.filter(function(x){return x.b>0.5});
+    if(key)live.sort(key);
+    for(var k=0;k<live.length&&left>0;k++){var p=Math.min(live[k].b,left);live[k].b-=p;left-=p}
+    m++;
+    d.forEach(function(x){if(x.b<=0.5&&order.indexOf(x.n)<0){x.b=0;order.push(x.n)}});
+  }
+  return {m:d.some(function(x){return x.b>0.5})?Infinity:m,ti:ti,order:order};
+}
+function run(){
+  var debts=read(),X=C.num($('db-extra')),cur=$('db-cur').value;
+  var a=sim(debts,X,function(p,q){return q.r-p.r}),s=sim(debts,X,function(p,q){return p.b-q.b}),z=sim(debts,0,null);
+  $('db-at').textContent=C.years(a.m);$('db-ai').textContent=isFinite(a.m)?C.money(a.ti,cur)+' interest':'';
+  $('db-st').textContent=C.years(s.m);$('db-si').textContent=isFinite(s.m)?C.money(s.ti,cur)+' interest':'';
+  $('db-mt').textContent=isFinite(z.m)?C.years(z.m):'Over 50 years';$('db-mi').textContent=isFinite(z.m)?C.money(z.ti,cur)+' interest':'';
+  $('db-order').textContent=isFinite(a.m)?'Avalanche order: '+a.order.join(' → ')+'. Snowball order: '+s.order.join(' → ')+'. Avalanche saves '+C.money(Math.max(0,s.ti-a.ti),cur)+' compared with snowball.':'Your payments don’t cover the interest. Increase the extra payment or the minimums.';
+}
+C.bind(root,run);
+$('db-add').addEventListener('click',function(){var tr=row(['Another debt',0,12,0]);tr.querySelectorAll('input').forEach(function(el){el.addEventListener('input',run)});run()});
+})();
+</script>

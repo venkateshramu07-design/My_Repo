@@ -1,0 +1,48 @@
+<div class="bd-calc" id="bd-tz">
+<p class="bc-title">Time zone converter</p>
+<p class="bc-sub">Pick a date and time in one city to see the time in others. Daylight saving time is handled automatically.</p>
+<div class="bc-grid">
+<div><label for="tz-when">Date and time</label><input id="tz-when" type="datetime-local"></div>
+<div><label for="tz-from">In time zone</label><select id="tz-from"></select></div>
+<div><label for="tz-add">Add a time zone</label><select id="tz-add"><option value="">Choose…</option></select></div>
+</div>
+<div class="bc-table"><table><thead><tr><th>Place</th><th>Local time</th><th>UTC offset</th></tr></thead><tbody id="tz-rows"></tbody></table></div>
+<div class="bc-row"><button type="button" id="tz-now">Use current time</button></div>
+<p class="bc-note">Uses your browser's built-in time zone database. For meetings, double-check dates near daylight saving changes.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-tz');if(!root||!window.bdCalc||!window.Intl)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+var all=(Intl.supportedValuesOf?Intl.supportedValuesOf('timeZone'):[]).concat(['UTC']);
+var picked=['Asia/Kolkata','America/New_York','America/Los_Angeles','Europe/London','Asia/Dubai','Asia/Singapore','Asia/Tokyo','Australia/Sydney'];
+var alias={'Asia/Calcutta':'Asia/Kolkata','Asia/Saigon':'Asia/Ho_Chi_Minh','Asia/Katmandu':'Asia/Kathmandu','Asia/Rangoon':'Asia/Yangon','Europe/Kiev':'Europe/Kyiv','America/Buenos_Aires':'America/Argentina/Buenos_Aires'};
+var here=Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Kolkata';here=alias[here]||here;
+all=all.map(function(z){return alias[z]||z}).filter(function(z,i,a){return a.indexOf(z)===i});
+if(all.indexOf(here)<0)all.push(here);
+all.sort();
+function label(z){return z.replace(/_/g,' ').replace(/\//g,' / ')}
+all.forEach(function(z){$('tz-from').add(new Option(label(z),z));$('tz-add').add(new Option(label(z),z))});
+$('tz-from').value=here;
+function parts(ms,z){var o={};new Intl.DateTimeFormat('en-US',{timeZone:z,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(new Date(ms)).forEach(function(p){o[p.type]=+p.value});return o}
+function offset(ms,z){var p=parts(ms,z);return Date.UTC(p.year,p.month-1,p.day,p.hour%24,p.minute,p.second)-Math.floor(ms/1000)*1000}
+function setNow(){var d=new Date(),p=parts(d.getTime(),$('tz-from').value);function z2(n){return (n<10?'0':'')+n}
+  $('tz-when').value=p.year+'-'+z2(p.month)+'-'+z2(p.day)+'T'+z2(p.hour%24)+':'+z2(p.minute)}
+setNow();
+function off(min){var s=min<0?'-':'+';min=Math.abs(min);return 'UTC'+s+Math.floor(min/60)+(min%60?':'+(min%60<10?'0':'')+min%60:'')}
+function run(){
+  var v=$('tz-when').value,from=$('tz-from').value;if(!v)return;
+  var a=v.split(/[-T:]/).map(Number),guess=Date.UTC(a[0],a[1]-1,a[2],a[3],a[4]);
+  var utc=guess-offset(guess,from);utc=guess-offset(utc,from);
+  var list=[from].concat(picked.filter(function(z){return z!==from})),html='';
+  list.forEach(function(z){
+    var t=new Date(utc).toLocaleString([], {timeZone:z,weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});
+    html+='<tr><td>'+(z===from?'<b>'+label(z)+'</b>':label(z))+'</td><td>'+t+'</td><td>'+off(Math.round(offset(utc,z)/60000))+'</td></tr>';
+  });
+  $('tz-rows').innerHTML=html;
+}
+C.bind(root,run);
+$('tz-add').addEventListener('change',function(){var z=this.value;if(z&&picked.indexOf(z)<0)picked.push(z);this.value='';run()});
+$('tz-now').addEventListener('click',function(){setNow();run()});
+})();
+</script>

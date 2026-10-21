@@ -15,10 +15,9 @@ POSTS = {
 
 
 def build(name):
-    css = open(os.path.join(TOOLS, "calc.css"), encoding="utf-8").read()
-    js = open(os.path.join(TOOLS, "calc.js"), encoding="utf-8").read()
+    from apply import escape_scripts, tool_assets
     body = open(os.path.join(TOOLS, name + ".html"), encoding="utf-8").read()
-    return f"<style>{css}</style>\n<script>{js}</script>\n<div class=\"seo-post\">\n{body}</div>"
+    return escape_scripts(f"{tool_assets()}\n<div class=\"seo-post\">\n{body}</div>")
 
 
 def publish(names):

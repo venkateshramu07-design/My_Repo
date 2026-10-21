@@ -1,0 +1,33 @@
+<div class="bd-calc" id="bd-sleep">
+<p class="bc-title">Sleep cycle calculator</p>
+<p class="bc-sub">Sleep runs in cycles of roughly 90 minutes. Waking at the end of a cycle, rather than in the middle of one, can help you feel less groggy.</p>
+<div class="bc-grid">
+<div><label for="sl-mode">I want to</label><select id="sl-mode"><option value="wake">wake up at a set time</option><option value="bed">go to bed at a set time</option><option value="now">go to sleep now</option></select></div>
+<div><label for="sl-time">Time</label><input id="sl-time" type="time" value="06:30"></div>
+<div><label for="sl-fall">Minutes to fall asleep</label><input id="sl-fall" type="number" min="0" max="90" step="5" value="15"></div>
+</div>
+<p class="bc-note" id="sl-head" style="font-weight:600;color:inherit"></p>
+<div class="bc-chips" id="sl-out"></div>
+<p class="bc-note">Highlighted times give 7½ to 9 hours of sleep, in line with the 7 to 9 hours most adults need. Cycle length varies from person to person, so treat these as a starting point.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-sleep');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+function fmt(d){return d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}
+C.bind(root,function(){
+  var mode=$('sl-mode').value,fall=C.num($('sl-fall')),t=$('sl-time').value.split(':'),base=new Date();
+  $('sl-time').disabled=mode==='now';
+  if(mode!=='now'){base.setHours(+t[0]||0,+t[1]||0,0,0)}
+  var html='',cycles=[6,5,4,3];
+  if(mode==='wake'){
+    $('sl-head').textContent='To wake up at '+fmt(base)+', try falling asleep by going to bed at:';
+    cycles.forEach(function(n){var d=new Date(base.getTime()-(n*90+fall)*60000);html+='<span class="bc-chip'+(n>=5?' bc-best':'')+'">'+fmt(d)+' · '+(n*1.5)+' h</span>'});
+  }else{
+    $('sl-head').textContent=(mode==='now'?'If you go to bed now ('+fmt(base)+')':'If you go to bed at '+fmt(base))+', try waking up at:';
+    cycles.slice().reverse().forEach(function(n){var d=new Date(base.getTime()+(n*90+fall)*60000);html+='<span class="bc-chip'+(n>=5?' bc-best':'')+'">'+fmt(d)+' · '+(n*1.5)+' h</span>'});
+  }
+  $('sl-out').innerHTML=html;
+});
+})();
+</script>
