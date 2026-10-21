@@ -44,21 +44,30 @@ Every post is saved to `seo/backup/` before anything is changed, and `python3 se
 
 ## Site redesign (`theme/redesign.xml`)
 
-A design layer over the current SoraTemplates theme. It doesn't remove any posts, pages, gadgets or URLs.
-It adds:
-- a homepage hero with search, stats and floating cards for the latest posts
-- "Explore by topic" tiles linking to the topic label pages
-- card-style post listings with full-size images
-- editorial typography (Fraunces and Inter) and a sticky, blurred header
-- a reading progress bar, reading-time label and drop cap on articles
-- styled contents and related-articles boxes, a back-to-top button, scroll-reveal motion and a dark mode toggle
+A design layer over the current SoraTemplates theme. It only restyles the theme: posts, pages, gadgets and
+URLs are left as they are. Version 2 adds:
+- a monogram logo, a sticky blurred header, a one-row mobile header with a dropdown menu, and a search overlay
+  (search icon or the `/` key)
+- a homepage hero with search, stats and a "Start here" panel linking the money, mind and career hubs
+- "Explore by topic" tiles with icons, a full-width featured first post, and a "Browse all articles" banner
+- topic-coloured cover art for posts without an image (cards, ticker, widgets, related posts), in place of
+  the theme's grey "no image" picture
+- articles: an "Updated" pill, a quick-answer callout, a drop cap on the first real paragraph, correct list
+  numbering, FAQ question badges, restyled share buttons, tags and newer/older links
+- tidier widgets: sentence-case titles, no "0 Comments" lines, a cleaner Recent Posts list; the empty
+  Report Abuse and "Powered by Blogger" boxes are hidden, and Recent Posts is hidden on the homepage
+  (it repeats the main list)
+- reading progress bar, reading time, back-to-top button, scroll-reveal motion and a dark mode toggle
 
 Animations are turned off for visitors whose system asks for reduced motion.
 
-To install:
-1. In Blogger, open **Theme**, click the arrow next to **Customise**, and choose **Backup** to download the current theme.
-2. Choose **Edit HTML**, search for `</head>` (Ctrl+F), and paste the whole contents of `theme/redesign.xml` on the line directly above it.
-3. Click **Save**.
+The Blogger API cannot edit themes, so this step is done by hand in Blogger:
+1. Open **Theme**, click the arrow next to **Customise**, and choose **Backup** to download the current theme.
+2. Choose **Edit HTML** and search for `bd-redesign` (Ctrl+F). If the earlier version is there, select from
+   the `<link href='https://fonts.googleapis.com' rel='preconnect'/>` line above it down to the closing
+   `//]]></script>` and delete it.
+3. Search for `</head>` and paste the whole contents of `theme/redesign.xml` on the line directly above it.
+4. Click **Save**.
 
 To undo, delete the pasted block, or restore the backup from step 1.
 
