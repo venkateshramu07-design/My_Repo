@@ -33,6 +33,12 @@ CALCULATORS = [  # live calculator posts (seo/tools/)
     ("Credit card payoff calculator", BLOG_URL + "2026/10/credit-card-payoff-calculator-how-long.html"),
 ]
 CALCULATOR_LABELS = {"Personal Finance", "Investing"}
+HUB_LABELS = {  # a post's main label -> the "Start here" hub published from seo/hubs/
+    "Personal Finance": "money", "Investing": "money", "Economics": "money",
+    "Career & Workplace": "career", "Leadership": "career", "Education": "career",
+    "Self Improvement": "mind", "Psychology": "mind", "Health & Wellness": "mind",
+    "Zen & Mindfulness": "mind", "Love & Relationships": "mind",
+}
 TOOLS = os.path.join(HERE, "tools")
 TOOLS_START, TOOLS_END = "<!-- seo-tools-start -->", "<!-- seo-tools-end -->"
 EMBEDS = {  # interactive widgets from seo/tools/embeds/, shown before the first section of these posts
@@ -193,10 +199,16 @@ def related_block(s, posts_by_slug):
     items = "".join(
         f'<li><a href="{posts_by_slug[o]["url"]}">{html.escape(PLAN[o][0] or posts_by_slug[o]["title"])}</a></li>'
         for o in picks)
+    hub = ""
+    if labels[0] in HUB_LABELS:
+        from publish_tools import POSTS, load_ids
+        name = f"hubs/{HUB_LABELS[labels[0]]}-start-here"
+        url = load_ids()[name]["url"]
+        hub = f'<p><strong>Start here:</strong> <a href="{url}">{html.escape(POSTS[name][0])}</a></p>'
     tools = ""
     if CALCULATOR_LABELS & set(labels):
         tools = "<p>Free calculators: " + " · ".join(f'<a href="{u}">{n}</a>' for n, u in CALCULATORS) + "</p>"
-    return (f'{RELATED_START}<div class="seo-related"><h3>Related articles</h3><ul>{items}</ul>{tools}'
+    return (f'{RELATED_START}<div class="seo-related"><h3>Related articles</h3>{hub}<ul>{items}</ul>{tools}'
             f'<p><a href="{BLOG_URL}2021/06/sitemap.html">Browse all articles by topic</a></p></div>{RELATED_END}')
 
 
@@ -246,7 +258,17 @@ def sitemap_html(posts_by_slug):
     for s, (t, _, labs) in PLAN.items():
         if labs and s in posts_by_slug:
             groups.setdefault(labs[0], []).append(s)
-    out = ["<p>Browse every article on Blog Digest, grouped by topic.</p><h2>Free Calculators and Tools</h2><ul>"]
+    from publish_tools import POSTS, load_ids
+    ids = load_ids()
+    new = {}  # posts published from seo/hubs/ and seo/articles/, newest first
+    for name in reversed(list(POSTS)):
+        if "/" in name and isinstance(ids.get(name), dict):
+            new.setdefault("Start Here" if name.startswith("hubs/") else POSTS[name][1][0], []).append(
+                f'<li><a href="{ids[name]["url"]}">{html.escape(POSTS[name][0])}</a></li>')
+    out = ["<p>Browse every article on Blog Digest, grouped by topic.</p>"]
+    if "Start Here" in new:
+        out += ["<h2>Start Here: Topic Guides</h2><ul>"] + new.pop("Start Here") + ["</ul>"]
+    out.append("<h2>Free Calculators and Tools</h2><ul>")
     out += [f'<li><a href="{u}">{html.escape(n[0].upper() + n[1:])}</a></li>' for n, u in CALCULATORS]
     homes = {}
     for s, es in EMBEDS.items():
@@ -257,6 +279,7 @@ def sitemap_html(posts_by_slug):
     out.append("</ul>")
     for lab in sorted(groups):
         out.append(f"<h2>{html.escape(lab)}</h2><ul>")
+        out += new.get(lab, [])
         for s in sorted(groups[lab], key=lambda x: posts_by_slug[x]["published"], reverse=True):
             out.append(f'<li><a href="{posts_by_slug[s]["url"]}">'
                        f'{html.escape(PLAN[s][0] or posts_by_slug[s]["title"])}</a></li>')
