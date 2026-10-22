@@ -30,7 +30,7 @@ POSTS.update({
 })
 # Cover images (seo/covers/, drawn by make_covers.py), served from a fixed commit. The first image in a post is
 # what Blogger uses for its share preview (og:image), and these posts have no image of their own.
-COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@b9d2dda4aafa47a1a45c67f4698cb95ae4f41773/seo/covers/"
+COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@b1f46bc1541f76c8a245cec61b136954a8e6d8c9/seo/covers/"
 COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-here",
           "articles/emergency-fund-guide", "articles/good-credit-score-cibil", "articles/prepay-home-loan-or-invest",
           "articles/gdp-measuring-economy"}
