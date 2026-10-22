@@ -18,10 +18,13 @@ Content
 - Voice: an experienced, measured expert explaining to an intelligent general reader. Concrete examples, real
   history and real cases, plain judgements, varied sentence length. No filler, no hype, no "In conclusion".
   Byline stays "Blog Digest"; do not claim any person's name or credentials.
+- Audience: global (US, UK, Europe, Asia, Middle East, Africa, Latin America), not one country. Use US dollars
+  first, with other currencies only where they help; explain any local term. Draw examples and data from several
+  countries (for example the US, UK, EU, Japan, China, India, Brazil), and say which country a rule or figure
+  applies to. Avoid lakh/crore and country-specific jargon unless the article is about that country.
 - Research before writing: use web search for current figures and check them against official sources
-  (for India: MoSPI, RBI, PIB; global: IMF, World Bank). Use today's latest data, give dates for figures, and
-  re-check every number and calculation in your draft before publishing. List the sources to me at the end.
-- India-first examples where relevant (₹, lakh/crore), with international comparisons.
+  (IMF, World Bank, OECD, national statistics offices and central banks). Use today's latest data, give dates for
+  figures, and re-check every number and calculation in your draft before publishing. List the sources at the end.
 - Structure, as in the existing articles: <p><em>Updated <today's date></em></p>, a "Quick answer:" paragraph,
   a two-paragraph intro, 12-16 <h2> sections with <h3> subsections where useful, a "Frequently Asked Questions"
   section (6+ questions as <h3>), "Final Thoughts", "Related Guides" with 4-5 links to my existing posts on the
@@ -32,6 +35,8 @@ Visuals
   e.g. an animated SVG diagram (SMIL or CSS, respects prefers-reduced-motion), an animated chart that fills
   when scrolled into view, and a calculator that uses window.bdCalc (see seo/tools/calc.js and
   seo/tools/embeds/gdp-calculator.html). Must work on phones (no sideways scrolling) and in dark mode.
+  Calculators that take money amounts get a currency select (₹, $, €, £) and an entry in CALC_EXAMPLES in
+  seo/theme/redesign.xml, so readers outside India see their currency and realistic example amounts.
 - A 1200x630 cover: add the post to POSTS in seo/covers/make_covers.py, render it (Fraunces variable font from
   github.com/google/fonts ofl/fraunces), commit, point COVER_BASE in seo/publish_tools.py at that commit,
   and add the post to COVERS.

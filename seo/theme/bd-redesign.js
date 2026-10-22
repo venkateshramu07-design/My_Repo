@@ -523,6 +523,49 @@
     });
   }
 
+  // Calculators: readers outside India get their own currency and realistic example amounts. Only examples still at
+  // their original rupee values change, so nothing a reader has typed is touched. The region comes from the
+  // browser's time zone and language; nothing is sent anywhere.
+  function readerCurrency() {
+    var tz = '', lang = (navigator.language || '').toLowerCase();
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    if (/^Asia\/(Kolkata|Calcutta)$/.test(tz) || /-in$/.test(lang)) return '₹';
+    if (/^Europe\/(London|Belfast|Guernsey|Jersey|Isle_of_Man)$/.test(tz) || /-gb$/.test(lang)) return '£';
+    if (/^Europe\/(Amsterdam|Andorra|Athens|Berlin|Bratislava|Brussels|Busingen|Dublin|Helsinki|Lisbon|Ljubljana|Luxembourg|Madrid|Malta|Monaco|Paris|Riga|Rome|San_Marino|Tallinn|Vatican|Vienna|Vilnius|Zagreb)$/.test(tz) ||
+      /^Atlantic\/(Azores|Madeira|Canary)$/.test(tz)) return '€';
+    return '$';
+  }
+  // select id: { input id: [rupee example, example elsewhere] }
+  var CALC_EXAMPLES = {
+    'cc-cur': { 'cc-b': [100000, 5000], 'cc-r': [3.6, 1.8], 'cc-p': [10000, 300] },
+    'emi-cur': { 'emi-p': [5000000, 300000], 'emi-r': [8.5, 6.5], 'emi-x': [5000, 200] },
+    'fi-cur': { 'fi-exp': [600000, 50000], 'fi-sav': [1000000, 100000], 'fi-mon': [40000, 1500], 'fi-ret': [10, 7], 'fi-inf': [6, 3] },
+    'sip-cur': { 'sip-amt': [10000, 500], 'sip-rate': [12, 8], 'sip-infl': [6, 3] },
+    'an-cur': { 'an-pv': [5000000, 250000], 'an-rate': [7, 5] },
+    'db-cur': { 'db-extra': [5000, 200] },
+    'ef-cur': { 'ef-home': [20000, 1500], 'ef-food': [12000, 600], 'ef-bills': [6000, 400], 'ef-other': [7000, 350], 'ef-have': [50000, 3000], 'ef-save': [10000, 500] },
+    'in-cur': { 'in-amt': [100000, 1000], 'in-rate': [6, 3] },
+    'lu-cur': { 'lu-amt': [600000, 10000], 'lu-rate': [12, 8] }
+  };
+  var DEBT_ROWS = [['Credit card', 80000, 42, 4000, 'Credit card', 3000, 22, 90], ['Personal loan', 150000, 14, 5000, 'Personal loan', 8000, 11, 250],
+    ['Phone EMI', 20000, 16, 2000, 'Car loan', 12000, 7, 300]];
+  function localiseCalculators() {
+    var cur = readerCurrency(); if (cur === '₹') return;
+    var fire = function (n) { ['input', 'change'].forEach(function (t) { n.dispatchEvent(new Event(t, { bubbles: true })); }); };
+    Object.keys(CALC_EXAMPLES).forEach(function (sid) {
+      var sel = document.getElementById(sid); if (!sel || sel.value !== '₹') return;
+      var map = CALC_EXAMPLES[sid];
+      Object.keys(map).forEach(function (id) { var n = document.getElementById(id); if (n && +n.value === map[id][0]) n.value = map[id][1]; });
+      if (sid === 'db-cur') document.querySelectorAll('#db-rows tr').forEach(function (tr) {
+        var i = tr.querySelectorAll('input'); if (i.length < 4) return;
+        DEBT_ROWS.forEach(function (d) {
+          if (i[0].value === d[0] && +i[1].value === d[1] && +i[2].value === d[2] && +i[3].value === d[3]) { i[0].value = d[4]; i[1].value = d[5]; i[2].value = d[6]; i[3].value = d[7]; }
+        });
+      });
+      sel.value = cur; fire(sel);
+    });
+  }
+
   // Reading history, kept in this browser only.
   function store(key, val) {
     try {
@@ -534,6 +577,7 @@
 
   function init() {
     fillRandomPosts();
+    try { localiseCalculators(); } catch (e) {}
     setMeta('name', 'robots', 'max-image-preview:large');
     // Search snippets for the homepage and topic pages, in place of the blog's old keyword-list description.
     var siteDesc = 'Practical, in-depth guides on personal finance, investing, psychology, relationships and careers, with free calculators.';
