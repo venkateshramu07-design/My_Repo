@@ -10,6 +10,7 @@ js = re.search(r"<script>//<!\[CDATA\[\n(.*?)//\]\]></script>", src, re.S).group
 out = f"""/* Blog Digest redesign, built from seo/theme/redesign.xml by build_loader.py. Do not edit by hand. */
 (function () {{
   var me = document.currentScript, box = me && me.closest('.widget');
+  window.bdBase = me && me.src ? me.src.replace(/bd-redesign\\.js.*$/, '') : '';
   if (box) box.style.display = 'none';
   if (window.bdRedesign) return;
   window.bdRedesign = true;

@@ -573,6 +573,56 @@ html.bd-article .post-body .seo-related li::marker{content:''}
 @keyframes ill-up{0%{transform:translateY(10px);opacity:0}50%{opacity:1}100%{transform:translateY(-18px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.bd-ill [class*="a-"]{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}}
 
+/* Homepage, round 3 */
+#top-bar{display:none!important}
+html.bd-home-front #content-wrapper{display:none!important}
+.bd-dek{margin:0 0 10px;font:400 17px/1.55 var(--bd-sans);color:var(--bd-muted);max-width:60ch}
+.bd-dek.bd-dek-sm{margin:6px 0 0;font-size:14.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bd-dek:empty{display:none}
+.bd-toolsbar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;padding:18px 20px;border-radius:20px;background:var(--bd-deep);color:#fff}
+.bd-toolsbar-head b{display:block;font:800 20px var(--bd-serif);color:#fff}
+.bd-toolsbar-head span{font:500 13px var(--bd-sans);color:#a9aebb}
+.bd-toolsbar-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.bd-toolsbar-list a{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:#fff!important;text-decoration:none!important;transition:background .2s,transform .25s var(--bd-ease)}
+.bd-toolsbar-list a:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+.bd-toolsbar-list i{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--bd-accent),var(--bd-gold));color:#fff}
+.bd-toolsbar-list i svg{width:18px;height:18px}
+.bd-toolsbar-list b{display:block;font:700 14px/1.25 var(--bd-sans)}
+.bd-toolsbar-list small{display:block;font:500 12px/1.35 var(--bd-sans);color:#a9aebb}
+.bd-extras{max-width:1170px;margin:44px auto 0;padding:0 15px;display:grid;gap:44px}
+.bd-extras *{box-sizing:border-box}
+.bd-pair{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.bd-pair-sec .bd-section-head{border-top:2px solid var(--bd-ink);padding-top:16px}
+.bd-pair-body{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+.bd-pair-lead b{display:block;font:700 19px/1.3 var(--bd-serif)}
+.bd-pair-list{list-style:none;margin:0;padding:0}
+.bd-pair-list li{padding:10px 0;border-bottom:1px solid var(--bd-line)}
+.bd-pair-list li:first-child{padding-top:0}
+.bd-pair-list a{text-decoration:none!important;color:var(--bd-ink)!important}
+.bd-pair-list b{display:block;font:700 16px/1.3 var(--bd-serif)}
+.bd-pair-list small{font:600 12px var(--bd-sans);color:var(--bd-muted)}
+.bd-pair-list a:hover b{color:var(--bd-accent)}
+.bd-archive{margin:0 calc(50% - 50vw);padding:44px calc(50vw - 50%);background:var(--bd-deep);color:#fff}
+.bd-archive-in{max-width:1140px;margin:0 auto}
+.bd-archive .bd-section-head h2{color:#fff}
+.bd-archive .bd-section-head p{color:#a9aebb}
+.bd-archive .bd-section-head a{color:#ffb199!important}
+.bd-archive-list{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 26px;counter-reset:arc}
+.bd-archive-list li{counter-increment:arc}
+.bd-archive-list a{display:grid;grid-template-columns:auto 84px minmax(0,1fr);gap:14px;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.1);text-decoration:none!important;color:#fff!important}
+.bd-archive-list a::before{content:counter(arc);font:800 30px/1 var(--bd-serif);color:#ffb199;min-width:22px}
+.bd-archive-img{display:block;aspect-ratio:1;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.06)}
+.bd-archive-img img{width:100%;height:100%;object-fit:cover}
+.bd-archive-list small{display:block;font:700 11px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:#ffb199}
+.bd-archive-list b{display:block;margin-top:3px;font:700 16.5px/1.3 var(--bd-serif)}
+.bd-archive-list a:hover b{color:#ffb199}
+.bd-home-more{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.bd-home-btn{display:inline-flex;align-items:center;padding:14px 22px;border-radius:999px;background:var(--bd-ink);color:var(--bd-bg)!important;font:700 15px var(--bd-sans);text-decoration:none!important}
+.bd-home-btn.bd-ghost{background:transparent;border:1px solid var(--bd-line);color:var(--bd-ink)!important}
+.bd-home-btn:hover{opacity:.9}
+html.bd-home-front .bd-closer{display:none!important}
+
 /* Magazine front page */
 .home #break-wrapper-outer{display:none!important}
 .bd-front{max-width:1170px;margin:22px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -725,6 +775,10 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   .bd-hero-grid{grid-template-columns:1fr;gap:32px}
   .bd-topic-grid{grid-template-columns:repeat(2,1fr)}
   .bd-lead-grid{grid-template-columns:1fr 1fr}
+  .bd-toolsbar{grid-template-columns:1fr}
+  .bd-toolsbar-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .bd-pair{grid-template-columns:1fr}
+  .bd-archive-list{grid-template-columns:1fr 1fr}
   .bd-tp-lead{grid-template-columns:1fr}
   .bd-tp-lead .bd-second{grid-template-columns:1fr 1fr}
   .bd-tp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -782,6 +836,13 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   html.bd-article .post-body h2{font-size:26px!important}
   .bd-sec-grid{grid-template-columns:1fr 1fr;gap:16px}
   .bd-lead-grid{grid-template-columns:1fr;gap:22px}
+  .bd-toolsbar{padding:16px}
+  .bd-toolsbar-list{display:flex;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+  .bd-toolsbar-list a{flex:none;width:210px}
+  .bd-pair-body{grid-template-columns:1fr}
+  .bd-archive-list{grid-template-columns:1fr}
+  .bd-archive-list a{grid-template-columns:auto 72px minmax(0,1fr)}
+  .bd-lead .bd-dek{font-size:15.5px}
   .bd-tp-grid{grid-template-columns:1fr 1fr;gap:22px 14px}
   .bd-sr-row{grid-template-columns:96px minmax(0,1fr);gap:14px;padding:14px 0}
   .bd-sr-head .bd-sr-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -15px;padding:0 15px;max-width:100vw}
@@ -1238,6 +1299,31 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     return isNaN(d) ? '' : d.getDate() + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()] + ' ' + d.getFullYear();
   }
 
+  // Standfirsts for lists: Blogger's feed summaries start with the posts' inline styles, so lists use the article
+  // descriptions in descriptions.json, published next to this script. Lists add empty .bd-dek slots and this fills them.
+  var deskMap = null, deskWait = [];
+  function pathOf(u) { return String(u).replace(/^https?:\/\/[^/]+/, '').split('?')[0].split('#')[0]; }
+  function dekSlot(p, cls) { return p.sum ? '<p class="bd-dek ' + (cls || '') + '">' + esc(p.sum) + '</p>' : '<p class="bd-dek ' + (cls || '') + '" data-u="' + esc(pathOf(p.url)) + '"></p>'; }
+  function withDescriptions(cb) {
+    if (deskMap) return cb(deskMap);
+    deskWait.push(cb);
+    if (deskWait.length > 1) return;
+    var done = function (m) { deskMap = m; deskWait.forEach(function (f) { f(m); }); deskWait = []; };
+    if (!window.bdBase) return done({});
+    var x = new XMLHttpRequest(); x.open('GET', window.bdBase + 'descriptions.json');
+    x.onload = function () { try { done(JSON.parse(x.responseText)); } catch (e) { done({}); } };
+    x.onerror = function () { done({}); }; x.send();
+  }
+  function applyDeks(scope, hl) {
+    withDescriptions(function (m) {
+      scope.querySelectorAll('.bd-dek[data-u]').forEach(function (n) {
+        var t = m[n.getAttribute('data-u')]; n.removeAttribute('data-u');
+        if (!t) { n.remove(); return; }
+        if (hl && n.getAttribute('data-hl')) n.innerHTML = hl(t); else n.textContent = t;
+      });
+    });
+  }
+
   // Reading history, kept in this browser only.
   function store(key, val) {
     try {
@@ -1355,6 +1441,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     if (isHome && content && !document.querySelector('.bd-front')) {
       var today = new Date();
       var dateLine = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()] + ', ' + longDate(today.toISOString());
+      var TOOLS_HOME = [['SIP calculator', 'What a monthly SIP could grow to', '2026/10/sip-calculator-estimate-your-mutual.html', 'chart'],
+        ['EMI calculator', 'Home loan EMI and prepayment savings', '2026/10/home-loan-emi-calculator-with.html', 'money'],
+        ['FIRE calculator', 'How much you need to retire early', '2026/10/fire-calculator-how-much-you-need-to.html', 'rise'],
+        ['Debt payoff', 'How long your credit card debt will take', '2026/10/credit-card-payoff-calculator-how-long.html', 'coin'],
+        ['Emergency fund', 'The safety net you should keep', '2026/10/how-much-emergency-fund-do-you-need.html', 'leaf']];
       var NAV = [['Money', 'Personal Finance'], ['Investing', 'Investing'], ['Mind', 'Psychology'], ['Self Improvement', 'Self Improvement'],
         ['Relationships', 'Love & Relationships'], ['Work', 'Career & Workplace'], ['Health', 'Health & Wellness'], ['Tech', 'Technology & AI']];
       var front = el('section', 'bd-front',
@@ -1366,8 +1457,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         '<aside class="bd-latest"><h2>Latest</h2><ol class="bd-latest-list"></ol></aside></div>' +
         '<div class="bd-start"><span class="bd-start-label">New here? Start with a guide</span>' + GUIDES.map(function (g) {
           return '<a class="bd-start-card" style="--c:' + g[2] + '" href="' + g[4] + '"><i>' + svg(g[3]) + '</i><span><b>' + g[0] + '</b><small>' + g[1] + '</small></span></a>';
-        }).join('') + '</div>');
+        }).join('') + '</div>' +
+        '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute.</span></div><div class="bd-toolsbar-list">' +
+        TOOLS_HOME.map(function (t) { return '<a href="' + BLOG + t[2] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span></a>'; }).join('') + '</div></div>');
       content.parentNode.insertBefore(front, content);
+      root.classList.add('bd-home-front');
       var secs = el('div', 'bd-sections', '');
       var SECS = [['Money', 'Personal Finance', 'Budgeting, investing, loans and getting out of debt.'],
         ['Mind', 'Psychology', 'How the mind works, and how to look after yours.'],
@@ -1393,15 +1487,16 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         leadEl.className = 'bd-lead';
         leadEl.innerHTML = '<a href="' + esc(lead.url) + '"><span class="bd-lead-img"><img alt="" fetchpriority="high" decoding="async" src="' + esc(pic(lead, 960)) + '" srcset="' +
           (lead.thumb ? [640, 960, 1280].map(function (w) { return esc(sized(lead.thumb, w)) + ' ' + w + 'w'; }).join(', ') : esc(pic(lead, 960)) + ' 800w') + '" sizes="(max-width: 980px) 92vw, 560px"/></span>' +
-          '<small class="bd-kick">' + esc(lead.label || 'Featured') + '</small><h1>' + esc(lead.title) + '</h1>' + (lead.sum ? '<p>' + esc(lead.sum) + '</p>' : '') +
+          '<small class="bd-kick">' + esc(lead.label || 'Featured') + '</small><h1>' + esc(lead.title) + '</h1>' + dekSlot(lead) +
           '<span class="bd-meta">' + metaLine(lead) + '</span></a>';
         front.querySelector('.bd-second').innerHTML = second.map(function (p) {
           return '<a class="bd-story" href="' + esc(p.url) + '"><span class="bd-story-img"><img alt="" decoding="async" src="' + esc(pic(p, 640)) + '"/></span>' +
-            '<small class="bd-kick">' + esc(p.label || 'Blog Digest') + '</small><b>' + esc(p.title) + '</b></a>';
+            '<small class="bd-kick">' + esc(p.label || 'Blog Digest') + '</small><b>' + esc(p.title) + '</b>' + dekSlot(p, 'bd-dek-sm') + '</a>';
         }).join('');
         front.querySelector('.bd-latest-list').innerHTML = latest.map(function (p) {
           return '<li><a href="' + esc(p.url) + '"><small>' + metaLine(p) + '</small><b>' + esc(p.title) + '</b></a></li>';
         }).join('');
+        applyDeks(front);
         return used;
       };
       var renderSections = function (used) {
@@ -1419,12 +1514,56 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           }, sec[1]);
         });
       };
+      var extras = el('div', 'bd-extras', '<div class="bd-pair"></div><section class="bd-archive"><div class="bd-archive-in"><div class="bd-section-head"><div><h2>Worth revisiting</h2>' +
+        '<p>Guides from the archive, a different set on every visit.</p></div><a href="' + BLOG + '2021/06/sitemap.html">All articles \u2192</a></div><ol class="bd-archive-list"></ol></div></section>' +
+        '<nav class="bd-home-more"><a class="bd-home-btn" href="' + BLOG + '2021/06/sitemap.html">Browse all articles by topic</a><a class="bd-home-btn bd-ghost bd-older" href="/search/label/Self%20Improvement">Older articles \u2192</a></nav>');
+      secs.parentNode.insertBefore(extras, secs.nextSibling);
+      var extrasDone = false;
+      var renderExtras = function (used) {
+        if (extrasDone) return; extrasDone = true;
+        var pair = extras.querySelector('.bd-pair');
+        [['Relationships', 'Love & Relationships', 'Love, dating, breakups and connection.'], ['Health', 'Health & Wellness', 'Sleep, stress and healthy living.']].forEach(function (sec) {
+          var box = el('section', 'bd-pair-sec', '<div class="bd-section-head"><div><h2>' + sec[0] + '</h2><p>' + esc(sec[2]) + '</p></div><a href="' + labelUrl(sec[1]) + '">More \u2192</a></div><div class="bd-pair-body"></div>');
+          pair.appendChild(box);
+          feed('', 12, function (posts) {
+            var fresh = posts.filter(function (p) { return !used[p.url]; });
+            fresh = fresh.filter(function (p) { return p.thumb; }).concat(fresh.filter(function (p) { return !p.thumb; })).slice(0, 4);
+            if (!fresh.length) { box.remove(); return; }
+            fresh.forEach(function (p) { used[p.url] = 1; });
+            box.querySelector('.bd-pair-body').innerHTML = '<a class="bd-story bd-pair-lead" href="' + esc(fresh[0].url) + '"><span class="bd-story-img"><img alt="" loading="lazy" decoding="async" src="' + esc(pic(fresh[0], 640)) + '"/></span><b>' + esc(fresh[0].title) + '</b>' + dekSlot(fresh[0], 'bd-dek-sm') + '</a>' +
+              '<ul class="bd-pair-list">' + fresh.slice(1).map(function (p) { return '<li><a href="' + esc(p.url) + '"><b>' + esc(p.title) + '</b><small>' + esc(longDate(p.date)) + '</small></a></li>'; }).join('') + '</ul>';
+            applyDeks(box);
+          }, sec[1]);
+        });
+        var total = 0; try { total = (JSON.parse(localStorage.getItem('bd-post-count') || 'null') || {}).n || 0; } catch (e) {}
+        var start = 30 + Math.floor(Math.random() * Math.max(1, (total || 170) - 40));
+        var x = new XMLHttpRequest(); x.open('GET', '/feeds/posts/summary?alt=json&max-results=12&start-index=' + start);
+        x.onload = function () {
+          var list = [];
+          try {
+            list = (JSON.parse(x.responseText).feed.entry || []).map(function (e) {
+              var link = (e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0], cats = (e.category || []).map(function (c) { return c.term; });
+              return { title: e.title.$t, url: link && link.href, label: cats[0] || '', date: (e.published.$t || '').slice(0, 10), thumb: e.media$thumbnail ? e.media$thumbnail.url : '' };
+            }).filter(function (p) { return p.url && !used[p.url] && !/^quote of the day/i.test(p.title) && !/^(about us|contact us|privacy policy|disclaimer|terms and conditions)$/i.test(p.title); }).slice(0, 6);
+          } catch (e) {}
+          if (!list.length) { extras.querySelector('.bd-archive').remove(); return; }
+          extras.querySelector('.bd-archive-list').innerHTML = list.map(function (p) {
+            return '<li><a href="' + esc(p.url) + '"><span class="bd-archive-img"><img alt="" loading="lazy" decoding="async" src="' + esc(p.thumb ? sized(p.thumb, 400) : cover(p.title, p.label, false)) + '"/></span>' +
+              '<span><small>' + esc(p.label || 'Blog Digest') + '</small><b>' + esc(p.title) + '</b></span></a></li>';
+          }).join('');
+        };
+        x.onerror = function () { extras.querySelector('.bd-archive').remove(); };
+        x.send();
+      };
       var cached = store('bd-front'), painted = false;
       if (cached && cached.p && Date.now() - cached.t < 6 * 3600e3) { renderFront(cached.p); painted = true; }
       feed('', 25, function (posts) {
         if (posts.length) store('bd-front', { t: Date.now(), p: posts });
         var used = renderFront(posts.length ? posts : (cached && cached.p) || []);
         if (!painted || posts.length) renderSections(used);
+        renderExtras(used);
+        var last = (posts.length ? posts : (cached && cached.p) || []).slice(-1)[0], older = extras.querySelector('.bd-older');
+        if (last && last.date && older) older.href = '/search?updated-max=' + encodeURIComponent(last.date + 'T00:00:00+05:30') + '&max-results=12';
       });
     }
     var footer = document.getElementById('footer-wrapper');
@@ -1759,10 +1898,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         var lead = withPic[0] || posts[0]; used[lead.url] = 1;
         var second = withPic.filter(function (p) { return !used[p.url]; }).slice(0, 2); second.forEach(function (p) { used[p.url] = 1; });
         tp.querySelector('.bd-tp-lead').innerHTML = '<div class="bd-lead"><a href="' + esc(lead.url) + '"><span class="bd-lead-img"><img alt="" fetchpriority="high" decoding="async" src="' + esc(tpPic(lead, 960)) + '"/></span>' +
-          '<small class="bd-kick">Featured</small><h1>' + esc(lead.title) + '</h1>' + (lead.sum ? '<p>' + esc(lead.sum) + '</p>' : '') + '<span class="bd-meta">' + esc(longDate(lead.date)) + '</span></a></div>' +
+          '<small class="bd-kick">Featured</small><h1>' + esc(lead.title) + '</h1>' + dekSlot(lead) + '<span class="bd-meta">' + esc(longDate(lead.date)) + '</span></a></div>' +
           '<div class="bd-second">' + second.map(function (p) {
-            return '<a class="bd-story" href="' + esc(p.url) + '"><span class="bd-story-img"><img alt="" decoding="async" src="' + esc(tpPic(p, 640)) + '"/></span><b>' + esc(p.title) + '</b><span class="bd-meta">' + esc(longDate(p.date)) + '</span></a>';
+            return '<a class="bd-story" href="' + esc(p.url) + '"><span class="bd-story-img"><img alt="" decoding="async" src="' + esc(tpPic(p, 640)) + '"/></span><b>' + esc(p.title) + '</b>' + dekSlot(p, 'bd-dek-sm') + '<span class="bd-meta">' + esc(longDate(p.date)) + '</span></a>';
           }).join('') + '</div>';
+        applyDeks(tp);
         var grid = tp.querySelector('.bd-tp-grid');
         grid.innerHTML = posts.map(function (p) {
           return '<a class="bd-tp-card' + (used[p.url] ? ' bd-tp-dup' : '') + '" href="' + esc(p.url) + '" data-t="' + esc(p.title.toLowerCase()) + '"><span class="bd-sec-img"><img alt="" loading="lazy" decoding="async" src="' + esc(tpPic(p, 640)) + '"/></span>' +
@@ -1799,7 +1939,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var srPic = function (p) { return p.thumb ? sized(p.thumb, 400) : cover(p.title, p.label, false); };
       var row = function (p) {
         return '<a class="bd-sr-row" href="' + esc(p.url) + '"><span class="bd-sr-img"><img alt="" loading="lazy" decoding="async" src="' + esc(srPic(p)) + '"/></span>' +
-          '<span class="bd-sr-text"><small>' + esc(p.label || 'Article') + ' · ' + esc(longDate(p.date)) + '</small><b>' + hl(p.title) + '</b>' + (p.sum ? '<span class="bd-sr-sum">' + hl(p.sum) + '</span>' : '') + '</span></a>';
+          '<span class="bd-sr-text"><small>' + esc(p.label || 'Article') + ' · ' + esc(longDate(p.date)) + '</small><b>' + hl(p.title) + '</b>' + (p.sum ? '<span class="bd-sr-sum">' + hl(p.sum) + '</span>' : '<span class="bd-sr-sum bd-dek" data-u="' + esc(pathOf(p.url)) + '" data-hl="1"></span>') + '</span></a>';
       };
       var sectionChips = function () {
         return TOPICS.map(function (t) { return '<a class="bd-chip" href="' + labelUrl(t[0]) + '">' + esc(t[0]) + '</a>'; }).join('');
@@ -1837,6 +1977,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
               return sub + row(p);
             }).join(''));
             shownN = Math.min(current.length, shownN + 20);
+            applyDeks(list, hl);
             more.hidden = shownN >= current.length;
             more.textContent = 'Show more results (' + (current.length - shownN) + ' more)';
           };
