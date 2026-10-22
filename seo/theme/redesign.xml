@@ -620,6 +620,43 @@ html.bd-article .post-body .seo-related li::marker{content:''}
 .home .bd-sections{margin-top:6px}
 .home #content-wrapper{margin-top:30px!important}
 
+/* Search page */
+html.bd-searchpage-ready #content-wrapper{display:none!important}
+.bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
+.bd-sr *{box-sizing:border-box}
+.bd-sr-head{display:grid;gap:14px;padding-bottom:20px;border-bottom:2px solid var(--bd-ink)}
+.bd-sr-head small{font:700 12px var(--bd-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--bd-accent)}
+.bd-sr-form{display:flex;gap:8px;padding:6px;border-radius:999px;background:var(--bd-surface);border:1px solid var(--bd-line);box-shadow:var(--bd-shadow)}
+.bd-sr-form:focus-within{border-color:var(--bd-accent)}
+.bd-sr-form input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--bd-ink);font:600 clamp(18px,2.6vw,24px) var(--bd-serif);padding:0 16px}
+.bd-sr-form button{border:0;border-radius:999px;background:var(--bd-accent);color:#fff;font:700 15px var(--bd-sans);padding:14px 24px;cursor:pointer}
+.bd-sr-count{margin:0;font:500 15px var(--bd-sans);color:var(--bd-muted)}
+.bd-sr-count b{color:var(--bd-ink)}
+.bd-sr-chips{display:flex;flex-wrap:wrap;gap:8px}
+.bd-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;border:1px solid var(--bd-line);background:var(--bd-surface);color:var(--bd-ink)!important;
+  font:600 13.5px var(--bd-sans);text-decoration:none!important;cursor:pointer}
+.bd-chip i{font-style:normal;color:var(--bd-muted);font-weight:500}
+.bd-chip:hover{border-color:var(--bd-accent)}
+.bd-chip.bd-on{background:var(--bd-ink);border-color:var(--bd-ink);color:var(--bd-bg)!important}
+.bd-chip.bd-on i{color:inherit;opacity:.7}
+.bd-sr-list{display:grid}
+.bd-sr-sub{margin:0 0 4px;font:800 22px var(--bd-serif);color:var(--bd-ink)}
+.bd-sr-also{margin:28px 0 0!important;font-size:17px!important;font-family:var(--bd-sans)!important;color:var(--bd-muted)!important}
+.bd-sr-row{display:grid;grid-template-columns:148px minmax(0,1fr);gap:18px;align-items:start;padding:18px 0;border-bottom:1px solid var(--bd-line);text-decoration:none!important;color:var(--bd-ink)!important}
+.bd-sr-img{display:block;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--bd-surface-2)}
+.bd-sr-img img{width:100%;height:100%;object-fit:cover}
+.bd-sr-text small{display:block;font:700 11.5px var(--bd-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--bd-accent)}
+.bd-sr-text b{display:block;margin-top:4px;font:700 21px/1.3 var(--bd-serif);letter-spacing:-.01em;text-wrap:balance}
+.bd-sr-row:hover b{color:var(--bd-accent)}
+.bd-sr-sum{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:6px;font:400 15px/1.55 var(--bd-sans);color:var(--bd-muted)}
+.bd-sr mark{background:color-mix(in srgb,var(--bd-gold) 40%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.bd-sr-more{justify-self:center;padding:12px 22px;border-radius:999px;border:1px solid var(--bd-line);background:var(--bd-surface);color:var(--bd-ink);font:700 14.5px var(--bd-sans);cursor:pointer}
+.bd-sr-more:hover{border-color:var(--bd-accent);color:var(--bd-accent)}
+.bd-sr-more[hidden],.bd-sr-empty[hidden]{display:none}
+.bd-sr-empty h2{margin:0 0 10px;font:800 28px var(--bd-serif);color:var(--bd-ink)}
+.bd-sr-empty ul{margin:0 0 22px;padding-left:1.2em;font:400 16px/1.7 var(--bd-sans);color:var(--bd-muted)}
+.bd-sr-empty h3{margin:22px 0 12px;font:800 20px var(--bd-serif);color:var(--bd-ink)}
+
 /* Topic (section) pages */
 html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{display:none!important}
 .bd-tp{max-width:1170px;margin:26px auto 0;padding:0 15px;display:grid;gap:30px}
@@ -728,6 +765,13 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   .bd-sec-grid{grid-template-columns:1fr 1fr;gap:16px}
   .bd-lead-grid{grid-template-columns:1fr;gap:22px}
   .bd-tp-grid{grid-template-columns:1fr 1fr;gap:22px 14px}
+  .bd-sr-row{grid-template-columns:96px minmax(0,1fr);gap:14px;padding:14px 0}
+  .bd-sr-head .bd-sr-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+  .bd-sr-head .bd-sr-chips::-webkit-scrollbar{display:none}
+  .bd-sr-head .bd-chip{flex:none}
+  .bd-sr-text b{font-size:17.5px}
+  .bd-sr-sum{font-size:14px}
+  .bd-sr-form button{padding:12px 16px}
   .bd-tp-card b{font-size:16px}
   .bd-tp-filter{width:100%}
   .bd-tp-head p{font-size:17px}
@@ -1119,6 +1163,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     var x = new XMLHttpRequest();
     x.open('GET', '/feeds/posts/summary' + (label ? '/-/' + encodeURIComponent(label) : '') + '?alt=json&max-results=' + n + (q ? '&q=' + encodeURIComponent(q) : ''));
     x.onload = function () {
+      if (x.status !== 200) { cb([], true); return; }
       try {
         cb((JSON.parse(x.responseText).feed.entry || []).map(function (e) {
           var link = (e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
@@ -1130,9 +1175,9 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           if (sum.length > 170) sum = sum.slice(0, 165).replace(/\s+\S*$/, '') + '\u2026';
           return { title: e.title.$t, url: link && link.href, label: cats[0] || '', date: (e.published.$t || '').slice(0, 10), thumb: e.media$thumbnail ? e.media$thumbnail.url : '', sum: sum };
         }).filter(function (p) { return p.url; }));
-      } catch (err) { cb([]); }
+      } catch (err) { cb([], true); }
     };
-    x.onerror = function () { cb([]); };
+    x.onerror = function () { cb([], true); };
     x.send();
   }
   function instantSearch(input, box) {
@@ -1677,6 +1722,80 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           none.hidden = shownN > 0;
         });
       }, lab);
+    }
+
+    // Search results: a search page with the query in a large box, results ranked title matches first with the
+    // words highlighted, topic filters with counts, 20 at a time, and a helpful page when nothing matches.
+    // Built from the summary feed; the theme's list stays if the feed fails.
+    var sq = location.search.match(/[?&]q=([^&]*)/);
+    var isSearch = path === '/search' && !/[?&](updated-max|start|by-date)=/.test(location.search);
+    if (isSearch && cw && !document.querySelector('.bd-sr')) {
+      var query = sq ? decodeURIComponent(sq[1].replace(/\+/g, ' ')).trim() : '';
+      var terms = query.toLowerCase().split(/\s+/).filter(function (t) { return t.length > 1; });
+      var termRe = terms.length ? new RegExp('(' + terms.map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')', 'gi') : null;
+      var hl = function (text) { var e = esc(text); return termRe ? e.replace(termRe, '<mark>$1</mark>') : e; };
+      var sr = el('section', 'bd-sr', '<header class="bd-sr-head"><small>Search</small>' +
+        '<form class="bd-sr-form" action="/search" method="get" role="search"><input name="q" type="search" value="' + esc(query) + '" placeholder="Search 160+ articles" aria-label="Search articles"/><button type="submit">Search</button></form>' +
+        '<p class="bd-sr-count">' + (query ? 'Searching…' : 'Search every guide on Blog Digest, or browse a section.') + '</p><div class="bd-sr-chips"></div></header>' +
+        '<div class="bd-sr-list"></div><button class="bd-sr-more" type="button" hidden>Show more results</button><div class="bd-sr-empty" hidden></div>');
+      cw.parentNode.insertBefore(sr, cw);
+      root.classList.add('bd-searchpage');
+      var list = sr.querySelector('.bd-sr-list'), more = sr.querySelector('.bd-sr-more'), chips = sr.querySelector('.bd-sr-chips');
+      var srPic = function (p) { return p.thumb ? sized(p.thumb, 400) : cover(p.title, p.label, false); };
+      var row = function (p) {
+        return '<a class="bd-sr-row" href="' + esc(p.url) + '"><span class="bd-sr-img"><img alt="" loading="lazy" decoding="async" src="' + esc(srPic(p)) + '"/></span>' +
+          '<span class="bd-sr-text"><small>' + esc(p.label || 'Article') + ' · ' + esc(longDate(p.date)) + '</small><b>' + hl(p.title) + '</b>' + (p.sum ? '<span class="bd-sr-sum">' + hl(p.sum) + '</span>' : '') + '</span></a>';
+      };
+      var sectionChips = function () {
+        return TOPICS.map(function (t) { return '<a class="bd-chip" href="' + labelUrl(t[0]) + '">' + esc(t[0]) + '</a>'; }).join('');
+      };
+      var showEmpty = function (latest) {
+        var box = sr.querySelector('.bd-sr-empty'); box.hidden = false;
+        box.innerHTML = '<h2>No articles match “' + esc(query) + '”</h2><ul><li>Check the spelling, or try a shorter or more general word.</li><li>Search for a topic, such as “loan”, “sleep” or “career”.</li></ul>' +
+          '<h3>Browse a section</h3><div class="bd-sr-chips">' + sectionChips() + '</div><h3>Latest articles</h3><div class="bd-sr-list">' + latest.slice(0, 6).map(row).join('') + '</div>';
+      };
+      if (!query) {
+        chips.innerHTML = sectionChips();
+        feed('', 12, function (posts) { root.classList.add('bd-searchpage-ready'); list.innerHTML = '<h2 class="bd-sr-sub">Latest articles</h2>' + posts.map(row).join(''); });
+      } else {
+        feed(query, 100, function (posts, failed) {
+          if (failed) { sr.remove(); root.classList.remove('bd-searchpage'); return; }
+          root.classList.add('bd-searchpage-ready');
+          var score = function (p) {  // phrase in the title, then words in the title, then words in the excerpt or topic
+            var t = p.title.toLowerCase(), x = (p.sum + ' ' + p.label).toLowerCase();
+            return (t.indexOf(query.toLowerCase()) > -1 ? 50 : 0) + terms.filter(function (w) { return t.indexOf(w) > -1; }).length * 10 + terms.filter(function (w) { return x.indexOf(w) > -1; }).length * 3;
+          };
+          posts = posts.map(function (p, i) { return { p: p, s: score(p), i: i }; }).sort(function (a, b) { return b.s - a.s || a.i - b.i; }).map(function (x) { x.p.strong = x.s >= 10; return x.p; });
+          sr.querySelector('.bd-sr-count').innerHTML = posts.length ? '<b>' + posts.length + '</b> result' + (posts.length === 1 ? '' : 's') + ' for “' + esc(query) + '”' : '';
+          if (!posts.length) { feed('', 6, showEmpty); return; }
+          var counts = {}; posts.forEach(function (p) { if (p.label) counts[p.label] = (counts[p.label] || 0) + 1; });
+          var labels = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+          chips.innerHTML = labels.length > 1 ? '<button type="button" class="bd-chip bd-on" data-l="">All <i>' + posts.length + '</i></button>' +
+            labels.map(function (l) { return '<button type="button" class="bd-chip" data-l="' + esc(l) + '">' + esc(l) + ' <i>' + counts[l] + '</i></button>'; }).join('') : '';
+          var current = posts, shownN = 0;
+          var render = function (reset) {
+            if (reset) { list.innerHTML = ''; shownN = 0; }
+            var hasStrong = current.some(function (p) { return p.strong; });
+            list.insertAdjacentHTML('beforeend', current.slice(shownN, shownN + 20).map(function (p, k) {
+              var idx = shownN + k, prev = current[idx - 1];
+              var sub = hasStrong && !p.strong && (idx === 0 || (prev && prev.strong)) ? '<h2 class="bd-sr-sub bd-sr-also">Also mentions \u201c' + esc(query) + '\u201d</h2>' : '';
+              return sub + row(p);
+            }).join(''));
+            shownN = Math.min(current.length, shownN + 20);
+            more.hidden = shownN >= current.length;
+            more.textContent = 'Show more results (' + (current.length - shownN) + ' more)';
+          };
+          render(true);
+          more.addEventListener('click', function () { render(false); });
+          chips.addEventListener('click', function (ev) {
+            var b = ev.target.closest('button.bd-chip'); if (!b) return;
+            chips.querySelectorAll('.bd-chip').forEach(function (c) { c.classList.toggle('bd-on', c === b); });
+            var l = b.getAttribute('data-l');
+            current = l ? posts.filter(function (p) { return p.label === l; }) : posts;
+            render(true);
+          });
+        });
+      }
     }
 
     // 404 page: search, the topic guides and the latest articles instead of a dead end.
