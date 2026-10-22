@@ -421,11 +421,51 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
 .errorWrap h3{font-family:var(--bd-serif)!important;color:var(--bd-accent)!important}
 .errorWrap h4{font-family:var(--bd-serif)!important;color:var(--bd-ink)!important}
 
+/* Editorial article page */
+html.bd-article #sidebar-wrapper,html.bd-article #breadcrumb,html.bd-article .item-post .post-meta,
+html.bd-article .post-body .seo-post>p.bd-updated{display:none!important}
+html.bd-article #main-wrapper{float:none!important;width:100%!important;max-width:800px;margin:0 auto!important;padding:0!important}
+html.bd-article .item-post{padding:48px 60px!important}
+html.bd-article .item-post>.post-body{border-top:0!important;padding-top:0!important}
+.bd-kicker{display:inline-block;margin:0 0 14px;font:700 12.5px/1 var(--bd-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--bd-accent)!important;text-decoration:none!important}
+html.bd-article .item-post h1.post-title{font-size:clamp(34px,5.2vw,54px)!important;line-height:1.06!important;margin:0 0 22px!important}
+.bd-byline{display:flex;align-items:center;gap:12px;padding:0 0 26px;margin:0 0 30px;border-bottom:1px solid var(--bd-line)}
+.bd-byline .bd-mark{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--bd-accent),var(--bd-gold));color:#fff;font:italic 800 22px/1 var(--bd-serif)}
+.bd-byline b{display:block;font:700 15px/1.3 var(--bd-sans);color:var(--bd-ink)}
+.bd-byline small{display:block;font:500 13.5px/1.4 var(--bd-sans);color:var(--bd-muted)}
+html.bd-article .post-body .seo-post{font-family:'Newsreader',Georgia,'Times New Roman',serif!important;font-size:20.5px!important;line-height:1.72!important;
+  font-optical-sizing:auto;font-kerning:normal;hanging-punctuation:first}
+html.bd-article .post-body .seo-post p{margin:0 0 1.15em!important}
+html.bd-article .post-body .seo-post p.bd-quick,html.bd-article .post-body .bd-calc,html.bd-article .post-body .seo-toc,html.bd-article .post-body table,
+html.bd-article .post-body .seo-related,html.bd-article .post-body .bd-inline-read{font-family:var(--bd-sans)!important}
+html.bd-article .post-body .seo-post p.bd-quick{font-size:17px!important}
+html.bd-article .post-body .seo-post p.bd-dropcap::first-letter{font-size:76px;margin-top:10px}
+html.bd-article .post-body .separator{margin:1.8em 0!important}
+html.bd-article .post-body .separator a{display:block;margin:0!important}
+html.bd-article .post-body .seo-post img{display:block;width:100%;height:auto;margin:0 auto;border-radius:14px;background:var(--bd-surface-2)}
+html.bd-article .post-body h2{font-size:32px!important;margin:1.9em 0 .55em!important}
+html.bd-article .post-body h3{font-size:23px!important}
+html.bd-article .post-body blockquote{font-size:24px!important}
+
+/* Homepage topic sections */
+.bd-sections{max-width:1170px;margin:20px auto 0;padding:0 15px;display:grid;gap:44px}
+.bd-section .bd-section-head{border-top:2px solid var(--bd-ink);padding-top:16px}
+.bd-sec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.bd-sec-card{display:flex;flex-direction:column;gap:8px;text-decoration:none!important;color:var(--bd-ink)!important}
+.bd-sec-img{display:block;aspect-ratio:16/10;overflow:hidden;border-radius:14px;background:var(--bd-surface-2);margin-bottom:4px}
+.bd-sec-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--bd-ease)}
+.bd-sec-card:hover .bd-sec-img img{transform:scale(1.05)}
+.bd-sec-card small{font:700 11.5px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--bd-accent)}
+.bd-sec-card b{font:700 19px/1.3 var(--bd-serif);letter-spacing:-.01em}
+.bd-sec-card:hover b{color:var(--bd-accent)}
+.bd-stats{display:none!important}
+
 /* Responsive */
 @media (max-width:980px){
   .bd-hero{margin:18px 12px 6px!important;padding:44px 28px}
   .bd-hero-grid{grid-template-columns:1fr;gap:32px}
   .bd-topic-grid{grid-template-columns:repeat(2,1fr)}
+  .bd-sec-grid{grid-template-columns:repeat(2,1fr)}
   #main-menu{display:none!important}
   .header-header .container{padding:0 16px!important;box-sizing:border-box!important;max-width:100%!important}
   .header-menu{order:2;flex-direction:row-reverse;border:0!important}
@@ -466,6 +506,11 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
   .bd-tools{gap:6px}
   #break-section .widget-title h3.title{padding:0 10px!important}
   .bd-closer h2{font-size:24px}
+  html.bd-article .item-post{padding:24px 18px!important}
+  html.bd-article .post-body .seo-post{font-size:18.5px!important;line-height:1.68!important}
+  html.bd-article .post-body h2{font-size:26px!important}
+  .bd-sec-grid{grid-template-columns:1fr 1fr;gap:16px}
+  .bd-sec-card b{font-size:16.5px}
   .bd-readbar{width:auto;left:12px;right:76px;transform:translateY(140%);bottom:14px}
   .bd-readbar.bd-show{transform:none}
   .bd-readbar .bd-rb-toc span{display:none}
@@ -661,15 +706,15 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
 
 
   // Blogger's JSON feed, used for instant search, the 404 page and "up next" thumbnails.
-  function feed(q, n, cb) {
+  function feed(q, n, cb, label) {
     var x = new XMLHttpRequest();
-    x.open('GET', '/feeds/posts/summary?alt=json&max-results=' + n + (q ? '&q=' + encodeURIComponent(q) : ''));
+    x.open('GET', '/feeds/posts/summary' + (label ? '/-/' + encodeURIComponent(label) : '') + '?alt=json&max-results=' + n + (q ? '&q=' + encodeURIComponent(q) : ''));
     x.onload = function () {
       try {
         cb((JSON.parse(x.responseText).feed.entry || []).map(function (e) {
           var link = (e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
           var cats = (e.category || []).map(function (c) { return c.term; }).filter(function (t) { return t !== 'Start Here'; });
-          return { title: e.title.$t, url: link && link.href, label: cats[0] || '', date: (e.published.$t || '').slice(0, 10) };
+          return { title: e.title.$t, url: link && link.href, label: cats[0] || '', date: (e.published.$t || '').slice(0, 10), thumb: e.media$thumbnail ? e.media$thumbnail.url : '' };
         }).filter(function (p) { return p.url; }));
       } catch (err) { cb([]); }
     };
@@ -705,6 +750,17 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
     });
   }
 
+  function isHomePath() { return (location.pathname === '/' || location.pathname === '') && !/[?&](q|updated-max|start)=/.test(location.search); }
+  function setMeta(attr, key, val) {
+    var m = document.head.querySelector('meta[' + attr + '="' + key + '"]');
+    if (!m) { m = document.createElement('meta'); m.setAttribute(attr, key); document.head.appendChild(m); }
+    m.setAttribute('content', val);
+  }
+  function longDate(iso) {
+    var d = new Date(iso || '');
+    return isNaN(d) ? '' : d.getDate() + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()] + ' ' + d.getFullYear();
+  }
+
   // Reading history, kept in this browser only.
   function store(key, val) {
     try {
@@ -716,6 +772,16 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
 
   function init() {
     fillRandomPosts();
+    setMeta('name', 'robots', 'max-image-preview:large');
+    // Search snippets for the homepage and topic pages, in place of the blog's old keyword-list description.
+    var siteDesc = 'Practical, in-depth guides on personal finance, investing, psychology, relationships and careers, with free calculators.';
+    var labelPage = location.pathname.match(/^\/search\/label\/([^/]+)$/);
+    if (isHomePath()) { setMeta('name', 'description', siteDesc); setMeta('property', 'og:description', siteDesc); }
+    else if (labelPage) {
+      var ln = decodeURIComponent(labelPage[1].replace(/\+/g, ' ')), li2 = TOPICS.filter(function (t) { return t[0] === ln; })[0];
+      var ld = ln + ' guides on Blog Digest' + (li2 ? ': ' + li2[1].toLowerCase() + '.' : '.') + ' Practical, in-depth and free.';
+      setMeta('name', 'description', ld); setMeta('property', 'og:description', ld);
+    }
     // Remove what the first version of this layer added, if it is still in the theme.
     document.querySelectorAll('style#bd-redesign').forEach(function (e) { e.remove(); });
     document.querySelectorAll('.bd-hero, .bd-topics, .bd-tools, #bd-top, #bd-progress').forEach(function (e) { e.remove(); });
@@ -761,7 +827,7 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
     // Card thumbnails: sharp, right-sized WebP instead of the theme's 72px placeholder (an 800px JPEG is ~200 KB, a 640px WebP ~65 KB).
     var sized = function (u, w) {
       var seg = 'w' + w + '-h' + Math.round(w * .625) + '-p-k-no-nu-rw';
-      return u.replace(/\/(s\d+(-c)?|w\d+-h\d+[^/]*|w\d+[^/]*)\//, '/' + seg + '/').replace(/=(s\d+(-c)?|w\d+-h\d+[^=/]*)$/, '=' + seg);
+      return u.replace(/\/(s\d+[^/]*|w\d+[^/]*)\//, '/' + seg + '/').replace(/=(s\d+[^=/]*|w\d+[^=/]*)$/, '=' + seg);
     };
     var cardNo = 0;
     document.querySelectorAll('.index-post').forEach(function (p) {
@@ -782,7 +848,7 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
     var paintWidgets = function () {
       document.querySelectorAll('img').forEach(function (img) {
         if (img.classList.contains('bd-cover') || img.closest('.post-body, .index-post')) return;
-        var a = img.closest('a'), li = img.closest('li, .post, .related-item'), t = (li && li.querySelector('.post-title, div > a, h2, h3')) || a;
+        var a = img.closest('a'), li = img.closest('li, .post, .related-item'), t = (li && (li.querySelector('.post-title') || li.querySelector('div > a, h2, h3'))) || a;
         var tag = li && li.querySelector('.post-tag');
         var wide = img.closest('.related-posts, .FeaturedPost, .related-wrap');
         fixImage(img, (t && t.textContent) || img.alt || '', tag ? tag.textContent : '', !!wide);
@@ -830,6 +896,31 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
       var ht = document.querySelector('.home-title span');
       if (ht) ht.textContent = 'Latest articles';
     }
+
+    // Homepage: Money, Mind and Work sections with the latest stories in each, after the latest articles.
+    if (isHome && content && !document.querySelector('.bd-sections')) {
+      var shown = {};
+      document.querySelectorAll('.index-post .post-title a').forEach(function (a) { shown[cleanUrl(a.href)] = 1; });
+      var secs = el('div', 'bd-sections', '');
+      [['Money', 'Personal Finance', 'Budgeting, investing, loans and getting out of debt.'],
+       ['Mind', 'Psychology', 'How the mind works, and how to look after yours.'],
+       ['Work', 'Career & Workplace', 'Office life, leadership and growing your career.']].forEach(function (sec) {
+        var box = el('section', 'bd-section', '<div class="bd-section-head"><div><h2>' + sec[0] + '</h2><p>' + esc(sec[2]) + '</p></div>' +
+          '<a href="' + labelUrl(sec[1]) + '">All ' + esc(sec[1].toLowerCase()) + ' →</a></div><div class="bd-sec-grid"></div>');
+        secs.appendChild(box);
+        feed('', 16, function (posts) {
+          var fresh = posts.filter(function (p) { return !shown[cleanUrl(p.url)]; });
+          var pick = fresh.filter(function (p) { return p.thumb; }).concat(fresh.filter(function (p) { return !p.thumb; })).slice(0, 4);
+          if (!pick.length) { box.remove(); return; }
+          box.querySelector('.bd-sec-grid').innerHTML = pick.map(function (p) {
+            var img = p.thumb ? sized(p.thumb, 640) : cover(p.title, p.label, true);
+            return '<a class="bd-sec-card" href="' + esc(p.url) + '"><span class="bd-sec-img"><img alt="" loading="lazy" decoding="async" src="' + esc(img) + '"/></span>' +
+              '<small>' + esc(p.label || sec[1]) + '</small><b>' + esc(p.title) + '</b></a>';
+          }).join('');
+        }, sec[1]);
+      });
+      content.parentNode.insertBefore(secs, content.nextSibling);
+    }
     var footer = document.getElementById('footer-wrapper');
     if (footer && !document.querySelector('.bd-closer')) {
       footer.parentNode.insertBefore(el('section', 'bd-closer',
@@ -871,6 +962,48 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
         if (h.tagName === 'H2') inFaq = /FAQ|Frequently asked/i.test(h.textContent);
         else if (inFaq) h.classList.add('bd-faq-q');
       });
+    }
+
+
+    // Editorial article page: one reading column, topic kicker, byline, sharp responsive images and a search snippet
+    // written from the quick answer instead of the old keyword-list description.
+    if (isPost && body) {
+      root.classList.add('bd-article');
+      if (!document.querySelector('link[href*="family=Newsreader"]')) {
+        var nf = document.createElement('link'); nf.rel = 'stylesheet';
+        nf.href = 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap';
+        document.head.appendChild(nf);
+      }
+      var itemPost = document.querySelector('.item-post'), h1 = itemPost && itemPost.querySelector('h1.post-title');
+      var crumbs = document.querySelectorAll('#breadcrumb a'), topic = crumbs.length > 1 ? crumbs[crumbs.length - 1].textContent.trim() : '';
+      var updP = post.querySelector('p.bd-updated'), pubEl = document.querySelector('.item-post .post-date');
+      var when = updP ? 'Updated ' + updP.textContent.replace(/^Updated\s*/i, '').trim() : (pubEl ? longDate(pubEl.getAttribute('datetime')) : '');
+      if (h1 && !itemPost.querySelector('.bd-byline')) {
+        if (topic && !/^home$/i.test(topic)) { var kick = el('a', 'bd-kicker', esc(topic)); kick.href = labelUrl(topic); h1.parentNode.insertBefore(kick, h1); }
+        h1.parentNode.insertBefore(el('div', 'bd-byline', '<span class="bd-mark" aria-hidden="true">B</span><span><b>Blog Digest</b><small>' +
+          esc(when) + (when ? ' · ' : '') + mins + ' min read</small></span>'), h1.nextSibling);
+      }
+      var GUC = /^https:\/\/(blogger\.googleusercontent\.com\/img\/|\d\.bp\.blogspot\.com\/)/;
+      var widthOnly = function (u, w) {
+        var seg = 'w' + w + '-rw';
+        return u.replace(/\/(s\d+[^/]*|w\d+[^/]*)\/([^/]*)$/, '/' + seg + '/$2').replace(/=(s\d+[^=/]*|w\d+[^=/]*)$/, '=' + seg);
+      };
+      Array.prototype.forEach.call(post.querySelectorAll('img'), function (img, i) {
+        var src = img.getAttribute('src') || '';
+        if (!GUC.test(src) || img.closest('.bd-calc, .seo-related, .bd-inline-read')) return;
+        img.removeAttribute('width'); img.removeAttribute('height');
+        img.sizes = '(max-width: 780px) 92vw, 680px';
+        img.srcset = [480, 800, 1200].map(function (w) { return widthOnly(src, w) + ' ' + w + 'w'; }).join(', ');
+        img.src = widthOnly(src, 800);
+        img.decoding = 'async';
+        if (i > 0) img.loading = 'lazy';
+      });
+      var snip = post.querySelector('p.bd-quick') || post.querySelector('p.bd-dropcap');
+      if (snip) {
+        var st = snip.textContent.replace(/^\s*Quick answer:?\s*/i, '').replace(/\s+/g, ' ').trim();
+        if (st.length > 158) st = st.slice(0, 155).replace(/\s+\S*$/, '') + '…';
+        setMeta('name', 'description', st); setMeta('property', 'og:description', st);
+      }
     }
 
 
