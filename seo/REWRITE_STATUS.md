@@ -48,3 +48,12 @@ Republish them (keeps their dates):
 
 Then check that each page's `og:image` meta tag names the cover.
 
+## Pending: GDP article (written 22 October 2026, waiting for a valid token)
+
+`seo/articles/gdp-measuring-economy.html` (3,600+ words, Economics) with three embeds (gdp-circular-flow,
+gdp-components, gdp-calculator) and a cover from `seo/covers/`. Publish with:
+
+    python3 seo/publish_tools.py publish articles/gdp-measuring-economy
+
+Then add its URL to `seo/theme/descriptions.json` and check the live page.
+
