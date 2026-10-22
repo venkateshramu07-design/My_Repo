@@ -58,6 +58,11 @@ URLs are left as they are. Version 2 adds:
   Report Abuse and "Powered by Blogger" boxes are hidden, and Recent Posts is hidden on the homepage
   (it repeats the main list)
 - reading progress bar, reading time, back-to-top button, scroll-reveal motion and a dark mode toggle
+- engagement: instant search results as you type; on articles a reading bar (current section, contents panel,
+  next article), an "Up next" card at 60% read and a "Keep reading" card halfway through; a "Continue reading"
+  link on the homepage and "Read" chips on finished posts (history is kept in the reader's browser only);
+  topic page headers that link to the matching "Start here" guide; a 404 page with search, guides and latest
+  articles; lazy-loaded article images and external links that open in a new tab
 
 Animations are turned off for visitors whose system asks for reduced motion.
 

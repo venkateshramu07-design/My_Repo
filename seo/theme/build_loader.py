@@ -11,11 +11,11 @@ out = f"""/* Blog Digest redesign, built from seo/theme/redesign.xml by build_lo
 (function () {{
   var me = document.currentScript, box = me && me.closest('.widget');
   if (box) box.style.display = 'none';
-  if (document.getElementById('bd-redesign-v2')) return;
+  if (window.bdRedesign) return;
+  window.bdRedesign = true;
   var f = document.createElement('link'); f.rel = 'stylesheet'; f.href = {json.dumps(fonts)};
   var s = document.createElement('style'); s.id = 'bd-redesign-v2'; s.textContent = {json.dumps(css, ensure_ascii=True)};
   document.head.appendChild(f); document.head.appendChild(s);
-}})();
-{js}"""
+  {js}}})();"""
 open(os.path.join(HERE, "bd-redesign.js"), "w", encoding="utf-8").write(out)
 print("wrote bd-redesign.js", len(out), "bytes")

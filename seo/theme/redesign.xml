@@ -338,6 +338,85 @@ html.bd-dark .post-body *:not(a):not(.seo-toc):not(.seo-related):not(blockquote)
 html.bd-dark #random-posts li,html.bd-dark .widget li{border-color:var(--bd-line)!important}
 html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var(--bd-ink)!important}
 
+/* Instant search results */
+.bd-search-results{width:min(640px,100%);margin-top:10px;border-radius:18px;background:var(--bd-surface);border:1px solid var(--bd-line);box-shadow:var(--bd-shadow-lg);
+  overflow:hidden;max-height:60vh;overflow-y:auto}
+.bd-search-results:empty{display:none}
+.bd-search-results a{display:flex;align-items:center;gap:12px;padding:12px 16px;text-decoration:none!important;color:var(--bd-ink)!important;border-bottom:1px solid var(--bd-line)}
+.bd-search-results a:last-child{border-bottom:0}
+.bd-search-results a:hover,.bd-search-results a.bd-sel{background:var(--bd-accent-soft)}
+.bd-search-results img{flex:none;width:48px;height:48px;border-radius:10px;object-fit:cover}
+.bd-search-results b{display:block;font:600 15px/1.35 var(--bd-sans)}
+.bd-search-results small{display:block;margin-top:2px;font:500 12.5px var(--bd-sans);color:var(--bd-muted)}
+.bd-search-results .bd-empty{padding:16px;font:500 14px var(--bd-sans);color:var(--bd-muted)}
+
+/* Article reading bar, contents panel and "up next" card */
+.bd-readbar{position:fixed;left:50%;bottom:16px;z-index:997;display:flex;align-items:center;gap:6px;width:min(620px,calc(100vw - 104px));padding:6px;border-radius:999px;
+  background:color-mix(in srgb,var(--bd-surface) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--bd-line);box-shadow:var(--bd-shadow-lg);
+  transform:translate(-50%,140%);transition:transform .45s var(--bd-ease)}
+.bd-readbar.bd-show{transform:translate(-50%,0)}
+.bd-readbar button,.bd-readbar a{flex:none;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border:0;border-radius:999px;cursor:pointer;
+  font:600 13.5px var(--bd-sans);text-decoration:none!important;white-space:nowrap}
+.bd-readbar .bd-rb-toc{background:var(--bd-surface-2);color:var(--bd-ink)!important;border:1px solid var(--bd-line)}
+.bd-readbar .bd-rb-next{background:var(--bd-accent);color:#fff!important}
+.bd-readbar svg{width:16px;height:16px}
+.bd-readbar .bd-rb-now{flex:1;min-width:0;padding:0 6px;font:500 13.5px var(--bd-sans);color:var(--bd-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-readbar .bd-rb-now b{color:var(--bd-ink);font-weight:600}
+.bd-toc-panel{position:fixed;left:50%;bottom:76px;z-index:997;width:min(620px,calc(100vw - 32px));max-height:min(62vh,520px);overflow-y:auto;padding:10px;border-radius:20px;
+  background:var(--bd-surface);border:1px solid var(--bd-line);box-shadow:var(--bd-shadow-lg);transform:translate(-50%,12px);opacity:0;pointer-events:none;transition:all .3s var(--bd-ease)}
+.bd-toc-panel.bd-open{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.bd-toc-panel p{margin:6px 10px 8px;font:700 12px var(--bd-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--bd-muted)}
+.bd-toc-panel a{display:flex;gap:10px;padding:10px 12px;border-radius:12px;color:var(--bd-ink)!important;text-decoration:none!important;font:500 14.5px/1.4 var(--bd-sans)}
+.bd-toc-panel a i{flex:none;font-style:normal;font-weight:700;color:var(--bd-muted);min-width:18px}
+.bd-toc-panel a:hover{background:var(--bd-surface-2)}
+.bd-toc-panel a.bd-cur{background:var(--bd-accent-soft);color:var(--bd-accent)!important}
+.bd-toc-panel a.bd-cur i{color:var(--bd-accent)}
+.bd-upnext{position:fixed;right:22px;bottom:84px;z-index:996;width:330px;display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:20px;background:var(--bd-surface);
+  border:1px solid var(--bd-line);box-shadow:var(--bd-shadow-lg);text-decoration:none!important;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .45s var(--bd-ease)}
+.bd-upnext.bd-show{transform:none;opacity:1;pointer-events:auto}
+.bd-upnext img{flex:none;width:64px;height:64px;border-radius:14px;object-fit:cover}
+.bd-upnext small{display:block;font:700 11.5px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--bd-accent)}
+.bd-upnext b{display:block;margin-top:3px;font:700 15.5px/1.35 var(--bd-serif);color:var(--bd-ink)}
+.bd-upnext button{position:absolute;top:6px;right:8px;width:26px;height:26px;border:0;border-radius:50%;background:transparent;color:var(--bd-muted);font-size:18px;line-height:1;cursor:pointer}
+.bd-upnext button:hover{background:var(--bd-surface-2);color:var(--bd-ink)}
+.post-body .bd-inline-read{display:flex;align-items:center;gap:16px;margin:2em 0;padding:16px 18px;border-radius:18px;background:var(--bd-surface-2);border:1px solid var(--bd-line);
+  text-decoration:none!important;transition:border-color .2s,transform .3s var(--bd-ease)}
+.post-body .bd-inline-read:hover{border-color:var(--bd-accent);transform:translateY(-2px)}
+.post-body .bd-inline-read img{flex:none;width:72px;height:72px;border-radius:14px;object-fit:cover;margin:0!important}
+.post-body .bd-inline-read small{display:block;font:700 11.5px var(--bd-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--bd-accent)}
+.post-body .bd-inline-read b{display:block;margin-top:4px;font:700 18px/1.35 var(--bd-serif);color:var(--bd-ink)}
+
+/* Continue reading, read chips, topic and error pages */
+.bd-resume{max-width:1170px;margin:16px auto 0;padding:0 15px}
+.bd-resume a{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:18px;background:var(--bd-surface);border:1px solid var(--bd-line);box-shadow:var(--bd-shadow);
+  text-decoration:none!important;color:var(--bd-ink)!important}
+.bd-resume a:hover{border-color:var(--bd-accent)}
+.bd-resume i{flex:none;position:relative;width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--bd-accent) calc(var(--p)*1%),var(--bd-line) 0)}
+.bd-resume i::after{content:'';position:absolute;inset:5px;border-radius:50%;background:var(--bd-surface)}
+.bd-resume span{flex:1;min-width:0}
+.bd-resume small{display:block;font:700 11.5px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--bd-accent)}
+.bd-resume b{display:block;margin-top:2px;font:600 15px/1.35 var(--bd-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-resume em{flex:none;font:600 13px var(--bd-sans);font-style:normal;color:var(--bd-muted)}
+.bd-resume button{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--bd-muted);font-size:18px;cursor:pointer}
+.bd-read-chip{position:absolute;top:14px;right:14px;z-index:2;display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;
+  background:rgba(18,20,27,.72);color:#fff;font:700 11px/26px var(--bd-sans);letter-spacing:.06em;text-transform:uppercase;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.bd-topic-head{position:relative;overflow:hidden;margin:0 0 22px;padding:28px 30px;border-radius:24px;background:var(--bd-surface);border:1px solid var(--bd-line);box-shadow:var(--bd-shadow);isolation:isolate}
+.bd-topic-head::after{content:'';position:absolute;z-index:-1;right:-60px;top:-80px;width:240px;height:240px;border-radius:50%;background:var(--c);opacity:.12}
+.bd-topic-head small{font:700 12px var(--bd-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
+.bd-topic-head h1{margin:6px 0 8px;font:800 clamp(28px,4vw,40px)/1.1 var(--bd-serif);letter-spacing:-.02em;color:var(--bd-ink)}
+.bd-topic-head p{margin:0;max-width:560px;font:400 16px/1.6 var(--bd-sans);color:var(--bd-muted)}
+.bd-topic-head a{display:inline-flex;margin-top:14px;padding:10px 16px;border-radius:999px;background:var(--c);color:#fff!important;font:700 14px var(--bd-sans);text-decoration:none!important}
+.queryMessage{border-radius:14px!important;background:var(--bd-surface-2)!important;border:1px solid var(--bd-line)!important}
+.bd-404{max-width:720px;margin:0 auto;text-align:center}
+.bd-404 .bd-search{margin:22px auto 0;background:var(--bd-surface);border-color:var(--bd-line)}
+.bd-404 .bd-search input{color:var(--bd-ink)}
+.bd-404-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px;text-align:left}
+.bd-404-grid a{display:block;padding:16px;border-radius:16px;background:var(--bd-surface);border:1px solid var(--bd-line);text-decoration:none!important;color:var(--bd-ink)!important;font:600 15px/1.4 var(--bd-sans)}
+.bd-404-grid a:hover{border-color:var(--bd-accent);color:var(--bd-accent)!important}
+.bd-404 h3.bd-404-sub{margin:34px 0 0;font:800 22px var(--bd-serif);color:var(--bd-ink)}
+.errorWrap h3{font-family:var(--bd-serif)!important;color:var(--bd-accent)!important}
+.errorWrap h4{font-family:var(--bd-serif)!important;color:var(--bd-ink)!important}
+
 /* Responsive */
 @media (max-width:980px){
   .bd-hero{margin:18px 12px 6px!important;padding:44px 28px}
@@ -383,6 +462,16 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
   .bd-tools{gap:6px}
   #break-section .widget-title h3.title{padding:0 10px!important}
   .bd-closer h2{font-size:24px}
+  .bd-readbar{width:auto;left:12px;right:76px;transform:translateY(140%);bottom:14px}
+  .bd-readbar.bd-show{transform:none}
+  .bd-readbar .bd-rb-toc span{display:none}
+  .bd-readbar .bd-rb-toc{padding:0 12px}
+  .bd-toc-panel{left:12px;right:12px;width:auto;transform:translateY(12px);bottom:70px}
+  .bd-toc-panel.bd-open{transform:none}
+  .bd-upnext{left:12px;right:12px;width:auto;bottom:72px}
+  .bd-404-grid{grid-template-columns:1fr}
+  .bd-topic-head{padding:22px 20px}
+  .bd-resume em{display:none}
 }
 @media (max-width:380px){.header-image-wrapper::after{font-size:18px}}
 @media (prefers-reduced-motion:reduce){
@@ -438,6 +527,8 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
     ['Mind', 'Calmer, more focused and happier', '#6b5cff', 'brain', BLOG + '2026/10/mental-well-being-and-self-improvement.html', /mind|mental|well/i],
     ['Career', 'Work smarter and avoid burnout', '#2f7de1', 'case', BLOG + '2026/10/career-guide-work-smarter-avoid-burnout.html', /career/i]
   ];
+  var HUB_LABELS = { 'Personal Finance': 'Money', 'Investing': 'Money', 'Economics': 'Money', 'Career & Workplace': 'Career', 'Leadership': 'Career',
+    'Education': 'Career', 'Self Improvement': 'Mind', 'Psychology': 'Mind', 'Health & Wellness': 'Mind', 'Zen & Mindfulness': 'Mind', 'Love & Relationships': 'Mind' };
   var ICONS = {
     moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
     sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
@@ -482,6 +573,61 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
     return false;
   }
 
+
+  // Blogger's JSON feed, used for instant search, the 404 page and "up next" thumbnails.
+  function feed(q, n, cb) {
+    var x = new XMLHttpRequest();
+    x.open('GET', '/feeds/posts/summary?alt=json&max-results=' + n + (q ? '&q=' + encodeURIComponent(q) : ''));
+    x.onload = function () {
+      try {
+        cb((JSON.parse(x.responseText).feed.entry || []).map(function (e) {
+          var link = (e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
+          var cats = (e.category || []).map(function (c) { return c.term; }).filter(function (t) { return t !== 'Start Here'; });
+          return { title: e.title.$t, url: link && link.href, label: cats[0] || '', date: (e.published.$t || '').slice(0, 10) };
+        }).filter(function (p) { return p.url; }));
+      } catch (err) { cb([]); }
+    };
+    x.onerror = function () { cb([]); };
+    x.send();
+  }
+  function instantSearch(input, box) {
+    var timer, seq = 0;
+    input.setAttribute('autocomplete', 'off');
+    input.addEventListener('input', function () {
+      clearTimeout(timer);
+      var q = input.value.trim();
+      if (q.length < 2) { box.innerHTML = ''; return; }
+      timer = setTimeout(function () {
+        var mine = ++seq;
+        feed(q, 6, function (posts) {
+          if (mine !== seq) return;
+          box.innerHTML = posts.length ? posts.map(function (p) {
+            return '<a href="' + esc(p.url) + '"><img alt="" src="' + cover(p.title, p.label, false) + '"/><span><b>' + esc(p.title) + '</b><small>' + esc(p.label || 'Article') + '</small></span></a>';
+          }).join('') : '<div class="bd-empty">No articles match “' + esc(q) + '”. Press Enter to search the whole blog.</div>';
+        });
+      }, 180);
+    });
+    input.addEventListener('keydown', function (ev) {
+      var links = box.querySelectorAll('a'), cur = box.querySelector('a.bd-sel'), i = Array.prototype.indexOf.call(links, cur);
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+        if (!links.length) return;
+        ev.preventDefault();
+        if (cur) cur.classList.remove('bd-sel');
+        i = ev.key === 'ArrowDown' ? (i + 1) % links.length : (i <= 0 ? links.length - 1 : i - 1);
+        links[i].classList.add('bd-sel');
+      } else if (ev.key === 'Enter' && cur) { ev.preventDefault(); location.href = cur.href; }
+    });
+  }
+
+  // Reading history, kept in this browser only.
+  function store(key, val) {
+    try {
+      if (val === undefined) return JSON.parse(localStorage.getItem(key) || 'null');
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch (e) { return null; }
+  }
+  function cleanUrl(u) { return String(u).split('#')[0].split('?')[0].replace(/^http:/, 'https:'); }
+
   function init() {
     // Remove what the first version of this layer added, if it is still in the theme.
     document.querySelectorAll('style#bd-redesign').forEach(function (e) { e.remove(); });
@@ -494,12 +640,13 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
     var menu = document.querySelector('.header-menu');
     var modal = el('div', 'bd-search-modal',
       '<form action="/search" method="get" role="search"><input name="q" type="search" placeholder="Search articles, topics and guides…" aria-label="Search"/>' +
-      '<button type="submit">Search</button></form><p>Press Esc to close</p>');
+      '<button type="submit">Search</button></form><div class="bd-search-results" role="listbox"></div><p>Press Esc to close</p>');
     modal.setAttribute('aria-hidden', 'true');
     document.body.appendChild(modal);
     var openSearch = function () { modal.classList.add('bd-open'); modal.setAttribute('aria-hidden', 'false'); setTimeout(function () { modal.querySelector('input').focus(); }, 50); };
     var closeSearch = function () { modal.classList.remove('bd-open'); modal.setAttribute('aria-hidden', 'true'); };
     modal.addEventListener('click', function (ev) { if (ev.target === modal) closeSearch(); });
+    instantSearch(modal.querySelector('input'), modal.querySelector('.bd-search-results'));
     addEventListener('keydown', function (ev) {
       if (ev.key === 'Escape') closeSearch();
       if (ev.key === '/' && !/INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || '')) { ev.preventDefault(); openSearch(); }
@@ -622,6 +769,148 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
       post.querySelectorAll('h2, h3').forEach(function (h) {
         if (h.tagName === 'H2') inFaq = /FAQ|Frequently asked/i.test(h.textContent);
         else if (inFaq) h.classList.add('bd-faq-q');
+      });
+    }
+
+
+    // Article: reading bar, contents, "up next", inline related link, history, lazy images, external links.
+    if (isPost && body) {
+      var post2 = body.querySelector('.seo-post') || body, here = cleanUrl(location.href);
+      var heads = Array.prototype.filter.call(post2.querySelectorAll('h2'), function (h) { return !h.closest('.seo-related, .seo-toc, .bd-calc'); });
+      var title2 = ((document.querySelector('.item-post h1.post-title') || {}).textContent || document.title).trim();
+      var relLinks = Array.prototype.filter.call(body.querySelectorAll('.seo-related li a'), function (a) { return cleanUrl(a.href) !== here; });
+      if (!relLinks.length) heads.forEach(function (h) {
+        var list = h.nextElementSibling;
+        if (/related|read next|further reading|keep reading/i.test(h.textContent) && list && /^(UL|OL)$/.test(list.tagName))
+          relLinks = Array.prototype.filter.call(list.querySelectorAll('a'), function (a) { return a.hostname === location.hostname && cleanUrl(a.href) !== here; });
+      });
+      var navNext = document.querySelector('.post-nav .post-prev a, .post-nav .post-next a');
+      var next = relLinks[0] ? { url: relLinks[0].href, title: relLinks[0].textContent.trim() } :
+        navNext ? { url: navNext.href, title: navNext.textContent.replace(/^\s*(Older|Newer)\s*/i, '').trim() } : null;
+
+      // A "keep reading" card halfway through long articles.
+      var mid = relLinks[1] || relLinks[0];
+      if (mid && heads.length >= 4 && !post2.querySelector('.bd-inline-read')) {
+        var card = el('a', 'bd-inline-read', '<img alt="" src="' + cover(mid.textContent, '', false) + '"/><span><small>Keep reading</small><b>' + esc(mid.textContent.trim()) + '</b></span>');
+        card.href = mid.href;
+        heads[Math.floor(heads.length / 2)].parentNode.insertBefore(card, heads[Math.floor(heads.length / 2)]);
+      }
+
+      // Reading bar with the current section, a contents panel and the next article.
+      if (heads.length >= 3) {
+        heads.forEach(function (h, i) { if (!h.id) h.id = 'bd-s' + (i + 1); });
+        var panel = el('nav', 'bd-toc-panel', '<p>In this article</p>' + heads.map(function (h, i) {
+          return '<a href="#' + h.id + '"><i>' + (i + 1) + '</i><span>' + esc(h.textContent.trim()) + '</span></a>';
+        }).join(''));
+        panel.setAttribute('aria-label', 'Contents');
+        var rb = el('div', 'bd-readbar',
+          '<button type="button" class="bd-rb-toc" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Contents</span></button>' +
+          '<div class="bd-rb-now"></div>' + (next ? '<a class="bd-rb-next" href="' + esc(next.url) + '">Next →</a>' : ''));
+        document.body.appendChild(panel); document.body.appendChild(rb);
+        var tocBtn = rb.querySelector('.bd-rb-toc'), now = rb.querySelector('.bd-rb-now');
+        var togglePanel = function (open) { panel.classList.toggle('bd-open', open); tocBtn.setAttribute('aria-expanded', open ? 'true' : 'false'); };
+        tocBtn.addEventListener('click', function () { togglePanel(!panel.classList.contains('bd-open')); });
+        panel.addEventListener('click', function (ev) { if (ev.target.closest('a')) togglePanel(false); });
+        document.addEventListener('click', function (ev) { if (!ev.target.closest('.bd-toc-panel, .bd-readbar')) togglePanel(false); });
+        var links2 = panel.querySelectorAll('a'), lastCur = -1;
+        var onBar = function () {
+          var r = body.getBoundingClientRect(), cur = -1;
+          rb.classList.toggle('bd-show', r.top < -300 && r.bottom > innerHeight * .9);
+          if (!rb.classList.contains('bd-show')) togglePanel(false);
+          heads.forEach(function (h, i) { if (h.getBoundingClientRect().top < 170) cur = i; });
+          if (cur !== lastCur) {
+            lastCur = cur;
+            links2.forEach(function (a, i) { a.classList.toggle('bd-cur', i === cur); });
+            now.innerHTML = cur < 0 ? esc(title2) : '<b>' + (cur + 1) + '/' + heads.length + '</b> · ' + esc(heads[cur].textContent.trim());
+          }
+        };
+        addEventListener('scroll', onBar, { passive: true }); onBar();
+      }
+
+      // "Up next" once the reader is well into the article; dismissing it hides it for this visit.
+      if (next) {
+        var up = el('a', 'bd-upnext', '<img alt="" src="' + cover(next.title, '', false) + '"/><span><small>Up next</small><b>' + esc(next.title) + '</b></span><button type="button" aria-label="Dismiss">×</button>');
+        up.href = next.url;
+        document.body.appendChild(up);
+        up.querySelector('button').addEventListener('click', function (ev) {
+          ev.preventDefault(); ev.stopPropagation(); up.classList.remove('bd-show'); up.dataset.off = 1;
+          try { sessionStorage.setItem('bd-upnext-off', '1'); } catch (e) {}
+        });
+        var offNow = false; try { offNow = sessionStorage.getItem('bd-upnext-off') === '1'; } catch (e) {}
+        if (offNow) up.dataset.off = 1;
+        var onUp = function () {
+          var r = body.getBoundingClientRect(), pct = -r.top / Math.max(1, r.height - innerHeight);
+          up.classList.toggle('bd-show', !up.dataset.off && pct > .6 && r.bottom > innerHeight * .9);
+        };
+        addEventListener('scroll', onUp, { passive: true });
+      }
+
+      // Remember what has been read, and how far, for "continue reading" and the read chips.
+      var saveTimer;
+      var save = function () {
+        var r = body.getBoundingClientRect(), pct = Math.round(Math.min(100, Math.max(0, -r.top / Math.max(1, r.height - innerHeight) * 100)));
+        var hist = store('bd-history') || [], old = hist.filter(function (h) { return h.u === here; })[0];
+        pct = Math.max(pct, old ? old.p : 0);
+        hist = [{ u: here, t: title2, p: pct, d: Date.now() }].concat(hist.filter(function (h) { return h.u !== here; })).slice(0, 200);
+        store('bd-history', hist);
+      };
+      save();
+      addEventListener('scroll', function () { clearTimeout(saveTimer); saveTimer = setTimeout(save, 600); }, { passive: true });
+
+      // Faster pages: load images further down lazily.
+      Array.prototype.slice.call(body.querySelectorAll('img'), 2).forEach(function (img) {
+        if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+        img.setAttribute('decoding', 'async');
+      });
+    }
+
+    // External links open in a new tab, so readers keep their place on the blog.
+    document.querySelectorAll('.post-body a[href^="http"]').forEach(function (a) {
+      if (a.hostname && a.hostname !== location.hostname && !a.target) { a.target = '_blank'; a.rel = (a.rel ? a.rel + ' ' : '') + 'noopener'; }
+    });
+
+    // Read chips on post cards, and a "continue reading" link on the homepage.
+    var seen = store('bd-history') || [], readUrls = {};
+    seen.forEach(function (h) { if (h.p >= 60) readUrls[h.u] = 1; });
+    document.querySelectorAll('.index-post').forEach(function (p) {
+      var a = p.querySelector('.post-title a'), wrap = p.querySelector('.post-image-wrap');
+      if (a && wrap && readUrls[cleanUrl(a.href)] && !wrap.querySelector('.bd-read-chip')) wrap.appendChild(el('span', 'bd-read-chip', '✓ Read'));
+    });
+    var hero2 = document.querySelector('.bd-hero');
+    if (isHome && hero2) {
+      var last = seen.filter(function (h) { return h.p >= 5 && h.p < 85 && Date.now() - h.d < 30 * 864e5; })[0];
+      if (last && !store('bd-resume-off-' + last.u)) {
+        var res = el('section', 'bd-resume', '<a href="' + esc(last.u) + '"><i style="--p:' + last.p + '"></i><span><small>Continue reading</small><b>' + esc(last.t) + '</b></span><em>' + last.p + '% read</em><button type="button" aria-label="Dismiss">×</button></a>');
+        res.querySelector('button').addEventListener('click', function (ev) { ev.preventDefault(); store('bd-resume-off-' + last.u, 1); res.remove(); });
+        hero2.parentNode.insertBefore(res, hero2);
+      }
+    }
+
+    // Topic pages: a header with what the topic covers and its "Start here" guide.
+    var lm = path.match(/^\/search\/label\/([^/]+)$/);
+    var blogPosts = document.querySelector('.blog-posts');
+    if (lm && blogPosts && !document.querySelector('.bd-topic-head')) {
+      var lab = decodeURIComponent(lm[1].replace(/\+/g, ' ')), info = TOPICS.filter(function (t) { return t[0] === lab; })[0];
+      var hubKey = HUB_LABELS[lab], hub = GUIDES.filter(function (g) { return g[0] === hubKey; })[0];
+      var col = (COLORS[lab.toLowerCase()] || ['#e2462c'])[0];
+      var head = el('div', 'bd-topic-head', '<small>Topic</small><h1>' + esc(lab) + '</h1><p>' + esc(info ? info[1] + '. Practical, in-depth guides, newest first.' : 'Practical, in-depth guides, newest first.') + '</p>' +
+        (hub ? '<a href="' + hub[4] + '">New here? Start with the ' + hub[0].toLowerCase() + ' guide →</a>' : ''));
+      head.style.setProperty('--c', col);
+      blogPosts.parentNode.insertBefore(head, document.querySelector('.queryMessage') || blogPosts);
+    }
+
+    // 404 page: search, the topic guides and the latest articles instead of a dead end.
+    var err = document.querySelector('.errorWrap');
+    if (err && !document.querySelector('.bd-404')) {
+      var box404 = el('div', 'bd-404',
+        '<form class="bd-search" action="/search" method="get" role="search"><input name="q" type="search" placeholder="Search 160+ articles…" aria-label="Search articles"/><button type="submit">Search</button></form>' +
+        '<div class="bd-search-results"></div>' +
+        '<div class="bd-404-grid">' + GUIDES.map(function (g) { return '<a href="' + g[4] + '">' + g[0] + ' guide →</a>'; }).join('') + '</div>' +
+        '<h3 class="bd-404-sub">Latest articles</h3><div class="bd-404-grid bd-404-latest"></div>');
+      err.appendChild(box404);
+      instantSearch(box404.querySelector('input'), box404.querySelector('.bd-search-results'));
+      feed('', 6, function (posts) {
+        box404.querySelector('.bd-404-latest').innerHTML = posts.map(function (p) { return '<a href="' + esc(p.url) + '">' + esc(p.title) + '</a>'; }).join('');
       });
     }
 
