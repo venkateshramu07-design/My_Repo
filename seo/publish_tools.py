@@ -26,7 +26,7 @@ POSTS.update({
     "articles/prepay-home-loan-or-invest": ("Prepay Home Loan or Invest? How to Decide (With Examples)", ["Personal Finance"]),
     "articles/emergency-fund-guide": ("How Much Emergency Fund Do You Need? (With Calculator)", ["Personal Finance"]),
     "articles/good-credit-score-cibil": ("What Is a Good CIBIL Score? How to Check and Improve It", ["Personal Finance"]),
-    "articles/gdp-measuring-economy": ("What Is GDP? Its Role in Measuring an Economy, Explained", ["Economics", "Investing"]),
+    "articles/gdp-measuring-economy": ("What Is GDP? Its Role in Measuring an Economy, Explained", ["Economics"]),
 })
 # Cover images (seo/covers/, drawn by make_covers.py), served from a fixed commit. The first image in a post is
 # what Blogger uses for its share preview (og:image), and these posts have no image of their own.

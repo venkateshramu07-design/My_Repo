@@ -38,22 +38,7 @@ All 153 queued posts are rewritten and live.
   wait a few minutes and run the command again.
 - Console errors on live pages come from the theme's random posts widget (`random_posts`), not from post content.
 
-## Pending: share covers (prepared 22 October 2026, waiting for a valid token)
+## GDP article (published 22 October 2026)
 
-The six posts published from `seo/hubs` and `seo/articles` have no image, so their WhatsApp, Facebook and X
-previews show none. `publish_tools.py` now puts a cover from `seo/covers/` after their "Updated" line.
-Republish them (keeps their dates):
-
-    python3 seo/publish_tools.py publish articles/prepay-home-loan-or-invest articles/emergency-fund-guide articles/good-credit-score-cibil hubs/money-start-here hubs/mind-start-here hubs/career-start-here
-
-Then check that each page's `og:image` meta tag names the cover.
-
-## Pending: GDP article (written 22 October 2026, waiting for a valid token)
-
-`seo/articles/gdp-measuring-economy.html` (3,600+ words, Economics) with three embeds (gdp-circular-flow,
-gdp-components, gdp-calculator) and a cover from `seo/covers/`. Publish with:
-
-    python3 seo/publish_tools.py publish articles/gdp-measuring-economy
-
-Then add its URL to `seo/theme/descriptions.json` and check the live page.
-
+Live at https://randomthoughtsever.blogspot.com/2026/10/what-is-gdp-its-role-in-measuring.html (Economics).
+The six newest posts now carry their covers from `seo/covers/`.
