@@ -37,3 +37,14 @@ All 153 queued posts are rewritten and live.
 - Blogger limits how many new posts can be created in a short time (429 `rateLimitExceeded`);
   wait a few minutes and run the command again.
 - Console errors on live pages come from the theme's random posts widget (`random_posts`), not from post content.
+
+## Pending: share covers (prepared 22 October 2026, waiting for a valid token)
+
+The six posts published from `seo/hubs` and `seo/articles` have no image, so their WhatsApp, Facebook and X
+previews show none. `publish_tools.py` now puts a cover from `seo/covers/` after their "Updated" line.
+Republish them (keeps their dates):
+
+    python3 seo/publish_tools.py publish articles/prepay-home-loan-or-invest articles/emergency-fund-guide articles/good-credit-score-cibil hubs/money-start-here hubs/mind-start-here hubs/career-start-here
+
+Then check that each page's `og:image` meta tag names the cover.
+

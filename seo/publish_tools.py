@@ -27,6 +27,11 @@ POSTS.update({
     "articles/emergency-fund-guide": ("How Much Emergency Fund Do You Need? (With Calculator)", ["Personal Finance"]),
     "articles/good-credit-score-cibil": ("What Is a Good CIBIL Score? How to Check and Improve It", ["Personal Finance"]),
 })
+# Cover images (seo/covers/, drawn by make_covers.py), served from a fixed commit. The first image in a post is
+# what Blogger uses for its share preview (og:image), and these posts have no image of their own.
+COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@b9d2dda4aafa47a1a45c67f4698cb95ae4f41773/seo/covers/"
+COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-here",
+          "articles/emergency-fund-guide", "articles/good-credit-score-cibil", "articles/prepay-home-loan-or-invest"}
 HUB_NAMES = {"money-start-here": "personal finance guide", "career-start-here": "career guide",
              "mind-start-here": "well-being guide"}
 
@@ -59,9 +64,14 @@ def expand(body):
 
 
 def build(name):
+    import html
     from apply import escape_scripts, tool_assets
     body = expand(open(os.path.join(TOOLS, "..", name + ".html") if "/" in name
                        else os.path.join(TOOLS, name + ".html"), encoding="utf-8").read())
+    if name in COVERS:  # after the opening "Updated" line
+        img = (f'<img src="{COVER_BASE}{name.split("/")[1]}.jpg" alt="{html.escape(POSTS[name][0], quote=True)}" '
+               'width="1200" height="630" style="width:100%;height:auto;border-radius:16px"/>')
+        body = body.replace("</p>", "</p>\n" + img, 1)
     return escape_scripts(f"{tool_assets()}\n<div class=\"seo-post\">\n{body}</div>")
 
 
