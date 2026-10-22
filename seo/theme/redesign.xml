@@ -447,6 +447,61 @@ html.bd-article .post-body h2{font-size:32px!important;margin:1.9em 0 .55em!impo
 html.bd-article .post-body h3{font-size:23px!important}
 html.bd-article .post-body blockquote{font-size:24px!important}
 
+/* Article page, editorial details */
+html.bd-article .item-post,html.bd-article .blog-post-comments{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+html.bd-article .item-post{padding:34px 0 0!important}
+html.bd-article .blog-post-comments{padding:30px 0 0!important;border-top:1px solid var(--bd-line)!important}
+html.bd-article .blog-post-comments .comments-title h3,html.bd-article #comments>h3.title{text-align:left!important;font:800 24px var(--bd-serif)!important}
+html.bd-article #comments .comment-form>p{font:400 15px var(--bd-sans)!important;color:var(--bd-muted)!important}
+html.bd-article .post-body .seo-post>p.bd-quick{background:none!important;border:0!important;border-left:4px solid var(--bd-accent)!important;border-radius:0!important;
+  padding:2px 0 2px 22px!important;margin:4px 0 1.8em!important;font-size:18px!important;line-height:1.65!important}
+html.bd-article .post-body .seo-post>p.bd-quick>strong:first-child{margin-bottom:4px}
+html.bd-article .post-body ul,html.bd-article .post-body ol{margin:.5em 0 1.4em!important;padding-left:1.35em!important}
+html.bd-article .post-body ul{list-style:disc outside!important}
+html.bd-article .post-body ol{list-style:decimal outside!important}
+html.bd-article .post-body li{margin:.5em 0!important;padding-left:.25em!important}
+html.bd-article .post-body ul li:before{display:none!important}
+html.bd-article .post-body ul li::marker{color:var(--bd-accent);font-size:.9em}
+html.bd-article .post-body ol li::marker{color:var(--bd-accent);font:700 .85em var(--bd-sans)}
+html.bd-article .post-body .seo-toc{border:0!important;border-top:1px solid var(--bd-line)!important;border-bottom:1px solid var(--bd-line)!important;border-radius:0!important;
+  background:none!important;padding:18px 0!important;margin:1.6em 0 2em!important}
+html.bd-article .post-body .seo-toc ol{columns:2;column-gap:36px;margin:8px 0 0!important}
+html.bd-article .post-body .seo-toc li{break-inside:avoid;margin:0 0 .55em!important;font:500 15.5px/1.4 var(--bd-sans)}
+html.bd-article .post-body .seo-toc li::marker{color:var(--bd-muted)}
+html.bd-article .post-body .seo-toc a{color:var(--bd-ink)!important;text-decoration:none!important}
+html.bd-article .post-body .seo-toc a:hover{color:var(--bd-accent)!important}
+html.bd-article .post-body .seo-toc.bd-toc-folded li:nth-child(n+6){display:none}
+.bd-toc-more{margin-top:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--bd-line);background:var(--bd-surface);color:var(--bd-ink);font:600 13.5px var(--bd-sans);cursor:pointer}
+.bd-toc-more:hover{border-color:var(--bd-accent);color:var(--bd-accent)}
+.bd-end{display:inline-block;width:.55em;height:.55em;margin-left:.4em;border-radius:2px;background:var(--bd-accent);vertical-align:.05em}
+.bd-pubnote{display:flex;gap:16px;align-items:flex-start;margin:40px 0 8px;padding:22px 0;border-top:2px solid var(--bd-ink);border-bottom:1px solid var(--bd-line)}
+.bd-pubnote .bd-mark{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--bd-accent),var(--bd-gold));color:#fff;font:italic 800 26px/1 var(--bd-serif)}
+.bd-pubnote b{display:block;font:800 18px var(--bd-serif);color:var(--bd-ink)}
+.bd-pubnote p{margin:4px 0 10px!important;font:400 15px/1.55 var(--bd-sans);color:var(--bd-muted)}
+.bd-pub-links{display:flex;flex-wrap:wrap;gap:8px}
+.bd-pub-links a{padding:6px 14px;border-radius:999px;background:var(--bd-accent-soft);color:var(--bd-accent)!important;font:700 13.5px var(--bd-sans);text-decoration:none!important}
+html.bd-article .post-body .seo-related{background:none!important;border:0!important;border-top:1px solid var(--bd-line)!important;border-radius:0!important;padding:24px 0 0!important}
+html.bd-article .post-body .seo-related ul{display:block!important;padding-left:0!important;list-style:none!important}
+html.bd-article .post-body .seo-related li{border-bottom:1px solid var(--bd-line)}
+html.bd-article .post-body .seo-related li a{border:0!important;background:none!important;padding:13px 0!important;border-radius:0!important;font:700 17px/1.35 var(--bd-serif)!important;box-shadow:none!important;transform:none!important}
+html.bd-article .post-body .seo-related li::marker{content:''}
+#related-wrap .title-wrap h3{text-align:left!important;font:800 24px var(--bd-serif)!important}
+#related-wrap .related-posts .post-tag{border-radius:999px!important;background:color-mix(in srgb,var(--bd-surface) 88%,transparent)!important;color:var(--bd-accent)!important;
+  font:700 10.5px/22px var(--bd-sans)!important;padding:0 9px!important;height:22px!important;top:8px!important;left:8px!important}
+#related-wrap .related-posts .post-tag::before,#related-wrap .related-posts .post-tag::after{display:none!important}
+#related-wrap .related-posts .post-title,#related-wrap .related-posts .post-title a{font:700 16px/1.35 var(--bd-serif)!important;color:var(--bd-ink)!important}
+#related-wrap .post-image-wrap,#related-wrap .post-image-wrap img{border-radius:12px!important}
+.bd-rail{position:fixed;top:120px;left:max(16px,calc(50% - 400px - 250px));width:220px;max-height:calc(100vh - 160px);overflow-y:auto;scrollbar-width:thin;z-index:5;
+  opacity:0;pointer-events:none;transform:translateX(-8px);transition:opacity .3s,transform .3s var(--bd-ease);display:none}
+.bd-rail.bd-show{opacity:1;pointer-events:auto;transform:none}
+.bd-rail p{margin:0 0 8px;font:700 11.5px var(--bd-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--bd-muted)}
+.bd-rail a{display:block;padding:6px 0 6px 12px;border-left:2px solid var(--bd-line);color:var(--bd-muted)!important;font:500 13.5px/1.4 var(--bd-sans);text-decoration:none!important;transition:color .2s,border-color .2s}
+.bd-rail a:hover{color:var(--bd-ink)!important}
+.bd-rail a.bd-cur{border-left-color:var(--bd-accent);color:var(--bd-ink)!important;font-weight:700}
+.bd-rail a.bd-rail-next{margin-top:16px;border-left:0;padding:12px 14px;border-radius:14px;background:var(--bd-surface);border:1px solid var(--bd-line);color:var(--bd-ink)!important;font:700 14px/1.35 var(--bd-serif)}
+.bd-rail a.bd-rail-next small{display:block;margin-bottom:3px;font:700 11px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--bd-accent)}
+@media (min-width:1280px){.bd-rail{display:block}html.bd-article .bd-readbar{display:none!important}}
+
 /* Article illustrations */
 .post-body .bd-ill{margin:2.2em 0 1.6em!important;padding:0!important;border:0!important}
 .post-body .bd-ill svg{display:block;width:100%;height:auto;border-radius:20px;overflow:hidden}
@@ -629,7 +684,11 @@ html.bd-article .post-body blockquote{font-size:24px!important}
   .bd-tools{gap:6px}
   #break-section .widget-title h3.title{padding:0 10px!important}
   .bd-closer h2{font-size:24px}
-  html.bd-article .item-post{padding:24px 18px!important}
+  html.bd-article .item-post{padding:18px 0 0!important}
+  html.bd-article .post-body .seo-toc ol{columns:1}
+  .post-nav{grid-template-columns:1fr!important}
+  .post-nav a,.post-nav .post-next a{text-align:left!important}
+  .bd-pubnote .bd-mark{width:40px;height:40px;font-size:22px}
   html.bd-article .post-body .seo-post{font-size:18.5px!important;line-height:1.68!important}
   html.bd-article .post-body h2{font-size:26px!important}
   .bd-sec-grid{grid-template-columns:1fr 1fr;gap:16px}
@@ -1368,6 +1427,35 @@ html.bd-article .post-body blockquote{font-size:24px!important}
     }
 
 
+
+    // Article furniture: long contents lists fold to five, an end mark closes the text, and a short publication
+    // note with the three guides sits before the tags.
+    if (isPost && body) {
+      Array.prototype.forEach.call(post.querySelectorAll('.seo-toc'), function (toc) {
+        var items = toc.querySelectorAll('li');
+        if (items.length <= 6 || toc.querySelector('.bd-toc-more')) return;
+        toc.classList.add('bd-toc-folded');
+        var more = el('button', 'bd-toc-more', 'Show all ' + items.length + ' sections');
+        more.type = 'button';
+        more.addEventListener('click', function () {
+          var folded = toc.classList.toggle('bd-toc-folded');
+          more.textContent = folded ? 'Show all ' + items.length + ' sections' : 'Show fewer';
+        });
+        toc.appendChild(more);
+      });
+      var endP = Array.prototype.filter.call(post.querySelectorAll(':scope > p'), function (p) {
+        var t = p.textContent.trim();
+        return t.length > 80 && !p.matches('.bd-quick, .bd-updated') && !(p.children.length === 1 && p.firstElementChild.tagName === 'EM' && p.firstElementChild.textContent.trim() === t);
+      }).pop();
+      if (endP && !post.querySelector('.bd-end')) endP.appendChild(el('span', 'bd-end'));
+      var pfoot = document.querySelector('.item-post .post-footer');
+      if (pfoot && !document.querySelector('.bd-pubnote')) {
+        pfoot.parentNode.insertBefore(el('aside', 'bd-pubnote', '<span class="bd-mark" aria-hidden="true">B</span><div><b>Blog Digest</b>' +
+          '<p>Practical, in-depth guides on money, the mind and work, updated regularly. New here? Start with a guide:</p>' +
+          '<span class="bd-pub-links">' + GUIDES.map(function (g) { return '<a href="' + g[4] + '">' + g[0] + '</a>'; }).join('') + '</span></div>'), pfoot);
+      }
+    }
+
     // Article: reading bar, contents, "up next", inline related link, history, lazy images, external links.
     if (isPost && body) {
       var post2 = body.querySelector('.seo-post') || body, here = cleanUrl(location.href);
@@ -1402,6 +1490,13 @@ html.bd-article .post-body blockquote{font-size:24px!important}
           '<button type="button" class="bd-rb-toc" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Contents</span></button>' +
           '<div class="bd-rb-now"></div>' + (next ? '<a class="bd-rb-next" href="' + esc(next.url) + '">Next →</a>' : ''));
         document.body.appendChild(panel); document.body.appendChild(rb);
+        // Wide screens: the same contents as a rail beside the text, with the next article at the foot.
+        var rail = el('nav', 'bd-rail', '<p>In this article</p>' + heads.map(function (h, i) {
+          return '<a href="#' + h.id + '"><span>' + esc(h.textContent.trim()) + '</span></a>';
+        }).join('') + (next ? '<a class="bd-rail-next" href="' + esc(next.url) + '"><small>Next article</small>' + esc(next.title) + '</a>' : ''));
+        rail.setAttribute('aria-label', 'Contents');
+        document.body.appendChild(rail);
+        var railLinks = rail.querySelectorAll('a[href^="#"]');
         var tocBtn = rb.querySelector('.bd-rb-toc'), now = rb.querySelector('.bd-rb-now');
         var togglePanel = function (open) { panel.classList.toggle('bd-open', open); tocBtn.setAttribute('aria-expanded', open ? 'true' : 'false'); };
         tocBtn.addEventListener('click', function () { togglePanel(!panel.classList.contains('bd-open')); });
@@ -1411,11 +1506,13 @@ html.bd-article .post-body blockquote{font-size:24px!important}
         var onBar = function () {
           var r = body.getBoundingClientRect(), cur = -1;
           rb.classList.toggle('bd-show', r.top < -300 && r.bottom > innerHeight * .9);
+          rail.classList.toggle('bd-show', r.top < -200 && r.bottom > innerHeight * .6);
           if (!rb.classList.contains('bd-show')) togglePanel(false);
           heads.forEach(function (h, i) { if (h.getBoundingClientRect().top < 170) cur = i; });
           if (cur !== lastCur) {
             lastCur = cur;
             links2.forEach(function (a, i) { a.classList.toggle('bd-cur', i === cur); });
+            railLinks.forEach(function (a, i) { a.classList.toggle('bd-cur', i === cur); });
             now.innerHTML = cur < 0 ? esc(title2) : '<b>' + (cur + 1) + '/' + heads.length + '</b> · ' + esc(heads[cur].textContent.trim());
           }
         };
