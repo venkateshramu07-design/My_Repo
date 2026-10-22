@@ -447,6 +447,77 @@ html.bd-article .post-body h2{font-size:32px!important;margin:1.9em 0 .55em!impo
 html.bd-article .post-body h3{font-size:23px!important}
 html.bd-article .post-body blockquote{font-size:24px!important}
 
+/* Article illustrations */
+.post-body .bd-ill{margin:2.2em 0 1.6em!important;padding:0!important;border:0!important}
+.post-body .bd-ill svg{display:block;width:100%;height:auto;border-radius:20px;overflow:hidden}
+.bd-ill .ill-bg{fill:color-mix(in srgb,var(--c) 9%,var(--bd-surface))}
+.bd-ill .ill-bgc{fill:color-mix(in srgb,var(--c) 9%,var(--bd-surface))}
+.bd-ill .ill-soft{fill:var(--c);opacity:.08}
+.bd-ill .ill-main{fill:var(--c)}
+.bd-ill .ill-light{fill:color-mix(in srgb,var(--c) 30%,var(--bd-surface))}
+.bd-ill .ill-face{fill:var(--bd-surface)}
+.bd-ill .ill-bar{fill:var(--c);opacity:.45}
+.bd-ill .ill-glow{fill:var(--c);opacity:.15}
+.bd-ill .ill-star,.bd-ill .ill-dot{fill:var(--c)}
+.bd-ill .ill-line,.bd-ill .ill-stem{fill:none;stroke:var(--c);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.bd-ill .ill-tick{fill:none;stroke:var(--bd-surface);stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.bd-ill .ill-face~.ill-tick,.bd-ill rect.ill-face+rect+.ill-tick{stroke:var(--c)}
+.bd-ill .ill-axis,.bd-ill .ill-link,.bd-ill .ill-meridian,.bd-ill .ill-ticks line,.bd-ill .ill-ray{fill:none;stroke:color-mix(in srgb,var(--c) 45%,var(--bd-surface));stroke-width:3;stroke-linecap:round}
+.bd-ill .ill-hand{stroke:var(--c);stroke-width:8;stroke-linecap:round}.bd-ill .ill-hand.thin{stroke-width:4}
+.bd-ill .ill-ring{fill:none;stroke:var(--c);stroke-width:3}
+.bd-ill .ill-sym{font:800 64px var(--bd-serif);fill:var(--c)}.bd-ill .ill-sym.small{font-size:26px;fill:var(--c)}.bd-ill .ill-sym.small.big{font-size:40px}
+.bd-ill g.a-coin .ill-sym{fill:var(--c)}
+.bd-ill .ill-z{font:italic 800 26px var(--bd-serif);fill:var(--c)}
+.bd-ill [class*="a-"]{transform-box:fill-box;transform-origin:center;animation-play-state:paused;animation-iteration-count:infinite}
+.bd-ill.bd-ill-on [class*="a-"]{animation-play-state:running}
+.bd-ill .d2{animation-delay:.6s}.bd-ill .d3{animation-delay:1.2s}
+.bd-ill .a-float{animation:ill-float 5s ease-in-out infinite}
+.bd-ill .a-pulse{animation:ill-pulse 2.4s ease-in-out infinite}
+.bd-ill .a-beat{animation:ill-beat 1.4s ease-in-out infinite}
+.bd-ill .a-blink{animation:ill-blink 2.2s ease-in-out infinite}
+.bd-ill .a-spin{transform-origin:bottom center;animation:ill-spin 6s linear infinite}.bd-ill .a-spin.slow{animation-duration:36s}
+.bd-ill .a-rise{transform-origin:bottom center;animation:ill-rise 3.2s var(--bd-ease) infinite alternate}
+.bd-ill .a-draw{stroke-dasharray:600;stroke-dashoffset:600;animation:ill-draw 3.6s ease-in-out infinite}
+.bd-ill .a-drop{animation:ill-drop 4s var(--bd-ease) infinite}
+.bd-ill .a-ping{animation:ill-ping 2.6s ease-out infinite}
+.bd-ill .a-sway{transform-origin:left center;animation:ill-sway 4s ease-in-out infinite alternate}.bd-ill .a-sway.d2{transform-origin:right center}
+.bd-ill .a-shoot{animation:ill-shoot 3s var(--bd-ease) infinite}
+.bd-ill .a-climb{animation:ill-climb 5s ease-in-out infinite}
+.bd-ill .a-squash{animation:ill-squash 4s ease-in-out infinite alternate}
+.bd-ill .a-orbit{animation:ill-orbit 6s linear infinite}
+.bd-ill .a-flow{animation:ill-flow 2.4s linear infinite}.bd-ill .a-flow.rev{animation-name:ill-flowr}
+.bd-ill .a-tilt{transform-origin:center top;animation:ill-tilt 4s ease-in-out infinite alternate}
+.bd-ill .a-pop{animation:ill-pop 3s ease-in-out infinite}
+.bd-ill .a-flip{transform-origin:left center;animation:ill-flip 3.4s ease-in-out infinite}
+.bd-ill .a-coin{animation:ill-coin 4s ease-in-out infinite}
+.bd-ill .a-swipe{animation:ill-swipe 3.6s var(--bd-ease) infinite}
+.bd-ill .a-fill{transform-origin:left center;animation:ill-fill 3.6s ease-in-out infinite}
+.bd-ill .a-up{animation:ill-up 3s ease-in-out infinite}
+@keyframes ill-float{50%{transform:translateY(-10px)}}
+@keyframes ill-pulse{50%{transform:scale(1.12)}}
+@keyframes ill-beat{0%,100%{transform:scale(1)}15%{transform:scale(1.1)}30%{transform:scale(.97)}45%{transform:scale(1.06)}}
+@keyframes ill-blink{50%{opacity:.3}}
+@keyframes ill-spin{to{transform:rotate(360deg)}}
+@keyframes ill-rise{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+@keyframes ill-draw{0%{stroke-dashoffset:600}55%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:-600}}
+@keyframes ill-drop{0%{transform:translateY(-60px);opacity:0}25%,85%{transform:none;opacity:1}100%{opacity:0}}
+@keyframes ill-ping{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+@keyframes ill-sway{to{transform:rotate(8deg)}}
+@keyframes ill-shoot{0%{transform:translate(120px,-60px);opacity:0}30%,80%{transform:none;opacity:1}100%{opacity:0}}
+@keyframes ill-climb{0%{transform:translate(198px,186px)}25%{transform:translate(254px,156px)}50%{transform:translate(310px,126px)}75%{transform:translate(366px,96px)}100%{transform:translate(422px,66px)}}
+@keyframes ill-squash{to{transform:scaleX(.35)}}
+@keyframes ill-orbit{from{transform:rotate(0) translateX(80px)}to{transform:rotate(360deg) translateX(80px)}}
+@keyframes ill-flow{from{transform:translateX(0)}to{transform:translateX(80px)}}
+@keyframes ill-flowr{from{transform:translateX(0)}to{transform:translateX(-80px)}}
+@keyframes ill-tilt{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@keyframes ill-pop{0%,100%{transform:scale(.92);opacity:.75}50%{transform:scale(1);opacity:1}}
+@keyframes ill-flip{0%,20%{transform:scaleX(1)}50%{transform:scaleX(-1)}80%,100%{transform:scaleX(1)}}
+@keyframes ill-coin{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.15)}}
+@keyframes ill-swipe{0%{transform:translateX(-30px) rotate(-4deg)}50%{transform:translateX(30px) rotate(3deg)}100%{transform:translateX(-30px) rotate(-4deg)}}
+@keyframes ill-fill{0%{transform:scaleX(.05)}60%,100%{transform:scaleX(1)}}
+@keyframes ill-up{0%{transform:translateY(10px);opacity:0}50%{opacity:1}100%{transform:translateY(-18px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.bd-ill [class*="a-"]{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}}
+
 /* Magazine front page */
 .home #break-wrapper-outer{display:none!important}
 .bd-front{max-width:1170px;margin:22px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -741,6 +812,159 @@ html.bd-article .post-body blockquote{font-size:24px!important}
     search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
     up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'
   };
+
+  // Animated spot illustrations (600x240 SVG). Shapes use var(--c), the post's topic colour; animation classes are
+  // defined in the stylesheet and only run while the figure is on screen.
+  var S = function (inner) {
+    return '<svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg"><rect class="ill-bg" width="600" height="240" rx="22"/>' +
+      '<circle class="ill-soft a-float" cx="90" cy="60" r="46"/><circle class="ill-soft a-float d2" cx="520" cy="190" r="60"/>' + inner + '</svg>';
+  };
+  var ILL = {
+    coins: function () {
+      var c = ''; for (var i = 0; i < 5; i++) c += '<g class="a-drop" style="animation-delay:' + (i * .35) + 's"><ellipse class="ill-main" cx="300" cy="' + (178 - i * 22) + '" rx="62" ry="16"/><ellipse class="ill-light" cx="300" cy="' + (172 - i * 22) + '" rx="62" ry="16"/></g>';
+      return S(c + '<g class="a-float"><circle class="ill-light" cx="430" cy="92" r="38"/><text class="ill-sym small big" x="430" y="106" text-anchor="middle">₹</text></g>');
+    },
+    chart: function () {
+      var b = ''; [70, 105, 90, 140, 170].forEach(function (h, i) { b += '<rect class="ill-main a-rise" style="animation-delay:' + (i * .15) + 's" x="' + (170 + i * 56) + '" y="' + (200 - h) + '" width="34" height="' + h + '" rx="6"/>'; });
+      return S('<line class="ill-axis" x1="150" y1="200" x2="460" y2="200"/>' + b + '<polyline class="ill-line a-draw" points="175,140 232,108 290,122 346,76 402,46 452,30"/><circle class="ill-dot a-pulse" cx="452" cy="30" r="8"/>');
+    },
+    shield: function () {
+      return S('<circle class="ill-ring a-ping" cx="300" cy="120" r="70"/><path class="ill-main a-pulse" d="M300 40 L370 66 V118 C370 162 338 190 300 204 C262 190 230 162 230 118 V66 Z"/>' +
+        '<path class="ill-tick a-draw" d="M268 120 L292 144 L336 98"/>');
+    },
+    clock: function () {
+      return S('<circle class="ill-light" cx="300" cy="120" r="84"/><circle class="ill-face" cx="300" cy="120" r="72"/>' +
+        '<g class="ill-ticks">' + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (i) { var a = i * Math.PI / 6; return '<line x1="' + (300 + 60 * Math.sin(a)).toFixed(1) + '" y1="' + (120 - 60 * Math.cos(a)).toFixed(1) + '" x2="' + (300 + 66 * Math.sin(a)).toFixed(1) + '" y2="' + (120 - 66 * Math.cos(a)).toFixed(1) + '"/>'; }).join('') + '</g>' +
+        '<line class="ill-hand a-spin slow" x1="300" y1="120" x2="300" y2="76"/><line class="ill-hand thin a-spin" x1="300" y1="120" x2="300" y2="62"/><circle class="ill-dot" cx="300" cy="120" r="7"/>');
+    },
+    brain: function () {
+      var pts = [[230, 90], [280, 60], [340, 70], [380, 110], [350, 160], [290, 175], [240, 145], [300, 115]], l = '';
+      [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 0], [7, 0], [7, 2], [7, 4], [7, 5], [1, 7], [3, 7]].forEach(function (e, i) {
+        l += '<line class="ill-link a-blink" style="animation-delay:' + (i * .2) + 's" x1="' + pts[e[0]][0] + '" y1="' + pts[e[0]][1] + '" x2="' + pts[e[1]][0] + '" y2="' + pts[e[1]][1] + '"/>';
+      });
+      return S(l + pts.map(function (q, i) { return '<circle class="ill-main a-pulse" style="animation-delay:' + (i * .25) + 's" cx="' + q[0] + '" cy="' + q[1] + '" r="' + (i === 7 ? 14 : 10) + '"/>'; }).join(''));
+    },
+    heart: function () {
+      return S('<path class="ill-main a-beat" d="M300 196 C210 140 200 96 222 70 C246 42 286 50 300 80 C314 50 354 42 378 70 C400 96 390 140 300 196 Z"/>' +
+        '<polyline class="ill-line a-draw" points="120,128 200,128 220,96 240,160 262,128 338,128 360,92 380,164 400,128 480,128"/>');
+    },
+    moon: function () {
+      var st = ''; [[180, 60], [230, 150], [420, 70], [460, 150], [380, 190], [150, 170], [500, 50]].forEach(function (q, i) {
+        st += '<circle class="ill-star a-blink" style="animation-delay:' + (i * .4) + 's" cx="' + q[0] + '" cy="' + q[1] + '" r="' + (3 + i % 3) + '"/>';
+      });
+      return S(st + '<g class="a-float"><circle class="ill-main" cx="300" cy="118" r="66"/><circle class="ill-bgc" cx="330" cy="98" r="58"/></g>' +
+        '<text class="ill-z a-up" x="372" y="72">z</text><text class="ill-z a-up d2" x="394" y="52">z</text>');
+    },
+    plant: function () {
+      return S('<path class="ill-light" d="M250 200 H350 L338 236 H262 Z"/><path class="ill-stem a-draw" d="M300 200 C300 160 300 130 300 70"/>' +
+        '<path class="ill-main a-sway" d="M300 140 C250 140 230 110 232 86 C262 86 296 104 300 140 Z"/><path class="ill-main a-sway d2" d="M300 112 C346 112 366 82 364 58 C334 58 302 76 300 112 Z"/>');
+    },
+    target: function () {
+      return S('<circle class="ill-light" cx="300" cy="120" r="86"/><circle class="ill-face" cx="300" cy="120" r="62"/><circle class="ill-light" cx="300" cy="120" r="40"/><circle class="ill-main a-pulse" cx="300" cy="120" r="18"/>' +
+        '<g class="a-shoot"><line class="ill-hand" x1="300" y1="120" x2="420" y2="56"/><path class="ill-main" d="M420 56 l22 -4 -8 20 z"/></g>');
+    },
+    climb: function () {
+      var st = ''; for (var i = 0; i < 5; i++) st += '<rect class="ill-light" x="' + (170 + i * 56) + '" y="' + (200 - i * 30) + '" width="56" height="' + (i * 30 + 14) + '" rx="4"/>';
+      return S(st + '<g class="a-climb"><circle class="ill-main" cx="0" cy="-34" r="12"/><rect class="ill-main" x="-10" y="-22" width="20" height="26" rx="8"/></g>' +
+        '<path class="ill-main a-pulse" d="M440 40 l8 16 18 3 -13 12 3 18 -16 -9 -16 9 3 -18 -13 -12 18 -3 z"/>');
+    },
+    globe: function () {
+      return S('<circle class="ill-light" cx="300" cy="120" r="84"/><circle class="ill-face" cx="300" cy="120" r="74"/>' +
+        '<ellipse class="ill-meridian a-squash" cx="300" cy="120" rx="34" ry="74"/><ellipse class="ill-meridian a-squash d2" cx="300" cy="120" rx="60" ry="74"/>' +
+        '<line class="ill-meridian" x1="226" y1="120" x2="374" y2="120"/><ellipse class="ill-meridian" cx="300" cy="84" rx="64" ry="12"/><ellipse class="ill-meridian" cx="300" cy="156" rx="64" ry="12"/>' +
+        '<circle class="ill-dot a-orbit" cx="300" cy="120" r="8"/>');
+    },
+    chip: function () {
+      var w = ''; [[170, 80], [170, 120], [170, 160], [430, 80], [430, 120], [430, 160]].forEach(function (q, i) {
+        var x2 = q[0] < 300 ? 250 : 350; w += '<line class="ill-link" x1="' + q[0] + '" y1="' + q[1] + '" x2="' + x2 + '" y2="' + q[1] + '"/><circle class="ill-dot a-flow' + (q[0] < 300 ? '' : ' rev') + '" style="animation-delay:' + (i * .3) + 's" cx="' + q[0] + '" cy="' + q[1] + '" r="5"/>';
+      });
+      return S(w + '<rect class="ill-main" x="250" y="60" width="100" height="120" rx="16"/><rect class="ill-face a-blink" x="272" y="84" width="56" height="72" rx="8"/>');
+    },
+    bulb: function () {
+      var r = ''; for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4; r += '<line class="ill-ray a-blink" style="animation-delay:' + (i * .15) + 's" x1="' + (300 + 78 * Math.cos(a)).toFixed(1) + '" y1="' + (104 + 78 * Math.sin(a)).toFixed(1) + '" x2="' + (300 + 100 * Math.cos(a)).toFixed(1) + '" y2="' + (104 + 100 * Math.sin(a)).toFixed(1) + '"/>'; }
+      return S(r + '<circle class="ill-glow a-pulse" cx="300" cy="104" r="62"/><path class="ill-main" d="M300 54 C330 54 352 76 352 104 C352 124 340 136 330 148 V166 H270 V148 C260 136 248 124 248 104 C248 76 270 54 300 54 Z"/>' +
+        '<rect class="ill-light" x="272" y="172" width="56" height="14" rx="6"/><rect class="ill-light" x="280" y="190" width="40" height="12" rx="6"/>');
+    },
+    checklist: function () {
+      var r = ''; for (var i = 0; i < 3; i++) {
+        r += '<rect class="ill-face" x="200" y="' + (50 + i * 52) + '" width="36" height="36" rx="8"/><rect class="ill-bar" x="252" y="' + (60 + i * 52) + '" width="' + (150 - i * 30) + '" height="16" rx="8"/>' +
+          '<path class="ill-tick a-draw" style="animation-delay:' + (i * .6) + 's" d="M208 ' + (68 + i * 52) + ' l9 9 l16 -18"/>';
+      }
+      return S('<rect class="ill-light" x="180" y="30" width="250" height="186" rx="18"/>' + r);
+    },
+    scale: function () {
+      return S('<rect class="ill-main" x="292" y="60" width="16" height="140" rx="6"/><rect class="ill-main" x="250" y="196" width="100" height="14" rx="7"/>' +
+        '<g class="a-tilt"><rect class="ill-main" x="180" y="58" width="240" height="10" rx="5"/><line class="ill-hand thin" x1="200" y1="64" x2="200" y2="120"/><line class="ill-hand thin" x1="400" y1="64" x2="400" y2="120"/>' +
+        '<path class="ill-light" d="M160 120 H240 C236 146 164 146 160 120 Z"/><path class="ill-light" d="M360 120 H440 C436 146 364 146 360 120 Z"/></g><circle class="ill-dot" cx="300" cy="62" r="9"/>');
+    },
+    chat: function () {
+      return S('<g class="a-pop"><rect class="ill-main" x="170" y="50" width="180" height="76" rx="22"/><path class="ill-main" d="M210 122 l-14 28 34 -26 z"/></g>' +
+        '<g class="a-pop d2"><rect class="ill-light" x="270" y="110" width="170" height="70" rx="22"/><path class="ill-light" d="M404 176 l16 26 -36 -24 z"/></g>' +
+        '<circle class="ill-face a-blink" cx="226" cy="88" r="7"/><circle class="ill-face a-blink d2" cx="260" cy="88" r="7"/><circle class="ill-face a-blink d3" cx="294" cy="88" r="7"/>');
+    },
+    book: function () {
+      return S('<path class="ill-main" d="M300 70 C270 54 220 52 180 60 V190 C220 182 270 184 300 200 Z"/><path class="ill-main" d="M300 70 C330 54 380 52 420 60 V190 C380 182 330 184 300 200 Z"/>' +
+        '<path class="ill-face a-flip" d="M300 74 C330 60 376 58 410 64 V184 C376 178 330 180 300 194 Z"/>');
+    },
+    crypto: function () {
+      return S('<g class="a-coin"><circle class="ill-main" cx="300" cy="120" r="72"/><circle class="ill-light" cx="300" cy="120" r="56"/><text class="ill-sym" x="300" y="146" text-anchor="middle">₿</text></g>' +
+        '<circle class="ill-ring a-ping" cx="300" cy="120" r="72"/>');
+    },
+    house: function () {
+      return S('<path class="ill-main" d="M300 40 L410 120 H384 V204 H216 V120 H190 Z"/><rect class="ill-face" x="282" y="150" width="36" height="54" rx="4"/>' +
+        '<rect class="ill-face a-blink" x="236" y="132" width="30" height="28" rx="4"/><rect class="ill-face a-blink d2" x="334" y="132" width="30" height="28" rx="4"/>' +
+        '<g class="a-float"><circle class="ill-light" cx="456" cy="70" r="26"/><text class="ill-sym small" x="456" y="80" text-anchor="middle">%</text></g>');
+    },
+    card: function () {
+      return S('<g class="a-swipe"><rect class="ill-main" x="200" y="62" width="200" height="124" rx="16"/><rect class="ill-face" x="200" y="90" width="200" height="22"/>' +
+        '<rect class="ill-light" x="220" y="142" width="64" height="12" rx="6"/><rect class="ill-light" x="296" y="142" width="40" height="12" rx="6"/></g>' +
+        '<rect class="ill-light" x="160" y="196" width="280" height="18" rx="9"/><rect class="ill-main a-fill" x="160" y="196" width="280" height="18" rx="9"/>');
+    }
+  };
+  // Whole words only, so "rent" does not match "different" or "age" match "manage".
+  var MOTIF_WORDS = [
+    ['crypto', /\b(crypto\w*|bitcoin|altcoins?|blockchain|ethereum)\b/i],
+    ['card', /\b(credit cards?|cibil|credit scores?|debts?|emis?|repay\w*)\b/i],
+    ['house', /\b(home loans?|mortgages?|houses?|housing|rent|renting|property|real estate|prepay\w*)\b/i],
+    ['moon', /\b(sleep\w*|night|dreams?|insomnia|bedtime)\b/i],
+    ['heart', /\b(love|romance|romantic|partners?|marriage|married|dating|breakups?|heart)\b/i],
+    ['shield', /\b(insurance|emergenc\w*|protect\w*|safety|safe|risks?|scams?|fraud|security|dangers?)\b/i],
+    ['chart', /\b(invest\w*|stocks?|markets?|sip|mutual funds?|returns?|portfolios?|growth|inflation|econom\w*|gdp|interest rates?|nasdaq)\b/i],
+    ['coins', /\b(money|savings?|save|budget\w*|salar\w*|pay|income|costs?|prices?|spend\w*|wealth\w*|rich|financ\w*|tax\w*|earn\w*)\b/i],
+    ['chip', /\b(ai|artificial|machine learning|technolog\w*|data|internet|google|software|computers?|digital|algorithms?)\b/i],
+    ['globe', /\b(country|countries|world|global|abroad|travel\w*|elections?|politic\w*|government\w*|nations?|dubai|china|india|usa|america\w*)\b/i],
+    ['climb', /\b(careers?|jobs?|promotions?|leaders?\w*|ceo|coo|managers?|boss\w*|office|workplace|interviews?|resumes?|teams?)\b/i],
+    ['book', /\b(books?|education|schools?|study|studying|learn\w*|students?|exams?|reading|summary|lessons?)\b/i],
+    ['clock', /\b(time|habits?|routines?|daily|schedules?|morning|retire\w*|aging|ageing|consisten\w*|procrastinat\w*|minutes?|hours?)\b/i],
+    ['brain', /\b(mind\w*|psycholog\w*|brain|think\w*|emotions?|emotional|bias\w*|memory|stress\w*|anxiety|overthink\w*|mental)\b/i],
+    ['plant', /\b(grow\w*|wellness|zen|mindful\w*|calm|nature|health\w*|meditat\w*|peace\w*|happi\w*|happy)\b/i],
+    ['chat', /\b(talk\w*|communicat\w*|social\w*|conversations?|friends?\w*|connect\w*|listen\w*)\b/i],
+    ['scale', /\b(vs|versus|compar\w*|differences?|pros|cons|balanc\w*|choos\w*|choices?|better)\b/i],
+    ['target', /\b(goals?|plans?|planning|strateg\w*|success\w*|decid\w*|decisions?|focus\w*|achiev\w*)\b/i],
+    ['checklist', /\b(steps?|checklists?|how to|tips|mistakes?|ways|rules|guide|signs)\b/i],
+    ['bulb', /\b(ideas?|why|what is|understand\w*|explain\w*|myths?|facts?|meaning|truth)\b/i]
+  ];
+  var TOPIC_MOTIF = { 'personal finance': 'coins', 'investing': 'chart', 'economics': 'chart', 'cryptocurrency': 'crypto', 'psychology': 'brain',
+    'self improvement': 'target', 'love & relationships': 'heart', 'career & workplace': 'climb', 'leadership': 'climb', 'health & wellness': 'plant',
+    'zen & mindfulness': 'plant', 'technology & ai': 'chip', 'education': 'book', 'countries & living abroad': 'globe', 'politics': 'globe', 'parenting & family': 'heart' };
+  var FILLERS = ['bulb', 'checklist', 'target', 'scale', 'clock', 'chat', 'book', 'plant'];
+  function title2Text() { return ((document.querySelector('.item-post h1.post-title') || {}).textContent || ''); }
+  function wordMotif(text, used) {
+    for (var i = 0; i < MOTIF_WORDS.length; i++) if (!used[MOTIF_WORDS[i][0]] && MOTIF_WORDS[i][1].test(text)) return MOTIF_WORDS[i][0];
+    return '';
+  }
+  // The section heading decides first, then the post's topic, then its title.
+  function pickMotif(heading, topic, used, k) {
+    var m = wordMotif(heading, used);
+    if (m) return m;
+    var t = TOPIC_MOTIF[(topic || '').toLowerCase()];
+    if (t && !used[t]) return t;
+    m = wordMotif(title2Text(), used);
+    if (m) return m;
+    for (var j = 0; j < FILLERS.length; j++) { var f = FILLERS[(j + k) % FILLERS.length]; if (!used[f]) return f; }
+    return 'bulb';
+  }
+
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function labelUrl(t) { return '/search/label/' + encodeURIComponent(t); }
@@ -1073,6 +1297,34 @@ html.bd-article .post-body blockquote{font-size:24px!important}
       });
     }
 
+
+
+    // Article illustrations: five small animated drawings at evenly spaced section breaks, each chosen from the
+    // heading it introduces (falling back to the post's topic). Added at view time; the post itself is unchanged.
+    if (isPost && body && !post.querySelector('.bd-ill')) {
+      var sectionHeads = Array.prototype.filter.call(post.querySelectorAll('h2'), function (h) {
+        if (h.closest('.seo-related, .seo-toc, .bd-calc')) return false;
+        if (/FAQ|Frequently asked|Related|Final thoughts|Conclusion|Further reading|Keep reading/i.test(h.textContent)) return false;
+        var prev = h.previousElementSibling;
+        return !(prev && (prev.matches('.separator, .bd-inline-read, .bd-ill') || prev.querySelector && prev.querySelector('img')));
+      });
+      var bc = document.querySelectorAll('#breadcrumb a'), postTopic = bc.length > 1 ? bc[bc.length - 1].textContent.trim() : '';
+      var picks5 = [], n5 = Math.min(5, sectionHeads.length);
+      for (var k = 0; k < n5; k++) picks5.push(sectionHeads[Math.floor((k + 0.5) * sectionHeads.length / n5)]);
+      var usedMotifs = {};
+      picks5.forEach(function (h, k) {
+        var name = pickMotif(h.textContent, postTopic, usedMotifs, k);
+        usedMotifs[name] = 1;
+        var fig = el('figure', 'bd-ill', ILL[name]());
+        fig.setAttribute('aria-hidden', 'true');
+        fig.style.setProperty('--c', (COLORS[postTopic.toLowerCase()] || ['#e2462c'])[0]);
+        h.parentNode.insertBefore(fig, h);
+      });
+      if ('IntersectionObserver' in window) {
+        var illIO = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('bd-ill-on', e.isIntersecting); }); }, { rootMargin: '80px' });
+        post.querySelectorAll('.bd-ill').forEach(function (f) { illIO.observe(f); });
+      } else post.querySelectorAll('.bd-ill').forEach(function (f) { f.classList.add('bd-ill-on'); });
+    }
 
     // Editorial article page: one reading column, topic kicker, byline, sharp responsive images and a search snippet
     // written from the quick answer instead of the old keyword-list description.
