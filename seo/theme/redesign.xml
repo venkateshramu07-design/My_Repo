@@ -620,6 +620,24 @@ html.bd-article .post-body .seo-related li::marker{content:''}
 .home .bd-sections{margin-top:6px}
 .home #content-wrapper{margin-top:30px!important}
 
+/* Native Blog Digest theme */
+@media (min-width:981px){html.bd-native .grid-posts{grid-template-columns:repeat(3,minmax(0,1fr))}html.bd-native .bd-secnav{display:none}html.bd-native .bd-mast{border-bottom:2px solid var(--bd-ink)}}
+html.bd-native .index-post .post-image-wrap{aspect-ratio:16/10}
+.bd-more{margin-top:34px;padding-top:22px;border-top:2px solid var(--bd-ink)}
+.bd-more h3{margin:0 0 16px;font:800 24px var(--bd-serif)!important;color:var(--bd-ink)}
+.bd-more-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.bd-more .bd-tp-card b{font-size:17px}
+.bd-more-all{display:inline-block;margin-top:16px;font:700 14px var(--bd-sans);color:var(--bd-accent)!important;text-decoration:none!important}
+@media (max-width:640px){.bd-more-grid{grid-template-columns:1fr 1fr}.bd-more-grid a:nth-child(3){display:none}}
+html.bd-native #comments{font-family:var(--bd-sans)}
+html.bd-native #comments .comment-block{background:var(--bd-surface);border-color:var(--bd-line)}
+html.bd-native .share-links .twitter a{background:#15171d}
+html.bd-native .slide-menu-toggle::before,html.bd-native .slide-menu-toggle::after{content:'';grid-area:1/1;width:18px;height:2px;border-radius:2px;background:currentColor!important;transition:transform .2s,box-shadow .2s}
+html.bd-native .slide-menu-toggle::before{box-shadow:0 -6px 0 currentColor,0 6px 0 currentColor}
+html.bd-native .slide-menu-toggle::after{opacity:0}
+html.bd-native .nav-active .slide-menu-toggle::before{box-shadow:none;transform:rotate(45deg)}
+html.bd-native .nav-active .slide-menu-toggle::after{opacity:1;transform:rotate(-45deg)}
+
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -1549,6 +1567,43 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         pfoot.parentNode.insertBefore(el('aside', 'bd-pubnote', '<span class="bd-mark" aria-hidden="true">B</span><div><b>Blog Digest</b>' +
           '<p>Practical, in-depth guides on money, the mind and work, updated regularly. New here? Start with a guide:</p>' +
           '<span class="bd-pub-links">' + GUIDES.map(function (g) { return '<a href="' + g[4] + '">' + g[0] + '</a>'; }).join('') + '</span></div>'), pfoot);
+      }
+    }
+
+
+    // Article structured data, and a "More in <topic>" block where the theme has no related-posts widget.
+    if (isPost && body) {
+      var t3 = ((document.querySelector('.item-post h1.post-title') || {}).textContent || document.title).trim();
+      var pubD = document.querySelector('.item-post .post-date, .item-post time');
+      var firstImg = post.querySelector('img[src*="googleusercontent"], img[src*="bp.blogspot"]');
+      var bcs = document.querySelectorAll('#breadcrumb a');
+      if (!document.querySelector('script[type="application/ld+json"]')) {
+        var ld = { '@context': 'https://schema.org', '@type': 'BlogPosting', mainEntityOfPage: { '@type': 'WebPage', '@id': here }, headline: t3,
+          datePublished: pubD && pubD.getAttribute('datetime') || undefined, image: firstImg ? firstImg.src : undefined,
+          author: { '@type': 'Organization', name: 'Blog Digest', url: BLOG }, publisher: { '@type': 'Organization', name: 'Blog Digest' },
+          description: (document.querySelector('meta[name="description"]') || {}).content || undefined };
+        var sd = document.createElement('script'); sd.type = 'application/ld+json'; sd.textContent = JSON.stringify(ld); document.head.appendChild(sd);
+        if (bcs.length > 1) {
+          var bl = document.createElement('script'); bl.type = 'application/ld+json';
+          bl.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: BLOG }, { '@type': 'ListItem', position: 2, name: bcs[1].textContent.trim(), item: bcs[1].href },
+            { '@type': 'ListItem', position: 3, name: t3 }] });
+          document.head.appendChild(bl);
+        }
+      }
+      var relTopic = bcs.length > 1 ? bcs[bcs.length - 1].textContent.trim() : '';
+      var pfoot2 = document.querySelector('.item-post .post-footer');
+      if (relTopic && pfoot2 && !document.getElementById('related-wrap') && !document.querySelector('.bd-more')) {
+        var moreBox = el('section', 'bd-more', '<h3>More in ' + esc(relTopic) + '</h3><div class="bd-more-grid"></div><a class="bd-more-all" href="' + labelUrl(relTopic) + '">All ' + esc(relTopic.toLowerCase()) + ' articles →</a>');
+        pfoot2.appendChild(moreBox);
+        feed('', 8, function (posts) {
+          var pick = posts.filter(function (p) { return cleanUrl(p.url) !== here; });
+          pick = pick.filter(function (p) { return p.thumb; }).concat(pick.filter(function (p) { return !p.thumb; })).slice(0, 3);
+          if (!pick.length) { moreBox.remove(); return; }
+          moreBox.querySelector('.bd-more-grid').innerHTML = pick.map(function (p) {
+            return '<a class="bd-tp-card" href="' + esc(p.url) + '"><span class="bd-sec-img"><img alt="" loading="lazy" decoding="async" src="' + esc(p.thumb ? sized(p.thumb, 640) : cover(p.title, relTopic, true)) + '"/></span><b>' + esc(p.title) + '</b><small>' + esc(longDate(p.date)) + '</small></a>';
+          }).join('');
+        }, relTopic);
       }
     }
 
