@@ -381,6 +381,8 @@ html.bd-foot-on #sub-footer-wrapper .copyright-area{text-align:left!important}
 .bd-fbtn svg{width:18px;height:18px}
 .bd-fpush{background:var(--bd-accent)}.bd-fwa{background:#1fa855}.bd-fmail{background:var(--bd-ink);color:var(--bd-bg)!important}
 .bd-fbtn:hover{filter:brightness(1.07)}
+.bd-fdone{opacity:.75;cursor:default}
+#webpushr-prompt-wrapper,#webpushr-bell-optin,#webpushr-lightbox-optin{display:none!important}
 .bd-ftoast{position:fixed;left:22px;bottom:22px;z-index:998;width:min(340px,calc(100vw - 32px));padding:18px;border-radius:20px;background:var(--bd-surface);border:1px solid var(--bd-line);
   box-shadow:var(--bd-shadow-lg);transform:translateY(24px);opacity:0;pointer-events:none;transition:all .45s var(--bd-ease)}
 .bd-ftoast.bd-show{transform:none;opacity:1;pointer-events:auto}
@@ -1419,10 +1421,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   var pushLoaded = false;
   function loadPush(cfg) {  // Webpushr, the push service used on Blogger (opt-in happens on its own domain)
     if (pushLoaded || !cfg.webpushrKey) return; pushLoaded = true;
+    if (window.webpushr || document.getElementById('webpushr-jssdk')) return;  // the theme already has its snippet
     window.webpushr = window.webpushr || function () { (window.webpushr.q = window.webpushr.q || []).push(arguments); };
     var js = document.createElement('script'); js.id = 'webpushr-jssdk'; js.async = true; js.src = 'https://cdn.webpushr.com/app.min.js';
     document.head.appendChild(js);
-    window.webpushr('setup', { key: cfg.webpushrKey });
+    window.webpushr('setup', { key: cfg.webpushrKey, integration: 'popup' });
   }
   var FOLLOW_ICONS = {
     bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
@@ -1432,20 +1435,29 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   // Buttons for the configured channels. Push needs a browser that supports it; on iPhone only installed web apps do.
   function followButtons(cfg) {
     var b = [];
-    if (cfg.webpushrKey && 'Notification' in window && 'serviceWorker' in navigator) b.push('<button type="button" class="bd-fbtn bd-fpush">' + FOLLOW_ICONS.bell + '<span>Notify me</span></button>');
+    if (cfg.webpushrKey && 'Notification' in window && 'serviceWorker' in navigator)
+      b.push(pushSubscribed() ? '<span class="bd-fbtn bd-fpush bd-fdone">' + FOLLOW_ICONS.bell + '<span>Notifications on</span></span>'
+        : '<button type="button" class="bd-fbtn bd-fpush">' + FOLLOW_ICONS.bell + '<span>Notify me</span></button>');
     if (cfg.whatsappChannel) b.push('<a class="bd-fbtn bd-fwa" target="_blank" rel="noopener" href="' + esc(cfg.whatsappChannel) + '">' + FOLLOW_ICONS.wa + '<span>WhatsApp channel</span></a>');
     if (cfg.emailForm) b.push('<a class="bd-fbtn bd-fmail" target="_blank" rel="noopener" href="' + esc(cfg.emailForm) + '">' + FOLLOW_ICONS.mail + '<span>Email</span></a>');
     return b.join('');
   }
+  function pushSubscribed() { return /(?:^|;\s*)_webpushrSubscriberID=[^;]+/.test(document.cookie); }
+  // "Notify me" opens Webpushr's subscribe window (its own domain, as Blogger cannot host the push worker). Webpushr's
+  // automatic prompt and bell are hidden by CSS, so this button is the only way in.
   function wireFollow(scope) {
-    var push = scope.querySelector('.bd-fpush'); if (!push) return;
+    var push = scope.querySelector('button.bd-fpush'); if (!push) return;
     push.addEventListener('click', function () {
       var lab = push.querySelector('span');
-      try {
-        if (window.webpushr) window.webpushr('subscribe');
-        lab.textContent = 'Check the prompt';
-        try { localStorage.setItem('bd-follow-asked', Date.now()); } catch (e) {}
-      } catch (e) { lab.textContent = 'Not available here'; }
+      try { localStorage.setItem('bd-follow-asked', Date.now()); } catch (e) {}
+      if (typeof window._webpushrPromptAction === 'function' && typeof window._wp_prompt_info !== 'undefined') window._webpushrPromptAction('Approve');
+      else if (followCfg && followCfg.webpushrDomain) window.open(followCfg.webpushrDomain + '/subscribe?public_key=' + encodeURIComponent(followCfg.webpushrKey), 'wpushr-subscribe-dialog', 'width=626,height=436');
+      else { lab.textContent = 'Try again in a moment'; return; }
+      lab.textContent = 'Allow in the window';
+      var tries = 0, t = setInterval(function () {
+        if (pushSubscribed()) { clearInterval(t); document.querySelectorAll('button.bd-fpush span').forEach(function (x) { x.textContent = 'Notifications on'; }); }
+        else if (++tries > 120) clearInterval(t);
+      }, 1000);
     });
   }
 
