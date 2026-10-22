@@ -57,7 +57,7 @@ a{transition:color .2s}
 
 /* Removed integrations */
 #top-bar-social,#onesignal-slidedown-container,#onesignal-bell-container,#onesignal-popover-container,.onesignal-customlink-container,
-.post-share li.facebook,.post-share li.twitter,.post-share li.pinterest,.social li.facebook,.social li.twitter,.social li.pinterest,.fb-comments,.facebook-tab{display:none!important}
+.post-share li.pinterest,#top-bar .social li.facebook,#top-bar .social li.twitter,#top-bar .social li.pinterest,.fb-comments,.facebook-tab{display:none!important}
 
 /* Search overlay */
 .bd-search-modal{position:fixed;inset:0;z-index:10001;display:flex;flex-direction:column;align-items:center;padding:14vh 16px 16px;background:rgba(10,11,15,.55);
@@ -554,7 +554,8 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
       return XMLHttpRequest.prototype.bdOpen.apply(this, arguments);
     };
   }
-  // Removed integrations: Facebook SDK, OneSignal push notifications, Twitter and Pinterest. The theme still
+  // Removed integrations: Facebook SDK, OneSignal push notifications and Pinterest (Facebook and Twitter share
+  // buttons stay: they are plain links and need none of these scripts). The theme still
   // references them, so stop them here: the Facebook loader skips itself when its id exists, OneSignal's queued
   // init is cleared, and any script, stylesheet or frame they try to add is dropped.
   if (!document.getElementById('facebook-jssdk')) {
