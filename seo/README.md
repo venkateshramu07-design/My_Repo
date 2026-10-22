@@ -76,17 +76,19 @@ The Blogger API cannot edit themes, so this step is done by hand in Blogger:
 
 To undo, delete the pasted block, or restore the backup from step 1.
 
-**Easier option (works from a phone): one-line gadget.** `theme/bd-redesign.js` is the same layer as a single
-script, built with `python3 seo/theme/build_loader.py` after editing `redesign.xml`. It also removes the first
-version's output, so the old block in the theme can stay. In Blogger, open **Layout**, click **Add a Gadget**
-in the sidebar, choose **HTML/JavaScript**, leave the title empty, paste this line and click **Save**:
-
-    <script src="https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@ccr-ee047f91-rbyv4x/seo/theme/bd-redesign.js"></script>
-
-The gadget hides its own box. jsDelivr caches the file for up to 12 hours after a change is pushed. To undo,
+**Easier option (works from a phone): gadget.** `theme/bd-redesign.js` is the same layer as a single script,
+built with `python3 seo/theme/build_loader.py` after editing `redesign.xml`. It also removes the first version's
+output, so the old block in the theme can stay. In Blogger, open **Layout**, click **Add a Gadget** at the top of
+the sidebar (it must sit above the theme's random-posts widgets), choose **HTML/JavaScript**, leave the title
+empty, paste the contents of `theme/gadget.html` and click **Save**. The gadget hides its own box. To undo,
 delete the gadget.
 
-Also recommended under **Settings > Posts**: set "Max posts shown on main page" to 10 so the post list is about as long as the sidebar.
+`gadget.html` loads the script from the exact commit named in `theme/version.txt`. jsDelivr's branch URLs are
+cached for up to 7 days in browsers and its branch copies can lag by days, so commit URLs are the only reliable
+ones. To release a change:
+1. Edit `redesign.xml`, run `build_loader.py`, commit and push.
+2. Put that commit's full hash in `theme/version.txt` (`git rev-parse HEAD > seo/theme/version.txt`), commit and push.
+Readers pick up the new version on their next page view after GitHub's 5-minute cache.
 
 ## Publishing rewritten articles
 

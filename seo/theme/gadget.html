@@ -1,0 +1,14 @@
+<script>
+/* Blog Digest design loader: paste into Layout > HTML/JavaScript gadget. It loads seo/theme/bd-redesign.js from
+   the exact commit named in seo/theme/version.txt (jsDelivr's branch copies can be days out of date), and checks
+   version.txt in the background so updates reach readers on their next page view. */
+(function () {
+  var repo = 'venkateshramu07-design/My_Repo', ver = 'ac979c6d979aff65a8839a6d77a475ea4bed040c';
+  try { ver = localStorage.getItem('bd-ver') || ver; } catch (e) {}
+  document.write('<script src="https://cdn.jsdelivr.net/gh/' + repo + '@' + ver + '/seo/theme/bd-redesign.js"><\/script>');
+  try {
+    fetch('https://raw.githubusercontent.com/' + repo + '/ccr-ee047f91-rbyv4x/seo/theme/version.txt').then(function (r) { return r.text(); })
+      .then(function (t) { t = t.trim(); if (/^[0-9a-f]{40}$/.test(t)) localStorage.setItem('bd-ver', t); }).catch(function () {});
+  } catch (e) {}
+})();
+</script>
