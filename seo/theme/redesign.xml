@@ -539,6 +539,23 @@ html.bd-article .post-body blockquote{font-size:24px!important}
 
   var BLOG = 'https://randomthoughtsever.blogspot.com/';
 
+  // An older gadget may still load this layer from jsDelivr's branch URL, which can serve a version days old that
+  // does not know to stand aside. Stop that script before it runs and hide its empty gadget box.
+  if ('MutationObserver' in window && !window.bdStale) {
+    window.bdStale = new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        Array.prototype.forEach.call(m.addedNodes, function (n) {
+          if (n.tagName === 'SCRIPT' && /My_Repo@[^/]*[^0-9a-f/][^/]*\/seo\/theme\/bd-redesign\.js/.test(n.src || '')) {
+            n.type = 'javascript/blocked';
+            var w = n.closest && n.closest('.widget'); if (w) w.style.display = 'none';
+            n.remove();
+          }
+        });
+      });
+    });
+    window.bdStale.observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(function () { window.bdStale.disconnect(); }, 0); });
+  }
   // Speed: the theme's five random-posts widgets each block the page on six sequential feed requests for full post
   // text (~30 per page). Here the post count comes from a cache, each post becomes an empty slot, and the slots are
   // filled from the small summary feed in parallel once the page is up. This works because the gadget loading this
