@@ -15,7 +15,9 @@ out = f"""/* Blog Digest redesign, built from seo/theme/redesign.xml by build_lo
   window.bdRedesign = true;
   var f = document.createElement('link'); f.rel = 'stylesheet'; f.href = {json.dumps(fonts)};
   var s = document.createElement('style'); s.id = 'bd-redesign-v2'; s.textContent = {json.dumps(css, ensure_ascii=True)};
-  document.head.appendChild(f); document.head.appendChild(s);
+  // The first version of this layer, if still in the theme, already loads Fraunces; reuse it instead of a second copy.
+  if (!document.querySelector('link[href*="family=Fraunces:opsz"]')) document.head.appendChild(f);
+  document.head.appendChild(s);
   {js}}})();"""
 open(os.path.join(HERE, "bd-redesign.js"), "w", encoding="utf-8").write(out)
 print("wrote bd-redesign.js", len(out), "bytes")

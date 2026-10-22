@@ -3,14 +3,14 @@
      posts, pages, gadgets and URLs are left as they are. -->
 <link href='https://fonts.googleapis.com' rel='preconnect'/>
 <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
-<link href='https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,800;1,9..144,700&amp;family=Inter:wght@400;500;600;700&amp;display=swap' rel='stylesheet'/>
+<link href='https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;1,700&amp;display=swap' rel='stylesheet'/>
 <style id='bd-redesign-v2'>/*<![CDATA[*/
 :root{
   --bd-bg:#f7f4ee;--bd-surface:#ffffff;--bd-surface-2:#fbf9f5;--bd-ink:#15171d;--bd-muted:#5d6271;--bd-line:#e8e2d6;
   --bd-accent:#e2462c;--bd-accent-ink:#ffffff;--bd-accent-soft:#fde8e3;--bd-gold:#f2a33a;--bd-deep:#12141b;
   --bd-shadow:0 1px 2px rgba(20,22,29,.05),0 8px 24px rgba(20,22,29,.07);
   --bd-shadow-lg:0 2px 4px rgba(20,22,29,.06),0 22px 48px rgba(20,22,29,.14);
-  --bd-radius:18px;--bd-serif:'Fraunces',Georgia,serif;--bd-sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --bd-radius:18px;--bd-serif:'Fraunces',Georgia,serif;--bd-sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   --bd-ease:cubic-bezier(.2,.8,.2,1);
 }
 html.bd-dark{
@@ -489,6 +489,70 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
   } catch (e) {}
 
   var BLOG = 'https://randomthoughtsever.blogspot.com/';
+
+  // Speed: the theme's five random-posts widgets each block the page on six sequential feed requests for full post
+  // text (~30 per page). Here the post count comes from a cache, each post becomes an empty slot, and the slots are
+  // filled from the small summary feed in parallel once the page is up. This works because the gadget loading this
+  // script sits above those widgets.
+  var COUNT_KEY = 'bd-post-count';
+  function cachedCount() {
+    var n = +(window.total_randomposts || 0);
+    if (!n) try { var c = JSON.parse(localStorage.getItem(COUNT_KEY) || 'null'); if (c && Date.now() - c.t < 864e5) n = c.n; } catch (e) {}
+    return n;
+  }
+  if (!document.bdWrite) {
+    document.bdWrite = document.write;
+    document.write = function (h) {
+      if (arguments.length === 1 && typeof h === 'string' && h.indexOf('alt=json-in-script') > -1) {
+        var n = cachedCount(), k = h.match(/start-index=(\d+)&max-results=1&callback=random_posts\b/);
+        if (/callback=randomposts\b/.test(h) && n) return document.bdWrite('<script>randomposts({feed:{openSearch$totalResults:{$t:' + n + '}}});<\/script>');
+        if (k) return document.bdWrite('<li class="bd-rp-slot" data-start="' + k[1] + '"></li>');
+        h = h.replace('/feeds/posts/default?', '/feeds/posts/summary?');
+      }
+      return document.bdWrite.apply(document, arguments);
+    };
+  }
+  function fillRandomPosts() {
+    var slots = document.querySelectorAll('li.bd-rp-slot');
+    Array.prototype.forEach.call(slots, function (li) {
+      li.className = '';
+      var x = new XMLHttpRequest();
+      x.open('GET', '/feeds/posts/summary?alt=json&max-results=1&start-index=' + li.getAttribute('data-start'));
+      x.onload = function () {
+        try {
+          var f = JSON.parse(x.responseText).feed, e = (f.entry || [])[0];
+          try { localStorage.setItem(COUNT_KEY, JSON.stringify({ n: +f.openSearch$totalResults.$t, t: Date.now() })); } catch (err) {}
+          if (!e) { li.remove(); return; }
+          var url = ((e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0] || {}).href, t = e.title.$t, d = e.published.$t;
+          var thumb = e.media$thumbnail ? e.media$thumbnail.url : 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbLOy6UDG3zz-MDPFqP76pZpzIwOSIbtahfHcaDBurG4ngL3GAVsdDwe6wofQnSSjuLNR6x2p3X5Rop6O8lhTn988Y6sMPzU2UBNpc1Gnufxf1t5UGj1Qw2UWnCY8nHxS9Y83Dqv1zjJY/s1600/no_thumb.png';
+          li.innerHTML = '<a href="' + esc(url) + '" rel="nofollow"><img alt="' + esc(t) + '" loading="lazy" decoding="async" src="' + esc(thumb) + '"/></a><div><a href="' + esc(url) + '" rel="nofollow">' + esc(t) + '</a></div>' +
+            '<span><div class="random-info">' + d.substring(8, 10) + '.' + d.substring(5, 7) + '.' + d.substring(0, 4) + '</div></span>';
+        } catch (err) { li.remove(); }
+      };
+      x.onerror = function () { li.remove(); };
+      x.send();
+    });
+  }
+
+  // Speed: the theme downloads the whole newer/older article pages in the background, and parsing them loads
+  // every image in them (~25 images, ~600 KB) that is never shown. Hand it those pages with image sources disabled.
+  if (!XMLHttpRequest.prototype.bdOpen) {
+    var RT = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, 'responseText');
+    XMLHttpRequest.prototype.bdOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (m, u) {
+      var url = String(u);
+      if (RT && RT.get && /^(https?:\/\/[^/]*blogspot\.com)?\/\d{4}\/\d{2}\/[^?#]+\.html/.test(url) && (url.charAt(0) === '/' || url.indexOf(location.host) > -1)) {
+        Object.defineProperty(this, 'responseText', { configurable: true, get: function () {
+          var t = RT.get.call(this);
+          return t && t.replace(/<img\b[^>]*>/gi, function (tag) { return tag.replace(/\s(src|srcset)=/gi, ' data-bd-$1='); });
+        } });
+      }
+      return XMLHttpRequest.prototype.bdOpen.apply(this, arguments);
+    };
+  }
+  (function () {  // connect to the image server early
+    var l = document.createElement('link'); l.rel = 'preconnect'; l.href = 'https://blogger.googleusercontent.com'; document.head.appendChild(l);
+  })();
   // Icons are 24x24 stroke paths.
   var P = {
     money: '<path d="M3 7h18v10H3z"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v4M18 10v4"/>',
@@ -629,6 +693,7 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
   function cleanUrl(u) { return String(u).split('#')[0].split('?')[0].replace(/^http:/, 'https:'); }
 
   function init() {
+    fillRandomPosts();
     // Remove what the first version of this layer added, if it is still in the theme.
     document.querySelectorAll('style#bd-redesign').forEach(function (e) { e.remove(); });
     document.querySelectorAll('.bd-hero, .bd-topics, .bd-tools, #bd-top, #bd-progress').forEach(function (e) { e.remove(); });
@@ -671,11 +736,25 @@ html.bd-dark .slide-menu-toggle,html.bd-dark .slide-menu-toggle:before{color:var
     var header = document.getElementById('header-wrap');
 
     // Card thumbnails: load a sharp image straight away instead of the theme's 72px placeholder.
-    var big = function (u) { return u.replace(/\/(s\d+(-c)?|w\d+-h\d+[^/]*|w\d+)\//, '/w800-h500-p-k-no-nu/').replace(/=(s\d+(-c)?|w\d+-h\d+[^=/]*)$/, '=w800-h500-p-k-no-nu'); };
+    // Card thumbnails: sharp, right-sized WebP instead of the theme's 72px placeholder (an 800px JPEG is ~200 KB, a 640px WebP ~65 KB).
+    var sized = function (u, w) {
+      var seg = 'w' + w + '-h' + Math.round(w * .625) + '-p-k-no-nu-rw';
+      return u.replace(/\/(s\d+(-c)?|w\d+-h\d+[^/]*|w\d+[^/]*)\//, '/' + seg + '/').replace(/=(s\d+(-c)?|w\d+-h\d+[^=/]*)$/, '=' + seg);
+    };
+    var cardNo = 0;
     document.querySelectorAll('.index-post').forEach(function (p) {
       var img = p.querySelector('.post-thumb'), a = p.querySelector('.post-title a'), tag = p.querySelector('.post-tag');
       if (!img) return;
-      if (!fixImage(img, a ? a.textContent : '', tag ? tag.textContent : '', true)) img.src = big(img.getAttribute('data-src') || img.getAttribute('src'));
+      var first = cardNo++ < 2;
+      if (!fixImage(img, a ? a.textContent : '', tag ? tag.textContent : '', true)) {
+        var orig = img.getAttribute('data-src') || img.getAttribute('src');
+        if (!first) img.loading = 'lazy';
+        else img.setAttribute('fetchpriority', 'high');
+        img.decoding = 'async';
+        img.sizes = '(max-width: 640px) 92vw, (max-width: 980px) 46vw, ' + (first && p.matches('.home .grid-posts .index-post:first-child') ? '420px' : '380px');
+        img.srcset = [400, 640, 960].map(function (w) { return sized(orig, w) + ' ' + w + 'w'; }).join(', ');
+        img.src = sized(orig, 640);
+      }
       img.classList.add('lazy-yard');
     });
     var paintWidgets = function () {
