@@ -620,6 +620,37 @@ html.bd-article .post-body .seo-related li::marker{content:''}
 .home .bd-sections{margin-top:6px}
 .home #content-wrapper{margin-top:30px!important}
 
+/* Topic (section) pages */
+html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{display:none!important}
+.bd-tp{max-width:1170px;margin:26px auto 0;padding:0 15px;display:grid;gap:30px}
+.bd-tp *{box-sizing:border-box}
+.bd-tp-head{position:relative;padding:8px 0 24px;border-bottom:2px solid var(--bd-ink)}
+.bd-tp-head small{font:700 12px var(--bd-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--c)}
+.bd-tp-head h1{margin:6px 0 8px;font:800 clamp(38px,6vw,68px)/1 var(--bd-serif);letter-spacing:-.035em;color:var(--bd-ink)}
+.bd-tp-head p{margin:0;font:400 19px/1.5 var(--bd-sans);color:var(--bd-muted);max-width:60ch}
+.bd-tp-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px}
+.bd-tp-count{font:600 14px var(--bd-sans);color:var(--bd-ink)}
+.bd-tp-hub{padding:9px 16px;border-radius:999px;background:var(--c);color:#fff!important;font:700 14px var(--bd-sans);text-decoration:none!important}
+.bd-tp-lead{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:28px;align-items:start}
+.bd-tp-lead[hidden]{display:none}
+.bd-tp .bd-kick{color:var(--c)}
+.bd-tp-bar{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--bd-line);padding-top:22px}
+.bd-tp-bar h2{margin:0;font:800 28px var(--bd-serif);letter-spacing:-.02em;color:var(--bd-ink)}
+.bd-tp-filter{width:280px;max-width:100%;height:42px;padding:0 16px;border-radius:999px;border:1px solid var(--bd-line);background:var(--bd-surface);color:var(--bd-ink);font:500 15px var(--bd-sans)}
+.bd-tp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 24px;margin-top:-6px}
+.bd-tp-card{display:flex;flex-direction:column;gap:8px;text-decoration:none!important;color:var(--bd-ink)!important}
+.bd-tp-card[hidden],.bd-tp:not(.bd-tp-filtering) .bd-tp-dup{display:none}
+.bd-tp-card b{font:700 19px/1.3 var(--bd-serif);letter-spacing:-.01em;text-wrap:balance}
+.bd-tp-card small{font:600 12.5px var(--bd-sans);color:var(--bd-muted)}
+.bd-tp-card:hover b{color:var(--c)}
+.bd-tp-card:hover .bd-sec-img img{transform:scale(1.05)}
+.bd-tp-none{margin:0;font:500 16px var(--bd-sans);color:var(--bd-muted)}
+.bd-tp-more{border-top:2px solid var(--bd-ink);padding-top:18px}
+.bd-tp-more h2{margin:0 0 12px;font:800 22px var(--bd-serif);color:var(--bd-ink)}
+.bd-tp-more div{display:flex;flex-wrap:wrap;gap:8px}
+.bd-tp-more a{padding:8px 14px;border-radius:999px;border:1px solid var(--bd-line);background:var(--bd-surface);color:var(--bd-ink)!important;font:600 14px var(--bd-sans);text-decoration:none!important}
+.bd-tp-more a:hover{border-color:var(--bd-accent);color:var(--bd-accent)!important}
+
 /* Homepage topic sections */
 .bd-sections{max-width:1170px;margin:20px auto 0;padding:0 15px;display:grid;gap:44px}
 .bd-section .bd-section-head{border-top:2px solid var(--bd-ink);padding-top:16px}
@@ -639,6 +670,9 @@ html.bd-article .post-body .seo-related li::marker{content:''}
   .bd-hero-grid{grid-template-columns:1fr;gap:32px}
   .bd-topic-grid{grid-template-columns:repeat(2,1fr)}
   .bd-lead-grid{grid-template-columns:1fr 1fr}
+  .bd-tp-lead{grid-template-columns:1fr}
+  .bd-tp-lead .bd-second{grid-template-columns:1fr 1fr}
+  .bd-tp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .bd-lead{grid-column:1/-1}
   .bd-latest{border-left:0;padding-left:0}
   .bd-start{grid-template-columns:1fr 1fr 1fr}
@@ -693,6 +727,10 @@ html.bd-article .post-body .seo-related li::marker{content:''}
   html.bd-article .post-body h2{font-size:26px!important}
   .bd-sec-grid{grid-template-columns:1fr 1fr;gap:16px}
   .bd-lead-grid{grid-template-columns:1fr;gap:22px}
+  .bd-tp-grid{grid-template-columns:1fr 1fr;gap:22px 14px}
+  .bd-tp-card b{font-size:16px}
+  .bd-tp-filter{width:100%}
+  .bd-tp-head p{font-size:17px}
   .bd-second{grid-template-columns:1fr 1fr;gap:14px}
   .bd-story b{font-size:16.5px}
   .bd-tagline{display:none}
@@ -863,6 +901,9 @@ html.bd-article .post-body .seo-related li::marker{content:''}
     ['Mind', 'Calmer, more focused and happier', '#6b5cff', 'brain', BLOG + '2026/10/mental-well-being-and-self-improvement.html', /mind|mental|well/i],
     ['Career', 'Work smarter and avoid burnout', '#2f7de1', 'case', BLOG + '2026/10/career-guide-work-smarter-avoid-burnout.html', /career/i]
   ];
+  var TOPIC_ABOUT = { 'Economics': 'How economies, money and markets work', 'Leadership': 'Leading people and teams well', 'Education': 'Learning, study and schools',
+    'Zen & Mindfulness': 'Calm, presence and Zen wisdom', 'Cryptocurrency': 'Bitcoin, altcoins and the risks', 'Countries & Living Abroad': 'Life, money and work around the world',
+    'Politics': 'How governments and elections work', 'Parenting & Family': 'Raising children and family life' };
   var HUB_LABELS = { 'Personal Finance': 'Money', 'Investing': 'Money', 'Economics': 'Money', 'Career & Workplace': 'Career', 'Leadership': 'Career',
     'Education': 'Career', 'Self Improvement': 'Mind', 'Psychology': 'Mind', 'Health & Wellness': 'Mind', 'Zen & Mindfulness': 'Mind', 'Love & Relationships': 'Mind' };
   var ICONS = {
@@ -1032,15 +1073,25 @@ html.bd-article .post-body .seo-related li::marker{content:''}
   // Cover art for posts without an image, in place of the theme's grey "no image" picture.
   var PLACEHOLDER = /(\/nth\.png|no[-_]?thumb\.png|no[-_]?image[^/]*)(\?|$)/i;
   var DEEP = ['#12141b', '#1e1b3a', '#2a1530', '#0f2a2a', '#2b1a10'];
+  var COVER_ICONS = [['money', /emergency fund/i], ['chart', /calculator|\bsip\b|fire\b|return|invest|stock|mutual fund/i], ['coin', /credit|debt|loan|emi|cibil|crypto|bitcoin/i], ['money', /money|budget|saving|emergency|tax|income|finance/i],
+    ['brain', /mind|psycholog|mental|think|stress/i], ['rise', /habit|improve|growth|confiden|success/i], ['heart', /love|relationship|partner/i],
+    ['case', /career|job|work|boss|office|leader/i], ['leaf', /health|sleep|calm|zen|well/i], ['chip', /\bai\b|technolog|data|google|internet/i],
+    ['globe', /countr|world|global|abroad/i], ['book', /book|learn|study|education|school/i], ['flag', /guide|start here/i]];
   var PALETTE = ['#e2462c', '#0f9d76', '#6b5cff', '#e48b12', '#e5487d', '#2f7de1', '#16a34a', '#0e9bb5'];
   function cover(title, label, big) {
     var key = (label || '').trim().toLowerCase(), c = COLORS[key] || [PALETTE[hash(title || key) % PALETTE.length], 'spark'];
     if (key === 'start here') GUIDES.forEach(function (g) { if (g[5].test(title)) c = [g[2], g[3]]; });
     var W = big ? 800 : 200, H = big ? 500 : 200, letter = esc(((title || label || 'B').trim().charAt(0) || 'B').toUpperCase());
-    var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="' + c[0] + '"/><stop offset=".3" stop-color="' + c[0] + '"/><stop offset="1" stop-color="' + DEEP[hash(title || '') % DEEP.length] + '"/></linearGradient>' +
+    // Covers in one topic share its colour; a second colour and the icon come from the title, so neighbours differ.
+    var hv = hash(title || key), alt = PALETTE[hv % PALETTE.length];
+    if (alt === c[0]) alt = PALETTE[(hv + 3) % PALETTE.length];
+    for (var ci = 0; ci < COVER_ICONS.length; ci++) if (COVER_ICONS[ci][1].test(title || '')) { c = [c[0], COVER_ICONS[ci][0]]; break; }
+    var ang = [[0, 0, 1, 1], [1, 0, 0, 1], [0, 1, 1, 0], [0, 0, 1, .4]][hv % 4];
+    var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '"><defs><linearGradient id="g" x1="' + ang[0] + '" y1="' + ang[1] + '" x2="' + ang[2] + '" y2="' + ang[3] + '">' +
+      '<stop offset="0" stop-color="' + c[0] + '"/><stop offset=".45" stop-color="' + c[0] + '"/><stop offset="1" stop-color="' + alt + '"/></linearGradient>' +
+      '<linearGradient id="d" x1="0" y1="0" x2="0" y2="1"><stop offset=".35" stop-color="' + DEEP[hv % DEEP.length] + '" stop-opacity="0"/><stop offset="1" stop-color="' + DEEP[hv % DEEP.length] + '" stop-opacity=".75"/></linearGradient>' +
       '<radialGradient id="r" cx=".85" cy=".15" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>' +
-      '<rect width="100%" height="100%" fill="url(#g)"/><rect width="100%" height="100%" fill="url(#r)"/>';
+      '<rect width="100%" height="100%" fill="url(#g)"/><rect width="100%" height="100%" fill="url(#d)"/><rect width="100%" height="100%" fill="url(#r)"/>';
     if (big) {
       s += '<circle cx="690" cy="430" r="230" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>' +
         '<circle cx="690" cy="430" r="160" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>' +
@@ -1578,17 +1629,54 @@ html.bd-article .post-body .seo-related li::marker{content:''}
       }
     }
 
-    // Topic pages: a header with what the topic covers and its "Start here" guide.
+    // Topic pages: a magazine section page. Header with what the topic covers, its size and its guide, a lead story
+    // with two more, then every article in the topic on one page with a filter box, then the other topics. Built from
+    // the topic's summary feed; the theme's own list stays in place if the feed fails.
     var lm = path.match(/^\/search\/label\/([^/]+)$/);
-    var blogPosts = document.querySelector('.blog-posts');
-    if (lm && blogPosts && !document.querySelector('.bd-topic-head')) {
-      var lab = decodeURIComponent(lm[1].replace(/\+/g, ' ')), info = TOPICS.filter(function (t) { return t[0] === lab; })[0];
+    var cw = document.getElementById('content-wrapper');
+    if (lm && cw && !document.querySelector('.bd-tp')) {
+      var lab = decodeURIComponent(lm[1].replace(/\+/g, ' '));
+      var info = TOPICS.filter(function (t) { return t[0] === lab; })[0];
+      var about = (info && info[1]) || TOPIC_ABOUT[lab] || 'Practical, in-depth guides';
       var hubKey = HUB_LABELS[lab], hub = GUIDES.filter(function (g) { return g[0] === hubKey; })[0];
       var col = (COLORS[lab.toLowerCase()] || ['#e2462c'])[0];
-      var head = el('div', 'bd-topic-head', '<small>Topic</small><h1>' + esc(lab) + '</h1><p>' + esc(info ? info[1] + '. Practical, in-depth guides, newest first.' : 'Practical, in-depth guides, newest first.') + '</p>' +
-        (hub ? '<a href="' + hub[4] + '">New here? Start with the ' + hub[0].toLowerCase() + ' guide →</a>' : ''));
-      head.style.setProperty('--c', col);
-      blogPosts.parentNode.insertBefore(head, document.querySelector('.queryMessage') || blogPosts);
+      var others = TOPICS.map(function (t) { return t[0]; }).concat(Object.keys(TOPIC_ABOUT)).filter(function (t, i, a) { return t !== lab && a.indexOf(t) === i; });
+      var tp = el('section', 'bd-tp', '<header class="bd-tp-head"><small>Section</small><h1>' + esc(lab) + '</h1><p>' + esc(about) + '.</p>' +
+        '<div class="bd-tp-meta"><span class="bd-tp-count">Loading articles…</span>' + (hub ? '<a class="bd-tp-hub" href="' + hub[4] + '">New here? Start with the ' + hub[0].toLowerCase() + ' guide →</a>' : '') + '</div></header>' +
+        '<div class="bd-tp-lead"><div class="bd-lead bd-skel"></div><div class="bd-second"><div class="bd-skel"></div><div class="bd-skel"></div></div></div>' +
+        '<div class="bd-tp-bar"><h2>All ' + esc(lab.toLowerCase()) + ' articles</h2><input class="bd-tp-filter" type="search" placeholder="Filter these articles" aria-label="Filter articles in ' + esc(lab) + '"/></div>' +
+        '<div class="bd-tp-grid"></div><p class="bd-tp-none" hidden>No articles in ' + esc(lab) + ' match that.</p>' +
+        '<nav class="bd-tp-more" aria-label="Other sections"><h2>Other sections</h2><div>' + others.map(function (t) { return '<a href="' + labelUrl(t) + '">' + esc(t) + '</a>'; }).join('') + '</div></nav>');
+      tp.style.setProperty('--c', col);
+      cw.parentNode.insertBefore(tp, cw);
+      root.classList.add('bd-topicpage');
+      var tpPic = function (p, w) { return p.thumb ? sized(p.thumb, w) : cover(p.title, lab, true); };
+      feed('', 60, function (posts) {
+        if (!posts.length) { tp.remove(); root.classList.remove('bd-topicpage'); return; }
+        root.classList.add('bd-topicpage-ready');
+        tp.querySelector('.bd-tp-count').textContent = posts.length + ' article' + (posts.length === 1 ? '' : 's') + ' · latest ' + longDate(posts[0].date);
+        var withPic = posts.filter(function (p) { return p.thumb; }), used = {};
+        var lead = withPic[0] || posts[0]; used[lead.url] = 1;
+        var second = withPic.filter(function (p) { return !used[p.url]; }).slice(0, 2); second.forEach(function (p) { used[p.url] = 1; });
+        tp.querySelector('.bd-tp-lead').innerHTML = '<div class="bd-lead"><a href="' + esc(lead.url) + '"><span class="bd-lead-img"><img alt="" fetchpriority="high" decoding="async" src="' + esc(tpPic(lead, 960)) + '"/></span>' +
+          '<small class="bd-kick">Featured</small><h1>' + esc(lead.title) + '</h1>' + (lead.sum ? '<p>' + esc(lead.sum) + '</p>' : '') + '<span class="bd-meta">' + esc(longDate(lead.date)) + '</span></a></div>' +
+          '<div class="bd-second">' + second.map(function (p) {
+            return '<a class="bd-story" href="' + esc(p.url) + '"><span class="bd-story-img"><img alt="" decoding="async" src="' + esc(tpPic(p, 640)) + '"/></span><b>' + esc(p.title) + '</b><span class="bd-meta">' + esc(longDate(p.date)) + '</span></a>';
+          }).join('') + '</div>';
+        var grid = tp.querySelector('.bd-tp-grid');
+        grid.innerHTML = posts.map(function (p) {
+          return '<a class="bd-tp-card' + (used[p.url] ? ' bd-tp-dup' : '') + '" href="' + esc(p.url) + '" data-t="' + esc(p.title.toLowerCase()) + '"><span class="bd-sec-img"><img alt="" loading="lazy" decoding="async" src="' + esc(tpPic(p, 640)) + '"/></span>' +
+            '<b>' + esc(p.title) + '</b><small>' + esc(longDate(p.date)) + '</small></a>';
+        }).join('');
+        var none = tp.querySelector('.bd-tp-none');
+        tp.querySelector('.bd-tp-filter').addEventListener('input', function () {
+          var q = this.value.trim().toLowerCase(), shownN = 0;
+          tp.querySelector('.bd-tp-lead').hidden = !!q;
+          tp.classList.toggle('bd-tp-filtering', !!q);  // the lead stories' cards show in the grid only while filtering
+          grid.querySelectorAll('.bd-tp-card').forEach(function (c) { var on = !q || c.getAttribute('data-t').indexOf(q) > -1; c.hidden = !on; if (on && (q || !c.classList.contains('bd-tp-dup'))) shownN++; });
+          none.hidden = shownN > 0;
+        });
+      }, lab);
     }
 
     // 404 page: search, the topic guides and the latest articles instead of a dead end.
