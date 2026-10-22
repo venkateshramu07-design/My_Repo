@@ -1,0 +1,37 @@
+<div class="bd-calc" id="bd-gdp">
+<p class="bc-title">Real GDP growth calculator</p>
+<p class="bc-sub">Separate genuine growth from price rises. Enter GDP at current prices for two years and the GDP deflator inflation between them.</p>
+<div class="bc-grid">
+<div><label for="gd-y1">Nominal GDP, earlier year (₹ lakh crore)</label><input id="gd-y1" type="number" min="0" step="1" value="318"></div>
+<div><label for="gd-y2">Nominal GDP, later year (₹ lakh crore)</label><input id="gd-y2" type="number" min="0" step="1" value="345"></div>
+<div><label for="gd-def">Price rise over the year (GDP deflator, %)</label><input id="gd-def" type="number" step="0.1" value="1.0"></div>
+<div><label for="gd-pop">Population, later year (crore)</label><input id="gd-pop" type="number" min="0" step="0.1" value="146"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Nominal growth</span><b id="gd-nom">—</b></div>
+<div class="bc-stat bc-main"><span>Real growth</span><b id="gd-real">—</b></div>
+<div class="bc-stat"><span>Real GDP doubles in about</span><b id="gd-dbl">—</b></div>
+<div class="bc-stat"><span>GDP per person (nominal)</span><b id="gd-pc">—</b></div>
+</div>
+<div class="bc-bar"><i id="gd-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="gd-split">—</span></div>
+<p class="bc-note">Real growth = (1 + nominal growth) ÷ (1 + deflator inflation) − 1. The example values are illustrative round numbers, not official estimates.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-gdp');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var a=C.num($('gd-y1')),b=C.num($('gd-y2')),d=C.num($('gd-def'))/100,pop=C.num($('gd-pop'));
+  if(a<=0||b<=0){$('gd-nom').textContent=$('gd-real').textContent=$('gd-dbl').textContent='—';return;}
+  var n=b/a-1,r=(1+n)/(1+d)-1;
+  $('gd-nom').textContent=(n*100).toFixed(1)+'%';
+  $('gd-real').textContent=(r*100).toFixed(1)+'%';
+  $('gd-dbl').textContent=r>0?(Math.log(2)/Math.log(1+r)).toFixed(1)+' years':'Not growing';
+  $('gd-pc').textContent=pop>0?C.money(b*1e12/(pop*1e7),'₹')+' a year':'—';
+  var share=n>0?Math.max(0,Math.min(100,r/n*100)):0;
+  $('gd-bar').style.width=share+'%';
+  $('gd-split').textContent=n>0?Math.round(share)+'% of the nominal increase is real output; '+Math.round(100-share)+'% is higher prices':'Nominal GDP did not rise';
+});
+})();
+</script>

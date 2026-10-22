@@ -1,0 +1,45 @@
+<figure class="bd-gdpflow" aria-label="Circular flow of income between households, firms and government">
+<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>The circular flow: households, firms and government</title>
+<style>
+.bd-gdpflow svg{display:block;width:100%;height:auto;border-radius:20px;background:color-mix(in srgb,#0e9bb5 8%,#fff)}
+.gf-box{fill:#fff;stroke:#0e9bb5;stroke-width:2}
+.gf-gov{fill:#fff;stroke:#7c5cff;stroke-width:2}
+.gf-t{font:700 17px Georgia,serif;fill:#15171d}
+.gf-s{font:500 11.5px system-ui,sans-serif;fill:#5d6271}
+.gf-lab{font:700 11px system-ui,sans-serif;letter-spacing:.06em;fill:#0b7c91}
+.gf-lab2{font:700 11px system-ui,sans-serif;letter-spacing:.06em;fill:#e2462c}
+.gf-path{fill:none;stroke:#0e9bb5;stroke-opacity:.35;stroke-width:2;stroke-dasharray:6 6}
+.gf-path2{fill:none;stroke:#e2462c;stroke-opacity:.35;stroke-width:2;stroke-dasharray:6 6}
+.gf-path3{fill:none;stroke:#7c5cff;stroke-opacity:.35;stroke-width:2;stroke-dasharray:6 6}
+.gf-coin{fill:#f2a33a}.gf-good{fill:#0e9bb5}.gf-tax{fill:#7c5cff}
+@media (prefers-reduced-motion:reduce){.bd-gdpflow animateMotion{display:none}}
+</style>
+<rect class="gf-box" x="30" y="115" width="170" height="100" rx="18"/>
+<text class="gf-t" x="115" y="158" text-anchor="middle">Households</text>
+<text class="gf-s" x="115" y="180" text-anchor="middle">spend, save, supply labour</text>
+<rect class="gf-box" x="440" y="115" width="170" height="100" rx="18"/>
+<text class="gf-t" x="525" y="158" text-anchor="middle">Firms</text>
+<text class="gf-s" x="525" y="180" text-anchor="middle">produce, hire, invest</text>
+<rect class="gf-gov" x="235" y="250" width="170" height="64" rx="16"/>
+<text class="gf-t" x="320" y="278" text-anchor="middle">Government</text>
+<text class="gf-s" x="320" y="298" text-anchor="middle">taxes in, spending out</text>
+<path id="gf-a" class="gf-path2" d="M200 140 C 280 60, 360 60, 440 140"/>
+<path id="gf-b" class="gf-path" d="M440 190 C 360 270, 280 270, 200 190" />
+<path id="gf-c" class="gf-path2" d="M200 105 C 270 10, 370 10, 440 105"/>
+<path id="gf-d" class="gf-path3" d="M115 215 C 140 280, 200 285, 235 282"/>
+<path id="gf-e" class="gf-path3" d="M405 282 C 450 285, 510 280, 525 215"/>
+<text class="gf-lab2" x="320" y="18" text-anchor="middle">SPENDING  (= GDP, expenditure side)</text>
+<text class="gf-lab2" x="320" y="78" text-anchor="middle">GOODS AND SERVICES</text>
+<text class="gf-lab" x="320" y="238" text-anchor="middle">WAGES, RENT, PROFIT  (= GDP, income side)</text>
+<g><circle class="gf-coin" r="7"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#gf-c"/></animateMotion></circle></g>
+<g><circle class="gf-coin" r="7"><animateMotion dur="4s" begin="-2s" repeatCount="indefinite"><mpath href="#gf-c"/></animateMotion></circle></g>
+<g><rect class="gf-good" x="-6" y="-6" width="12" height="12" rx="3"><animateMotion dur="4s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#gf-a"/></animateMotion></rect></g>
+<g><rect class="gf-good" x="-6" y="-6" width="12" height="12" rx="3"><animateMotion dur="4s" begin="-2s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#gf-a"/></animateMotion></rect></g>
+<g><circle class="gf-coin" r="7"><animateMotion dur="4.5s" repeatCount="indefinite"><mpath href="#gf-b"/></animateMotion></circle></g>
+<g><circle class="gf-coin" r="7"><animateMotion dur="4.5s" begin="-2.2s" repeatCount="indefinite"><mpath href="#gf-b"/></animateMotion></circle></g>
+<g><circle class="gf-tax" r="6"><animateMotion dur="3s" repeatCount="indefinite"><mpath href="#gf-d"/></animateMotion></circle></g>
+<g><circle class="gf-tax" r="6"><animateMotion dur="3s" begin="-1.5s" repeatCount="indefinite"><mpath href="#gf-e"/></animateMotion></circle></g>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">Every rupee spent on a final good is a rupee of someone's income. That is why GDP can be counted from the spending side or the income side and, in principle, give the same answer.</figcaption>
+</figure>
