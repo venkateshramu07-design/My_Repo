@@ -90,6 +90,17 @@ ones. To release a change:
 2. Put that commit's full hash in `theme/version.txt` (`git rev-parse HEAD > seo/theme/version.txt`), commit and push.
 Readers pick up the new version on their next page view after GitHub's 5-minute cache.
 
+## Blog Digest theme (`theme/blog-digest-theme.xml`)
+
+A complete Blogger theme of its own, replacing the SoraTemplates theme and its required credit line. It renders
+the header, menus, post cards, articles, comments, pager and footer, loads AdSense (Auto ads), Google Analytics 4
+(G-2P00N18249) and the design layer directly, so no gadget is needed. Article structured data comes from the
+design layer.
+
+To install: Theme > arrow next to Customise > Backup (download the current theme first), then Restore > upload
+`blog-digest-theme.xml`. To undo, Restore the backup. Gadgets from the old theme's sidebar and footer are not
+kept; the footer has an empty section for new ones.
+
 ## Publishing rewritten articles
 
 Rewritten posts live in `rewrites/<year>_<month>_<slug>.html`. When `apply.py` finds a rewrite for a post, it uses it as the post text. It keeps the post's original images, spaced through the article, then adds the contents box, alt text and related articles.

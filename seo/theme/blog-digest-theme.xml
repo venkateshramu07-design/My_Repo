@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<!-- Blog Digest theme. Install in Blogger: Theme > (arrow next to Customise) > Backup first, then Restore and upload
+     this file. The design itself (seo/theme/redesign.xml, built into bd-redesign.js) loads from jsDelivr, so most
+     design changes do not need a new theme upload. -->
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' b:templateVersion='1.0.0' expr:dir='data:blog.languageDirection' lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<b:include data='blog' name='all-head-content'/>
+<b:if cond='data:view.isHomepage'>
+<title>Blog Digest: Practical Guides to Money, Mind and Work</title>
+<b:elseif cond='data:view.isLabelSearch'/>
+<title><data:view.search.label/> | Blog Digest</title>
+<b:elseif cond='data:view.isSearch'/>
+<title>Search | Blog Digest</title>
+<b:else/>
+<title><data:view.title.escaped/></title>
+</b:if>
+<meta content='max-image-preview:large' name='robots'/>
+<meta content='summary_large_image' name='twitter:card'/>
+<meta content='Blog Digest' property='og:site_name'/>
+<b:if cond='data:view.isSingleItem'>
+<meta content='article' property='og:type'/>
+<b:else/>
+<meta content='website' property='og:type'/>
+</b:if>
+<b:if cond='data:view.featuredImage'>
+<meta expr:content='resizeImage(data:view.featuredImage, 1200)' property='og:image'/>
+</b:if>
+<meta content='367fff7334b52dbf' name='yandex-verification'/>
+<meta content='625ddde13b56e623e3c77af7c095cad1' name='p:domain_verify'/>
+<meta content='#e2462c' name='theme-color'/>
+<link href='https://fonts.googleapis.com' rel='preconnect'/>
+<link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+<link href='https://cdn.jsdelivr.net' rel='preconnect'/>
+<link href='https://blogger.googleusercontent.com' rel='preconnect'/>
+
+<b:skin><![CDATA[
+/* Blog Digest theme: base layout. The design layer (bd-redesign.js) styles everything on top of this. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f7f4ee;color:#15171d;font:16px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;overflow-x:hidden}
+a{color:#e2462c;text-decoration:none}
+img{max-width:100%;height:auto;border:0}
+h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em}
+.container{max-width:1170px;margin:0 auto;padding:0 15px}
+.clearfix{clear:both}
+.skip-link{position:absolute;left:-9999px;top:0;z-index:10002;padding:10px 16px;background:#15171d;color:#fff}
+.skip-link:focus{left:16px;top:16px}
+.section,.widget{margin:0;padding:0}
+
+/* Header */
+#header-wrap{position:sticky;top:0;z-index:999;background:#fffdf9;border-bottom:1px solid #e8e2d6}
+.header-header .container{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
+.header-logo{padding:12px 0}
+.header-image-wrapper{display:flex;align-items:center;gap:12px;color:#15171d}
+.header-image-wrapper img{width:42px;height:42px;border-radius:12px}
+.header-menu{display:flex;align-items:center}
+#main-menu-nav{display:flex;align-items:center;gap:4px;list-style:none;margin:0;padding:0}
+#main-menu-nav a{display:block;padding:0 12px;line-height:36px;border-radius:999px;color:#15171d;font-weight:600;font-size:14px}
+.mobile-menu{display:none}
+.slide-menu-toggle{display:none;cursor:pointer}
+.slide-menu-toggle::before{content:'';display:block;width:18px;height:14px;
+  background:linear-gradient(currentColor,currentColor) 0 0/100% 2px no-repeat,linear-gradient(currentColor,currentColor) 0 50%/100% 2px no-repeat,linear-gradient(currentColor,currentColor) 0 100%/100% 2px no-repeat}
+.nav-active .slide-menu-toggle::before{background:linear-gradient(45deg,transparent 45%,currentColor 45%,currentColor 55%,transparent 55%),linear-gradient(-45deg,transparent 45%,currentColor 45%,currentColor 55%,transparent 55%)}
+@media (max-width:980px){
+  #main-menu{display:none}
+  .slide-menu-toggle{display:grid;place-items:center}
+  .mobile-menu{display:block;visibility:hidden;opacity:0;transform:translateY(-6px);transition:opacity .2s,transform .2s,visibility .2s}
+  .nav-active .mobile-menu{visibility:visible;opacity:1;transform:none}
+  .mobile-menu #main-menu-nav{display:block}
+}
+
+/* Content */
+#content-wrapper{margin:30px auto 0}
+#main-wrapper{width:100%}
+.blog-posts{margin:0}
+.grid-posts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.index-post{position:relative;background:#fff;border-radius:18px;overflow:hidden}
+.index-post .post-image-wrap{position:relative;aspect-ratio:16/10;overflow:hidden;background:#fbf9f5}
+.index-post .post-image-link,.index-post .post-thumb{display:block;width:100%;height:100%;object-fit:cover}
+.index-post .post-tag{position:absolute;top:14px;left:14px}
+.index-post .post-info{padding:18px 20px 22px}
+.index-post .post-title{font-size:20px;margin:0 0 8px}
+.index-post .post-title a{color:#15171d}
+.post-meta,.post-meta a{font-size:13px;color:#5d6271}
+.queryMessage{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;margin:0 0 18px;font-size:14px}
+.home-title{margin:0 0 18px;font-size:22px;font-weight:800}
+.blog-pager{display:flex;justify-content:space-between;gap:12px;margin:30px 0 0}
+.blog-pager a{display:inline-block;padding:10px 18px;border-radius:999px;background:#fff;border:1px solid #e8e2d6;color:#15171d;font-weight:700}
+.item-post{max-width:800px;margin:0 auto}
+.post-body{overflow-wrap:break-word}
+.post-body img{border-radius:14px}
+.post-body .separator{text-align:center}
+.post-body .separator a{margin:0!important}
+.post-body table{width:100%;border-collapse:collapse}
+.post-body iframe{max-width:100%}
+.post-footer{margin-top:34px}
+.post-labels{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.label-head{display:flex;flex-wrap:wrap;gap:8px}
+.share-links{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:14px 0 0;padding:0}
+.share-links a{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;color:#fff}
+.share-links svg{width:18px;height:18px;fill:currentColor}
+.share-links .facebook a{background:#1877f2}.share-links .twitter a{background:#15171d}.share-links .linkedin a{background:#0a66c2}
+.share-links .whatsapp a{background:#25d366}.share-links .email a{background:#6b7280}
+.post-nav{list-style:none;margin:22px 0 0;padding:0}
+.post-nav p{margin:0}
+.errorWrap{text-align:center;padding:60px 0}
+.errorWrap h3{font-size:96px;margin:0}
+.blog-post-comments{max-width:800px;margin:24px auto 0}
+
+/* Blogger comments */
+#comments .comment-thread ol{list-style:none;margin:0;padding:0}
+#comments .comment-thread li{margin:0 0 18px}
+#comments .comment-block{padding:14px 16px;border-radius:14px;background:#fff;border:1px solid #e8e2d6}
+#comments .avatar-image-container{float:left;margin-right:12px}
+#comments .avatar-image-container img{border-radius:50%}
+#comments .comment-header{font-size:14px}
+#comments .comment-header .datetime{margin-left:8px;color:#5d6271}
+#comments .comment-actions a{font-size:13px;margin-right:12px}
+#comments .thread-toggle,#comments .continue a{font-size:14px;font-weight:600}
+#comment-editor{width:100%}
+
+/* Footer */
+#footer-wrapper{margin-top:56px;padding:44px 0 30px;background:#12141b;color:#c5c9d3}
+#footer-wrapper a{color:#c5c9d3}
+.bd-foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px}
+.bd-foot-brand b{display:block;font-size:24px;color:#fff}
+.bd-foot-brand p{margin:8px 0 0;max-width:36ch;font-size:15px;line-height:1.6}
+.bd-foot-col h4{margin:0 0 12px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+.bd-foot-col ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px}
+#footer-gadgets{margin-top:30px}
+#sub-footer-wrapper{background:#0a0b0f;color:#8d92a0;font-size:13.5px}
+#sub-footer-wrapper .container{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:16px;padding-bottom:16px}
+#sub-footer-wrapper a{color:#8d92a0}
+@media (max-width:980px){.grid-posts{grid-template-columns:repeat(2,minmax(0,1fr))}.bd-foot-grid{grid-template-columns:1fr 1fr}.bd-foot-brand{grid-column:1/-1}}
+@media (max-width:640px){.grid-posts{grid-template-columns:1fr}}
+]]></b:skin>
+
+<script>//<![CDATA[
+document.documentElement.classList.add('bd-native');
+//]]></script>
+<script async='async' crossorigin='anonymous' src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9105247488116580'/>
+<script async='async' src='https://www.googletagmanager.com/gtag/js?id=G-2P00N18249'/>
+<script>//<![CDATA[
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+gtag('js', new Date());
+gtag('config', 'G-2P00N18249');
+//]]></script>
+<script>//<![CDATA[
+/* Blog Digest design loader: asks GitHub which commit is current (at most once every 10 minutes per visitor), then
+   loads seo/theme/bd-redesign.js from that commit. */
+(function () {
+  var repo = 'venkateshramu07-design/My_Repo', ver = '34baf3482e47249b385b14c35189cdc4e7ab0d0a', c = null, now = Date.now();
+  try { c = JSON.parse(localStorage.getItem('bd-ver2') || 'null'); } catch (e) {}
+  if (c && now - c.t < 6e5) ver = c.v;
+  else {
+    try {
+      var x = new XMLHttpRequest();
+      x.open('GET', 'https://raw.githubusercontent.com/' + repo + '/ccr-ee047f91-rbyv4x/seo/theme/version.txt', false);
+      x.send();
+      var t = (x.responseText || '').trim();
+      if (x.status === 200 && /^[0-9a-f]{40}$/.test(t)) { ver = t; localStorage.setItem('bd-ver2', JSON.stringify({ v: t, t: now })); }
+      else if (c) ver = c.v;
+    } catch (e) { if (c) ver = c.v; }
+  }
+  document.write('<script src="https://cdn.jsdelivr.net/gh/' + repo + '@' + ver + '/seo/theme/bd-redesign.js"><\/script>');
+})();
+//]]></script>
+</head>
+<body>
+<b:class cond='data:view.isHomepage' name='index'/>
+<b:class cond='data:view.isHomepage' name='home'/>
+<b:class cond='data:view.isMultipleItems and not data:view.isHomepage' name='index'/>
+<b:class cond='data:view.isSingleItem' name='item'/>
+<a class='skip-link' href='#main-wrapper'>Skip to content</a>
+<div id='outer-wrapper'>
+
+<div id='header-wrap'>
+<div class='header-header'>
+<div class='container row'>
+<div class='header-logo'>
+<a class='header-image-wrapper' expr:href='data:blog.homepageUrl' title='Blog Digest'>
+<img alt='Blog Digest' height='42' src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRohSzFDbJ48b-1wrEyEXx3NQs3zOcdRX-ZtV09jpJpExAhHPZUQ-7ZyACSMPCysO9gD5XQsrTlG2udxWXp_H17peG8BjTxsBVr17LueDQvlNOInHkv4PBdQffCB8jDdOzGrMXFYXqGEmg/s96/Random+Thoughts.png' width='42'/>
+</a>
+</div>
+<div class='header-menu'>
+<div class='mobile-menu'>
+<ul id='main-menu-nav' role='menubar'>
+<li><a expr:href='data:blog.homepageUrl' role='menuitem'>Home</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Personal%20Finance"' role='menuitem'>Money</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Investing"' role='menuitem'>Investing</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Psychology"' role='menuitem'>Mind</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Career%20%26%20Workplace"' role='menuitem'>Work</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Health%20%26%20Wellness"' role='menuitem'>Health</a></li>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/sitemap.html"' role='menuitem'>All articles</a></li>
+</ul>
+</div>
+<span aria-label='Menu' class='slide-menu-toggle' role='button' tabindex='0'/>
+<div class='main-menu' id='main-menu'>
+<div class='widget'>
+<ul id='main-menu-nav' role='menubar'>
+<li><a expr:href='data:blog.homepageUrl' role='menuitem'>Home</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Personal%20Finance"' role='menuitem'>Money</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Investing"' role='menuitem'>Investing</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Psychology"' role='menuitem'>Mind</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Career%20%26%20Workplace"' role='menuitem'>Work</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Health%20%26%20Wellness"' role='menuitem'>Health</a></li>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/sitemap.html"' role='menuitem'>All articles</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class='clearfix'/>
+<div class='container row' id='content-wrapper'>
+<main id='main-wrapper'>
+<b:section class='main' id='main' showaddelement='no'>
+<b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2' visible='true'>
+<b:includable id='main' var='top'>
+<b:if cond='data:view.isError'>
+<div class='errorWrap'>
+<h3>404</h3>
+<h4>There&#39;s nothing here!</h4>
+<p>Sorry, the page you were looking for in this blog does not exist.</p>
+<a class='homepage' expr:href='data:blog.homepageUrl'>Home</a>
+</div>
+<b:elseif cond='data:view.isMultipleItems'/>
+<b:if cond='data:view.isSearch'>
+<div class='queryMessage'>
+<span class='query-info'>
+<b:if cond='data:view.isLabelSearch'>Showing posts in <b><data:view.search.label/></b><b:else/>Search results</b:if>
+</span>
+<a class='show-more' expr:href='data:blog.homepageUrl'>Show all</a>
+</div>
+</b:if>
+<b:if cond='data:view.isHomepage'>
+<h2 class='home-title'><span>Latest articles</span></h2>
+</b:if>
+<div class='blog-posts hfeed container index-post-wrap'>
+<div class='grid-posts'>
+<b:loop values='data:posts' var='post'>
+<b:include data='post' name='bdIndexPost'/>
+</b:loop>
+</div>
+</div>
+<div class='blog-pager container' id='blog-pager'>
+<b:if cond='data:newerPageUrl'>
+<a class='blog-pager-newer-link' expr:href='data:newerPageUrl' rel='prev'>&#8592; Newer</a>
+</b:if>
+<b:if cond='data:olderPageUrl'>
+<a class='blog-pager-older-link' expr:href='data:olderPageUrl' rel='next'>Older &#8594;</a>
+</b:if>
+</div>
+<b:else/>
+<b:loop values='data:posts' var='post'>
+<b:include data='post' name='bdItemPost'/>
+</b:loop>
+</b:if>
+</b:includable>
+
+<b:includable id='bdIndexPost' var='post'>
+<article class='blog-post hentry index-post'>
+<div class='post-image-wrap'>
+<a class='post-image-link' expr:href='data:post.url'>
+<b:if cond='data:post.featuredImage'>
+<img class='post-thumb' decoding='async' expr:alt='data:post.title' expr:src='resizeImage(data:post.featuredImage, 640, "16:10")' loading='lazy'/>
+<b:else/>
+<img class='post-thumb' decoding='async' expr:alt='data:post.title' loading='lazy' src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjmyJ6v3BnZ5Ir35Fm-yd7aVqd2r7nBipm6Zo94dfNEMjOcmJCIHx60LUK8gcxh-0EV16Eh1Z5uFEe35lTZzKXoty3ETuxZiW7J6twNEpcWGzCwwVzd_eCvIvsWLLZQPzHBRcbg0tAyqox-/s1600/no-thumb.png'/>
+</b:if>
+<b:loop index='i' values='data:post.labels' var='label'><b:if cond='data:i == 0'><span class='post-tag'><data:label.name/></span></b:if></b:loop>
+</a>
+</div>
+<div class='post-info'>
+<h2 class='post-title entry-title'><a expr:href='data:post.url'><data:post.title/></a></h2>
+<div class='post-meta'><time class='published' expr:datetime='data:post.date.iso8601'><data:post.date/></time></div>
+</div>
+</article>
+</b:includable>
+
+<b:includable id='bdItemPost' var='post'>
+<article class='blog-post hentry item-post'>
+<b:if cond='data:view.isPost and data:post.labels'>
+<nav id='breadcrumb'><a expr:href='data:blog.homepageUrl'>Home</a><b:loop index='i' values='data:post.labels' var='label'><b:if cond='data:i == 0'> &#8250; <a expr:href='data:label.url'><data:label.name/></a></b:if></b:loop> &#8250; <span><data:post.title/></span></nav>
+</b:if>
+<header class='post-header'>
+<h1 class='post-title entry-title'><data:post.title/></h1>
+<b:if cond='data:view.isPost'>
+<div class='post-meta'><span class='post-date published' expr:datetime='data:post.date.iso8601'><data:post.date/></span></div>
+</b:if>
+</header>
+<div class='post-body post-content entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
+<data:post.body/>
+</div>
+<b:if cond='data:view.isPost'>
+<footer class='post-footer'>
+<b:if cond='data:post.labels'>
+<div class='post-labels'>
+<span>Tags</span>
+<div class='label-head Label'>
+<b:loop values='data:post.labels' var='label'>
+<a class='label-link' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+</b:loop>
+</div>
+</div>
+</b:if>
+<div class='post-share'>
+<ul class='share-links social social-color'>
+<li class='facebook'><a aria-label='Share on Facebook' class='facebook' expr:href='&quot;https://www.facebook.com/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M14 8V6.5c0-.8.5-1 1-1h2V2h-3c-3 0-4 2-4 4.3V8H8v3.6h2V22h4V11.6h2.8L17 8z'/></svg></a></li>
+<li class='twitter'><a aria-label='Share on X' class='twitter' expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z'/></svg></a></li>
+<li class='linkedin'><a aria-label='Share on LinkedIn' class='linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M5 3.5A2 2 0 1 1 5 7.5a2 2 0 0 1 0-4zM3.3 9h3.4v12H3.3zM9 9h3.3v1.7h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.2 2.4 4.2 5.4V21h-3.4v-5.9c0-1.4 0-3.2-2-3.2s-2.2 1.5-2.2 3.1v6H9z'/></svg></a></li>
+<li class='whatsapp'><a aria-label='Share on WhatsApp' class='whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.7 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5-4.5-.2-.2-1.2-1.6-1.2-3s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.2c.1.2.1.4 0 .6l-.4.6-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l2.1 1c.3.1.5.2.5.3.1.2.1.8-.1 1.5z'/></svg></a></li>
+<li class='email'><a aria-label='Share by email' class='email' expr:href='&quot;mailto:?body=&quot; + data:post.url' rel='nofollow'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7.3L4 7.2V17h16V7.2zM5.2 7l6.8 4.2L18.8 7z'/></svg></a></li>
+</ul>
+</div>
+<ul class='post-nav'>
+<b:if cond='data:newerPageUrl'>
+<li class='post-next'><a class='next-post-link' expr:href='data:newerPageUrl' rel='next'><div class='post-nav-inner'><span>Newer article</span><p>Read the next article &#8594;</p></div></a></li>
+</b:if>
+<b:if cond='data:olderPageUrl'>
+<li class='post-prev'><a class='prev-post-link' expr:href='data:olderPageUrl' rel='prev'><div class='post-nav-inner'><span>Older article</span><p>&#8592; Read the previous article</p></div></a></li>
+</b:if>
+</ul>
+</footer>
+</b:if>
+</article>
+<b:if cond='data:view.isSingleItem and data:post.allowComments'>
+<section class='blog-post-comments'>
+<div class='title-wrap comments-title'><h3>Comments</h3></div>
+<b:include data='post' name='commentPicker'/>
+</section>
+</b:if>
+</b:includable>
+</b:widget>
+</b:section>
+</main>
+</div>
+
+<footer id='footer-wrapper'>
+<div class='container row'>
+<div class='bd-foot-grid'>
+<div class='bd-foot-brand'>
+<b>Blog Digest</b>
+<p>Practical, in-depth guides on money, the mind and work, with free calculators.</p>
+</div>
+<nav class='bd-foot-col' aria-label='Sections'>
+<h4>Sections</h4>
+<ul>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Personal%20Finance"'>Personal Finance</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Investing"'>Investing</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Psychology"'>Psychology</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Self%20Improvement"'>Self Improvement</a></li>
+<li><a expr:href='data:blog.homepageUrl + "search/label/Career%20%26%20Workplace"'>Career &amp; Workplace</a></li>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/sitemap.html"'>All articles</a></li>
+</ul>
+</nav>
+<nav class='bd-foot-col' aria-label='About'>
+<h4>About</h4>
+<ul>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/about-us.html"'>About us</a></li>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/contact-us.html"'>Contact us</a></li>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/privacy-policy.html"'>Privacy policy</a></li>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/disclaimer.html"'>Disclaimer</a></li>
+<li><a expr:href='data:blog.homepageUrl + "2021/06/terms-and-conditions.html"'>Terms and conditions</a></li>
+<li><a expr:href='data:blog.homepageUrl + "p/trending-posts_53.html"'>Trending posts</a></li>
+</ul>
+</nav>
+</div>
+<b:section class='footer-gadgets' id='footer-gadgets' maxwidgets='4' showaddelement='yes'/>
+</div>
+</footer>
+<div id='sub-footer-wrapper'>
+<div class='container row'>
+<div class='copyright-area'>&#169; <span id='bd-year'>2026</span> Blog Digest. All rights reserved.</div>
+<div><a expr:href='data:blog.homepageUrl + "2021/06/privacy-policy.html"'>Privacy policy</a></div>
+</div>
+</div>
+
+</div>
+<script>//<![CDATA[
+(function () {
+  var y = document.getElementById('bd-year'); if (y) y.textContent = new Date().getFullYear();
+  var toggle = function () { document.body.classList.toggle('nav-active'); };
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.slide-menu-toggle')) toggle();
+    else if (!e.target.closest('.mobile-menu')) document.body.classList.remove('nav-active');
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('slide-menu-toggle')) { e.preventDefault(); toggle(); }
+    if (e.key === 'Escape') document.body.classList.remove('nav-active');
+  });
+})();
+//]]></script>
+</body>
+</html>
