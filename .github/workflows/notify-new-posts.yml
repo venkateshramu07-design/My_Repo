@@ -1,0 +1,35 @@
+# Push notification for each new Blog Digest post. GitHub runs scheduled workflows only from the repository's
+# default branch, so this file must be there; the script and its state live on the site branch below.
+name: Notify subscribers of new posts
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notify-new-posts
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ccr-ee047f91-rbyv4x
+      - name: Send notifications for new posts
+        env:
+          WEBPUSHR_KEY: ${{ secrets.WEBPUSHR_KEY }}
+          WEBPUSHR_TOKEN: ${{ secrets.WEBPUSHR_TOKEN }}
+        run: python3 seo/notify/notify_new_posts.py
+      - name: Save which posts were announced
+        if: always()
+        run: |
+          git config user.name "blog-digest-bot"
+          git config user.email "blog-digest-bot@users.noreply.github.com"
+          git add seo/notify/state.json
+          git diff --cached --quiet || (git commit -m "Record announced posts" && git push origin HEAD:ccr-ee047f91-rbyv4x)

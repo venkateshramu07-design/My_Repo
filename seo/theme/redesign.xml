@@ -371,6 +371,27 @@ html.bd-foot-on #sub-footer-wrapper .copyright-area{text-align:left!important}
   html.bd-foot-on #sub-footer-wrapper .container{flex-direction:column;align-items:flex-start}
 }
 
+/* Follow (push, WhatsApp, email) */
+.bd-follow{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:36px 0 0;padding:20px 22px;border-radius:20px;
+  background:linear-gradient(135deg,var(--bd-accent-soft),var(--bd-surface-2));border:1px solid color-mix(in srgb,var(--bd-accent) 22%,var(--bd-line))}
+.bd-follow b{display:block;font:800 19px/1.3 var(--bd-serif);color:var(--bd-ink)}
+.bd-follow p{margin:4px 0 0!important;font:400 14.5px var(--bd-sans);color:var(--bd-muted)}
+.bd-fbtns{display:flex;flex-wrap:wrap;gap:8px}
+.bd-fbtn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:999px;border:0;cursor:pointer;font:700 14px var(--bd-sans);text-decoration:none!important;color:#fff!important}
+.bd-fbtn svg{width:18px;height:18px}
+.bd-fpush{background:var(--bd-accent)}.bd-fwa{background:#1fa855}.bd-fmail{background:var(--bd-ink);color:var(--bd-bg)!important}
+.bd-fbtn:hover{filter:brightness(1.07)}
+.bd-ftoast{position:fixed;left:22px;bottom:22px;z-index:998;width:min(340px,calc(100vw - 32px));padding:18px;border-radius:20px;background:var(--bd-surface);border:1px solid var(--bd-line);
+  box-shadow:var(--bd-shadow-lg);transform:translateY(24px);opacity:0;pointer-events:none;transition:all .45s var(--bd-ease)}
+.bd-ftoast.bd-show{transform:none;opacity:1;pointer-events:auto}
+.bd-ftoast b{display:block;font:800 18px var(--bd-serif);color:var(--bd-ink)}
+.bd-ftoast p{margin:4px 0 12px;font:400 14px/1.5 var(--bd-sans);color:var(--bd-muted)}
+.bd-ftoast-x{position:absolute;top:8px;right:10px;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--bd-muted);font-size:20px;cursor:pointer}
+.bd-ffoot{margin-top:22px}
+.bd-ffoot b{display:block;margin-bottom:10px;font:700 12px var(--bd-sans);letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.bd-ffoot .bd-fmail{background:#fff;color:#12141b!important}
+@media (max-width:640px){.bd-ftoast{left:16px;bottom:84px}.bd-follow{padding:18px}}
+
 /* Back to top */
 #bd-top{position:fixed;right:22px;bottom:22px;z-index:998;width:48px;height:48px;border-radius:50%;border:0;background:var(--bd-accent);color:#fff;cursor:pointer;
   box-shadow:0 12px 28px rgba(226,70,44,.4);display:grid;place-items:center;opacity:0;transform:translateY(16px) scale(.9);pointer-events:none;transition:all .3s}
@@ -1382,6 +1403,52 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     });
   }
 
+  // Follow options (push notifications, WhatsApp channel, email), configured in follow.json next to this script so
+  // they can be switched on without code changes. Each option stays hidden until its setting is filled in.
+  var followCfg = null, followWait = [];
+  function withFollow(cb) {
+    if (followCfg) return cb(followCfg);
+    followWait.push(cb);
+    if (followWait.length > 1) return;
+    var done = function (c) { followCfg = c || {}; followWait.forEach(function (f) { f(followCfg); }); followWait = []; };
+    if (!window.bdBase) return done({});
+    var x = new XMLHttpRequest(); x.open('GET', window.bdBase + 'follow.json');
+    x.onload = function () { try { done(JSON.parse(x.responseText)); } catch (e) { done({}); } };
+    x.onerror = function () { done({}); }; x.send();
+  }
+  var pushLoaded = false;
+  function loadPush(cfg) {  // Webpushr, the push service used on Blogger (opt-in happens on its own domain)
+    if (pushLoaded || !cfg.webpushrKey) return; pushLoaded = true;
+    window.webpushr = window.webpushr || function () { (window.webpushr.q = window.webpushr.q || []).push(arguments); };
+    var js = document.createElement('script'); js.id = 'webpushr-jssdk'; js.async = true; js.src = 'https://cdn.webpushr.com/app.min.js';
+    document.head.appendChild(js);
+    window.webpushr('setup', { key: cfg.webpushrKey });
+  }
+  var FOLLOW_ICONS = {
+    bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+    wa: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.7 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5-4.5-.2-.2-1.2-1.6-1.2-3s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .7.5l.9 2.2c.1.2.1.4 0 .6l-.4.6-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l2.1 1c.3.1.5.2.5.3.1.2.1.8-.1 1.5z"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
+  };
+  // Buttons for the configured channels. Push needs a browser that supports it; on iPhone only installed web apps do.
+  function followButtons(cfg) {
+    var b = [];
+    if (cfg.webpushrKey && 'Notification' in window && 'serviceWorker' in navigator) b.push('<button type="button" class="bd-fbtn bd-fpush">' + FOLLOW_ICONS.bell + '<span>Notify me</span></button>');
+    if (cfg.whatsappChannel) b.push('<a class="bd-fbtn bd-fwa" target="_blank" rel="noopener" href="' + esc(cfg.whatsappChannel) + '">' + FOLLOW_ICONS.wa + '<span>WhatsApp channel</span></a>');
+    if (cfg.emailForm) b.push('<a class="bd-fbtn bd-fmail" target="_blank" rel="noopener" href="' + esc(cfg.emailForm) + '">' + FOLLOW_ICONS.mail + '<span>Email</span></a>');
+    return b.join('');
+  }
+  function wireFollow(scope) {
+    var push = scope.querySelector('.bd-fpush'); if (!push) return;
+    push.addEventListener('click', function () {
+      var lab = push.querySelector('span');
+      try {
+        if (window.webpushr) window.webpushr('subscribe');
+        lab.textContent = 'Check the prompt';
+        try { localStorage.setItem('bd-follow-asked', Date.now()); } catch (e) {}
+      } catch (e) { lab.textContent = 'Not available here'; }
+    });
+  }
+
   // Reading history, kept in this browser only.
   function store(key, val) {
     try {
@@ -2089,6 +2156,36 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var area = document.querySelector('#sub-footer-wrapper .copyright-area');
       if (area && !area.querySelector('.bd-copy')) area.insertBefore(el('span', 'bd-copy', '© ' + new Date().getFullYear() + ' Blog Digest · '), area.firstChild);
     }
+
+
+    // Follow: a "Get new articles" card at the end of articles, a one-time invitation after half an article, and a
+    // row in the footer. Nothing appears until follow.json has at least one channel.
+    withFollow(function (cfg) {
+      var buttons = followButtons(cfg); if (!buttons) return;
+      loadPush(cfg);
+      var pf = document.querySelector('.item-post .post-footer');
+      if (isPost && pf && !document.querySelector('.bd-follow')) {
+        var card = el('aside', 'bd-follow', '<div><b>Get new articles as they are published</b><p>One tap. No spam, and you can stop any time.</p></div><div class="bd-fbtns">' + buttons + '</div>');
+        pf.parentNode.insertBefore(card, document.querySelector('.bd-pubnote') || pf); wireFollow(card);
+        var seen = 0; try { seen = +localStorage.getItem('bd-follow-asked') || 0; } catch (e) {}
+        var ab = document.querySelector('.item-post .post-body');
+        if (ab && Date.now() - seen > 30 * 864e5) {
+          var toast = el('div', 'bd-ftoast', '<button type="button" class="bd-ftoast-x" aria-label="Close">×</button><b>Enjoying this?</b><p>Get Blog Digest’s new articles as soon as they are out.</p><div class="bd-fbtns">' + buttons + '</div>');
+          toast.setAttribute('role', 'dialog'); toast.setAttribute('aria-label', 'Follow Blog Digest');
+          document.body.appendChild(toast); wireFollow(toast);
+          var onT = function () {
+            var r = ab.getBoundingClientRect();
+            if (-r.top / Math.max(1, r.height - innerHeight) > .5) { toast.classList.add('bd-show'); removeEventListener('scroll', onT); }
+          };
+          var close = function () { toast.classList.remove('bd-show'); try { localStorage.setItem('bd-follow-asked', Date.now()); } catch (e) {} removeEventListener('scroll', onT); };
+          toast.querySelector('.bd-ftoast-x').addEventListener('click', close);
+          toast.querySelectorAll('.bd-fbtn').forEach(function (x) { x.addEventListener('click', function () { setTimeout(close, 1200); }); });
+          addEventListener('scroll', onT, { passive: true });
+        }
+      }
+      var fb = document.querySelector('.bd-foot-brand');
+      if (fb && !fb.querySelector('.bd-ffoot')) { var row = el('div', 'bd-ffoot', '<b>Follow Blog Digest</b><div class="bd-fbtns">' + buttons + '</div>'); fb.appendChild(row); wireFollow(row); }
+    });
 
     // Back to top + sticky header shadow.
     var top = el('button', '', ICONS.up); top.id = 'bd-top'; top.type = 'button'; top.setAttribute('aria-label', 'Back to top');
