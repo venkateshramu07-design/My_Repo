@@ -1,0 +1,46 @@
+# Posts the social pack (seo/social/pack.json) to the Blog Digest Facebook Page and LinkedIn on schedule.
+# GitHub runs scheduled workflows only from the repository's default branch, so this file must be there; the script
+# and its state live on the site branch below.
+name: Post social pack
+
+on:
+  schedule:
+    - cron: "7 13 * * 1-5"  # 13:07 UTC on weekdays; the script decides what is due that day
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "check = test the keys only; now = post the next item on each platform now"
+        type: choice
+        options: [check, now, scheduled]
+        default: check
+
+permissions:
+  contents: write
+
+concurrency:
+  group: social-pack
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ccr-ee047f91-rbyv4x
+      - name: Post what is due
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
+          SOCIAL_MODE: ${{ inputs.mode || 'scheduled' }}
+        run: python3 seo/social/post_social.py
+      - name: Save what was posted
+        if: always()
+        run: |
+          git config user.name "blog-digest-bot"
+          git config user.email "blog-digest-bot@users.noreply.github.com"
+          git add seo/social/state.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "Record social pack posts"
+          git pull --rebase origin ccr-ee047f91-rbyv4x && git push origin HEAD:ccr-ee047f91-rbyv4x
