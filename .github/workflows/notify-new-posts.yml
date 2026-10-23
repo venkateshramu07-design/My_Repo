@@ -1,4 +1,4 @@
-# Push notification for each new Blog Digest post. GitHub runs scheduled workflows only from the repository's
+# Push notification and newsletter email for each new Blog Digest post. GitHub runs scheduled workflows only from the repository's
 # default branch, so this file must be there; the script and its state live on the site branch below.
 name: Notify subscribers of new posts
 
@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: "*/20 * * * *"
   workflow_dispatch:
+    inputs:
+      email_test:
+        description: "Only send a preview of the latest article to the Brevo sender address"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -25,6 +30,9 @@ jobs:
         env:
           WEBPUSHR_KEY: ${{ secrets.WEBPUSHR_KEY }}
           WEBPUSHR_TOKEN: ${{ secrets.WEBPUSHR_TOKEN }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_LIST_ID: "2"
+          EMAIL_TEST: ${{ inputs.email_test }}
         run: python3 seo/notify/notify_new_posts.py
       - name: Save which posts were announced
         if: always()
