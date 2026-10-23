@@ -14,6 +14,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "good-credit-score-cibil": ("PERSONAL FINANCE", "What Is a Good CIBIL Score? How to Check and Improve It", "#e48b12"),
     "prepay-home-loan-or-invest": ("PERSONAL FINANCE", "Prepay Home Loan or Invest? How to Decide", "#0e9bb5"),
     "gdp-measuring-economy": ("ECONOMICS", "What Is GDP? Its Role in Measuring an Economy", "#7c5cff"),
+    "bitcoin-losing-its-hype": ("CRYPTOCURRENCY", "Is Bitcoin Losing Its Hype? What the Data Says", "#e48b12"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
