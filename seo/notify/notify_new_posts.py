@@ -131,9 +131,21 @@ def send_email(post, key, list_id):
 def email_test(posts, key):
     post = next(p for p in sorted(posts, key=lambda p: p["published"], reverse=True) if not NOT_ARTICLE.match(p["title"]))
     snd = sender_of(key)
-    brevo("/smtp/email", key, {"sender": {"email": snd["email"], "name": "Blog Digest"}, "to": [{"email": snd["email"]}],
-                               "subject": "[Test] " + post["title"], "htmlContent": email_html(post, BLOG)})
-    print("test email sent to the Brevo sender address for:", post["title"])
+    print("sender:", mask(snd["email"]), "| sender id", snd["id"])
+    try:  # what happened to earlier test emails, from Brevo's delivery log (addresses masked; the log is public)
+        for ev in brevo("/smtp/statistics/events?limit=20&sort=desc", key).get("events", []):
+            print("  log:", ev.get("date"), ev.get("event"), mask(ev.get("email", "")), ev.get("subject", "")[:50],
+                  ev.get("reason", ""))
+    except urllib.error.HTTPError:
+        pass
+    r = brevo("/smtp/email", key, {"sender": {"email": snd["email"], "name": "Blog Digest"}, "to": [{"email": snd["email"]}],
+                                   "subject": "[Test] " + post["title"], "htmlContent": email_html(post, BLOG)})
+    print("test email accepted by Brevo for:", post["title"], "| message", r.get("messageId", "?"))
+
+
+def mask(addr):
+    user, _, domain = addr.partition("@")
+    return (user[:2] + "***@" + domain) if domain else "***"
 
 
 def main():
