@@ -1,7 +1,7 @@
 # Post the social pack (pack.json) on schedule: Facebook Page posts on Monday, Wednesday and Friday, a LinkedIn post on
 # Tuesday, each with its pin image and the article link as the first comment. Run daily by
 # .github/workflows/social-pack.yml; state.json records what has been posted, so nothing is posted twice.
-#   FB_PAGE_ID=... FB_PAGE_TOKEN=... LINKEDIN_TOKEN=... python3 seo/social/post_social.py          # post what's due today
+#   FB_PAGE_TOKEN=... [FB_PAGE_ID=...] LINKEDIN_TOKEN=... python3 seo/social/post_social.py          # post what's due today
 #   SOCIAL_MODE=check  python3 seo/social/post_social.py   # check the keys work; posts nothing
 #   SOCIAL_MODE=now    python3 seo/social/post_social.py   # post the next item on each platform today, whatever the day
 # A platform without its keys is skipped (and printed as a dry run).
@@ -58,14 +58,32 @@ def fb_form(path, fields):
     return body
 
 
-def fb_check(page, token):
-    st, body, _ = call("GET", FB_API + page + "?fields=name&access_token=" + urllib.parse.quote(token))
+def fb_page(page, token):
+    """Work out the Page and its key from whatever key was saved: a Page key (it never expires) is used as it is;
+    a personal key is swapped for the Page key of the first Page it manages, or of FB_PAGE_ID if given."""
+    q = lambda path: call("GET", FB_API + path + ("&" if "?" in path else "?") + "access_token=" + urllib.parse.quote(token))
+    st, body, _ = q("me/accounts?fields=id,name,access_token")
+    pages = body.get("data") if st == 200 else None
+    if pages:  # a personal key
+        pg = next((x for x in pages if x["id"] == page), pages[0])
+        print("Facebook: note: the saved key is a personal key; it works, but expires after about 60 days. "
+              "A Page key (from me/accounts) never expires.")
+        return pg["id"], pg["access_token"], pg["name"]
+    st, body, _ = q("me?fields=id,name")
     if st != 200:
         raise RuntimeError("Facebook key check failed: %s %s" % (st, json.dumps(body.get("error", body))[:300]))
-    print("Facebook: key works for the Page", repr(body.get("name")))
+    if page and body["id"] != page:
+        print("Facebook: note: FB_PAGE_ID doesn't match the key's Page; using the key's Page")
+    return body["id"], token, body["name"]
+
+
+def fb_check(page, token):
+    pid, ptok, name = fb_page(page, token)
+    print("Facebook: key works for the Page %r (id %s)" % (name, pid))
 
 
 def fb_post(art, n, page, token):
+    page, token, _ = fb_page(page, token)
     p = art["facebook"][n]
     img = PINS + "%s-%s.jpg" % (art["id"], p["image"])
     photo = fb_form(page + "/photos", {"url": img, "message": p["text"], "access_token": token})
@@ -144,7 +162,7 @@ def main():
     failed = False
 
     if mode == "check":
-        for name, ok, fn in (("Facebook", page and fbt, lambda: fb_check(page, fbt)),
+        for name, ok, fn in (("Facebook", fbt, lambda: fb_check(page, fbt)),
                              ("LinkedIn", lit, lambda: print("LinkedIn: key works for", repr(li_me(lit).get("name"))))):
             if not ok:
                 print(name + ": no key saved yet"); continue
@@ -155,7 +173,7 @@ def main():
     jobs = []
     if mode == "now" or today.weekday() in FB_DAYS:
         nxt = next((k for k in FB_ORDER if "fb:" + k not in posted), None)
-        if nxt: jobs.append(("fb:" + nxt, page and fbt, lambda k=nxt: fb_post(pack[k.split(":")[0]], int(k.split(":")[1]), page, fbt)))
+        if nxt: jobs.append(("fb:" + nxt, fbt, lambda k=nxt: fb_post(pack[k.split(":")[0]], int(k.split(":")[1]), page, fbt)))
     if mode == "now" or today.weekday() in LI_DAYS:
         nxt = next((k for k in LI_ORDER if "li:" + k not in posted), None)
         if nxt: jobs.append(("li:" + nxt, lit, lambda k=nxt: li_post(pack[k], lit)))
