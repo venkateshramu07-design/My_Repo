@@ -1,0 +1,260 @@
+<title>Blog Digest Social Pack</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: one reading column; a sticky article switcher; each article stacks its channels (Facebook, Pinterest, Quora, LinkedIn) as ready-to-copy cards. Brand tokens from the blog's own design layer. */
+:root{
+  --bg:#f7f4ee;--surface:#ffffff;--surface-2:#fbf9f5;--ink:#15171d;--muted:#5d6271;--line:#e8e2d6;
+  --accent:#e2462c;--accent-ink:#ffffff;--accent-soft:#fde8e3;--ok:#0f8a66;--ok-soft:#dff3ec;--warn:#a86207;--warn-soft:#fdf0dc;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;--sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1015;--surface:#161920;--surface-2:#1b1f27;--ink:#ecebe7;--muted:#a4a8b3;--line:#272b35;
+  --accent:#ff6a4d;--accent-ink:#14161b;--accent-soft:#3a1f1a;--ok:#4cc79f;--ok-soft:#14302a;--warn:#f0b45a;--warn-soft:#352812;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1015;--surface:#161920;--surface-2:#1b1f27;--ink:#ecebe7;--muted:#a4a8b3;--line:#272b35;
+  --accent:#ff6a4d;--accent-ink:#14161b;--accent-soft:#3a1f1a;--ok:#4cc79f;--ok-soft:#14302a;--warn:#f0b45a;--warn-soft:#352812;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.12;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,7vw,46px);letter-spacing:-.01em}
+h2{font-size:clamp(25px,5.4vw,32px)}
+h3{font-size:20px;font-weight:700}
+p{margin:0}
+.lede{color:var(--muted);font-size:18px;max-width:60ch}
+.eyebrow{font:700 12.5px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+header.top{display:grid;gap:12px;padding-bottom:8px}
+nav.switch{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:8px;overflow-x:auto;padding-block:12px;margin-block:8px 4px;border-bottom:1px solid var(--line);scrollbar-width:none}
+nav.switch::-webkit-scrollbar{display:none}
+nav.switch a{flex:0 0 auto;text-decoration:none;color:var(--ink);font:600 15px var(--sans);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+nav.switch a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+nav.switch a.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+section.block{display:grid;gap:18px;padding-block:28px;border-bottom:1px solid var(--line)}
+.art-head{display:grid;gap:8px}
+.art-head a{color:var(--muted);font-size:15px;word-break:break-all}
+.channel{display:grid;gap:12px}
+.channel>h3{display:flex;align-items:center;gap:10px}
+.channel>h3 small{font:600 13px var(--sans);color:var(--muted)}
+.tip{font-size:15px;color:var(--muted);max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px;min-width:0}
+.card.done{opacity:.62}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tag{font:700 12px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.label{font:700 13px var(--sans);color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{font:700 15px var(--sans);border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 16px;cursor:pointer;min-height:42px}
+button.copy{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.copy.ok{background:var(--ok);border-color:var(--ok)}
+label.check{display:flex;gap:8px;align-items:center;font:600 14px var(--sans);color:var(--muted);cursor:pointer}
+label.check input{width:20px;height:20px;accent-color:var(--ok)}
+.media{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:start}
+.media img{width:120px;max-width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.media .body{display:grid;gap:10px;min-width:0}
+.pins{display:grid;gap:14px}
+a.full{font:600 14px var(--sans);color:var(--accent)}
+.plan{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:700 12.5px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:700;white-space:nowrap}
+.rules{display:grid;gap:8px;margin:0;padding-left:20px}
+.status{display:inline-flex;align-items:center;font:700 12px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:999px}
+.s-done{background:var(--ok-soft);color:var(--ok)}
+.s-you{background:var(--warn-soft);color:var(--warn)}
+.finding{display:grid;gap:8px}
+.finding h3{font-size:19px}
+.finding p{max-width:64ch}
+.steps{margin:0;padding-left:22px;display:grid;gap:6px}
+code{font:14px var(--mono);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+.titles{display:grid;gap:8px}
+.titles div{display:grid;gap:2px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.titles s{color:var(--muted)}
+footer{padding-top:24px;color:var(--muted);font-size:14px}
+@media (max-width:520px){.media{grid-template-columns:1fr}.media img{width:140px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">Blog Digest · Promotion</p>
+    <h1>Social pack and search check-up</h1>
+    <p class="lede">Ready-to-post copy for your five strongest articles, plus what the site audit found. Tap <b>Copy</b>, paste into the app, and tick each item off when it's posted.</p>
+  </header>
+  <nav class="switch" id="switch" aria-label="Jump to"></nav>
+  <main id="main"></main>
+  <footer>Ticks are saved in this browser only. Pins are 1000 × 1500, the size Pinterest recommends; they also work as Facebook images.</footer>
+</div>
+
+<script type="application/json" id="pack">__PACK__</script>
+<script type="application/json" id="seo">__SEO__</script>
+<script>
+(function(){
+  var pack = JSON.parse(document.getElementById('pack').textContent);
+  var seo = JSON.parse(document.getElementById('seo').textContent);
+  var RAW = 'https://raw.githubusercontent.com/venkateshramu07-design/My_Repo/ccr-ee047f91-rbyv4x/seo/social/pins/';
+  var main = document.getElementById('main'), nav = document.getElementById('switch');
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem('bd-social-done') || '{}'); } catch (e) {}
+  function save(){ try { localStorage.setItem('bd-social-done', JSON.stringify(done)); } catch (e) {} }
+  function el(tag, cls, html){ var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function link(url, src){ return src ? url + '?utm_source=' + src + '&utm_medium=social&utm_campaign=social_pack' : url; }
+  function fill(t, url){ return t.replace(/\{url\}/g, url); }
+
+  function copyBtn(getText, label){
+    var b = el('button', 'copy', label || 'Copy'); b.type = 'button';
+    b.addEventListener('click', function(){
+      var t = getText();
+      function ok(){ b.textContent = 'Copied'; b.classList.add('ok'); setTimeout(function(){ b.textContent = label || 'Copy'; b.classList.remove('ok'); }, 1600); }
+      function fallback(){
+        var ta = el('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); var good = false;
+        try { good = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        if (good) ok(); else { b.textContent = 'Select the text and copy'; }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fallback); else fallback();
+    });
+    return b;
+  }
+  function textBox(t){ var d = el('div', 'text'); d.textContent = t; return d; }
+  function check(key, card){
+    var l = el('label', 'check'); var i = el('input'); i.type = 'checkbox'; i.id = 'done-' + key; i.checked = !!done[key];
+    l.appendChild(i); l.appendChild(document.createTextNode('Posted'));
+    function sync(){ card.classList.toggle('done', i.checked); }
+    i.addEventListener('change', function(){ if (i.checked) done[key] = 1; else delete done[key]; save(); sync(); });
+    sync(); return l;
+  }
+  function pinImg(id, n, alt){
+    var img = el('img'); img.src = 'pins/' + id + '-pin-' + n + '.jpg'; img.alt = alt; img.loading = 'lazy'; img.width = 120; img.height = 180; return img;
+  }
+  function fullLink(id, n){ var a = el('a', 'full', 'Open full size to save'); a.href = RAW + id + '-pin-' + n + '.jpg'; a.target = '_blank'; a.rel = 'noopener'; return a; }
+
+  function channel(title, note, tip){
+    var c = el('div', 'channel'); c.appendChild(el('h3', '', esc(title) + (note ? ' <small>' + esc(note) + '</small>' : '')));
+    if (tip) c.appendChild(el('p', 'tip', tip)); return c;
+  }
+
+  // Article sections
+  pack.articles.forEach(function(a){
+    var s = el('section', 'block'); s.id = a.id;
+    var h = el('div', 'art-head');
+    h.appendChild(el('p', 'eyebrow', 'Article'));
+    h.appendChild(el('h2', '', esc(a.title)));
+    var al = el('a'); al.href = a.url; al.target = '_blank'; al.rel = 'noopener'; al.textContent = a.url.replace('https://', ''); h.appendChild(al);
+    s.appendChild(h);
+
+    var fb = channel('Facebook', '3 posts', 'Post the text with the image. Put the link in the first comment, not in the post.');
+    a.facebook.forEach(function(p, i){
+      var key = a.id + '-fb-' + i, card = el('div', 'card'), n = +p.image.slice(-1);
+      var top = el('div', 'card-top'); top.appendChild(el('span', 'tag', 'Post ' + (i + 1) + ' · ' + esc(p.angle))); top.appendChild(check(key, card)); card.appendChild(top);
+      var m = el('div', 'media'); m.appendChild(pinImg(a.id, n, a.pins[n - 1].alt));
+      var b = el('div', 'body');
+      b.appendChild(textBox(p.text));
+      var r1 = el('div', 'row'); r1.appendChild(copyBtn(function(){ return p.text; }, 'Copy post')); r1.appendChild(fullLink(a.id, n)); b.appendChild(r1);
+      b.appendChild(el('p', 'label', 'First comment'));
+      var cm = fill(p.comment, link(a.url, 'facebook')); b.appendChild(textBox(cm));
+      var r2 = el('div', 'row'); r2.appendChild(copyBtn(function(){ return cm; }, 'Copy comment')); b.appendChild(r2);
+      m.appendChild(b); card.appendChild(m); fb.appendChild(card);
+    });
+    s.appendChild(fb);
+
+    var pi = channel('Pinterest', '3 pins', 'Save the image, create a pin, then paste the title, description and link. Board name is a suggestion.');
+    a.pins.forEach(function(p, i){
+      var key = a.id + '-pin-' + i, card = el('div', 'card'), n = i + 1, url = link(a.url, 'pinterest');
+      var top = el('div', 'card-top'); top.appendChild(el('span', 'tag', 'Pin ' + n + ' · Board: ' + esc(p.board))); top.appendChild(check(key, card)); card.appendChild(top);
+      var m = el('div', 'media'); m.appendChild(pinImg(a.id, n, p.alt));
+      var b = el('div', 'body');
+      b.appendChild(fullLink(a.id, n));
+      b.appendChild(el('p', 'label', 'Title')); b.appendChild(textBox(p.pin_title));
+      var r1 = el('div', 'row'); r1.appendChild(copyBtn(function(){ return p.pin_title; }, 'Copy title')); b.appendChild(r1);
+      b.appendChild(el('p', 'label', 'Description')); b.appendChild(textBox(p.description));
+      var r2 = el('div', 'row'); r2.appendChild(copyBtn(function(){ return p.description; }, 'Copy description')); r2.appendChild(copyBtn(function(){ return url; }, 'Copy link')); b.appendChild(r2);
+      m.appendChild(b); card.appendChild(m); pi.appendChild(card);
+    });
+    s.appendChild(pi);
+
+    var q = channel('Quora', '1 answer', 'Search Quora for the question below (or a close match with many followers) and post this as your answer.');
+    (function(){
+      var key = a.id + '-quora', card = el('div', 'card'), ans = fill(a.quora.answer, a.url);
+      var top = el('div', 'card-top'); top.appendChild(el('span', 'tag', 'Question')); top.appendChild(check(key, card)); card.appendChild(top);
+      card.appendChild(el('h3', '', esc(a.quora.question)));
+      var r0 = el('div', 'row'); r0.appendChild(copyBtn(function(){ return a.quora.question; }, 'Copy question')); card.appendChild(r0);
+      card.appendChild(textBox(ans));
+      var r1 = el('div', 'row'); r1.appendChild(copyBtn(function(){ return ans; }, 'Copy answer')); card.appendChild(r1);
+      q.appendChild(card);
+    })();
+    s.appendChild(q);
+
+    var li = channel('LinkedIn', '1 post', 'Post the text with pin 1 as the image, then add the link as the first comment.');
+    (function(){
+      var key = a.id + '-li', card = el('div', 'card'), cm = 'Full guide: ' + link(a.url, 'linkedin');
+      var top = el('div', 'card-top'); top.appendChild(el('span', 'tag', 'Post')); top.appendChild(check(key, card)); card.appendChild(top);
+      card.appendChild(textBox(a.linkedin));
+      var r1 = el('div', 'row'); r1.appendChild(copyBtn(function(){ return a.linkedin; }, 'Copy post')); r1.appendChild(copyBtn(function(){ return cm; }, 'Copy comment')); card.appendChild(r1);
+      li.appendChild(card);
+    })();
+    s.appendChild(li);
+    main.appendChild(s);
+  });
+
+  // Posting plan
+  var plan = el('section', 'block'); plan.id = 'plan';
+  plan.appendChild(el('p', 'eyebrow', 'Schedule'));
+  plan.appendChild(el('h2', '', 'A five-week posting plan'));
+  plan.appendChild(el('p', 'tip', 'Spread out like this, no link appears on Facebook more than once in the same week, which keeps you clear of spam filters.'));
+  var rows = [
+    ['Week 1', 'GDP post 1, Emergency fund post 1, Sleep post 1', '1 a day: GDP, Emergency fund, Ikigai, Sleep, Burnout (pin 1 each)', 'GDP', 'GDP'],
+    ['Week 2', 'Ikigai post 1, Burnout post 1, GDP post 2', '1 a day: pin 2 of each article', 'Emergency fund', 'Emergency fund'],
+    ['Week 3', 'Sleep post 2, Emergency fund post 2, Ikigai post 2', '1 a day: pin 3 of each article', 'Ikigai', 'Ikigai'],
+    ['Week 4', 'Burnout post 2, GDP post 3, Sleep post 3', 'Repin your best performers to a second board', 'Sleep', 'Sleep'],
+    ['Week 5', 'Emergency fund post 3, Ikigai post 3, Burnout post 3', 'Repin to group boards you have joined', 'Burnout', 'Burnout']
+  ];
+  var t = '<div class="plan"><table><thead><tr><th>Week</th><th>Facebook (3 a week)</th><th>Pinterest</th><th>Quora</th><th>LinkedIn</th></tr></thead><tbody>' +
+    rows.map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+  plan.appendChild(el('div', '', t));
+  plan.appendChild(el('h3', '', 'Rules that keep your Page safe'));
+  plan.appendChild(el('ul', 'rules', ['Never post the same text twice, or the same link to several groups.',
+    'Keep links in the first comment on Facebook and LinkedIn.',
+    'Mix in posts with no link at all: a question, a chart, a one-line takeaway.',
+    'No link shorteners. Use the full blog link.',
+    'In groups, answer questions first. Share a link only when it helps and the group allows it.'].map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('')));
+  main.appendChild(plan);
+
+  // Search check-up
+  var b = el('section', 'block'); b.id = 'search';
+  b.appendChild(el('p', 'eyebrow', 'Search check-up'));
+  b.appendChild(el('h2', '', 'What the site audit found'));
+  b.appendChild(el('p', 'tip', seo.summary));
+  seo.findings.forEach(function(f){
+    var d = el('div', 'card finding');
+    var top = el('div', 'card-top'); top.appendChild(el('h3', '', esc(f.title)));
+    top.appendChild(el('span', 'status ' + (f.status === 'done' ? 's-done' : 's-you'), f.status === 'done' ? 'Done' : 'Your turn')); d.appendChild(top);
+    d.appendChild(el('p', '', f.text));
+    if (f.steps) d.appendChild(el('ol', 'steps', f.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('')));
+    (f.copies || []).forEach(function(c){
+      d.appendChild(el('p', 'label', esc(c.label))); d.appendChild(textBox(c.text));
+      var r = el('div', 'row'); r.appendChild(copyBtn(function(){ return c.text; })); d.appendChild(r);
+    });
+    if (f.titles) d.appendChild(el('div', 'titles', f.titles.map(function(x){ return '<div><s>' + esc(x[0]) + '</s><b>' + esc(x[1]) + '</b></div>'; }).join('')));
+    b.appendChild(d);
+  });
+  main.appendChild(b);
+
+  // Switcher
+  var items = pack.articles.map(function(a){ return [a.id, a.short]; }).concat([['plan', 'Schedule'], ['search', 'Search check-up']]);
+  items.forEach(function(it){ var l = el('a', '', esc(it[1])); l.href = '#' + it[0]; nav.appendChild(l); });
+  var links = nav.querySelectorAll('a');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) links.forEach(function(l){ l.classList.toggle('on', l.getAttribute('href') === '#' + e.target.id); }); }); }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('section.block').forEach(function(s){ io.observe(s); });
+  }
+  if (location.hash) { var target = document.getElementById(location.hash.slice(1)); if (target) target.scrollIntoView(); }
+})();
+</script>
