@@ -646,6 +646,8 @@ html.bd-article .post-body .seo-related li::marker{content:''}
 /* Homepage, round 3 */
 #top-bar{display:none!important}
 html.bd-home-front #content-wrapper{display:none!important}
+html.bd-home-early:not(.bd-home-front) #content-wrapper{visibility:hidden;position:relative}
+html.bd-home-early:not(.bd-home-front) #content-wrapper::before{content:'';visibility:visible;position:absolute;left:0;right:0;top:24px;height:min(60vh,440px);border-radius:var(--bd-radius);background:linear-gradient(100deg,var(--bd-surface-2) 30%,var(--bd-line) 50%,var(--bd-surface-2) 70%);background-size:200% 100%;animation:bd-shine 1.4s linear infinite}
 .bd-dek{margin:0 0 10px;font:400 17px/1.55 var(--bd-sans);color:var(--bd-muted);max-width:60ch}
 .bd-dek.bd-dek-sm{margin:6px 0 0;font-size:14.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .bd-dek:empty{display:none}
@@ -955,6 +957,12 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     var saved = localStorage.getItem('bd-theme');
     if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) root.classList.add('bd-dark');
   } catch (e) {}
+  // Homepage: keep the theme's own post grid hidden while the front page is built over it, so first-time visitors
+  // don't see the old layout flash and jump. If the build never happens, show the page again once it has loaded.
+  if ((location.pathname === '/' || location.pathname === '') && !/[?&](q|updated-max|start)=/.test(location.search)) {
+    root.classList.add('bd-home-early');
+    addEventListener('load', function () { if (!root.classList.contains('bd-home-front')) root.classList.remove('bd-home-early'); });
+  }
 
   var BLOG = 'https://randomthoughtsever.blogspot.com/';
 
