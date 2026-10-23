@@ -45,10 +45,14 @@ HOME_IMAGE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@e85c613
 attr = lambda t: html.escape(t, quote=True).replace("&#x27;", "&#39;")
 def desc_tags(text):
     return "<meta content='%s' name='description'/><meta content='%s' property='og:description'/>" % (attr(text), attr(text))
-# Blogger compares against its internal address, which is http:// (it rewrites links to https:// only on output),
-# so each article is listed under both forms.
-CASES = "\n".join("      <b:case value='%s'/>%s" % (attr(scheme + BLOG[len("https"):] + path), desc_tags(text))
-                   for path, text in sorted(DESCS.items()) for scheme in ("http", "https"))
+# One condition per article. b:switch never matched page addresses, so this uses the address comparison classic Blogger
+# themes use (data:blog.url == "..."), on both the canonical and the requested address, in http:// (Blogger's
+# internal form) and https://.
+def cond(path):
+    a, b = "http" + BLOG[len("https"):] + path, BLOG + path
+    return attr(" or ".join("%s == \"%s\"" % (var, u) for var in ("data:blog.canonicalUrl", "data:blog.url") for u in (a, b)))
+CHAIN = "".join(("<b:if cond='%s'>" if n == 0 else "\n      <b:elseif cond='%s'/>") % cond(path) + desc_tags(text)
+                for n, (path, text) in enumerate(sorted(DESCS.items())))
 META = """<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
     <meta content='blogger' name='generator'/>
     <link expr:href='data:blog.homepageUrl + &quot;favicon.ico&quot;' rel='icon' type='image/x-icon'/>
@@ -58,10 +62,9 @@ META = """<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
     <meta expr:content='data:blog.canonicalUrl' property='og:url'/>
     <b:if cond='data:view.isHomepage'><meta content='Blog Digest: Practical Guides to Money, Mind and Work' property='og:title'/><b:elseif cond='data:view.isLabelSearch'/><meta expr:content='data:view.search.label + &quot; | Blog Digest&quot;' property='og:title'/><b:elseif cond='data:view.isSingleItem'/><meta expr:content='data:view.title' property='og:title'/><b:else/><meta content='Blog Digest' property='og:title'/></b:if>
     <b:if cond='data:view.isSingleItem and data:view.featuredImage'><meta expr:content='resizeImage(data:view.featuredImage, 1200, &quot;1200:630&quot;)' property='og:image'/><b:else/><meta content='""" + HOME_IMAGE + """' property='og:image'/></b:if>
-    <b:switch var='data:blog.canonicalUrl'>
-""" + CASES + """
-      <b:default/><b:if cond='data:view.isPost and data:view.description'><meta expr:content='data:view.description' name='description'/><meta expr:content='data:view.description' property='og:description'/><b:else/>""" + desc_tags(SITE) + """</b:if>
-    </b:switch>
+    """ + CHAIN + """
+      <b:elseif cond='data:view.isPost and data:view.description'/><meta expr:content='data:view.description' name='description'/><meta expr:content='data:view.description' property='og:description'/>
+      <b:else/>""" + desc_tags(SITE) + """</b:if>
     <meta content='Blog Digest' property='og:site_name'/>
     <b:if cond='data:view.isSingleItem'><meta content='article' property='og:type'/><b:else/><meta content='website' property='og:type'/></b:if>
     <meta content='summary_large_image' name='twitter:card'/>
