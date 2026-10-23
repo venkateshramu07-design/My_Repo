@@ -1,7 +1,7 @@
 # Post the social pack (pack.json) on schedule: Facebook Page posts on Monday, Wednesday and Friday, a LinkedIn post on
 # Tuesday, each with its pin image and the article link as the first comment. Run daily by
 # .github/workflows/social-pack.yml; state.json records what has been posted, so nothing is posted twice.
-#   FB_PAGE_TOKEN=... [FB_PAGE_ID=...] LINKEDIN_TOKEN=... python3 seo/social/post_social.py          # post what's due today
+#   MAKE_WEBHOOK_URL=... (or FB_PAGE_TOKEN=...) LINKEDIN_TOKEN=... python3 seo/social/post_social.py          # post what's due today
 #   SOCIAL_MODE=check  python3 seo/social/post_social.py   # check the keys work; posts nothing
 #   SOCIAL_MODE=now    python3 seo/social/post_social.py   # post the next item on each platform today, whatever the day
 # A platform without its keys is skipped (and printed as a dry run).
@@ -39,7 +39,11 @@ def call(method, url, data=None, headers=None, raw=None):
     try:
         with urllib.request.urlopen(req, timeout=90) as r:
             txt = r.read()
-            return r.status, (json.loads(txt) if txt.strip() else {}), dict(r.headers)
+            try:
+                parsed = json.loads(txt) if txt.strip() else {}
+            except ValueError:  # Make's webhook answers with plain text ("Accepted")
+                parsed = {"raw": txt.decode(errors="replace")[:200]}
+            return r.status, parsed, dict(r.headers)
     except urllib.error.HTTPError as e:
         txt = e.read()[:600].decode(errors="replace")
         try:
@@ -80,6 +84,19 @@ def fb_page(page, token):
 def fb_check(page, token):
     pid, ptok, name = fb_page(page, token)
     print("Facebook: key works for the Page %r (id %s)" % (name, pid))
+
+
+def fb_make(art, n, hook, test=False):
+    """Hand a Facebook post to the Make.com scenario behind this webhook, which posts it with Make's own approved
+    Facebook connection (no developer app needed). The scenario's Webhook response can return the post id."""
+    p = art["facebook"][n]
+    data = {"message": p["text"], "image_url": PINS + "%s-%s.jpg" % (art["id"], p["image"]),
+            "comment": p["comment"].replace("{url}", link(art["url"], "facebook")), "test": test}
+    st, body, _ = call("POST", hook, data)
+    if st >= 300:
+        raise RuntimeError("Make webhook -> %s %s" % (st, json.dumps(body)[:200]))
+    pid = body.get("id") or body.get("post_id") if isinstance(body, dict) else None
+    return "https://www.facebook.com/" + pid if pid else "sent to Make (%s)" % (body.get("raw", "Accepted") if isinstance(body, dict) else body)
 
 
 def fb_post(art, n, page, token):
@@ -158,11 +175,14 @@ def main():
     posted = state["posted"]
     mode = os.environ.get("SOCIAL_MODE", "scheduled")
     page, fbt, lit = os.environ.get("FB_PAGE_ID", ""), os.environ.get("FB_PAGE_TOKEN", ""), os.environ.get("LINKEDIN_TOKEN", "")
+    hook = os.environ.get("MAKE_WEBHOOK_URL", "")  # Facebook through Make.com; used instead of FB_PAGE_TOKEN when saved
     today = datetime.now(timezone.utc)
     failed = False
 
     if mode == "check":
-        for name, ok, fn in (("Facebook", fbt, lambda: fb_check(page, fbt)),
+        if hook:
+            print("Facebook: posts go through Make.com (webhook saved). Make has no test call, so the first post is the test.")
+        for name, ok, fn in (("Facebook", fbt and not hook, lambda: fb_check(page, fbt)),
                              ("LinkedIn", lit, lambda: print("LinkedIn: key works for", repr(li_me(lit).get("name"))))):
             if not ok:
                 print(name + ": no key saved yet"); continue
@@ -173,7 +193,10 @@ def main():
     jobs = []
     if mode == "now" or today.weekday() in FB_DAYS:
         nxt = next((k for k in FB_ORDER if "fb:" + k not in posted), None)
-        if nxt: jobs.append(("fb:" + nxt, fbt, lambda k=nxt: fb_post(pack[k.split(":")[0]], int(k.split(":")[1]), page, fbt)))
+        if nxt:
+            a, n = nxt.split(":")
+            jobs.append(("fb:" + nxt, hook or fbt, (lambda a=a, n=int(n): fb_make(pack[a], n, hook)) if hook
+                         else (lambda a=a, n=int(n): fb_post(pack[a], n, page, fbt))))
     if mode == "now" or today.weekday() in LI_DAYS:
         nxt = next((k for k in LI_ORDER if "li:" + k not in posted), None)
         if nxt: jobs.append(("li:" + nxt, lit, lambda k=nxt: li_post(pack[k], lit)))

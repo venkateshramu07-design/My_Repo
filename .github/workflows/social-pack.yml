@@ -32,6 +32,7 @@ jobs:
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
           LINKEDIN_TOKEN: ${{ secrets.LINKEDIN_TOKEN }}
           SOCIAL_MODE: ${{ inputs.mode || 'scheduled' }}
         run: python3 seo/social/post_social.py
