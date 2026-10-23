@@ -69,7 +69,8 @@ def send_push(post, key, token):
 def brevo(path, key, body=None, method=None):
     req = urllib.request.Request(BREVO + path, method=method or ("POST" if body is not None else "GET"),
                                  data=json.dumps(body).encode() if body is not None else None,
-                                 headers={"api-key": key, "accept": "application/json", "content-type": "application/json"})
+                                 headers={"api-key": key, "accept": "application/json", "content-type": "application/json",
+                                          "user-agent": "blog-digest-notifier/1.0 (+" + BLOG + ")"})  # Cloudflare blocks urllib's default
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             raw = r.read()
