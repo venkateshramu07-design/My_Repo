@@ -32,7 +32,33 @@ HEAD = """<!-- Blog Digest: the design layer loads first, so pages render in the
 })();
 //]]></script>""".replace("3e8cd196ed9f95a7b0791e1aa3818ee65eae6967", CURRENT)
 
-META = """<b:include data='blog' name='all-head-content'/>
+# Blogger's all-head-content include writes og:description and the meta description from each post's search
+# description, which on this blog are still old comma-separated keyword lists, and the API can't change them. So the
+# theme writes those tags itself: every article gets its one-sentence summary from descriptions.json, and anything
+# else falls back to the post's own search description or the site sentence. The rest of what the include wrote
+# (canonical, feeds, favicon, og:url, og:title, og:image) is written out here too.
+import html, json
+DESCS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "descriptions.json"), encoding="utf-8"))
+BLOG = "https://randomthoughtsever.blogspot.com"
+SITE = "Clear, in-depth guides to money, economics, careers, psychology and well-being, for readers everywhere."
+HOME_IMAGE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@e85c61307eba213563a3c2f5fec931a8b9a15cd3/seo/covers/home.jpg"
+attr = lambda t: html.escape(t, quote=True).replace("&#x27;", "&#39;")
+def desc_tags(text):
+    return "<meta content='%s' name='description'/><meta content='%s' property='og:description'/>" % (attr(text), attr(text))
+CASES = "\n".join("      <b:case value='%s'/>%s" % (attr(BLOG + path), desc_tags(text)) for path, text in sorted(DESCS.items()))
+META = """<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+    <meta content='blogger' name='generator'/>
+    <link expr:href='data:blog.homepageUrl + &quot;favicon.ico&quot;' rel='icon' type='image/x-icon'/>
+    <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+    <link expr:href='data:blog.homepageUrl + &quot;feeds/posts/default&quot;' rel='alternate' title='Blog Digest - Atom' type='application/atom+xml'/>
+    <link expr:href='data:blog.homepageUrl + &quot;feeds/posts/default?alt=rss&quot;' rel='alternate' title='Blog Digest - RSS' type='application/rss+xml'/>
+    <meta expr:content='data:blog.canonicalUrl' property='og:url'/>
+    <b:if cond='data:view.isHomepage'><meta content='Blog Digest: Practical Guides to Money, Mind and Work' property='og:title'/><b:else/><meta expr:content='data:view.title' property='og:title'/></b:if>
+    <b:if cond='data:view.isSingleItem and data:view.featuredImage'><meta expr:content='resizeImage(data:view.featuredImage, 1200, &quot;1200:630&quot;)' property='og:image'/><b:else/><meta content='""" + HOME_IMAGE + """' property='og:image'/></b:if>
+    <b:switch var='data:blog.canonicalUrl'>
+""" + CASES + """
+      <b:default/><b:if cond='data:view.isPost and data:view.description'><meta expr:content='data:view.description' name='description'/><meta expr:content='data:view.description' property='og:description'/><b:else/>""" + desc_tags(SITE) + """</b:if>
+    </b:switch>
     <meta content='Blog Digest' property='og:site_name'/>
     <b:if cond='data:view.isSingleItem'><meta content='article' property='og:type'/><b:else/><meta content='website' property='og:type'/></b:if>
     <meta content='summary_large_image' name='twitter:card'/>
