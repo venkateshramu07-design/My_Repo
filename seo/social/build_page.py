@@ -11,13 +11,8 @@ BLOG_DESC = "Clear, in-depth guides to money, economics, careers, psychology and
 seo = {
  "summary": "I checked all 140 articles on the live site. The writing itself is in good shape. The problems are in Blogger settings that only you can change, and they hurt search and social sharing at the same time: a shared link currently shows an old keyword list, and no visits are being counted.",
  "findings": [
-  {"title": "Shared links show an old keyword list", "status": "you",
-   "text": "When anyone shares an article on Facebook, WhatsApp or LinkedIn, the preview text comes from Blogger's search description. Older posts still have the old comma-separated keywords (with typos), and new posts fall back to the blog description, which is also a keyword list. Google is less affected because the site's design layer fixes it for browsers, but social apps don't run that code. Fix this before posting the social pack.",
-   "steps": ["Blogger → <b>Settings</b> → <b>Meta tags</b>: turn on <b>Enable search description</b> and paste the blog description below.",
-             "For each of the five articles in this pack: open the post → <b>Post settings</b> → <b>Search description</b> → paste its line below → <b>Update</b>.",
-             "Then open <b>developers.facebook.com/tools/debug</b>, paste each article link and tap <b>Scrape again</b>, so Facebook forgets the old preview."],
-   "copies": [{"label": "Blog description", "text": BLOG_DESC}] + [
-       {"label": a["short"], "text": DESCS[a["url"].replace("https://randomthoughtsever.blogspot.com", "")]} for a in pack["articles"]]},
+  {"title": "Shared links show the right summary", "status": "done",
+   "text": "Fixed in the theme on 23 October. Every article now gives Facebook, WhatsApp, LinkedIn, X and Google its own one-sentence summary instead of the old keyword list, and the homepage has its own title and share image. Facebook keeps old previews for a while: to refresh one now, paste the link at developers.facebook.com/tools/debug and tap Scrape again."},
   {"title": "Visits aren't being counted", "status": "you",
    "text": "The blog still sends visits to an old Universal Analytics ID (UA-199206936-1). Google switched those off in 2023, so there's no record of which articles people read or where they come from. Without that, nobody can tell which posts are worth promoting.",
    "steps": ["Go to <b>analytics.google.com</b> → <b>Admin</b> → <b>Create</b> → <b>Property</b>, name it Blog Digest, then add a <b>Web</b> data stream for randomthoughtsever.blogspot.com.",
