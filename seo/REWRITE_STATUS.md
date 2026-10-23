@@ -42,3 +42,10 @@ All 153 queued posts are rewritten and live.
 
 Live at https://randomthoughtsever.blogspot.com/2026/10/what-is-gdp-its-role-in-measuring.html (Economics).
 The six newest posts now carry their covers from `seo/covers/`.
+
+## Bitcoin article (published 23 October 2026)
+
+Live at https://randomthoughtsever.blogspot.com/2026/10/is-bitcoin-losing-its-hype-what-data.html (Cryptocurrency).
+Embeds: btc-hype-cycle, btc-drawdowns, btc-risk-calculator (currency examples in CALC_EXAMPLES as `bt-cur`).
+Its share description is in descriptions.json and in the theme built by `seo/theme/blogger/optimize_theme.py`,
+which has to be uploaded again (Theme > Restore) for the description to reach Facebook and Google.
