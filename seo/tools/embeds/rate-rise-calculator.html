@@ -1,0 +1,37 @@
+<div class="bd-calc" id="bd-rr">
+<p class="bc-title">What a rate rise means for you</p>
+<p class="bc-sub">Enter your variable-rate debts and your savings, then the size of the rise. The calculator shows what it adds to your interest bill each year, what it could add to your savings income, and the net effect.</p>
+<div class="bc-grid">
+<div><label for="rr-card">Credit card balance you carry</label><input id="rr-card" type="number" min="0" step="1000" value="100000"></div>
+<div><label for="rr-loan">Variable-rate loans (floating mortgage, line of credit)</label><input id="rr-loan" type="number" min="0" step="10000" value="2500000"></div>
+<div><label for="rr-save">Savings that would earn the higher rate</label><input id="rr-save" type="number" min="0" step="5000" value="300000"></div>
+<div><label for="rr-rise">Rise in interest rates (percentage points)</label><input id="rr-rise" type="number" min="0" max="10" step="0.25" value="0.5"></div>
+<div><label for="rr-cur">Currency</label><select id="rr-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Extra interest on debts, per year</span><b id="rr-debt">—</b></div>
+<div class="bc-stat"><span>Extra interest on savings, per year</span><b id="rr-gain">—</b></div>
+<div class="bc-stat bc-main"><span>Net effect per year</span><b id="rr-net">—</b><span id="rr-netw"></span></div>
+<div class="bc-stat"><span>Net effect per month</span><b id="rr-mon">—</b></div>
+</div>
+<div class="bc-bar"><i id="rr-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="rr-note">—</span></div>
+<p class="bc-note">Simplified: assumes the whole rise passes through to variable debts and to the savings you enter, and ignores tax on interest. Fixed-rate loans and fixed deposits don't change until they are renewed.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-rr');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('rr-cur').value,rise=C.num($('rr-rise'))/100,debt=C.num($('rr-card'))+C.num($('rr-loan')),save=C.num($('rr-save'));
+  var cost=debt*rise,gain=save*rise,net=gain-cost;
+  $('rr-debt').textContent=C.money(cost,cur);
+  $('rr-gain').textContent=C.money(gain,cur);
+  $('rr-net').textContent=(net<0?'−':'+')+C.money(Math.abs(net),cur);$('rr-netw').textContent=C.words(Math.abs(net),cur);
+  $('rr-mon').textContent=(net<0?'−':'+')+C.money(Math.abs(net)/12,cur);
+  var share=cost+gain>0?cost/(cost+gain)*100:0;
+  $('rr-bar').style.width=share+'%';
+  $('rr-note').textContent=cost+gain>0?(net<0?'Rising rates cost you more than they earn you: pay down variable debt first':'Rising rates help you: make sure your savings actually earn the higher rate'):'Enter your balances';
+});
+})();
+</script>
