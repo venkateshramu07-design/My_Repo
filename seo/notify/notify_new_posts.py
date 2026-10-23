@@ -70,9 +70,13 @@ def brevo(path, key, body=None, method=None):
     req = urllib.request.Request(BREVO + path, method=method or ("POST" if body is not None else "GET"),
                                  data=json.dumps(body).encode() if body is not None else None,
                                  headers={"api-key": key, "accept": "application/json", "content-type": "application/json"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        raw = r.read()
-        return json.loads(raw) if raw.strip() else {}
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            raw = r.read()
+    except urllib.error.HTTPError as err:
+        print("Brevo", path, "->", err.code, err.read()[:300].decode(errors="replace"), file=sys.stderr)
+        raise
+    return json.loads(raw) if raw.strip() else {}
 
 
 def email_html(post, unsubscribe="{{ unsubscribe }}"):
@@ -119,8 +123,7 @@ def send_email(post, key, list_id):
         print("emailed list", list_id, ":", post["title"], "| campaign", camp["id"])
         return True
     except (urllib.error.HTTPError, urllib.error.URLError, RuntimeError, KeyError) as err:
-        detail = err.read()[:300].decode(errors="replace") if isinstance(err, urllib.error.HTTPError) else ""
-        print("EMAIL FAILED:", post["title"], "|", err, detail, file=sys.stderr)
+        print("EMAIL FAILED:", post["title"], "|", err, file=sys.stderr)
         return False
 
 
