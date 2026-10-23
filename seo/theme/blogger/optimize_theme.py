@@ -45,7 +45,10 @@ HOME_IMAGE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@e85c613
 attr = lambda t: html.escape(t, quote=True).replace("&#x27;", "&#39;")
 def desc_tags(text):
     return "<meta content='%s' name='description'/><meta content='%s' property='og:description'/>" % (attr(text), attr(text))
-CASES = "\n".join("      <b:case value='%s'/>%s" % (attr(BLOG + path), desc_tags(text)) for path, text in sorted(DESCS.items()))
+# Blogger compares against its internal address, which is http:// (it rewrites links to https:// only on output),
+# so each article is listed under both forms.
+CASES = "\n".join("      <b:case value='%s'/>%s" % (attr(scheme + BLOG[len("https"):] + path), desc_tags(text))
+                   for path, text in sorted(DESCS.items()) for scheme in ("http", "https"))
 META = """<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
     <meta content='blogger' name='generator'/>
     <link expr:href='data:blog.homepageUrl + &quot;favicon.ico&quot;' rel='icon' type='image/x-icon'/>
@@ -53,7 +56,7 @@ META = """<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
     <link expr:href='data:blog.homepageUrl + &quot;feeds/posts/default&quot;' rel='alternate' title='Blog Digest - Atom' type='application/atom+xml'/>
     <link expr:href='data:blog.homepageUrl + &quot;feeds/posts/default?alt=rss&quot;' rel='alternate' title='Blog Digest - RSS' type='application/rss+xml'/>
     <meta expr:content='data:blog.canonicalUrl' property='og:url'/>
-    <b:if cond='data:view.isHomepage'><meta content='Blog Digest: Practical Guides to Money, Mind and Work' property='og:title'/><b:else/><meta expr:content='data:view.title' property='og:title'/></b:if>
+    <b:if cond='data:view.isHomepage'><meta content='Blog Digest: Practical Guides to Money, Mind and Work' property='og:title'/><b:elseif cond='data:view.isLabelSearch'/><meta expr:content='data:view.search.label + &quot; | Blog Digest&quot;' property='og:title'/><b:elseif cond='data:view.isSingleItem'/><meta expr:content='data:view.title' property='og:title'/><b:else/><meta content='Blog Digest' property='og:title'/></b:if>
     <b:if cond='data:view.isSingleItem and data:view.featuredImage'><meta expr:content='resizeImage(data:view.featuredImage, 1200, &quot;1200:630&quot;)' property='og:image'/><b:else/><meta content='""" + HOME_IMAGE + """' property='og:image'/></b:if>
     <b:switch var='data:blog.canonicalUrl'>
 """ + CASES + """
@@ -83,7 +86,9 @@ once(r"<meta content='width=device-width, initial-scale=1, minimum-scale=1, maxi
      "<meta content='width=device-width, initial-scale=1' name='viewport'/>", "viewport")
 # 5. Homepage title: the blog's name in Settings is still "Good vibes".
 once(r"<title><data:view.title.escaped/></title>",
-     "<b:if cond='data:view.isHomepage'><title>Blog Digest: Practical Guides to Money, Mind and Work</title><b:else/><title><data:view.title.escaped/></title></b:if>", "title")
+     "<b:if cond='data:view.isHomepage'><title>Blog Digest: Practical Guides to Money, Mind and Work</title>"
+     "<b:elseif cond='data:view.isLabelSearch'/><title><data:view.search.label.escaped/> | Blog Digest</title>"
+     "<b:elseif cond='data:view.isSingleItem'/><title><data:view.title.escaped/></title><b:else/><title>Blog Digest</title></b:if>", "title")
 # 6. Sharing and indexing tags Blogger doesn't add.
 once(r"<b:include data='blog' name='all-head-content'/>", META, "head content")
 # 7. Open Sans and Arimo are overridden by the design layer's fonts; Arimo is metric-identical to Arial anyway.
