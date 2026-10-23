@@ -1,0 +1,37 @@
+<div class="bd-calc" id="bd-btr">
+<p class="bc-title">What a Bitcoin fall would do to your savings</p>
+<p class="bc-sub">Enter what you have invested in total, how much of it is in Bitcoin, and a fall to test. The calculator shows the damage, and how far Bitcoin would then have to rise just to get back to where it started.</p>
+<div class="bc-grid">
+<div><label for="bt-total">Total investments, including Bitcoin</label><input id="bt-total" type="number" min="0" step="10000" value="1000000"></div>
+<div><label for="bt-share">Share held in Bitcoin (%)</label><input id="bt-share" type="number" min="0" max="100" step="1" value="10"></div>
+<div><label for="bt-fall">Fall to test (%)</label><input id="bt-fall" type="number" min="0" max="99" step="1" value="50"></div>
+<div><label for="bt-cur">Currency</label><select id="bt-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Your Bitcoin today</span><b id="bt-hold">—</b></div>
+<div class="bc-stat bc-main"><span>Loss if Bitcoin falls that far</span><b id="bt-loss">—</b><span id="bt-lossw"></span></div>
+<div class="bc-stat"><span>Total investments after the fall</span><b id="bt-after">—</b></div>
+<div class="bc-stat"><span>Change in your total</span><b id="bt-pct">—</b></div>
+<div class="bc-stat bc-main"><span>Rise Bitcoin then needs to break even</span><b id="bt-back">—</b></div>
+</div>
+<div class="bc-bar"><i id="bt-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="bt-note">—</span></div>
+<p class="bc-note">Break-even rise = 1 ÷ (1 − fall) − 1. A 50% fall needs a 100% rise to recover; an 80% fall needs 400%. This is arithmetic, not a forecast, and it ignores fees and taxes.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-btr');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('bt-cur').value,total=C.num($('bt-total')),share=Math.min(100,Math.max(0,C.num($('bt-share'))))/100,fall=Math.min(99,Math.max(0,C.num($('bt-fall'))))/100;
+  var hold=total*share,loss=hold*fall,after=total-loss,pct=total>0?-loss/total:0;
+  $('bt-hold').textContent=C.money(hold,cur);
+  $('bt-loss').textContent=C.money(loss,cur);$('bt-lossw').textContent=C.words(loss,cur);
+  $('bt-after').textContent=C.money(after,cur);
+  $('bt-pct').textContent=total>0?(pct*100).toFixed(1)+'%':'—';
+  $('bt-back').textContent=fall>0?'+'+Math.round((1/(1-fall)-1)*100)+'%':'0%';
+  $('bt-bar').style.width=Math.min(100,Math.abs(pct)*100)+'%';
+  $('bt-note').textContent=total>0?'A '+Math.round(fall*100)+'% fall in Bitcoin takes '+Math.abs(pct*100).toFixed(1)+'% off everything you have invested':'Enter your total investments';
+});
+})();
+</script>

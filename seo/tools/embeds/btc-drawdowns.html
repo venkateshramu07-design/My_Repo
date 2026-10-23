@@ -1,0 +1,31 @@
+<figure class="bd-btcdd" aria-label="Bitcoin's largest falls from a peak to the following low, by cycle">
+<style>
+.bd-btcdd{margin:2em 0!important;padding:20px;border-radius:20px;background:#fbf6ee;font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+.bd-btcdd .dd-h{margin:0 0 4px;font:800 19px Georgia,serif;color:#15171d!important}
+.bd-btcdd .dd-s{margin:0 0 16px;font-size:13.5px;color:#5d6271!important}
+.bd-btcdd .dd-row{display:grid;grid-template-columns:118px 1fr 56px;gap:12px;align-items:center;margin:11px 0}
+.bd-btcdd .dd-row b{font-size:14px;color:#15171d!important}
+.bd-btcdd .dd-row small{display:block;font-size:11.5px;color:#5d6271!important;font-weight:500}
+.bd-btcdd .dd-track{height:18px;border-radius:999px;background:rgba(0,0,0,.07)!important;overflow:hidden;position:relative}
+.bd-btcdd .dd-fill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;width:0;background:#e2462c!important;transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
+.bd-btcdd .dd-now .dd-fill{background:#f2a33a!important}
+.bd-btcdd.dd-on .dd-fill{width:var(--w)}
+.bd-btcdd .dd-v{font:700 14px system-ui,sans-serif;color:#15171d!important;text-align:right}
+.bd-btcdd figcaption{margin-top:12px;font-size:12.5px;color:#5d6271!important}
+@media (max-width:560px){.bd-btcdd .dd-row{grid-template-columns:1fr 56px;gap:6px 10px;margin:14px 0}.bd-btcdd .dd-row>span:first-child{grid-column:1/-1}.bd-btcdd .dd-row small{display:inline;margin-left:6px}}
+@media (prefers-reduced-motion:reduce){.bd-btcdd .dd-fill{transition:none}}
+</style>
+<p class="dd-h">Every Bitcoin boom has ended in a deep fall</p>
+<p class="dd-s">Fall from each cycle's peak to the low that followed, in US dollars.</p>
+<div class="dd-row"><span><b>2011</b><small>about $32 to $2</small></span><span class="dd-track"><i class="dd-fill" style="--w:93%"></i></span><span class="dd-v">−93%</span></div>
+<div class="dd-row"><span><b>2013–2015</b><small>about $1,150 to $170</small></span><span class="dd-track"><i class="dd-fill" style="--w:85%"></i></span><span class="dd-v">−85%</span></div>
+<div class="dd-row"><span><b>2017–2018</b><small>about $19,800 to $3,200</small></span><span class="dd-track"><i class="dd-fill" style="--w:84%"></i></span><span class="dd-v">−84%</span></div>
+<div class="dd-row"><span><b>2021–2022</b><small>about $69,000 to $15,500</small></span><span class="dd-track"><i class="dd-fill" style="--w:77%"></i></span><span class="dd-v">−77%</span></div>
+<div class="dd-row dd-now"><span><b>2025–2026</b><small>about $126,000 to $58,000</small></span><span class="dd-track"><i class="dd-fill" style="--w:54%"></i></span><span class="dd-v">−54%</span></div>
+<figcaption>Approximate, rounded figures from widely used daily price histories; exchanges differ slightly. The 2025–2026 fall runs from the record of 6 October 2025 to the low of mid-2026 and may not be the final low of this cycle.</figcaption>
+<script>
+(function(){var f=document.currentScript&&document.currentScript.closest('.bd-btcdd');if(!f)return;
+if(!('IntersectionObserver' in window)){f.classList.add('dd-on');return;}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){f.classList.add('dd-on');io.disconnect();}})},{threshold:.3});io.observe(f);})();
+</script>
+</figure>

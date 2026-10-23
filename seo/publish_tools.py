@@ -27,13 +27,14 @@ POSTS.update({
     "articles/emergency-fund-guide": ("How Much Emergency Fund Do You Need? (With Calculator)", ["Personal Finance"]),
     "articles/good-credit-score-cibil": ("What Is a Good CIBIL Score? How to Check and Improve It", ["Personal Finance"]),
     "articles/gdp-measuring-economy": ("What Is GDP? Its Role in Measuring an Economy, Explained", ["Economics"]),
+    "articles/bitcoin-losing-its-hype": ("Is Bitcoin Losing Its Hype? What the Data Says in 2026", ["Cryptocurrency"]),
 })
 # Cover images (seo/covers/, drawn by make_covers.py), served from a fixed commit. The first image in a post is
 # what Blogger uses for its share preview (og:image), and these posts have no image of their own.
-COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@b1f46bc1541f76c8a245cec61b136954a8e6d8c9/seo/covers/"
+COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@b1945fde66acaac91b8910ba0627498c06efa458/seo/covers/"
 COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-here",
           "articles/emergency-fund-guide", "articles/good-credit-score-cibil", "articles/prepay-home-loan-or-invest",
-          "articles/gdp-measuring-economy"}
+          "articles/gdp-measuring-economy", "articles/bitcoin-losing-its-hype"}
 HUB_NAMES = {"money-start-here": "personal finance guide", "career-start-here": "career guide",
              "mind-start-here": "well-being guide"}
 

@@ -551,7 +551,8 @@
     'db-cur': { 'db-extra': [5000, 200] },
     'ef-cur': { 'ef-home': [20000, 1500], 'ef-food': [12000, 600], 'ef-bills': [6000, 400], 'ef-other': [7000, 350], 'ef-have': [50000, 3000], 'ef-save': [10000, 500] },
     'in-cur': { 'in-amt': [100000, 1000], 'in-rate': [6, 3] },
-    'lu-cur': { 'lu-amt': [600000, 10000], 'lu-rate': [12, 8] }
+    'lu-cur': { 'lu-amt': [600000, 10000], 'lu-rate': [12, 8] },
+    'bt-cur': { 'bt-total': [1000000, 20000] }
   };
   var DEBT_ROWS = [['Credit card', 80000, 42, 4000, 'Credit card', 3000, 22, 90], ['Personal loan', 150000, 14, 5000, 'Personal loan', 8000, 11, 250],
     ['Phone EMI', 20000, 16, 2000, 'Car loan', 12000, 7, 300]];

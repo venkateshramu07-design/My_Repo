@@ -1,0 +1,44 @@
+<figure class="bd-btchype" aria-label="The hype cycle: attention rises to a peak, falls into a trough, then recovers slowly as real use grows">
+<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>The hype cycle, and the question of where Bitcoin sits on it</title>
+<style>
+.bd-btchype{margin:2em 0!important}
+.bd-btchype svg{display:block;width:100%;height:auto;border-radius:20px}
+.bh-bg{fill:#fbf6ee}
+.bh-grid{stroke:#e8e2d6;stroke-width:1}
+.bh-axis{font:600 13px system-ui,-apple-system,sans-serif;fill:#5d6271;letter-spacing:.04em}
+.bh-curve{fill:none;stroke:#f2a33a;stroke-width:4;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;animation:bh-draw 2.6s ease-out forwards}
+.bh-use{fill:none;stroke:#0f9d76;stroke-width:2.5;stroke-dasharray:6 6}
+.bh-lab{font:700 16px Georgia,serif;fill:#15171d}
+.bh-sub{font:500 10.5px system-ui,-apple-system,sans-serif;fill:#5d6271}
+.bh-q{fill:#e2462c}
+.bh-qt{font:800 14px system-ui,-apple-system,sans-serif;fill:#fff}
+.bh-dot{fill:#e2462c}
+.bh-key{font:600 14px system-ui,-apple-system,sans-serif;fill:#3c404b}
+@keyframes bh-draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.bh-curve{animation:none;stroke-dashoffset:0}.bd-btchype animateMotion{display:none}}
+</style>
+<rect class="bh-bg" width="640" height="330" rx="20"/>
+<line class="bh-grid" x1="40" y1="270" x2="610" y2="270"/>
+<line class="bh-grid" x1="40" y1="40" x2="40" y2="270"/>
+<text class="bh-axis" transform="translate(30 200) rotate(-90)">ATTENTION</text>
+<text class="bh-axis" x="380" y="268" text-anchor="end">TIME →</text>
+<path id="bh-path" class="bh-curve" d="M45 262 C 95 255, 120 70, 160 62 C 200 56, 215 215, 270 228 C 320 240, 360 190, 430 165 C 490 145, 540 142, 605 140"/>
+<path class="bh-use" d="M45 266 C 160 262, 260 240, 360 200 C 450 168, 530 150, 605 144"/>
+<text class="bh-lab" x="160" y="28" text-anchor="middle">Peak of inflated</text>
+<text class="bh-lab" x="160" y="47" text-anchor="middle">expectations</text>
+<text class="bh-lab" x="235" y="292" text-anchor="middle">Trough of disillusionment</text>
+<text class="bh-lab" x="430" y="128" text-anchor="middle">Slope of enlightenment</text>
+<text class="bh-lab" x="575" y="122" text-anchor="middle">Plateau</text>
+<rect class="bh-q" x="250" y="160" width="136" height="28" rx="14"/>
+<text class="bh-qt" x="318" y="179" text-anchor="middle">Bitcoin, 2026?</text>
+<circle class="bh-dot" r="7">
+<animateMotion dur="7s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#bh-path"/></animateMotion>
+</circle>
+<line x1="400" y1="294" x2="424" y2="294" stroke="#f2a33a" stroke-width="4" stroke-linecap="round"/>
+<text class="bh-key" x="430" y="299">Attention</text>
+<line x1="400" y1="316" x2="424" y2="316" stroke="#0f9d76" stroke-width="2.5" stroke-dasharray="6 6"/>
+<text class="bh-key" x="430" y="321">Real use</text>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">The hype cycle, first described by the research firm Gartner in 1995, is a pattern rather than a law. Attention (prices, headlines, searches) runs ahead of real use (holders, payments, infrastructure), crashes below it, then recovers slowly. Bitcoin has looped through it several times; the argument is about which part of the curve it is on now.</figcaption>
+</figure>
