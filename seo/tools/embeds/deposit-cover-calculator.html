@@ -1,0 +1,41 @@
+<div class="bd-calc" id="bd-dc">
+<div class="bc-title">How much of my money is protected?</div>
+<div class="bc-sub">Choose your country, then enter what you hold at each bank and in apps that are not banks. The calculator applies the deposit insurance limit per person, per bank.</div>
+<div class="bc-grid">
+<div><label for="dc-cty">Country</label><select id="dc-cty"><option value="us">United States</option><option value="uk">United Kingdom</option><option value="eu">European Union</option><option value="ca">Canada</option><option value="au">Australia</option><option value="jp">Japan</option><option value="sg">Singapore</option><option value="hk">Hong Kong</option><option value="in">India</option></select></div>
+<div><label for="dc-b1">Savings at bank 1 (all accounts and brands under one licence)</label><input id="dc-b1" type="number" min="0" step="1000" value="300000"></div>
+<div><label for="dc-b2">Savings at bank 2</label><input id="dc-b2" type="number" min="0" step="1000" value="120000"></div>
+<div><label for="dc-b3">Savings at bank 3</label><input id="dc-b3" type="number" min="0" step="1000" value="0"></div>
+<div><label for="dc-app">Balances in payment and e-money apps</label><input id="dc-app" type="number" min="0" step="100" value="6000"></div>
+<div><label for="dc-cx">Crypto and stablecoins on exchanges</label><input id="dc-cx" type="number" min="0" step="100" value="4000"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Covered by deposit insurance</span><b id="dc-in">—</b></div>
+<div class="bc-stat"><span>Above the limit at a bank</span><b id="dc-over">—</b></div>
+<div class="bc-stat"><span>Not covered: apps and crypto</span><b id="dc-not">—</b></div>
+<div class="bc-stat bc-main"><span>Share of your money insured</span><b id="dc-pct">—</b></div>
+</div>
+<div class="bc-bar"><i id="dc-bar" style="background:#0f9d76;width:0"></i></div>
+<div class="bc-legend"><span id="dc-note">—</span></div>
+<div class="bc-note">Limits apply per person, per licensed bank. Joint accounts and, in the US and Canada, some retirement and trust accounts can be insured separately, so your real cover may be higher. App balances may be safeguarded, or covered through a partner bank in some cases, but neither is the same as a fixed government guarantee. This is a guide, not a ruling on your accounts.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-dc');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+var L={us:['$',250000],uk:['£',120000],eu:['€',100000],ca:['C$',100000],au:['A$',250000],jp:['¥',10000000],sg:['S$',100000],hk:['HK$',800000],in:['₹',500000]};
+var sel=$('dc-cty');
+try{var tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';
+ var m=/^Europe\/(London|Belfast)/.test(tz)?'uk':/^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|Regina|St_Johns|Montreal)/.test(tz)?'ca':/^Australia\//.test(tz)?'au':/^Asia\/Tokyo/.test(tz)?'jp':/^Asia\/Singapore/.test(tz)?'sg':/^Asia\/Hong_Kong/.test(tz)?'hk':/^Asia\/(Kolkata|Calcutta)/.test(tz)?'in':/^Europe\//.test(tz)?'eu':'';
+ if(m)sel.value=m;}catch(e){}
+C.bind(root,function(){
+  var c=L[sel.value],cur=c[0],lim=c[1],ins=0,over=0;
+  for(var i=1;i<=3;i++){var b=Math.max(0,C.num($('dc-b'+i)));ins+=Math.min(b,lim);over+=Math.max(0,b-lim)}
+  var not=Math.max(0,C.num($('dc-app')))+Math.max(0,C.num($('dc-cx'))),tot=ins+over+not;
+  $('dc-in').textContent=C.money(ins,cur);$('dc-over').textContent=C.money(over,cur);$('dc-not').textContent=C.money(not,cur);
+  var p=tot>0?ins/tot:0;$('dc-pct').textContent=tot>0?(p*100).toFixed(0)+'%':'—';
+  $('dc-bar').style.width=(p*100)+'%';$('dc-bar').style.background=p>=.95?'#0f9d76':p>=.75?'#f2a33a':'#e2462c';
+  $('dc-note').textContent='Limit here: '+C.money(lim,cur)+' per bank. '+(over>0?'Move '+C.money(over,cur)+' to another licensed bank to bring it all under the limit.':not>0?'Your bank savings are within the limit; keep app balances to what you need for spending.':'Everything you entered is within the limit.');
+});
+})();
+</script>

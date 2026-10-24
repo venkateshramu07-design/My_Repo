@@ -26,6 +26,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "how-to-buy-ipo-shares": ("INVESTING", "How Small Investors Can Buy IPO Shares", "#2f7de1"),
     "gold-safe-haven-2026-fall": ("INVESTING", "Is Gold Still a Safe Haven After Its Big 2026 Fall?", "#d4a017"),
     "credit-score-different-every-app": ("PERSONAL FINANCE", "Why your credit score is different on every app", "#2f7de1"),
+    "bank-fintech-app-goes-bust": ("PERSONAL FINANCE", "What happens to your money if your bank or app goes bust?", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

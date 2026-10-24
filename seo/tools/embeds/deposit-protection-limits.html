@@ -1,0 +1,33 @@
+<figure class="bd-dplim" aria-label="Deposit insurance limits per person per bank in major countries, converted to approximate US dollars">
+<div class="dp-wrap">
+<div class="dp-t">How much of your savings is protected if a bank fails?</div>
+<div class="dp-s">Limit per person, per bank, in approximate US dollars (October 2026 exchange rates)</div>
+<div class="dp-rows"></div>
+</div>
+<style>
+.bd-dplim{margin:2em 0!important}
+.bd-dplim .dp-wrap{background:#f3f5fb;border-radius:20px;padding:20px 18px 16px;color:#15171d}
+.bd-dplim .dp-t{font:700 17px/1.3 Georgia,serif;margin:0 0 4px;color:#15171d}
+.bd-dplim .dp-s{font:500 13px/1.4 system-ui,-apple-system,sans-serif;color:#5d6271;margin:0 0 14px}
+.bd-dplim .dp-r{display:grid;grid-template-columns:96px 1fr;gap:4px 10px;align-items:center;margin:0 0 9px}
+.bd-dplim .dp-c{font:700 13px system-ui,-apple-system,sans-serif;color:#15171d}
+.bd-dplim .dp-b{height:24px;background:#e3e7f2;border-radius:8px;position:relative;overflow:hidden}
+.bd-dplim .dp-b i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:8px;background:#2f7de1;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+.bd-dplim .dp-v{grid-column:2;font:600 12.5px system-ui,-apple-system,sans-serif;color:#3d4252}
+.bd-dplim.dp-on .dp-b i{width:var(--w)}
+@media (prefers-reduced-motion:reduce){.bd-dplim .dp-b i{transition:none}}
+</style>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">Limits in local currency are fixed by law; the dollar values are rounded and move with exchange rates. Money in e-money accounts, payment apps and crypto exchanges is not covered by these schemes.</figcaption>
+<script>
+(function(){
+var f=document.currentScript.closest('figure');if(!f)return;
+var D=[['US','$250,000',250000,'#2f7de1'],['Australia','A$250,000',163000],['UK','£120,000',160000],['Japan','¥10 million',66000],['EU','€100,000',116000],['Hong Kong','HK$800,000',103000],['Singapore','S$100,000',77000],['Canada','C$100,000',72000],['Brazil','R$250,000',46000],['India','₹5 lakh',5700]];
+D.sort(function(a,b){return b[2]-a[2]});
+var box=f.querySelector('.dp-rows'),h='';
+D.forEach(function(d){h+='<div class="dp-r"><span class="dp-c">'+d[0]+'</span><span class="dp-b"><i style="--w:'+Math.max(2,d[2]/2500).toFixed(1)+'%"></i></span><span class="dp-v">'+d[1]+(d[0]==='US'?'':' ≈ $'+d[2].toLocaleString('en-US'))+'</span></div>'});
+box.innerHTML=h;
+var on=function(){f.classList.add('dp-on')};
+if('IntersectionObserver' in window){var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){on();io.disconnect()}},{threshold:.3});io.observe(f)}else on();
+})();
+</script>
+</figure>
