@@ -27,5 +27,12 @@ out = f"""/* Blog Digest redesign, built from seo/theme/redesign.xml by build_lo
   if (!document.querySelector('link[href*="family=Fraunces:opsz"]')) document.head.appendChild(f);
   document.head.appendChild(s);
   {js}}})();"""
-open(os.path.join(HERE, "bd-redesign.js"), "w", encoding="utf-8").write(out)
+path = os.path.join(HERE, "bd-redesign.js")
+open(path, "w", encoding="utf-8").write(out)
+# Minify when terser is available (TERSER=/path/to/terser); the readable source stays in redesign.xml.
+import shutil, subprocess
+terser = os.environ.get("TERSER") or shutil.which("terser")
+if terser:
+    subprocess.run([terser, path, "-c", "-m", "--comments", "/Do not edit/", "-o", path], check=True)
+    out = open(path, encoding="utf-8").read()
 print("wrote bd-redesign.js", len(out), "bytes")
