@@ -1,0 +1,34 @@
+<figure class="bd-seesaw" aria-label="Bond prices and yields move in opposite directions, like a seesaw">
+<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>When yields rise, prices of existing bonds fall</title>
+<style>
+.bd-seesaw{margin:2em 0!important}
+.bd-seesaw svg{display:block;width:100%;height:auto;border-radius:20px}
+.bs-bg{fill:#f3f6fb}
+.bs-beam{fill:#15171d}
+.bs-piv{fill:#5d6271}
+.bs-yield{fill:#e2462c}
+.bs-price{fill:#2f7de1}
+.bs-t{font:800 18px Georgia,serif;fill:#ffffff}
+.bs-lab{font:700 15px system-ui,-apple-system,sans-serif;fill:#15171d}
+.bs-sub{font:500 13px system-ui,-apple-system,sans-serif;fill:#5d6271}
+.bs-arm{transform-origin:320px 190px;animation:bs-tilt 6s ease-in-out infinite}
+@keyframes bs-tilt{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@media (prefers-reduced-motion:reduce){.bs-arm{animation:none;transform:rotate(-9deg)}}
+</style>
+<rect class="bs-bg" width="640" height="300" rx="20"/>
+<text class="bs-lab" x="320" y="34" text-anchor="middle">Bond prices and yields are a seesaw</text>
+<text class="bs-sub" x="320" y="56" text-anchor="middle">When one end goes up, the other comes down</text>
+<g class="bs-arm">
+<rect class="bs-beam" x="90" y="184" width="460" height="12" rx="6"/>
+<rect class="bs-yield" x="100" y="128" width="130" height="56" rx="14"/>
+<text class="bs-t" x="165" y="163" text-anchor="middle">Yield</text>
+<rect class="bs-price" x="410" y="128" width="130" height="56" rx="14"/>
+<text class="bs-t" x="475" y="163" text-anchor="middle">Price</text>
+</g>
+<polygon class="bs-piv" points="320,192 290,250 350,250"/>
+<rect x="250" y="250" width="140" height="8" rx="4" fill="#94a3b8"/>
+<text class="bs-sub" x="320" y="282" text-anchor="middle">A bond paying 4% is worth less once new bonds pay 5%</text>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">Why the relationship holds: a bond's interest payments are fixed when it is issued. If market yields rise, buyers will only take an older, lower-paying bond at a discount, so its price falls until its effective yield matches the market. The longer the bond has left to run, the bigger the price move.</figcaption>
+</figure>

@@ -28,6 +28,7 @@ POSTS.update({
     "articles/good-credit-score-cibil": ("What Is a Good CIBIL Score? How to Check and Improve It", ["Personal Finance"]),
     "articles/gdp-measuring-economy": ("What Is GDP? Its Role in Measuring an Economy, Explained", ["Economics"]),
     "articles/bitcoin-losing-its-hype": ("Is Bitcoin Losing Its Hype? What the Data Says in 2026", ["Cryptocurrency"]),
+    "articles/10-year-treasury-yield-above-5": ("Why Is the 10-Year Treasury Yield Above 5%? What It Means for Your Money", ["Economics"]),
     "articles/where-to-keep-cash-rates-rise": ("Where to Keep Your Cash When Rates Rise: Savings Accounts, T-Bills and Money Market Funds", ["Personal Finance"]),
     "articles/interest-rates-rising-money-moves": ("Interest Rates Are Rising Again: 7 Money Moves to Make Now", ["Personal Finance"]),
 })

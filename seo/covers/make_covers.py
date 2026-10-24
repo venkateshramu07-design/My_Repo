@@ -17,6 +17,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "bitcoin-losing-its-hype": ("CRYPTOCURRENCY", "Is Bitcoin Losing Its Hype? What the Data Says", "#e48b12"),
     "interest-rates-rising-money-moves": ("PERSONAL FINANCE", "Interest Rates Are Rising Again: 7 Money Moves to Make Now", "#2f7de1"),
     "where-to-keep-cash-rates-rise": ("PERSONAL FINANCE", "Where to Keep Your Cash When Rates Rise", "#0f9d76"),
+    "10-year-treasury-yield-above-5": ("ECONOMICS", "Why Is the 10-Year Treasury Yield Above 5%?", "#7c5cff"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

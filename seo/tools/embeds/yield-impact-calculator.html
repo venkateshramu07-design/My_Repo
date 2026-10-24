@@ -1,0 +1,39 @@
+<div class="bd-calc" id="bd-ty">
+<p class="bc-title">What a move in bond yields does to you</p>
+<p class="bc-sub">Test a change in long-term interest rates on two things most households have: bond investments and a mortgage.</p>
+<div class="bc-grid">
+<div><label for="ty-dy">Change in yields (percentage points)</label><input id="ty-dy" type="number" min="-5" max="5" step="0.25" value="1"></div>
+<div><label for="ty-fund">Bonds or bond funds you own</label><input id="ty-fund" type="number" min="0" step="10000" value="500000"></div>
+<div><label for="ty-dur">Their duration in years (see the fund factsheet)</label><input id="ty-dur" type="number" min="0" max="30" step="0.5" value="6"></div>
+<div><label for="ty-loan">New mortgage or home loan amount</label><input id="ty-loan" type="number" min="0" step="100000" value="5000000"></div>
+<div><label for="ty-rate">Its interest rate before the change (%)</label><input id="ty-rate" type="number" min="0" step="0.05" value="8.5"></div>
+<div><label for="ty-yrs">Loan term (years)</label><input id="ty-yrs" type="number" min="1" max="40" step="1" value="20"></div>
+<div><label for="ty-cur">Currency</label><select id="ty-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Change in value of your bonds</span><b id="ty-bond">—</b></div>
+<div class="bc-stat"><span>Extra yearly income once reinvested at the new yield</span><b id="ty-inc">—</b></div>
+<div class="bc-stat"><span>Monthly payment before</span><b id="ty-p0">—</b></div>
+<div class="bc-stat bc-main"><span>Monthly payment after</span><b id="ty-p1">—</b><span id="ty-diff"></span></div>
+</div>
+<div class="bc-bar"><i id="ty-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="ty-note">—</span></div>
+<p class="bc-note">Bond price change ≈ −duration × change in yield, a standard approximation that works well for moves of a few points. Mortgage rates usually follow long-term bond yields, but not one for one; lenders' margins change too.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ty');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+function pay(P,a,y){var n=y*12,r=a/12;return r>0?P*r/(1-Math.pow(1+r,-n)):P/n}
+C.bind(root,function(){
+  var cur=$('ty-cur').value,dy=C.num($('ty-dy'))/100,fund=C.num($('ty-fund')),dur=C.num($('ty-dur')),loan=C.num($('ty-loan')),rate=C.num($('ty-rate'))/100,yrs=Math.max(1,C.num($('ty-yrs')));
+  var dv=-fund*dur*dy,inc=fund*dy,p0=pay(loan,rate,yrs),p1=pay(loan,Math.max(0,rate+dy),yrs);
+  $('ty-bond').textContent=(dv<0?'−':'+')+C.money(Math.abs(dv),cur);
+  $('ty-inc').textContent=(inc<0?'−':'+')+C.money(Math.abs(inc),cur);
+  $('ty-p0').textContent=C.money(p0,cur);$('ty-p1').textContent=C.money(p1,cur);
+  var d=p1-p0;$('ty-diff').textContent=(d<0?'−':'+')+C.money(Math.abs(d),cur)+' a month';
+  $('ty-bar').style.width=(p0>0?Math.min(100,Math.abs(d)/p0*100):0)+'%';
+  $('ty-note').textContent=p0>0?'The loan payment changes by '+(d/p0*100).toFixed(1)+'%; the bonds by '+(fund>0?(dv/fund*100).toFixed(1):'0')+'%':'Enter a loan amount';
+});
+})();
+</script>
