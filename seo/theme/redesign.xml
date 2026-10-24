@@ -1378,6 +1378,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   }
 
   function isHomePath() { return (location.pathname === '/' || location.pathname === '') && !/[?&](q|updated-max|start)=/.test(location.search); }
+  var BD_DESCS = {};
   function setMeta(attr, key, val) {
     var m = document.head.querySelector('meta[' + attr + '="' + key + '"]');
     if (!m) { m = document.createElement('meta'); m.setAttribute(attr, key); document.head.appendChild(m); }
@@ -1871,12 +1872,17 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         img.decoding = 'async';
         if (i > 0) img.loading = 'lazy';
       });
-      var snip = post.querySelector('p.bd-quick') || post.querySelector('p.bd-dropcap');
-      if (snip) {
-        var st = snip.textContent.replace(/^\s*Quick answer:?\s*/i, '').replace(/\s+/g, ' ').trim();
-        if (st.length > 158) st = st.slice(0, 155).replace(/\s+\S*$/, '') + '…';
-        setMeta('name', 'description', st); setMeta('property', 'og:description', st);
+      // Search and share summary: the article's entry in descriptions.json (built into this file, so a new one goes
+      // live with a release, not a theme upload), or else its quick answer cut at a sentence end.
+      var snip = post.querySelector('p.bd-quick') || post.querySelector('p.bd-dropcap'), st = BD_DESCS[location.pathname] || '';
+      if (!st && snip) {
+        st = snip.textContent.replace(/^\s*Quick answer:?\s*/i, '').replace(/\s+/g, ' ').trim();
+        if (st.length > 160) {
+          var end = st.slice(0, 161).lastIndexOf('. ');
+          st = end > 90 ? st.slice(0, end + 1) : st.slice(0, 155).replace(/\s+\S*$/, '') + '…';
+        }
       }
+      if (st) { setMeta('name', 'description', st); setMeta('property', 'og:description', st); setMeta('name', 'twitter:description', st); }
     }
 
 

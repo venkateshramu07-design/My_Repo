@@ -7,6 +7,10 @@ src = open(os.path.join(HERE, "redesign.xml"), encoding="utf-8").read()
 fonts = re.search(r"<link href='(https://fonts\.googleapis\.com/css2[^']+)'", src).group(1).replace("&amp;", "&")
 css = re.search(r"<style id='bd-redesign-v2'>/\*<!\[CDATA\[\*/(.*?)/\*\]\]>\*/</style>", src, re.S).group(1)
 js = re.search(r"<script>//<!\[CDATA\[\n(.*?)//\]\]></script>", src, re.S).group(1)
+# Article summaries from descriptions.json, so a new description goes live with the next release, not a theme upload.
+descs = json.load(open(os.path.join(HERE, "descriptions.json"), encoding="utf-8"))
+assert js.count("var BD_DESCS = {};") == 1
+js = js.replace("var BD_DESCS = {};", "var BD_DESCS = " + json.dumps(descs, ensure_ascii=True, separators=(",", ":")) + ";")
 out = f"""/* Blog Digest redesign, built from seo/theme/redesign.xml by build_loader.py. Do not edit by hand. */
 (function () {{
   var me = document.currentScript, box = me && me.closest('.widget');
