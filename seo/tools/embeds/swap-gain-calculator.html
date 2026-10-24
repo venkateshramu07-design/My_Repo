@@ -1,0 +1,42 @@
+<div class="bd-calc" id="bd-sg">
+<div class="bc-title">Crypto swap tax estimator</div>
+<div class="bc-sub">Work out the gain on a swap, the tax it could trigger at your rate, and the cost you carry into the new coin. Use values in your own currency at the moment of the swap.</div>
+<div class="bc-grid">
+<div><label for="sg-cost">What you paid for the coins you gave up, incl. fees</label><input id="sg-cost" type="number" min="0" step="100" value="2000"></div>
+<div><label for="sg-val">Market value of the coins you received</label><input id="sg-val" type="number" min="0" step="100" value="3500"></div>
+<div><label for="sg-fee">Fees on the swap</label><input id="sg-fee" type="number" min="0" step="5" value="15"></div>
+<div><label for="sg-rule">Where you pay tax</label><select id="sg-rule"><option value="us-s">US, held 1 year or less</option><option value="us-l">US, held over 1 year</option><option value="uk">UK</option><option value="ca">Canada</option><option value="au-s">Australia, held 12 months or less</option><option value="au-l">Australia, held over 12 months</option><option value="de-s">Germany, held 1 year or less</option><option value="de-l">Germany, held over 1 year</option><option value="in">India</option><option value="fr">France or Portugal (swaps deferred)</option></select></div>
+<div><label for="sg-rate">Your tax rate on this kind of gain (%)</label><input id="sg-rate" type="number" min="0" max="60" step="1" value="22"></div>
+<div><label for="sg-cur">Currency</label><select id="sg-cur" data-cur><option>$</option><option>€</option><option>£</option><option>₹</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Gain or loss on the swap</span><b id="sg-g">—</b></div>
+<div class="bc-stat"><span>Part of the gain that is taxed</span><b id="sg-tx">—</b></div>
+<div class="bc-stat bc-main"><span>Estimated tax from this swap</span><b id="sg-t">—</b></div>
+<div class="bc-stat"><span>Cost carried into the new coin</span><b id="sg-nb">—</b></div>
+</div>
+<div class="bc-bar"><i id="sg-bar" style="background:#e2462c;width:0"></i></div>
+<div class="bc-legend"><span id="sg-note">—</span></div>
+<div class="bc-note">A rough guide: it applies the rule you pick to this one swap and does not include allowances such as the UK's £3,000 annual exemption, Germany's €1,000 threshold, losses elsewhere, surcharges or state taxes. Your rate is set by your income; in the US, short-term gains are taxed at income rates of 10% to 37% and long-term gains at 0%, 15% or 20%; in the UK at 18% or 24%; India's rate is 30% plus cess.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-sg');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+var R={'us-s':[1,22],'us-l':[1,15],uk:[1,24],ca:[.5,30],'au-s':[1,32],'au-l':[.5,32],'de-s':[1,30],'de-l':[0,0],'in':[1,31.2],fr:[0,0]};
+var last='';
+C.bind(root,function(){
+  var rule=$('sg-rule').value,cur=$('sg-cur').value,r=R[rule];
+  if(rule!==last){if(last)$('sg-rate').value=r[1];last=rule}
+  var cost=Math.max(0,C.num($('sg-cost'))),val=Math.max(0,C.num($('sg-val'))),fee=Math.max(0,C.num($('sg-fee'))),rate=Math.max(0,C.num($('sg-rate')))/100;
+  var g=val-cost-fee,inc=r[0],taxed=g>0?g*inc:0,tax=taxed*rate;
+  var sign=function(v){return (v<0?'−':'+')+C.money(Math.abs(v),cur)};
+  $('sg-g').textContent=sign(g);
+  $('sg-tx').textContent=g<=0?'None':C.money(taxed,cur)+(inc===.5?' (half)':inc===0?' (none)':'');
+  $('sg-t').textContent=C.money(tax,cur);
+  $('sg-nb').textContent=C.money(inc===0&&rule==='fr'?cost+fee:val,cur);
+  $('sg-bar').style.width=(val>0&&tax>0?Math.min(100,tax/val*100*4):0)+'%';
+  $('sg-note').textContent=g<0?'A loss: report it, as it can usually offset other gains':rule==='fr'?'No tax now: the original cost carries over and tax is due when you cash out':rule==='de-l'?'Tax-free in Germany for coins held privately for more than a year':tax>0?'Set aside '+C.money(tax,cur)+' for tax, even though no cash reached your bank':'No tax at the rate entered';
+});
+})();
+</script>

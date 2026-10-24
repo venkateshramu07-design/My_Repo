@@ -1,0 +1,49 @@
+<figure class="bd-swapt" aria-label="How a tax authority sees a crypto swap: a sale of the first coin at market value, followed by a purchase of the second">
+<svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>A crypto swap, as most tax authorities see it</title>
+<style>
+.bd-swapt{margin:2em 0!important}
+.bd-swapt svg{display:block;width:100%;height:auto;border-radius:20px}
+.sw-bg{fill:#f6f3fb}
+.sw-box{fill:#fff;stroke:#7a5af5;stroke-width:2}
+.sw-sale{fill:#fff;stroke:#e2462c;stroke-width:2}
+.sw-buy{fill:#fff;stroke:#0f9d76;stroke-width:2}
+.sw-t{font:700 17px Georgia,serif;fill:#15171d}
+.sw-h{font:700 15px system-ui,-apple-system,sans-serif;fill:#15171d}
+.sw-s{font:500 13px system-ui,-apple-system,sans-serif;fill:#5d6271}
+.sw-r{font:800 15px system-ui,-apple-system,sans-serif;fill:#c23a22}
+.sw-g{font:800 15px system-ui,-apple-system,sans-serif;fill:#0b7c5c}
+.sw-ln{fill:none;stroke:#7a5af5;stroke-opacity:.4;stroke-width:2;stroke-dasharray:6 6}
+.sw-c1{fill:#7a5af5}.sw-c2{fill:#f2a33a}
+.sw-step{opacity:0;animation:sw-in .7s ease-out forwards}
+.sw-d1{animation-delay:.6s}.sw-d2{animation-delay:1.4s}
+@keyframes sw-in{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.bd-swapt animateMotion{display:none}.sw-step{animation:none;opacity:1}}
+</style>
+<rect class="sw-bg" width="640" height="340" rx="20"/>
+<text class="sw-t" x="24" y="36">What you do, and what the tax authority sees</text>
+<rect class="sw-box" x="20" y="70" width="180" height="96" rx="14"/>
+<text class="sw-h" x="110" y="102" text-anchor="middle">You swap</text>
+<text class="sw-s" x="110" y="124" text-anchor="middle">1 ETH (cost $2,000)</text>
+<text class="sw-s" x="110" y="144" text-anchor="middle">for SOL worth $3,500</text>
+<path id="sw-p1" class="sw-ln" d="M200 105 C 260 100, 280 92, 330 92"/>
+<path id="sw-p2" class="sw-ln" d="M200 135 C 260 160, 280 222, 330 222"/>
+<g class="sw-step sw-d1">
+<rect class="sw-sale" x="330" y="56" width="290" height="88" rx="14"/>
+<text class="sw-h" x="348" y="84">1. A sale of ETH for $3,500</text>
+<text class="sw-s" x="348" y="106">Proceeds $3,500 − cost $2,000</text>
+<text class="sw-r" x="348" y="128">Taxable gain now: $1,500</text>
+</g>
+<g class="sw-step sw-d2">
+<rect class="sw-buy" x="330" y="178" width="290" height="88" rx="14"/>
+<text class="sw-h" x="348" y="206">2. A purchase of SOL for $3,500</text>
+<text class="sw-s" x="348" y="228">This becomes the SOL's cost</text>
+<text class="sw-g" x="348" y="250">Later, tax only on any rise above it</text>
+</g>
+<text class="sw-s" x="24" y="300">No cash reached your bank, but in the US, UK, Canada, Australia, Germany,</text>
+<text class="sw-s" x="24" y="320">Japan and India the gain is taxed at the moment of the swap.</text>
+<circle class="sw-c1" r="7"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#sw-p1"/></animateMotion></circle>
+<rect class="sw-c2" x="-7" y="-7" width="14" height="14" rx="4"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#sw-p2"/></animateMotion></rect>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">France and Portugal are among the exceptions: they defer tax on swaps between crypto assets until you turn crypto into ordinary money. Figures are an example.</figcaption>
+</figure>

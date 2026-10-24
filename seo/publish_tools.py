@@ -28,6 +28,7 @@ POSTS.update({
     "articles/good-credit-score-cibil": ("What Is a Good CIBIL Score? How to Check and Improve It", ["Personal Finance"]),
     "articles/gdp-measuring-economy": ("What Is GDP? Its Role in Measuring an Economy, Explained", ["Economics"]),
     "articles/bitcoin-losing-its-hype": ("Is Bitcoin Losing Its Hype? What the Data Says in 2026", ["Cryptocurrency"]),
+    "articles/crypto-swap-tax-rules": ("Do You Pay Tax When You Swap One Crypto for Another? The Rules Explained", ["Cryptocurrency"]),
     "articles/bank-fintech-app-goes-bust": ("What Happens to Your Money If Your Bank or Fintech App Goes Bust?", ["Personal Finance"]),
     "articles/credit-score-different-every-app": ("Why Is My Credit Score Different on Every App? Which One Do Lenders Actually Use?", ["Personal Finance"]),
     "articles/gold-safe-haven-2026-fall": ("Is Gold Still a Safe Haven After Its Big 2026 Fall?", ["Investing"]),
@@ -46,7 +47,7 @@ POSTS.update({
 COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@4c4199c4a1a12093b2c0656c378fb9f6d5de9425/seo/covers/"
 COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-here",
           "articles/emergency-fund-guide", "articles/good-credit-score-cibil", "articles/prepay-home-loan-or-invest",
-          "articles/gdp-measuring-economy", "articles/bitcoin-losing-its-hype", "articles/interest-rates-rising-money-moves", "articles/where-to-keep-cash-rates-rise", "articles/10-year-treasury-yield-above-5", "articles/jobs-ai-is-replacing-skills", "articles/stablecoins-explained-interest", "articles/buy-house-mortgage-rates-above-7", "articles/prediction-markets-kalshi-polymarket", "articles/afford-car-2026-calculator", "articles/how-to-buy-ipo-shares", "articles/gold-safe-haven-2026-fall", "articles/credit-score-different-every-app", "articles/bank-fintech-app-goes-bust"}
+          "articles/gdp-measuring-economy", "articles/bitcoin-losing-its-hype", "articles/interest-rates-rising-money-moves", "articles/where-to-keep-cash-rates-rise", "articles/10-year-treasury-yield-above-5", "articles/jobs-ai-is-replacing-skills", "articles/stablecoins-explained-interest", "articles/buy-house-mortgage-rates-above-7", "articles/prediction-markets-kalshi-polymarket", "articles/afford-car-2026-calculator", "articles/how-to-buy-ipo-shares", "articles/gold-safe-haven-2026-fall", "articles/credit-score-different-every-app", "articles/bank-fintech-app-goes-bust", "articles/crypto-swap-tax-rules"}
 HUB_NAMES = {"money-start-here": "personal finance guide", "career-start-here": "career guide",
              "mind-start-here": "well-being guide"}
 
