@@ -11,6 +11,9 @@ js = re.search(r"<script>//<!\[CDATA\[\n(.*?)//\]\]></script>", src, re.S).group
 descs = json.load(open(os.path.join(HERE, "descriptions.json"), encoding="utf-8"))
 assert js.count("var BD_DESCS = {};") == 1
 js = js.replace("var BD_DESCS = {};", "var BD_DESCS = " + json.dumps(descs, ensure_ascii=True, separators=(",", ":")) + ";")
+links = json.load(open(os.path.join(HERE, "autolinks.json"), encoding="utf-8"))
+assert js.count("var BD_LINKS = {};") == 1
+js = js.replace("var BD_LINKS = {};", "var BD_LINKS = " + json.dumps(links, ensure_ascii=True, separators=(",", ":")) + ";")
 out = f"""/* Blog Digest redesign, built from seo/theme/redesign.xml by build_loader.py. Do not edit by hand. */
 (function () {{
   var me = document.currentScript, box = me && me.closest('.widget');

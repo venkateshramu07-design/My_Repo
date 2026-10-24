@@ -93,7 +93,7 @@ def build(name):
                        else os.path.join(TOOLS, name + ".html"), encoding="utf-8").read())
     if name in COVERS:  # after the opening "Updated" line
         img = (f'<img src="{COVER_BASE}{name.split("/")[1]}.jpg" alt="{html.escape(POSTS[name][0], quote=True)}" '
-               'width="1200" height="630" style="width:100%;height:auto;border-radius:16px"/>')
+               'width="1200" height="630" fetchpriority="high" decoding="async" style="width:100%;height:auto;border-radius:16px"/>')
         body = body.replace("</p>", "</p>\n" + img, 1)
     return escape_scripts(f"{tool_assets()}\n<div class=\"seo-post\">\n{body}</div>")
 
