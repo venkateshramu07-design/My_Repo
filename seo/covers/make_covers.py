@@ -28,6 +28,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "credit-score-different-every-app": ("PERSONAL FINANCE", "Why your credit score is different on every app", "#2f7de1"),
     "bank-fintech-app-goes-bust": ("PERSONAL FINANCE", "What happens to your money if your bank or app goes bust?", "#0f9d76"),
     "crypto-swap-tax-rules": ("CRYPTOCURRENCY", "Do you pay tax when you swap one crypto for another?", "#7a5af5"),
+    "retirement-savings-moving-abroad": ("LIVING ABROAD", "What happens to your retirement savings when you move abroad?", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
