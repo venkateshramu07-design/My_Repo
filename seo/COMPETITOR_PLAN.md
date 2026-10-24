@@ -117,10 +117,20 @@ and close the gaps we can't fix overnight. Targets for the next six months:
   certified consent tool, free). Google requires it for ads to serve fully to visitors in the EEA, UK and Switzerland,
   and the privacy policy describes it.
 
+### 8. Full-site audit (196 pages, 24 October 2026)
+- Median article length 3,183 words; no images without alt text; no duplicate titles; no broken internal links
+  (all 179 internal targets load; the only 404 is a draft "sitemap_pages" post nothing links to).
+- **Thin pages fixed:** three image-only "thought" posts (51–61 words) get companion articles of 700–900 words under
+  their original images (`seo/thoughts/`), the 37-word contact page is rewritten (`seo/pages/contact-us.html`),
+  and the About and Privacy pages are replaced. Thin pages are the most common reason AdSense rejects a site for
+  "low-value content", so this matters before any domain move or review.
+- **Remaining gap:** about 170 older posts still cite no outside sources. Next step: add linked Sources sections to
+  them in batches, starting with the most-visited finance posts.
+
 ## Status
 
 - Done and committed: sources on 25 articles, design-layer trust line, FAQ data, internal links, cover priority,
   About and Editorial Policy pages written.
-- Needs a Blogger token: republish the 25 articles with their sources, publish the Editorial Policy page and the new
-  About page, then release the design layer (`seo/publish_pages.py`, `seo/publish_tools.py publish ...`).
+- Needs a Blogger token: republish the 25 articles (sources, WebP covers), then `seo/publish_pages.py` (About,
+  Contact, Privacy, three thought posts, Editorial Policy and Free Calculators pages), then release the design layer.
 - Needs you: AdSense ad load, custom domain, Search Console and Bing verification.
