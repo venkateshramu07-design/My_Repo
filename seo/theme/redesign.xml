@@ -1504,8 +1504,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   var DEBT_ROWS = [['Credit card', 80000, 42, 4000, 'Credit card', 3000, 22, 90], ['Personal loan', 150000, 14, 5000, 'Personal loan', 8000, 11, 250],
     ['Phone EMI', 20000, 16, 2000, 'Car loan', 12000, 7, 300]];
   function localiseCalculators() {
-    var cur = readerCurrency(); if (cur === '₹') return;
+    var cur = readerCurrency();
     var fire = function (n) { ['input', 'change'].forEach(function (t) { n.dispatchEvent(new Event(t, { bubbles: true })); }); };
+    // Dollar-first calculators (select[data-cur]): amounts suit euros and pounds as they are, so only the symbol changes.
+    if (cur === '€' || cur === '£') document.querySelectorAll('select[data-cur]').forEach(function (sel) { if (sel.value === '$') { sel.value = cur; fire(sel); } });
+    if (cur === '₹') return;
     Object.keys(CALC_EXAMPLES).forEach(function (sid) {
       var sel = document.getElementById(sid); if (!sel || sel.value !== '₹') return;
       var map = CALC_EXAMPLES[sid];

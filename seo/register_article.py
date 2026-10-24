@@ -9,7 +9,7 @@ pt = open(R + "publish_tools.py").read()
 if key not in pt:
     anchor = '    "articles/bitcoin-losing-its-hype": ("Is Bitcoin Losing Its Hype? What the Data Says in 2026", ["Cryptocurrency"]),'
     pt = pt.replace(anchor, anchor + '\n    "%s": (%s, [%s]),' % (key, json.dumps(title), json.dumps(label)))
-    pt = pt.replace('"articles/bitcoin-losing-its-hype"}', '"articles/bitcoin-losing-its-hype", "%s"}' % key)
+    pt = re.sub(r"(COVERS = \{[^}]*)\}", lambda m: m.group(1) + ", \"%s\"}" % key, pt, count=1)
     pt = pt.replace('"articles/bitcoin-losing-its-hype", "', '"articles/bitcoin-losing-its-hype", "', 1)
     open(R + "publish_tools.py", "w").write(pt)
 mc = open(R + "covers/make_covers.py").read()
