@@ -127,10 +127,11 @@ and close the gaps we can't fix overnight. Targets for the next six months:
 - **Remaining gap:** about 170 older posts still cite no outside sources. Next step: add linked Sources sections to
   them in batches, starting with the most-visited finance posts.
 
-## Status
+## Status (24 October 2026, live)
 
-- Done and committed: sources on 25 articles, design-layer trust line, FAQ data, internal links, cover priority,
-  About and Editorial Policy pages written.
-- Needs a Blogger token: republish the 25 articles (sources, WebP covers), then `seo/publish_pages.py` (About,
-  Contact, Privacy, three thought posts, Editorial Policy and Free Calculators pages), then release the design layer.
-- Needs you: AdSense ad load, custom domain, Search Console and Bing verification.
+- **Live and verified on phone:** linked sources on 25 articles; trust line under every headline; FAQ structured
+  data; up to six internal links per article on all posts; WebP covers; About (1,037 words), Contact, Privacy,
+  Editorial Policy and Free Calculators pages; three image-only posts expanded; descriptions for all of them.
+- **Needs you:** AdSense consent message (Privacy & messaging → European regulations), AdSense ad load, Search
+  Console and Bing verification, and later the custom domain.
+- **Next:** linked sources for the ~170 older posts in batches; two new in-depth guides a week; monthly data refresh.
