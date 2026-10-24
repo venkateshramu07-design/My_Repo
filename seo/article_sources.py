@@ -401,6 +401,20 @@ def add_old(slug):
     s = s.rstrip("\n") + '\n\n<h2 id="sources">Sources and further reading</h2>\n<ul class="bd-sources">\n%s\n</ul>\n' % li
     open(p, "w", encoding="utf-8").write(s)
 
+S.update({
+ "sv_payscale": ("WorldatWork: Payscale 2027 salary budget forecasts by country", "https://worldatwork.org/publications/workspan-daily/payscale-economic-gains-will-push-2027-salary-budgets-higher"),
+ "sv_kornferry": ("WorldatWork: Korn Ferry Global Total Rewards Pulse Survey, 2027 projections", "https://worldatwork.org/publications/workspan-daily/global-report-reflects-employers-salary-budget-conservatism"),
+ "sv_wtw": ("WTW: salary increase budgets expected to average 3.4% in 2027", "https://www.wtwco.com/en-us/news/2026/07/employers-shift-from-bigger-pay-budgets-to-smarter-pay-strategies-wtw-finds"),
+ "sv_wtw_ph": ("Metrobank Wealth Insights: WTW 2027 forecasts for the Philippines and Southeast Asia", "https://wealthinsights.metrobank.com.ph/news/pay-raises-in-philippines-seen-edging-up-in-2027-wtw"),
+ "sv_aon_sea": ("Aon: Southeast Asia salary increases projected at 5.2% in 2027", "https://www.aon.com/apac/in-the-press/asia-newsroom/2026/aon-projects-southeast-asia-salary-increases-to-remain-stable-at-5-2-in-2027"),
+ "sv_aon_in": ("Aon: salaries in India projected to rise 9.1% in 2027", "https://www.aon.com/apac/in-the-press/asia-newsroom/2026/aon-study-finds-salaries-in-india-projected-to-fise-9-1-in-2027-employers-balance-growth-and-cost-pressures"),
+ "sv_mercer": ("Mercer: US employers stick with moderate pay increases for 2027", "https://www.mercer.com/en-us/about/newsroom/us-employers-stick-with-moderate-pay-increases-for-2027/"),
+ "sv_mercer_ca": ("Canadian HR Reporter: Canadian employers hold the line on salary increases for 2027", "https://www.hrreporter.com/focus-areas/compensation-and-benefits/canadian-employers-hold-the-line-on-salary-increases-for-2027/394840"),
+ "sv_nb": ("Daily Hive: Canadian salary increase forecasts for 2027, including Normandin Beaudry", "https://dailyhive.com/canada/salary-increases-canada-2027"),
+ "imf_weo26": ("IMF: World Economic Outlook, October 2026", "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026"),
+})
+A["salary-increase-forecast-2027-by-country"] = ["sv_payscale", "sv_kornferry", "sv_wtw", "sv_wtw_ph", "sv_aon_sea", "sv_aon_in", "sv_mercer", "sv_mercer_ca", "sv_nb", "imf_weo26", "bls", "ons_cpi", "hicp", "atl_wage"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
