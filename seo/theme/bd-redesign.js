@@ -1023,10 +1023,10 @@
           var tn = texts[ti], m = re.exec(tn.nodeValue); if (!m) continue;
           var key = keys.filter(function (k) { return k.toLowerCase() === m[1].toLowerCase(); })[0];
           if (!key || used[key] || (key === key.toUpperCase() && m[1] !== key)) continue;
-          var target = BD_LINKS[key]; if (!target || cleanUrl(BLOG + target.replace(/^\//, '')) === here) { used[key] = 1; continue; }
+          var target = BD_LINKS[key]; if (!target || used[target] || cleanUrl(BLOG + target.replace(/^\//, '')) === here) { used[key] = 1; continue; }
           var after = tn.splitText(m.index), rest = after.splitText(m[1].length), a = document.createElement('a');
           a.href = target; a.className = 'bd-autolink'; a.textContent = after.nodeValue; after.parentNode.replaceChild(a, after);
-          used[key] = 1; made++; texts.splice(ti + 1, 0, rest);
+          used[key] = used[target] = 1; made++; texts.splice(ti + 1, 0, rest);
         }
       } catch (e) {}
       var relTopic = bcs.length > 1 ? bcs[bcs.length - 1].textContent.trim() : '';
