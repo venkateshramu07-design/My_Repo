@@ -51,7 +51,7 @@ POSTS.update({
 })
 # Cover images (seo/covers/, drawn by make_covers.py), served from a fixed commit. The first image in a post is
 # what Blogger uses for its share preview (og:image), and these posts have no image of their own.
-COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@56317c8227acace624406dcd41847d7dd92afe43/seo/covers/"
+COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@ae982c31bf71205a3484d7810c6a871f29c4b736/seo/covers/"
 COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-here",
           "articles/emergency-fund-guide", "articles/good-credit-score-cibil", "articles/prepay-home-loan-or-invest",
           "articles/gdp-measuring-economy", "articles/bitcoin-losing-its-hype", "articles/interest-rates-rising-money-moves", "articles/where-to-keep-cash-rates-rise", "articles/10-year-treasury-yield-above-5", "articles/jobs-ai-is-replacing-skills", "articles/stablecoins-explained-interest", "articles/buy-house-mortgage-rates-above-7", "articles/prediction-markets-kalshi-polymarket", "articles/afford-car-2026-calculator", "articles/how-to-buy-ipo-shares", "articles/gold-safe-haven-2026-fall", "articles/credit-score-different-every-app", "articles/bank-fintech-app-goes-bust", "articles/crypto-swap-tax-rules", "articles/retirement-savings-moving-abroad", "articles/why-prices-still-high-inflation-down", "articles/explain-layoff-career-gap-interview", "articles/fair-pay-raise-2026-real-raise", "articles/lump-sum-or-monthly-pension", "articles/online-accounts-crypto-when-you-die", "articles/insurance-premium-up-no-claims"}
