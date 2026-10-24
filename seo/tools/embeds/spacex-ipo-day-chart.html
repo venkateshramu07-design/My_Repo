@@ -1,0 +1,31 @@
+<figure class="bd-ipoday" aria-label="SpaceX share price on its first day of trading, 12 June 2026, compared with the IPO price">
+<style>
+.bd-ipoday{margin:2em 0!important;padding:20px;border-radius:20px;background:#f3f6fb;font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+.bd-ipoday .ip-h{margin:0 0 4px;font:800 19px Georgia,serif;color:#15171d!important}
+.bd-ipoday .ip-s{margin:0 0 16px;font-size:13.5px;color:#5d6271!important}
+.bd-ipoday .ip-row{display:grid;grid-template-columns:200px 1fr 120px;gap:12px;align-items:center;margin:12px 0}
+.bd-ipoday .ip-row b{font-size:14px;color:#15171d!important}
+.bd-ipoday .ip-row small{display:block;font-size:11.5px;color:#5d6271!important;font-weight:500}
+.bd-ipoday .ip-track{height:18px;border-radius:999px;background:rgba(0,0,0,.07)!important;overflow:hidden;position:relative}
+.bd-ipoday .ip-fill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;width:0;background:#2f7de1!important;transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
+.bd-ipoday .ip-base .ip-fill{background:#94a3b8!important}
+.bd-ipoday .ip-peak .ip-fill{background:#e2462c!important}
+.bd-ipoday.ip-on .ip-fill{width:var(--w)}
+.bd-ipoday .ip-v{font:700 14px system-ui,sans-serif;color:#15171d!important;text-align:right}
+.bd-ipoday figcaption{margin-top:12px;font-size:12.5px;color:#5d6271!important}
+@media (max-width:560px){.bd-ipoday .ip-row{grid-template-columns:1fr 110px;gap:6px 10px;margin:14px 0}.bd-ipoday .ip-row>span:first-child{grid-column:1/-1}.bd-ipoday .ip-row small{display:inline;margin-left:6px}}
+@media (prefers-reduced-motion:reduce){.bd-ipoday .ip-fill{transition:none}}
+</style>
+<p class="ip-h">Who captured the first-day gain?</p>
+<p class="ip-s">SpaceX share price, Nasdaq, 12 June 2026.</p>
+<div class="ip-row ip-base"><span><b>IPO price</b><small>paid by investors given an allocation</small></span><span class="ip-track"><i class="ip-fill" style="--w:76%"></i></span><span class="ip-v">$135.00</span></div>
+<div class="ip-row"><span><b>Opening trade</b><small>first price for everyone else</small></span><span class="ip-track"><i class="ip-fill" style="--w:85%"></i></span><span class="ip-v">$150.00 (+11%)</span></div>
+<div class="ip-row ip-peak"><span><b>Day's high</b><small>peak of the excitement</small></span><span class="ip-track"><i class="ip-fill" style="--w:100%"></i></span><span class="ip-v">$176.52 (+31%)</span></div>
+<div class="ip-row"><span><b>First-day close</b></span><span class="ip-track"><i class="ip-fill" style="--w:91%"></i></span><span class="ip-v">$160.95 (+19%)</span></div>
+<figcaption>Investors allocated shares at $135 gained 19% by the close. Anyone who bought at the opening trade was up about 7%; anyone who bought near the day's high was down about 9%. Sources: NPR, CBS News and NBC News reporting of Nasdaq prices.</figcaption>
+<script>
+(function(){var f=document.currentScript&&document.currentScript.closest('.bd-ipoday');if(!f)return;
+if(!('IntersectionObserver' in window)){f.classList.add('ip-on');return;}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){f.classList.add('ip-on');io.disconnect();}})},{threshold:.3});io.observe(f);})();
+</script>
+</figure>

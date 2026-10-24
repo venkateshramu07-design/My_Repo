@@ -1,0 +1,36 @@
+<div class="bd-calc" id="bd-ip">
+<p class="bc-title">What is an IPO application really worth?</p>
+<p class="bc-sub">Popular IPOs are heavily oversubscribed, so you rarely get all the shares you ask for. Test how much you are likely to be allocated and what it could be worth.</p>
+<div class="bc-grid">
+<div><label for="ip-amt">Amount you apply for</label><input id="ip-amt" type="number" min="0" step="10000" value="200000"></div>
+<div><label for="ip-alloc">Share of your application you expect to receive (%)</label><input id="ip-alloc" type="number" min="0" max="100" step="1" value="10"></div>
+<div><label for="ip-list">First-day gain or loss (%)</label><input id="ip-list" type="number" min="-90" step="1" value="19"></div>
+<div><label for="ip-year">Change over the following year from the IPO price (%)</label><input id="ip-year" type="number" min="-99" step="1" value="-10"></div>
+<div><label for="ip-cur">Currency</label><select id="ip-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Shares you actually get, by value</span><b id="ip-got">—</b></div>
+<div class="bc-stat bc-main"><span>Gain if you sell on the first day</span><b id="ip-day">—</b></div>
+<div class="bc-stat"><span>Value after a year if you hold</span><b id="ip-hold">—</b></div>
+<div class="bc-stat"><span>Gain on your whole application</span><b id="ip-pct">—</b></div>
+</div>
+<div class="bc-bar"><i id="ip-bar" style="background:#2f7de1;width:0"></i></div>
+<div class="bc-legend"><span id="ip-note">—</span></div>
+<p class="bc-note">In India, when a public issue's retail portion is oversubscribed, shares are usually allocated by lottery, one lot per winning applicant, so many applicants get nothing. In the US, brokers allocate retail shares by their own rules. Money for unallocated shares is returned or released.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ip');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('ip-cur').value,amt=C.num($('ip-amt')),al=Math.min(100,Math.max(0,C.num($('ip-alloc'))))/100,ls=C.num($('ip-list'))/100,yr=C.num($('ip-year'))/100;
+  var got=amt*al,day=got*ls,hold=got*(1+yr);
+  $('ip-got').textContent=C.money(got,cur);
+  $('ip-day').textContent=(day<0?'−':'+')+C.money(Math.abs(day),cur);
+  $('ip-hold').textContent=C.money(hold,cur);
+  $('ip-pct').textContent=amt>0?((day/amt)*100).toFixed(1)+'%':'—';
+  $('ip-bar').style.width=Math.min(100,al*100)+'%';
+  $('ip-note').textContent=amt>0?'Even a '+Math.round(ls*100)+'% first-day jump adds only '+(day/amt*100).toFixed(1)+'% to the money you set aside, because you receive '+Math.round(al*100)+'% of what you applied for':'Enter an amount';
+});
+})();
+</script>

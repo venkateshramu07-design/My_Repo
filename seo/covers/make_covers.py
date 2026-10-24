@@ -23,6 +23,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "buy-house-mortgage-rates-above-7": ("PERSONAL FINANCE", "Should You Buy a House With Mortgage Rates Above 7%?", "#e48b12"),
     "prediction-markets-kalshi-polymarket": ("ECONOMICS", "How Prediction Markets Like Kalshi and Polymarket Work", "#7c5cff"),
     "afford-car-2026-calculator": ("PERSONAL FINANCE", "How to Afford a Car When the Average Payment Is $777", "#e2462c"),
+    "how-to-buy-ipo-shares": ("INVESTING", "How Small Investors Can Buy IPO Shares", "#2f7de1"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
