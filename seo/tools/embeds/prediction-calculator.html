@@ -1,0 +1,36 @@
+<div class="bd-calc" id="bd-pm">
+<p class="bc-title">Prediction market trade calculator</p>
+<p class="bc-sub">See what a trade costs, what it pays, and whether it makes sense given your own estimate of the chances.</p>
+<div class="bc-grid">
+<div><label for="pm-price">Price per YES contract (cents, 1 to 99)</label><input id="pm-price" type="number" min="1" max="99" step="1" value="62"></div>
+<div><label for="pm-n">Number of contracts</label><input id="pm-n" type="number" min="1" step="10" value="100"></div>
+<div><label for="pm-fee">Fees, as % of the amount you spend</label><input id="pm-fee" type="number" min="0" max="20" step="0.5" value="2"></div>
+<div><label for="pm-me">Your own estimate of the chance it happens (%)</label><input id="pm-me" type="number" min="0" max="100" step="1" value="65"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Total cost, including fees</span><b id="pm-cost">—</b></div>
+<div class="bc-stat"><span>Profit if it happens</span><b id="pm-win">—</b></div>
+<div class="bc-stat"><span>Loss if it does not</span><b id="pm-lose">—</b></div>
+<div class="bc-stat"><span>Chance you need to break even</span><b id="pm-be">—</b></div>
+<div class="bc-stat bc-main"><span>Expected result at your estimate</span><b id="pm-ev">—</b></div>
+</div>
+<div class="bc-bar"><i id="pm-bar" style="background:#7c5cff;width:0"></i></div>
+<div class="bc-legend"><span id="pm-note">—</span></div>
+<p class="bc-note">Contracts settle at $1 or $0. Expected result = your probability × profit − (1 − your probability) × loss. A positive number only means the trade is good if your estimate is better than the market's, which is hard to achieve consistently. Fee structures differ by platform.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-pm');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+function usd(v){return (v<0?'−':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+C.bind(root,function(){
+  var p=Math.min(99,Math.max(1,C.num($('pm-price'))))/100,n=Math.max(0,Math.round(C.num($('pm-n')))),fee=C.num($('pm-fee'))/100,me=Math.min(100,Math.max(0,C.num($('pm-me'))))/100;
+  var stake=p*n,cost=stake*(1+fee),win=n-cost,lose=cost,be=n>0?cost/n:0,ev=me*win-(1-me)*lose;
+  $('pm-cost').textContent=usd(cost);$('pm-win').textContent='+'+usd(win);$('pm-lose').textContent='−'+usd(lose);
+  $('pm-be').textContent=(be*100).toFixed(1)+'%';
+  $('pm-ev').textContent=(ev>=0?'+':'')+usd(ev);
+  $('pm-bar').style.width=Math.min(100,be*100)+'%';
+  $('pm-note').textContent=ev>0?'Only worth it if you are right that the chance is '+Math.round(me*100)+'%, not the '+Math.round(be*100)+'% the price implies after fees':'At your estimate this trade loses money on average';
+});
+})();
+</script>

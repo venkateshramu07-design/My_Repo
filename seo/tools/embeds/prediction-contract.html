@@ -1,0 +1,40 @@
+<figure class="bd-pmc" aria-label="A prediction market contract costs between 1 and 99 cents and pays $1 if the event happens, nothing if it does not">
+<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>How a yes-or-no event contract pays out</title>
+<style>
+.bd-pmc{margin:2em 0!important}
+.bd-pmc svg{display:block;width:100%;height:auto;border-radius:20px}
+.pm-bg{fill:#f5f3fb}
+.pm-box{fill:#ffffff;stroke:#7c5cff;stroke-width:2}
+.pm-yes{fill:#ffffff;stroke:#0f9d76;stroke-width:2.5}
+.pm-no{fill:#ffffff;stroke:#e2462c;stroke-width:2.5}
+.pm-t{font:700 17px Georgia,serif;fill:#15171d}
+.pm-big{font:800 30px Georgia,serif;fill:#15171d}
+.pm-s{font:500 13px system-ui,-apple-system,sans-serif;fill:#5d6271}
+.pm-g{font:800 22px system-ui,-apple-system,sans-serif;fill:#0f9d76}
+.pm-r{font:800 22px system-ui,-apple-system,sans-serif;fill:#e2462c}
+.pm-path{fill:none;stroke:#7c5cff;stroke-opacity:.35;stroke-width:2;stroke-dasharray:6 6}
+.pm-coin{fill:#f2a33a}
+@media (prefers-reduced-motion:reduce){.bd-pmc animateMotion{display:none}}
+</style>
+<rect class="pm-bg" width="640" height="300" rx="20"/>
+<text class="pm-t" x="320" y="34" text-anchor="middle">"Will it rain in New York tomorrow?"</text>
+<rect class="pm-box" x="40" y="80" width="200" height="140" rx="18"/>
+<text class="pm-s" x="140" y="110" text-anchor="middle">You buy a YES contract at</text>
+<text class="pm-big" x="140" y="155" text-anchor="middle">62¢</text>
+<text class="pm-s" x="140" y="185" text-anchor="middle">price ≈ market's view:</text>
+<text class="pm-s" x="140" y="203" text-anchor="middle" style="font-weight:700;fill:#7c5cff">62% chance of rain</text>
+<rect class="pm-yes" x="420" y="62" width="190" height="80" rx="16"/>
+<text class="pm-s" x="515" y="88" text-anchor="middle">It rains: contract pays</text>
+<text class="pm-g" x="515" y="122" text-anchor="middle">$1.00 (+38¢)</text>
+<rect class="pm-no" x="420" y="162" width="190" height="80" rx="16"/>
+<text class="pm-s" x="515" y="188" text-anchor="middle">No rain: contract pays</text>
+<text class="pm-r" x="515" y="222" text-anchor="middle">$0 (−62¢)</text>
+<path id="pm-a" class="pm-path" d="M240 130 C 320 120, 350 102, 420 102"/>
+<path id="pm-b" class="pm-path" d="M240 170 C 320 180, 350 202, 420 202"/>
+<g><circle class="pm-coin" r="7"><animateMotion dur="3s" repeatCount="indefinite"><mpath href="#pm-a"/></animateMotion></circle></g>
+<g><circle class="pm-coin" r="7" opacity=".55"><animateMotion dur="3s" begin="1.5s" repeatCount="indefinite"><mpath href="#pm-b"/></animateMotion></circle></g>
+<text class="pm-s" x="320" y="276" text-anchor="middle">Prices move every second as traders buy and sell until the event is settled</text>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">Every contract on a platform such as Kalshi or Polymarket settles at either $1 or $0. The price you pay is your maximum loss, and roughly the market's estimate of the probability. Platforms earn money from fees on trades.</figcaption>
+</figure>

@@ -21,6 +21,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "jobs-ai-is-replacing-skills": ("CAREER & WORKPLACE", "Jobs AI Is Replacing, and the Skills That Keep You Employed", "#2f7de1"),
     "stablecoins-explained-interest": ("CRYPTOCURRENCY", "Stablecoins Explained: Can You Earn Interest on Digital Dollars?", "#0f9d76"),
     "buy-house-mortgage-rates-above-7": ("PERSONAL FINANCE", "Should You Buy a House With Mortgage Rates Above 7%?", "#e48b12"),
+    "prediction-markets-kalshi-polymarket": ("ECONOMICS", "How Prediction Markets Like Kalshi and Polymarket Work", "#7c5cff"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
