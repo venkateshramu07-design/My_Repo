@@ -1,0 +1,37 @@
+<div class="bd-calc" id="bd-pr">
+<div class="bc-title">Have you kept up with prices?</div>
+<div class="bc-sub">See what your old spending costs now, whether your income has kept pace, and how far prices would have to fall to get back to where they were.</div>
+<div class="bc-grid">
+<div><label for="pr-spend">Monthly spending back then</label><input id="pr-spend" type="number" min="0" step="100" value="3000"></div>
+<div><label for="pr-rise">Price rise since then (%)</label><input id="pr-rise" type="number" min="-50" step="1" value="28"></div>
+<div><label for="pr-inc0">Your monthly income then</label><input id="pr-inc0" type="number" min="0" step="100" value="4000"></div>
+<div><label for="pr-inc1">Your monthly income now</label><input id="pr-inc1" type="number" min="0" step="100" value="4800"></div>
+<div><label for="pr-cur">Currency</label><select id="pr-cur" data-cur><option>$</option><option>€</option><option>£</option><option>₹</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>The same spending costs now</span><b id="pr-now">—</b></div>
+<div class="bc-stat"><span>Your income rise</span><b id="pr-ir">—</b></div>
+<div class="bc-stat bc-main"><span>Your real income change</span><b id="pr-real">—</b></div>
+<div class="bc-stat"><span>Prices would need to fall by</span><b id="pr-fall">—</b></div>
+</div>
+<div class="bc-bar"><i id="pr-bar" style="background:#0f9d76;width:0"></i></div>
+<div class="bc-legend"><span id="pr-note">—</span></div>
+<div class="bc-note">US consumer prices rose about 28% to 29% between January 2021 and September 2026; the UK and euro area saw similar rises. Your own price rise depends on what you buy. Real income change is your income rise after allowing for higher prices.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-pr');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('pr-cur').value,s=Math.max(0,C.num($('pr-spend'))),p=Math.max(-99,C.num($('pr-rise')))/100,i0=Math.max(0,C.num($('pr-inc0'))),i1=Math.max(0,C.num($('pr-inc1')));
+  var now=s*(1+p),ir=i0>0?i1/i0-1:NaN,real=i0>0?(1+ir)/(1+p)-1:NaN,fall=p>0?1-1/(1+p):0;
+  var pc=function(v){return isFinite(v)?(v<0?'−':'+')+Math.abs(v*100).toFixed(1)+'%':'—'};
+  $('pr-now').textContent=C.money(now,cur);$('pr-ir').textContent=pc(ir);$('pr-real').textContent=pc(real);
+  $('pr-fall').textContent=p>0?(fall*100).toFixed(1)+'%':'No fall needed';
+  $('pr-bar').style.width=(isFinite(real)?Math.min(100,Math.max(0,50+real*250)):0)+'%';
+  $('pr-bar').style.background=real>=0?'#0f9d76':'#e2462c';
+  var gap=i0*(1+p)-i1;
+  $('pr-note').textContent=!isFinite(real)?'Enter your income then':real>=0?'Your income has outpaced prices: you can buy more than before':'To keep up, your income would need to be '+C.money(i0*(1+p),cur)+' a month, '+C.money(gap,cur)+' more than now';
+});
+})();
+</script>
