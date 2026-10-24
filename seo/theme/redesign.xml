@@ -1549,6 +1549,9 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var ln = decodeURIComponent(labelPage[1].replace(/\+/g, ' ')), li2 = TOPICS.filter(function (t) { return t[0] === ln; })[0];
       var ld = ln + ' guides on Blog Digest' + (li2 ? ': ' + li2[1].toLowerCase() + '.' : '.') + ' Practical, in-depth and free.';
       setMeta('name', 'description', ld); setMeta('property', 'og:description', ld);
+    } else if (/^\/p\//.test(location.pathname) && BD_DESCS[location.pathname]) {
+      var sp = BD_DESCS[location.pathname];
+      setMeta('name', 'description', sp); setMeta('property', 'og:description', sp); setMeta('name', 'twitter:description', sp);
     }
     // Remove what the first version of this layer added, if it is still in the theme.
     document.querySelectorAll('style#bd-redesign').forEach(function (e) { e.remove(); });
@@ -1882,7 +1885,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       // live with a release, not a theme upload), or else its quick answer cut at a sentence end.
       var snip = post.querySelector('p.bd-quick') || post.querySelector('p.bd-dropcap'), st = BD_DESCS[location.pathname] || '';
       if (!st && snip) {
-        st = snip.textContent.replace(/^\s*Quick answer:?\s*/i, '').replace(/\s+/g, ' ').trim();
+        st = snip.textContent.replace(/^\s*(Quick answer|In short):?\s*/i, '').replace(/\s+/g, ' ').trim();
         if (st.length > 160) {
           var end = st.slice(0, 161).lastIndexOf('. ');
           st = end > 90 ? st.slice(0, end + 1) : st.slice(0, 155).replace(/\s+\S*$/, '') + '…';
