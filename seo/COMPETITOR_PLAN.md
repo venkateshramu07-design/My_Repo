@@ -134,4 +134,6 @@ and close the gaps we can't fix overnight. Targets for the next six months:
   Editorial Policy and Free Calculators pages; three image-only posts expanded; descriptions for all of them.
 - **Needs you:** AdSense consent message (Privacy & messaging → European regulations), AdSense ad load, Search
   Console and Bing verification, and later the custom domain.
-- **Next:** linked sources for the ~170 older posts in batches; two new in-depth guides a week; monthly data refresh.
+- **Done:** all 154 older posts now end with "Sources and further reading" (2–4 checked links each, matched to the
+  post's subject), so every article on the site links to outside sources.
+- **Next:** two new in-depth guides a week; monthly data refresh; speed work on the theme's blocking scripts.
