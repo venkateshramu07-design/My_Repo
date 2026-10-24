@@ -1,0 +1,37 @@
+<div class="bd-calc" id="bd-ir">
+<div class="bc-title">Insurance renewal checker</div>
+<div class="bc-sub">Compare your renewal with last year and with other quotes, and test whether a higher excess (deductible) is worth it.</div>
+<div class="bc-grid">
+<div><label for="ir-old">Last year's premium</label><input id="ir-old" type="number" min="0" step="10" value="1200"></div>
+<div><label for="ir-new">Renewal quote</label><input id="ir-new" type="number" min="0" step="10" value="1450"></div>
+<div><label for="ir-alt">Best other quote you found, same cover</label><input id="ir-alt" type="number" min="0" step="10" value="1290"></div>
+<div><label for="ir-d0">Current excess or deductible</label><input id="ir-d0" type="number" min="0" step="50" value="500"></div>
+<div><label for="ir-d1">Higher excess or deductible option</label><input id="ir-d1" type="number" min="0" step="50" value="1000"></div>
+<div><label for="ir-p1">Premium with the higher excess</label><input id="ir-p1" type="number" min="0" step="10" value="1180"></div>
+<div><label for="ir-cur">Currency</label><select id="ir-cur" data-cur><option>$</option><option>€</option><option>£</option><option>₹</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Renewal increase</span><b id="ir-inc">—</b></div>
+<div class="bc-stat bc-main"><span>Saving by switching</span><b id="ir-sw">—</b></div>
+<div class="bc-stat"><span>Yearly saving from the higher excess</span><b id="ir-ds">—</b></div>
+<div class="bc-stat bc-main"><span>Claim-free years to recover the extra excess</span><b id="ir-yr">—</b></div>
+</div>
+<div class="bc-bar"><i id="ir-bar" style="background:#2f7de1;width:0"></i></div>
+<div class="bc-legend"><span id="ir-note">—</span></div>
+<div class="bc-note">Before switching, check the cover is really the same: excess, limits, extras such as courtesy cars, legal cover and accidental damage. Call your current insurer with the better quote; many will reduce the price. A higher excess only makes sense if you could pay it at short notice.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ir');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('ir-cur').value,o=Math.max(0,C.num($('ir-old'))),n=Math.max(0,C.num($('ir-new'))),a=Math.max(0,C.num($('ir-alt'))),d0=Math.max(0,C.num($('ir-d0'))),d1=Math.max(0,C.num($('ir-d1'))),p1=Math.max(0,C.num($('ir-p1')));
+  var inc=o>0?n/o-1:NaN;$('ir-inc').textContent=isFinite(inc)?(inc<0?'−':'+')+Math.abs(inc*100).toFixed(1)+'% ('+(n-o<0?'−':'+')+C.money(Math.abs(n-o),cur)+')':'—';
+  var sw=a>0?n-a:0;$('ir-sw').textContent=a>0?(sw>0?C.money(sw,cur)+' a year':'None: renewal is cheaper'):'—';
+  var ds=n-p1,extra=d1-d0;$('ir-ds').textContent=p1>0&&extra>0?(ds>0?C.money(ds,cur):'No saving'):'—';
+  var yr=ds>0&&extra>0?extra/ds:Infinity;$('ir-yr').textContent=isFinite(yr)?yr.toFixed(1)+' years':'—';
+  $('ir-bar').style.width=(isFinite(inc)?Math.min(100,Math.max(0,inc*200)):0)+'%';$('ir-bar').style.background=inc>0.15?'#e2462c':inc>0.05?'#f2a33a':'#0f9d76';
+  $('ir-note').textContent=!isFinite(inc)?'Enter last year\'s premium':inc>0.1&&sw>0?'A big rise and a cheaper quote: ask your insurer to match it, or switch':inc>0.1?'A big rise: ask your insurer to explain it and get more quotes':sw>0?'Modest rise, but you could still save by switching':'Your renewal looks competitive';
+});
+})();
+</script>

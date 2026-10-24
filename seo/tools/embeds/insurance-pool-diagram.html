@@ -1,0 +1,55 @@
+<figure class="bd-ipool" aria-label="Insurance is a pool: everyone's premiums pay the claims of the few. When claim costs rise, everyone's premium rises, including people who never claim">
+<svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Why your premium rises even without a claim</title>
+<style>
+.bd-ipool{margin:2em 0!important}
+.bd-ipool svg{display:block;width:100%;height:auto;border-radius:20px}
+.ipd-bg{fill:#f1f6fd}
+.ipd-t{font:700 17px Georgia,serif;fill:#15171d}
+.ipd-h{font:700 14px system-ui,-apple-system,sans-serif;fill:#15171d}
+.ipd-s{font:500 12.5px system-ui,-apple-system,sans-serif;fill:#5d6271}
+.ipd-p{fill:#2f7de1}.ipd-c{fill:#e2462c}
+.ipd-pool{fill:#fff;stroke:#2f7de1;stroke-width:2.5}
+.ipd-wave{fill:#2f7de1;opacity:.18;animation:ipd-rise 5s ease-in-out infinite}
+.ipd-ln{fill:none;stroke:#2f7de1;stroke-opacity:.3;stroke-width:2;stroke-dasharray:5 6}
+.ipd-ln2{fill:none;stroke:#e2462c;stroke-opacity:.35;stroke-width:2;stroke-dasharray:5 6}
+.ipd-tag{fill:#fff;stroke:#e2462c;stroke-width:1.6}
+.ipd-up{font:800 12.5px system-ui,-apple-system,sans-serif;fill:#c23a22}
+@keyframes ipd-rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media (prefers-reduced-motion:reduce){.bd-ipool animateMotion{display:none}.ipd-wave{animation:none}}
+</style>
+<rect class="ipd-bg" width="640" height="360" rx="20"/>
+<text class="ipd-t" x="24" y="36">Insurance is a pool, and the pool's costs have risen</text>
+<g>
+<circle class="ipd-p" cx="50" cy="90" r="14"/><circle class="ipd-p" cx="50" cy="140" r="14"/><circle class="ipd-p" cx="50" cy="190" r="14"/><circle class="ipd-p" cx="50" cy="240" r="14"/><circle class="ipd-p" cx="50" cy="290" r="14"/>
+<circle class="ipd-c" cx="50" cy="190" r="14"/>
+</g>
+<text class="ipd-s" x="74" y="94">No claim</text><text class="ipd-s" x="74" y="144">No claim</text><text class="ipd-s" x="74" y="194" style="fill:#c23a22;font-weight:700">Claims</text><text class="ipd-s" x="74" y="244">No claim</text><text class="ipd-s" x="74" y="294">No claim</text>
+<path id="ipd-a1" class="ipd-ln" d="M140 90 C 190 90, 200 160, 240 175"/>
+<path id="ipd-a2" class="ipd-ln" d="M140 140 C 190 140, 200 170, 240 180"/>
+<path id="ipd-a3" class="ipd-ln" d="M140 240 C 190 240, 200 200, 240 195"/>
+<path id="ipd-a4" class="ipd-ln" d="M140 290 C 190 290, 200 210, 240 200"/>
+<rect class="ipd-pool" x="240" y="120" width="150" height="140" rx="18"/>
+<path class="ipd-wave" d="M242 200 Q 280 188 315 200 T 388 200 L 388 258 L 242 258 Z"/>
+<text class="ipd-h" x="315" y="170" text-anchor="middle">Everyone's</text>
+<text class="ipd-h" x="315" y="188" text-anchor="middle">premiums</text>
+<path id="ipd-b1" class="ipd-ln2" d="M390 190 C 420 190, 430 110, 450 100"/>
+<path id="ipd-b2" class="ipd-ln2" d="M390 190 L 450 165"/>
+<path id="ipd-b3" class="ipd-ln2" d="M390 195 L 450 225"/>
+<path id="ipd-b4" class="ipd-ln2" d="M390 200 C 420 200, 430 280, 450 290"/>
+<rect class="ipd-tag" x="450" y="78" width="172" height="44" rx="10"/><text class="ipd-h" x="462" y="98">Repairs and parts</text><text class="ipd-up" x="462" y="114">↑ sensors, labour</text>
+<rect class="ipd-tag" x="450" y="143" width="172" height="44" rx="10"/><text class="ipd-h" x="462" y="163">Rebuilding homes</text><text class="ipd-up" x="462" y="179">↑ materials, trades</text>
+<rect class="ipd-tag" x="450" y="203" width="172" height="44" rx="10"/><text class="ipd-h" x="462" y="223">Storms, floods, fire</text><text class="ipd-up" x="462" y="239">↑ bigger losses</text>
+<rect class="ipd-tag" x="450" y="268" width="172" height="44" rx="10"/><text class="ipd-h" x="462" y="288">Theft, fraud, legal</text><text class="ipd-up" x="462" y="304">↑ claim costs</text>
+<text class="ipd-s" x="24" y="340">When the cost of paying claims rises, the price for everyone in the pool rises, claims or not.</text>
+<circle class="ipd-p" r="5"><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#ipd-a1"/></animateMotion></circle>
+<circle class="ipd-p" r="5"><animateMotion dur="2.6s" begin=".6s" repeatCount="indefinite"><mpath href="#ipd-a2"/></animateMotion></circle>
+<circle class="ipd-p" r="5"><animateMotion dur="2.6s" begin="1.2s" repeatCount="indefinite"><mpath href="#ipd-a3"/></animateMotion></circle>
+<circle class="ipd-p" r="5"><animateMotion dur="2.6s" begin="1.8s" repeatCount="indefinite"><mpath href="#ipd-a4"/></animateMotion></circle>
+<circle class="ipd-c" r="5"><animateMotion dur="2.2s" begin=".3s" repeatCount="indefinite"><mpath href="#ipd-b1"/></animateMotion></circle>
+<circle class="ipd-c" r="5"><animateMotion dur="2.2s" begin=".9s" repeatCount="indefinite"><mpath href="#ipd-b2"/></animateMotion></circle>
+<circle class="ipd-c" r="5"><animateMotion dur="2.2s" begin="1.5s" repeatCount="indefinite"><mpath href="#ipd-b3"/></animateMotion></circle>
+<circle class="ipd-c" r="5"><animateMotion dur="2.2s" begin="2.1s" repeatCount="indefinite"><mpath href="#ipd-b4"/></animateMotion></circle>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">Most policyholders never claim in a given year. Premiums are set from the expected claims and costs of the whole group, so your no-claims discount applies to a base price that moves with the market.</figcaption>
+</figure>
