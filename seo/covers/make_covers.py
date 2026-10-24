@@ -93,5 +93,8 @@ def cover(eyebrow, title, accent):
 
 
 for name, (eyebrow, title, accent) in POSTS.items():
-    cover(eyebrow, title, accent).convert("RGB").save(os.path.join(HERE, name + ".jpg"), quality=84, optimize=True, progressive=True)
+    im = cover(eyebrow, title, accent).convert("RGB")
+    im.save(os.path.join(HERE, name + ".jpg"), quality=84, optimize=True, progressive=True)  # share image (og:image)
+    for w, q in ((800, 78), (1200, 80)):  # in-article cover, about a quarter of the JPEG's size
+        im.resize((w, round(630 * w / 1200)), Image.LANCZOS).save(os.path.join(HERE, "%s-%d.webp" % (name, w)), "WEBP", quality=q, method=6)
     print("wrote", name + ".jpg")

@@ -1663,7 +1663,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         '<div class="bd-start"><span class="bd-start-label">New here? Start with a guide</span>' + GUIDES.map(function (g) {
           return '<a class="bd-start-card" style="--c:' + g[2] + '" href="' + g[4] + '"><i>' + svg(g[3]) + '</i><span><b>' + g[0] + '</b><small>' + g[1] + '</small></span></a>';
         }).join('') + '</div>' +
-        '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute.</span></div><div class="bd-toolsbar-list">' +
+        '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute. <a href="' + BLOG + 'p/free-calculators.html">See all 38 →</a></span></div><div class="bd-toolsbar-list">' +
         TOOLS_HOME.map(function (t) { return '<a href="' + BLOG + t[2] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span></a>'; }).join('') + '</div></div>');
       content.parentNode.insertBefore(front, content);
       root.classList.add('bd-home-front');
@@ -2262,10 +2262,10 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         '<p>Practical, in-depth guides on money, the mind and work. Free to read, with free calculators.</p>' +
         '<form class="bd-foot-search" action="/search" method="get" role="search"><input name="q" type="search" placeholder="Search articles" aria-label="Search articles"/><button type="submit" aria-label="Search">' + ICONS.search + '</button></form></div>' +
         '<nav class="bd-foot-col" aria-label="Sections"><h4>Sections</h4><ul>' + TOPICS.slice(0, 7).map(function (t) { return link(labelUrl(t[0]), t[0]); }).join('') + link(BLOG + '2021/06/sitemap.html', 'All articles') + '</ul></nav>' +
-        '<nav class="bd-foot-col" aria-label="Calculators"><h4>Free calculators</h4><ul>' + TOOLS_FOOT.map(function (t) { return link(BLOG + t[1], t[0]); }).join('') + '</ul>' +
+        '<nav class="bd-foot-col" aria-label="Calculators"><h4>Free calculators</h4><ul>' + TOOLS_FOOT.map(function (t) { return link(BLOG + t[1], t[0]); }).join('') + link(BLOG + 'p/free-calculators.html', 'All free calculators →') + '</ul>' +
         '<h4 class="bd-foot-h2">Start here</h4><ul>' + GUIDES.map(function (g) { return link(g[4], g[0] + ' guide'); }).join('') + '</ul></nav>' +
         '<nav class="bd-foot-col" aria-label="About"><h4>About</h4><ul>' + [['2021/06/about-us.html', 'About us'], ['2021/06/contact-us.html', 'Contact us'], ['2021/06/privacy-policy.html', 'Privacy policy'],
-          ['2021/06/disclaimer.html', 'Disclaimer'], ['2021/06/terms-and-conditions.html', 'Terms and conditions']].map(function (a) { return link(BLOG + a[0], a[1]); }).join('') + '</ul></nav>' +
+          ['p/editorial-policy.html', 'Editorial policy'], ['2021/06/disclaimer.html', 'Disclaimer'], ['2021/06/terms-and-conditions.html', 'Terms and conditions']].map(function (a) { return link(BLOG + a[0], a[1]); }).join('') + '</ul></nav>' +
         '</div><h3 class="bd-foot-more">More from the archive</h3>');
       var fwc = fw.querySelector('.container') || fw;
       fwc.insertBefore(band, fwc.firstChild);

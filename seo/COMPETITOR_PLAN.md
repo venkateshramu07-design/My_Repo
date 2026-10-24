@@ -103,6 +103,20 @@ and close the gaps we can't fix overnight. Targets for the next six months:
 | Referring domains | few | +30 | thousands |
 | Search clicks | baseline from Search Console | 3× baseline | — |
 
+### 7. Built since the first plan (ready to publish with the next token)
+- **Free calculators hub** (`seo/pages/free-calculators.html`, page `/p/free-calculators.html`): all 38 tools on the
+  site, grouped by topic, each linked to its guide. Linked from the footer and the homepage tool bar. This is the
+  page outreach should point to; no competitor we measured has a hub like it.
+- **WebP covers:** every cover now also exists as 800 px and 1200 px WebP files (about 15 KB instead of 57 KB on
+  phones), served with srcset and loaded first. The cover is the largest element on article pages, so this is the
+  biggest single speed gain available to us.
+- **New privacy policy** (`seo/pages/privacy-policy.html`) with the disclosures AdSense requires: Google's advertising
+  cookies, third-party vendors, opt-out through Google's Ads Settings and aboutads.info, Analytics, the newsletter and
+  the calculators' browser storage.
+- **You:** in AdSense, go to Privacy & messaging → European regulations and publish the consent message (Google's
+  certified consent tool, free). Google requires it for ads to serve fully to visitors in the EEA, UK and Switzerland,
+  and the privacy policy describes it.
+
 ## Status
 
 - Done and committed: sources on 25 articles, design-layer trust line, FAQ data, internal links, cover priority,
