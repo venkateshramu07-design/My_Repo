@@ -137,3 +137,20 @@ and close the gaps we can't fix overnight. Targets for the next six months:
 - **Done:** all 154 older posts now end with "Sources and further reading" (2–4 checked links each, matched to the
   post's subject), so every article on the site links to outside sources.
 - **Next:** two new in-depth guides a week; monthly data refresh; speed work on the theme's blocking scripts.
+
+## Data pages (24 October 2026, live)
+
+Strategy change: instead of more guides on crowded questions, we now publish pages that compile official data
+nobody else puts in one place. Each has an interactive table, a full guide and linked official sources, and each is
+the kind of page journalists and bloggers cite.
+
+| Page | Coverage | Sources |
+|---|---|---|
+| [Salary increase forecasts 2027](https://randomthoughtsever.blogspot.com/2026/10/salary-increase-forecasts-2027-by.html) | 29 countries, 6 employer surveys | 14 |
+| [Deposit insurance limits 2026](https://randomthoughtsever.blogspot.com/2026/10/deposit-insurance-limits-by-country.html) | 30 countries and the EU, local currency and US$ | 28 |
+| [Petrol price rises since the Iran war](https://randomthoughtsever.blogspot.com/2026/10/petrol-prices-since-iran-war-how-much.html) | 29 countries on official weekly data, plus 6 | 15 |
+| [Retirement age by country 2026](https://randomthoughtsever.blogspot.com/2026/10/retirement-age-by-country-2026-state.html) | 39 countries, earliest age and legislated changes | 13 |
+
+Datasets: `seo/data_*.py` / `seo/data_petrol_2026.json`. The petrol table should be refreshed monthly from the EU
+Weekly Oil Bulletin, EIA and DESNZ files; the others when limits or ages change. These are the pages to offer in
+outreach (OUTREACH.md, section 3) for journalist requests on fuel prices, pensions and bank safety.
