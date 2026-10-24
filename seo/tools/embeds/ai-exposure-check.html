@@ -1,0 +1,37 @@
+<div class="bd-calc" id="bd-aix">
+<p class="bc-title">How exposed is your job to AI?</p>
+<p class="bc-sub">Think about a typical week at work and estimate how much of your time goes on each kind of task. The check scores how much of your work AI tools can already do, and what that suggests you should do next.</p>
+<div class="bc-grid">
+<div><label for="ax-write">Writing, summarising or translating standard documents (%)</label><input id="ax-write" type="number" min="0" max="100" step="5" value="20"></div>
+<div><label for="ax-data">Entering, checking or moving data between systems (%)</label><input id="ax-data" type="number" min="0" max="100" step="5" value="15"></div>
+<div><label for="ax-code">Writing routine code, formulas or reports from templates (%)</label><input id="ax-code" type="number" min="0" max="100" step="5" value="10"></div>
+<div><label for="ax-reply">Answering routine customer or colleague questions (%)</label><input id="ax-reply" type="number" min="0" max="100" step="5" value="15"></div>
+<div><label for="ax-judge">Judgement calls, negotiation, managing people (%)</label><input id="ax-judge" type="number" min="0" max="100" step="5" value="20"></div>
+<div><label for="ax-hands">Hands-on physical work or work on site (%)</label><input id="ax-hands" type="number" min="0" max="100" step="5" value="10"></div>
+<div><label for="ax-care">Care, teaching, persuading or building trust in person (%)</label><input id="ax-care" type="number" min="0" max="100" step="5" value="10"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Time you entered</span><b id="ax-total">—</b></div>
+<div class="bc-stat bc-main"><span>Share of your work AI can already help with</span><b id="ax-score">—</b></div>
+<div class="bc-stat bc-main"><span>What it suggests</span><b id="ax-band" style="font-size:18px;line-height:1.3">—</b></div>
+</div>
+<div class="bc-bar"><i id="ax-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="ax-note">—</span></div>
+<p class="bc-note">A rough guide, not a prediction. It weights routine writing, data and template work as highly exposed, routine questions as partly exposed, and judgement, physical and human-contact work as least exposed, in line with research on which tasks current AI tools perform well. Exposure means tools can change how the job is done; it does not mean the job will disappear.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-aix');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+var W={'ax-write':.85,'ax-data':.9,'ax-code':.8,'ax-reply':.6,'ax-judge':.2,'ax-hands':.05,'ax-care':.1};
+C.bind(root,function(){
+  var tot=0,exp=0;Object.keys(W).forEach(function(k){var v=Math.max(0,C.num($(k)));tot+=v;exp+=v*W[k];});
+  var s=tot>0?exp/tot*100:0;
+  $('ax-total').textContent=Math.round(tot)+'%';
+  $('ax-score').textContent=tot>0?Math.round(s)+'%':'—';
+  $('ax-band').textContent=tot<=0?'Enter your week':s>=60?'High: change how you work now':s>=35?'Medium: let AI take the routine part':'Low: AI is a tool, not a threat';
+  $('ax-bar').style.width=Math.min(100,s)+'%';
+  $('ax-note').textContent=Math.abs(tot-100)>10&&tot>0?'Your entries add up to '+Math.round(tot)+'%; the score uses them as shares of your week anyway':'Scores above about 60% mean a large part of the job can already be done faster by AI tools';
+});
+})();
+</script>
