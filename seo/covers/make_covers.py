@@ -30,6 +30,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "crypto-swap-tax-rules": ("CRYPTOCURRENCY", "Do you pay tax when you swap one crypto for another?", "#7a5af5"),
     "retirement-savings-moving-abroad": ("LIVING ABROAD", "What happens to your retirement savings when you move abroad?", "#0f9d76"),
     "why-prices-still-high-inflation-down": ("ECONOMICS", "Why are prices still so high when inflation has come down?", "#e2462c"),
+    "explain-layoff-career-gap-interview": ("CAREER & WORKPLACE", "How to explain a layoff or career gap in an interview", "#7a5af5"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

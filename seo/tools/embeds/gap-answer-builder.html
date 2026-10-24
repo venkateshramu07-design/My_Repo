@@ -1,0 +1,39 @@
+<div class="bd-calc" id="bd-ab">
+<div class="bc-title">Build your answer</div>
+<div class="bc-sub">Pick your situation and fill in a few details. You get a short, honest first draft to adapt in your own words and practise aloud.</div>
+<div class="bc-grid">
+<div><label for="ab-why">What happened</label><select id="ab-why"><option value="lay">My role was cut (layoff or redundancy)</option><option value="care">I cared for a child or relative</option><option value="health">I dealt with a health matter</option><option value="rest">I took a planned break or recovered from burnout</option><option value="study">I studied or retrained</option><option value="move">I relocated</option><option value="biz">I ran a business or start-up</option><option value="fit">I was let go because the role wasn't a fit</option></select></div>
+<div><label for="ab-when">When it started (e.g. March 2026)</label><input id="ab-when" type="text" maxlength="40" value="March 2026"></div>
+<div><label for="ab-did">What you did since (course, freelance, volunteering)</label><input id="ab-did" type="text" maxlength="120" value="completed a data analytics certificate"></div>
+<div><label for="ab-role">The job you are applying for</label><input id="ab-role" type="text" maxlength="60" value="operations analyst"></div>
+<div><label for="ab-why2">Why this job appeals (a few words)</label><input id="ab-why2" type="text" maxlength="120" value="it combines analysis with improving how teams work"></div>
+</div>
+<div class="ab-box" style="margin:14px 0 4px;padding:16px 18px;border-radius:14px;background:var(--c-paper,#fff);border:1.5px solid var(--c-line,#e4e0d8);font:400 16px/1.6 system-ui,-apple-system,sans-serif;color:var(--c-ink,#15171d)"><span id="ab-out">—</span></div>
+<div class="bc-out">
+<div class="bc-stat"><span>Length</span><b id="ab-w">—</b></div>
+<div class="bc-stat bc-main"><span>Time to say it aloud</span><b id="ab-t">—</b></div>
+</div>
+<div class="bc-note">Edit the draft so it sounds like you, keep it true, and stop after the last sentence. You do not have to share medical or family details.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ab');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+function v(id,d){var s=String($(id).value||'').trim();return s||d}
+var F={
+lay:function(w){return 'In '+w+', my role was one of a number cut when the company restructured.'},
+care:function(w){return 'From '+w+', I took time out to care for a family member, which was the right decision for us.'},
+health:function(w){return 'In '+w+', I took time off to deal with a health matter, which is now resolved.'},
+rest:function(w){return 'In '+w+', after several demanding years, I took a planned break to rest and decide on my next step.'},
+study:function(w){return 'In '+w+', I left work to study full-time and build new skills.'},
+move:function(w){return 'In '+w+', my family relocated, and it took some months to settle and get set up to work here.'},
+biz:function(w){return 'From '+w+', I built my own business. It taught me a great deal, and I wound it down when it did not grow as fast as we needed.'},
+fit:function(w){return 'In '+w+', I left my last role because it had moved away from my strengths, and we agreed to part ways. It taught me to ask more about a role before accepting it.'}};
+C.bind(root,function(){
+  var why=$('ab-why').value,w=v('ab-when','last year'),did=v('ab-did','kept my skills up to date'),role=v('ab-role','this role'),why2=v('ab-why2','it is a strong match for my experience');
+  var txt=F[why](w)+' Since then I have '+did.replace(/^i\s+/i,'').replace(/\.$/,'')+'. I am now fully ready to return, and I am particularly interested in this '+role.replace(/\.$/,'')+' role because '+why2.replace(/\.$/,'')+'.';
+  $('ab-out').textContent=txt;
+  var n=txt.split(/\s+/).length;$('ab-w').textContent=n+' words';$('ab-t').textContent='About '+Math.max(10,Math.round(n/2.5/5)*5)+' seconds';
+});
+})();
+</script>
