@@ -20,6 +20,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "10-year-treasury-yield-above-5": ("ECONOMICS", "Why Is the 10-Year Treasury Yield Above 5%?", "#7c5cff"),
     "jobs-ai-is-replacing-skills": ("CAREER & WORKPLACE", "Jobs AI Is Replacing, and the Skills That Keep You Employed", "#2f7de1"),
     "stablecoins-explained-interest": ("CRYPTOCURRENCY", "Stablecoins Explained: Can You Earn Interest on Digital Dollars?", "#0f9d76"),
+    "buy-house-mortgage-rates-above-7": ("PERSONAL FINANCE", "Should You Buy a House With Mortgage Rates Above 7%?", "#e48b12"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

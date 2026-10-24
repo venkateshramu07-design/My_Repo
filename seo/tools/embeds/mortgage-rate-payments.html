@@ -1,0 +1,32 @@
+<figure class="bd-mrpay" aria-label="Monthly payment on a $334,000 30-year mortgage at different interest rates">
+<style>
+.bd-mrpay{margin:2em 0!important;padding:20px;border-radius:20px;background:#fbf6ee;font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+.bd-mrpay .mp-h{margin:0 0 4px;font:800 19px Georgia,serif;color:#15171d!important}
+.bd-mrpay .mp-s{margin:0 0 16px;font-size:13.5px;color:#5d6271!important}
+.bd-mrpay .mp-row{display:grid;grid-template-columns:150px 1fr 70px;gap:12px;align-items:center;margin:11px 0}
+.bd-mrpay .mp-row b{font-size:14px;color:#15171d!important}
+.bd-mrpay .mp-row small{display:block;font-size:11.5px;color:#5d6271!important;font-weight:500}
+.bd-mrpay .mp-track{height:18px;border-radius:999px;background:rgba(0,0,0,.07)!important;overflow:hidden;position:relative}
+.bd-mrpay .mp-fill{position:absolute;top:0;bottom:0;left:0;border-radius:999px;width:0;background:#94a3b8!important;transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
+.bd-mrpay .mp-now .mp-fill{background:#e2462c!important}
+.bd-mrpay.mp-on .mp-fill{width:var(--w)}
+.bd-mrpay .mp-v{font:700 14px system-ui,sans-serif;color:#15171d!important;text-align:right}
+.bd-mrpay figcaption{margin-top:12px;font-size:12.5px;color:#5d6271!important}
+@media (max-width:560px){.bd-mrpay .mp-row{grid-template-columns:1fr 70px;gap:6px 10px;margin:14px 0}.bd-mrpay .mp-row>span:first-child{grid-column:1/-1}.bd-mrpay .mp-row small{display:inline;margin-left:6px}}
+@media (prefers-reduced-motion:reduce){.bd-mrpay .mp-fill{transition:none}}
+</style>
+<p class="mp-h">The same house, very different payments</p>
+<p class="mp-s">Monthly principal and interest on a $334,000, 30-year fixed mortgage: 80% of the September 2026 US median home price of $417,500.</p>
+<div class="mp-row"><span><b>3%</b><small>typical in 2021</small></span><span class="mp-track"><i class="mp-fill" style="--w:57%"></i></span><span class="mp-v">$1,408</span></div>
+<div class="mp-row"><span><b>5%</b></span><span class="mp-track"><i class="mp-fill" style="--w:73%"></i></span><span class="mp-v">$1,793</span></div>
+<div class="mp-row"><span><b>6%</b></span><span class="mp-track"><i class="mp-fill" style="--w:82%"></i></span><span class="mp-v">$2,002</span></div>
+<div class="mp-row"><span><b>7%</b></span><span class="mp-track"><i class="mp-fill" style="--w:91%"></i></span><span class="mp-v">$2,222</span></div>
+<div class="mp-row mp-now"><span><b>7.4%</b><small>early October 2026</small></span><span class="mp-track"><i class="mp-fill" style="--w:94%"></i></span><span class="mp-v">$2,313</span></div>
+<div class="mp-row"><span><b>8%</b></span><span class="mp-track"><i class="mp-fill" style="--w:100%"></i></span><span class="mp-v">$2,451</span></div>
+<figcaption>Excludes property tax, insurance and maintenance, which typically add several hundred dollars a month. Sources: National Association of Realtors (median price) and Freddie Mac (rates).</figcaption>
+<script>
+(function(){var f=document.currentScript&&document.currentScript.closest('.bd-mrpay');if(!f)return;
+if(!('IntersectionObserver' in window)){f.classList.add('mp-on');return;}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){f.classList.add('mp-on');io.disconnect();}})},{threshold:.3});io.observe(f);})();
+</script>
+</figure>

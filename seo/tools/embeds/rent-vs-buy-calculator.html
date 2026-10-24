@@ -1,0 +1,59 @@
+<div class="bd-calc" id="bd-rb">
+<p class="bc-title">Rent or buy? Compare your wealth after the years you choose</p>
+<p class="bc-sub">The calculator follows two versions of you. One buys the home; the other rents a similar home and invests the deposit and any monthly savings instead. It shows who ends up with more.</p>
+<div class="bc-grid">
+<div><label for="rb-price">Home price</label><input id="rb-price" type="number" min="0" step="100000" value="8000000"></div>
+<div><label for="rb-dep">Deposit (%)</label><input id="rb-dep" type="number" min="0" max="100" step="5" value="20"></div>
+<div><label for="rb-rate">Mortgage rate (%)</label><input id="rb-rate" type="number" min="0" step="0.05" value="8.5"></div>
+<div><label for="rb-term">Mortgage term (years)</label><input id="rb-term" type="number" min="1" max="40" step="1" value="20"></div>
+<div><label for="rb-own">Yearly ownership costs: tax, insurance, upkeep (% of price)</label><input id="rb-own" type="number" min="0" step="0.1" value="1"></div>
+<div><label for="rb-grow">Home price growth per year (%)</label><input id="rb-grow" type="number" step="0.5" value="5"></div>
+<div><label for="rb-rent">Monthly rent for a similar home</label><input id="rb-rent" type="number" min="0" step="1000" value="25000"></div>
+<div><label for="rb-rgrow">Rent increase per year (%)</label><input id="rb-rgrow" type="number" step="0.5" value="5"></div>
+<div><label for="rb-ret">Investment return per year (%)</label><input id="rb-ret" type="number" step="0.5" value="10"></div>
+<div><label for="rb-yrs">Years you expect to stay</label><input id="rb-yrs" type="number" min="1" max="40" step="1" value="10"></div>
+<div><label for="rb-cur">Currency</label><select id="rb-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Monthly mortgage payment</span><b id="rb-pay">—</b></div>
+<div class="bc-stat"><span>Wealth if you buy</span><b id="rb-wb">—</b></div>
+<div class="bc-stat"><span>Wealth if you rent and invest</span><b id="rb-wr">—</b></div>
+<div class="bc-stat bc-main"><span>Better choice over this period</span><b id="rb-win" style="font-size:20px">—</b><span id="rb-gap"></span></div>
+<div class="bc-stat bc-main"><span>Buying pulls ahead after</span><b id="rb-be">—</b></div>
+</div>
+<div class="bc-bar"><i id="rb-bar" style="background:#0f9d76;width:0"></i></div>
+<div class="bc-legend"><span id="rb-note">—</span></div>
+<p class="bc-note">Assumes buying costs of 3% of the price up front and selling costs of 5% when you sell; whichever side spends less each month invests the difference at your investment return. Ignores tax, which can favour either side depending on your country. A guide, not a forecast.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-rb');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+function sim(P,dp,rt,term,own,g,rent,rg,ret,yrs){
+  var loan=P*(1-dp),r=rt/12,n=term*12,pay=r>0?loan*r/(1-Math.pow(1+r,-n)):loan/n,bal=loan,val=P;
+  var potR=P*dp+P*.03,potB=0,mr=Math.pow(1+ret,1/12)-1,rentM=rent,out=[];
+  for(var m=1;m<=yrs*12;m++){
+    var interest=bal*r,prin=Math.min(bal,pay-interest);if(bal>0)bal-=prin;else prin=0;
+    var buyOut=(bal>0||prin>0?pay:0)+val*own/12;
+    potR*=1+mr;potB*=1+mr;
+    if(buyOut>rentM)potR+=buyOut-rentM;else potB+=rentM-buyOut;
+    val*=Math.pow(1+g,1/12);
+    if(m%12===0){rentM*=1+rg;out.push({b:val*.95-Math.max(0,bal)+potB,r:potR});}
+  }
+  return {pay:pay,years:out};
+}
+C.bind(root,function(){
+  var cur=$('rb-cur').value,P=C.num($('rb-price')),dp=Math.min(100,C.num($('rb-dep')))/100,rt=C.num($('rb-rate'))/100,term=Math.max(1,C.num($('rb-term'))),own=C.num($('rb-own'))/100,g=C.num($('rb-grow'))/100,rent=C.num($('rb-rent')),rg=C.num($('rb-rgrow'))/100,ret=C.num($('rb-ret'))/100,yrs=Math.min(40,Math.max(1,Math.round(C.num($('rb-yrs')))));
+  if(P<=0){$('rb-win').textContent='Enter a price';return;}
+  var s=sim(P,dp,rt,term,own,g,rent,rg,ret,Math.max(yrs,30)),end=s.years[yrs-1],be=0;
+  for(var i=0;i<s.years.length;i++){if(s.years[i].b>s.years[i].r){be=i+1;break;}}
+  $('rb-pay').textContent=C.money(s.pay,cur);
+  $('rb-wb').textContent=C.money(end.b,cur);$('rb-wr').textContent=C.money(end.r,cur);
+  var buy=end.b>=end.r;$('rb-win').textContent=buy?'Buying':'Renting and investing';
+  $('rb-gap').textContent='ahead by '+C.money(Math.abs(end.b-end.r),cur)+(C.words(Math.abs(end.b-end.r),cur)?' ('+C.words(Math.abs(end.b-end.r),cur)+')':'');
+  $('rb-be').textContent=be?be+(be===1?' year':' years'):'Not within 30 years';
+  var tot=Math.abs(end.b)+Math.abs(end.r);$('rb-bar').style.width=(tot>0?Math.max(0,end.b)/tot*100:0)+'%';
+  $('rb-note').textContent='Green bar: buying’s share of the combined wealth of the two paths after '+yrs+' years';
+});
+})();
+</script>
