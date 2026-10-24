@@ -16,6 +16,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "gdp-measuring-economy": ("ECONOMICS", "What Is GDP? Its Role in Measuring an Economy", "#7c5cff"),
     "bitcoin-losing-its-hype": ("CRYPTOCURRENCY", "Is Bitcoin Losing Its Hype? What the Data Says", "#e48b12"),
     "interest-rates-rising-money-moves": ("PERSONAL FINANCE", "Interest Rates Are Rising Again: 7 Money Moves to Make Now", "#2f7de1"),
+    "where-to-keep-cash-rates-rise": ("PERSONAL FINANCE", "Where to Keep Your Cash When Rates Rise", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

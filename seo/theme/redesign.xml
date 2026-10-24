@@ -1493,6 +1493,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     'in-cur': { 'in-amt': [100000, 1000], 'in-rate': [6, 3] },
     'lu-cur': { 'lu-amt': [600000, 10000], 'lu-rate': [12, 8] },
     'bt-cur': { 'bt-total': [1000000, 20000] },
+    'cs-cur': { 'cs-bal': [500000, 20000], 'cs-old': [2.7, 0.4], 'cs-new': [6.5, 4.2], 'cs-tax': [20, 22], 'cs-infl': [4, 3.7] },
     'rr-cur': { 'rr-card': [100000, 6000], 'rr-loan': [2500000, 250000], 'rr-save': [300000, 15000] }
   };
   var DEBT_ROWS = [['Credit card', 80000, 42, 4000, 'Credit card', 3000, 22, 90], ['Personal loan', 150000, 14, 5000, 'Personal loan', 8000, 11, 250],

@@ -1,0 +1,38 @@
+<div class="bd-calc" id="bd-cs">
+<p class="bc-title">How much more could your cash earn?</p>
+<p class="bc-sub">Compare what your savings earn now with a better account, after tax and after inflation.</p>
+<div class="bc-grid">
+<div><label for="cs-bal">Cash you keep in savings</label><input id="cs-bal" type="number" min="0" step="10000" value="500000"></div>
+<div><label for="cs-old">Rate you earn now (%)</label><input id="cs-old" type="number" min="0" step="0.05" value="2.7"></div>
+<div><label for="cs-new">Rate you could earn (%)</label><input id="cs-new" type="number" min="0" step="0.05" value="6.5"></div>
+<div><label for="cs-tax">Your tax rate on interest (%)</label><input id="cs-tax" type="number" min="0" max="60" step="1" value="20"></div>
+<div><label for="cs-infl">Inflation (%)</label><input id="cs-infl" type="number" min="0" step="0.1" value="4"></div>
+<div><label for="cs-yrs">Years</label><input id="cs-yrs" type="number" min="1" max="40" step="1" value="5"></div>
+<div><label for="cs-cur">Currency</label><select id="cs-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Interest this year, now</span><b id="cs-a">—</b></div>
+<div class="bc-stat"><span>Interest this year, after switching</span><b id="cs-b">—</b></div>
+<div class="bc-stat bc-main"><span>Extra after tax over the years you chose</span><b id="cs-gain">—</b><span id="cs-gainw"></span></div>
+<div class="bc-stat"><span>Real return after tax and inflation</span><b id="cs-real">—</b></div>
+</div>
+<div class="bc-bar"><i id="cs-bar" style="background:#0f9d76;width:0"></i></div>
+<div class="bc-legend"><span id="cs-note">—</span></div>
+<p class="bc-note">Interest is compounded yearly at the after-tax rate. Real return = (1 + after-tax rate) ÷ (1 + inflation) − 1. Rates on savings accounts can change at any time.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-cs');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('cs-cur').value,bal=C.num($('cs-bal')),r0=C.num($('cs-old'))/100,r1=C.num($('cs-new'))/100,t=Math.min(60,C.num($('cs-tax')))/100,inf=C.num($('cs-infl'))/100,n=Math.max(1,Math.round(C.num($('cs-yrs'))));
+  var a=bal*r0,b=bal*r1,g0=bal*(Math.pow(1+r0*(1-t),n)-1),g1=bal*(Math.pow(1+r1*(1-t),n)-1),gain=g1-g0;
+  var real=(1+r1*(1-t))/(1+inf)-1;
+  $('cs-a').textContent=C.money(a,cur);$('cs-b').textContent=C.money(b,cur);
+  $('cs-gain').textContent=(gain<0?'−':'')+C.money(Math.abs(gain),cur);$('cs-gainw').textContent=C.words(Math.abs(gain),cur);
+  $('cs-real').textContent=(real*100).toFixed(1)+'% a year';
+  $('cs-bar').style.width=(b>0?Math.min(100,a/b*100):0)+'%';
+  $('cs-note').textContent=b>0?'Your current account earns '+Math.round(a/b*100)+'% of what the better rate would pay':'Enter the rate you could earn';
+});
+})();
+</script>
