@@ -1,0 +1,41 @@
+<div class="bd-calc" id="bd-ls">
+<div class="bc-title">Lump sum or monthly pension?</div>
+<div class="bc-sub">Enter the two offers. See the payout rate, the break-even age, and how long the lump sum would last if you invested it and paid yourself the same income.</div>
+<div class="bc-grid">
+<div><label for="ls-sum">Lump sum offered</label><input id="ls-sum" type="number" min="0" step="5000" value="250000"></div>
+<div><label for="ls-mo">Monthly pension offered</label><input id="ls-mo" type="number" min="0" step="50" value="1500"></div>
+<div><label for="ls-age">Age when payments start</label><input id="ls-age" type="number" min="40" max="90" step="1" value="65"></div>
+<div><label for="ls-inc">Yearly increase in the pension (%)</label><input id="ls-inc" type="number" min="0" max="10" step="0.5" value="0"></div>
+<div><label for="ls-ret">Return you expect on the lump sum (%)</label><input id="ls-ret" type="number" min="-5" max="15" step="0.5" value="5"></div>
+<div><label for="ls-cur">Currency</label><select id="ls-cur" data-cur><option>$</option><option>€</option><option>£</option><option>₹</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Payout rate of the pension</span><b id="ls-rate">—</b></div>
+<div class="bc-stat"><span>Payments add up to the lump sum at age</span><b id="ls-be">—</b></div>
+<div class="bc-stat bc-main"><span>Invested lump sum paying the same income runs out at age</span><b id="ls-out">—</b></div>
+<div class="bc-stat"><span>Total pension received by age 90</span><b id="ls-90">—</b></div>
+</div>
+<div class="bc-bar"><i id="ls-bar" style="background:#0f9d76;width:0"></i></div>
+<div class="bc-legend"><span id="ls-note">—</span></div>
+<div class="bc-note">Assumes a steady return each year, before tax and fees; real returns vary, and a bad first few years can make money run out sooner. A payout rate above about 6% to 7% at 65 is hard to match safely by investing, while sustainable withdrawal rates from investments are usually put at 4% to 5%. This does not include survivor benefits, taxes or what you might leave to heirs.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ls');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('ls-cur').value,L=Math.max(0,C.num($('ls-sum'))),M=Math.max(0,C.num($('ls-mo'))),A=C.num($('ls-age')),g=C.num($('ls-inc'))/100,r=C.num($('ls-ret'))/100;
+  var W=M*12;if(L<=0||W<=0){['ls-rate','ls-be','ls-out','ls-90'].forEach(function(i){$(i).textContent='—'});$('ls-note').textContent='Enter both offers';return}
+  $('ls-rate').textContent=(W/L*100).toFixed(1)+'% a year';
+  var cum=0,be=null,pay=W;for(var y=0;y<80;y++){cum+=pay;if(be===null&&cum>=L){be=A+y+(1-(cum-L)/pay);}pay*=1+g}
+  $('ls-be').textContent=be===null?'Never':be.toFixed(0);
+  var bal=L,out=null;pay=W;for(var y=0;y<100;y++){var grown=bal*(1+r);if(grown<=pay){out=A+y+Math.max(0,grown/pay);break}bal=grown-pay;pay*=1+g}
+  $('ls-out').textContent=out===null?'Lasts past 100+':String(Math.floor(out));
+  var t90=0;pay=W;for(var y=0;y<Math.max(0,90-A);y++){t90+=pay;pay*=1+g}
+  $('ls-90').textContent=C.money(t90,cur);
+  var span=out===null?100:Math.min(100,Math.max(0,(out-A)/(100-A)*100));$('ls-bar').style.width=span+'%';
+  $('ls-bar').style.background=out===null||out>=95?'#e2462c':out>=88?'#f2a33a':'#0f9d76';
+  $('ls-note').textContent=out===null||out>=95?'At this return the lump sum could last a lifetime: it may be worth taking if you can accept market risk':out>=88?'Close call: the lump sum lasts into your late 80s, so the pension wins if you live longer':'The pension looks like the better deal unless your health or other plans point the other way';
+});
+})();
+</script>

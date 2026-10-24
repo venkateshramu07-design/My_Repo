@@ -1,0 +1,49 @@
+<figure class="bd-lsb" aria-label="A $250,000 lump sum invested at 5% and paying $1,500 a month runs out at about age 89, while the pension keeps paying for life">
+<svg viewBox="0 0 640 380" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Lump sum or monthly pension: what happens over time</title>
+<style>
+.bd-lsb{margin:2em 0!important}
+.bd-lsb svg{display:block;width:100%;height:auto;border-radius:20px}
+.lb-bg{fill:#f3f5fb}
+.lb-grid{stroke:#e1e5ef;stroke-width:1}
+.lb-ax{font:600 12.5px system-ui,-apple-system,sans-serif;fill:#5d6271}
+.lb-t{font:700 17px Georgia,serif;fill:#15171d}
+.lb-k{font:700 13px system-ui,-apple-system,sans-serif}
+.lb-pen{fill:none;stroke:#0f9d76;stroke-width:4;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900}
+.lb-pot{fill:none;stroke:#e2462c;stroke-width:4;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900}
+.lb-be{stroke:#7a5af5;stroke-width:2;stroke-dasharray:5 5}
+.lb-lab{opacity:0}
+.bd-lsb.lb-on .lb-pen,.bd-lsb.lb-on .lb-pot{animation:lb-draw 2.4s ease-out forwards}
+.bd-lsb.lb-on .lb-lab{animation:lb-fade .6s 2s ease-out forwards}
+@keyframes lb-draw{to{stroke-dashoffset:0}}
+@keyframes lb-fade{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.lb-pen,.lb-pot{stroke-dashoffset:0}.lb-lab{opacity:1}.bd-lsb.lb-on .lb-pen,.bd-lsb.lb-on .lb-pot,.bd-lsb.lb-on .lb-lab{animation:none}}
+</style>
+<rect class="lb-bg" width="640" height="380" rx="20"/>
+<text class="lb-t" x="24" y="34">$250,000 now, or $1,500 a month for life?</text>
+<text class="lb-k" x="24" y="58" fill="#0b7c5c">— Total pension received</text>
+<text class="lb-k" x="24" y="78" fill="#c23a22">— Lump sum invested at 5%, paying you $1,500 a month: what is left</text>
+<line class="lb-grid" x1="60" y1="330.0" x2="600" y2="330.0"/>
+<line class="lb-grid" x1="60" y1="234.2" x2="600" y2="234.2"/>
+<line class="lb-grid" x1="60" y1="138.3" x2="600" y2="138.3"/>
+<text class="lb-ax" x="54" y="334.0" text-anchor="end">$0</text>
+<text class="lb-ax" x="54" y="238.2" text-anchor="end">$250k</text>
+<text class="lb-ax" x="54" y="142.3" text-anchor="end">$500k</text>
+<text class="lb-ax" x="60" y="352" text-anchor="middle">65</text><text class="lb-ax" x="150" y="352" text-anchor="middle">70</text><text class="lb-ax" x="240" y="352" text-anchor="middle">75</text><text class="lb-ax" x="330" y="352" text-anchor="middle">80</text><text class="lb-ax" x="420" y="352" text-anchor="middle">85</text><text class="lb-ax" x="510" y="352" text-anchor="middle">90</text><text class="lb-ax" x="600" y="352" text-anchor="middle">95</text>
+<text class="lb-ax" x="330" y="372" text-anchor="middle">Age</text>
+<path class="lb-pen" d="M60 330.0 L 78 323.1 L 96 316.2 L 114 309.3 L 132 302.4 L 150 295.5 L 168 288.6 L 186 281.7 L 204 274.8 L 222 267.9 L 240 261.0 L 258 254.1 L 276 247.2 L 294 240.3 L 312 233.4 L 330 226.5 L 348 219.6 L 366 212.7 L 384 205.8 L 402 198.9 L 420 192.0 L 438 185.1 L 456 178.2 L 474 171.3 L 492 164.4 L 510 157.5 L 528 150.6 L 546 143.7 L 564 136.8 L 582 129.9 L 600 123.0"/>
+<path class="lb-pot" d="M60 234.2 L 78 236.3 L 96 238.5 L 114 240.8 L 132 243.3 L 150 245.8 L 168 248.5 L 186 251.3 L 204 254.3 L 222 257.4 L 240 260.7 L 258 264.1 L 276 267.7 L 294 271.5 L 312 275.5 L 330 279.7 L 348 284.0 L 366 288.6 L 384 293.5 L 402 298.6 L 420 303.9 L 438 309.5 L 456 315.3 L 474 321.5 L 492 328.0 L 498 330.0"/>
+<g class="lb-lab">
+<line class="lb-be" x1="310" y1="330.0" x2="310" y2="226.2"/>
+<text class="lb-ax" x="304" y="220.2" text-anchor="end" style="fill:#5a3fd0">Payments pass $250k at ~79</text>
+<circle cx="498" cy="330.0" r="7" fill="#e2462c" stroke="#fff" stroke-width="2"/>
+<text class="lb-ax" x="510" y="316.0" text-anchor="start" style="fill:#c23a22;font-weight:800">Runs out ~89</text>
+<text class="lb-ax" x="600" y="205" text-anchor="end" style="fill:#0b7c5c;font-weight:800">Pension still paying</text>
+</g>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">Example only: a fixed pension of $18,000 a year from 65 compared with taking $250,000 and withdrawing the same amount, invested at a steady 5% a year. Real returns vary, and if you die early the lump sum leaves money for heirs.</figcaption>
+<script>
+(function(){var f=document.currentScript.closest('figure');if(!f)return;var on=function(){f.classList.add('lb-on')};
+if('IntersectionObserver' in window){var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){on();io.disconnect()}},{threshold:.3});io.observe(f)}else on();})();
+</script>
+</figure>
