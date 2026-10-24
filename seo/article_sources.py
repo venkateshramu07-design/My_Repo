@@ -121,7 +121,7 @@ def block(keys):
 def add_sources(name):
     p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "articles", name + ".html")
     s = open(p, encoding="utf-8").read()
-    s = re.sub(r'<h2 id="sources">Sources</h2>\n<ul class="bd-sources">.*?</ul>\n', "", s, flags=re.S)
+    s = re.sub(r'<h2 id="sources">Sources</h2>\n<ul class="bd-sources">.*?</ul>\n\n?', "", s, flags=re.S)
     assert s.count("<h2>Related Guides</h2>") == 1, name
     s = s.replace("<h2>Related Guides</h2>", block(A[name]) + "\n<h2>Related Guides</h2>")
     open(p, "w", encoding="utf-8").write(s)
@@ -414,6 +414,29 @@ S.update({
  "imf_weo26": ("IMF: World Economic Outlook, October 2026", "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026"),
 })
 A["salary-increase-forecast-2027-by-country"] = ["sv_payscale", "sv_kornferry", "sv_wtw", "sv_wtw_ph", "sv_aon_sea", "sv_aon_in", "sv_mercer", "sv_mercer_ca", "sv_nb", "imf_weo26", "bls", "ons_cpi", "hicp", "atl_wage"]
+
+S.update({
+ "iadi": ("International Association of Deposit Insurers", "https://www.iadi.org/"),
+ "eu_dgsd": ("EU Deposit Guarantee Schemes Directive (2014/49/EU)", "https://eur-lex.europa.eu/eli/dir/2014/49/oj"),
+ "ecb_fx": ("European Central Bank: euro foreign exchange reference rates", "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"),
+ "esisuisse": ("esisuisse: Swiss depositor protection", "https://www.esisuisse.ch/en"),
+ "bsf_no": ("Bankenes sikringsfond (Norwegian Banks' Guarantee Fund)", "https://www.bankenessikringsfond.no/"),
+ "ipab": ("IPAB: Mexico's Institute for the Protection of Bank Savings", "https://www.ipab.org.mx/"),
+ "fgc_br": ("Fundo Garantidor de Créditos (Brazil)", "https://www.fgc.org.br/"),
+ "sedesa": ("SEDESA: Argentina's deposit guarantee scheme", "https://www.sedesa.com.ar/"),
+ "ndic": ("Nigeria Deposit Insurance Corporation", "https://ndic.gov.ng/"),
+ "kdic_ke": ("Kenya Deposit Insurance Corporation", "https://www.kdic.go.ke/"),
+ "kdic_kr": ("Korea Deposit Insurance Corporation", "https://www.kdic.or.kr/english/"),
+ "cdic_tw": ("Central Deposit Insurance Corporation (Taiwan)", "https://www.cdic.gov.tw/"),
+ "pidm": ("Perbadanan Insurans Deposit Malaysia", "https://www.pidm.gov.my/"),
+ "dpa_th": ("Deposit Protection Agency (Thailand)", "https://www.dpa.or.th/"),
+ "lps": ("Lembaga Penjamin Simpanan (Indonesia)", "https://lps.go.id/"),
+ "pdic": ("Philippine Deposit Insurance Corporation", "https://www.pdic.gov.ph/"),
+ "div": ("Deposit Insurance of Vietnam", "https://div.gov.vn/"),
+ "dpc_pk": ("Deposit Protection Corporation (Pakistan)", "https://www.dpc.org.pk/"),
+ "rbnz_dcs": ("Reserve Bank of New Zealand: Depositor Compensation Scheme", "https://www.rbnz.govt.nz/regulation-and-supervision/depositor-compensation-scheme"),
+})
+A["deposit-insurance-limits-by-country-2026"] = ["fdic", "fdic_prod", "fscs", "eu_dgsd", "cdic", "fcs", "dicj", "dps", "sdic", "dicgc", "kdic_kr", "pdic", "rbnz_dcs", "esisuisse", "bsf_no", "ipab", "fgc_br", "sedesa", "ndic", "kdic_ke", "cdic_tw", "pidm", "dpa_th", "lps", "div", "dpc_pk", "iadi", "ecb_fx"]
 
 if __name__ == "__main__":
     for n in A: add_sources(n)

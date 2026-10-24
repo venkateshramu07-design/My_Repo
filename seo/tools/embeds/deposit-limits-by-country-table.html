@@ -1,0 +1,52 @@
+<div class="bd-calc" id="bd-di">
+<div class="bc-title">Deposit insurance limits by country (2026)</div>
+<div class="bc-sub">How much of your money a government-backed scheme repays if your bank fails, per person, per bank. Sort by any column, filter by region, and tap a country for details.</div>
+<div class="di-filters" role="group" aria-label="Region"></div>
+<div class="di-wrap"><table class="di-t"><thead><tr><th data-k="c">Country</th><th data-k="l">Limit</th><th data-k="u">≈ US$</th></tr></thead><tbody></tbody></table></div>
+<div class="bc-legend"><span id="di-note">—</span></div>
+<div class="bc-note">Limits checked against each scheme or official announcements in October 2026. Dollar values use European Central Bank reference rates for 23 October 2026 (Oman: fixed peg) and are rounded; blank where the ECB publishes no rate. Limits apply per depositor per bank (in some countries, per ownership category). Money in e-money and payment apps, investments and crypto is not covered. The UAE, Saudi Arabia and Bahrain are not listed because we could not confirm a current published limit.</div>
+</div>
+<style>
+#bd-di .di-filters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+#bd-di .di-filters button{font:600 13px system-ui,-apple-system,sans-serif;padding:6px 11px;border-radius:999px;border:1.5px solid var(--c-line,#e4e0d8);background:var(--c-paper,#fff);color:var(--c-ink,#15171d);cursor:pointer}
+#bd-di .di-filters button[aria-pressed="true"]{background:#0f9d76;border-color:#0f9d76;color:#fff}
+#bd-di .di-wrap{max-height:600px;overflow:auto;border-radius:12px;border:1px solid var(--c-line,#e4e0d8)}
+#bd-di table.di-t{width:100%;table-layout:fixed;border-collapse:collapse;font:500 14px/1.35 system-ui,-apple-system,sans-serif;margin:0}
+#bd-di .di-t th:first-child{width:38%}#bd-di .di-t th:nth-child(3){width:26%}
+#bd-di .di-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5);font-weight:700;font-size:12.5px;text-align:left;padding:9px 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid var(--c-line,#e4e0d8);color:var(--c-ink,#15171d)}
+#bd-di .di-t th:last-child,#bd-di .di-t td:last-child{text-align:right}
+#bd-di .di-t td{padding:9px 8px;border-bottom:1px solid var(--c-line,#eeeae2);vertical-align:top;color:var(--c-ink,#15171d);overflow-wrap:anywhere;white-space:normal!important;text-align:left}
+#bd-di .di-t td:nth-child(2),#bd-di .di-t th:nth-child(2){text-align:left!important;width:30%}
+#bd-di .di-t tr.di-row{cursor:pointer}
+#bd-di .di-bar{display:block;height:5px;border-radius:3px;background:#0f9d76;margin-top:4px;margin-left:auto}
+#bd-di .di-det td{font-size:12.5px;color:var(--c-muted,#5d6271);background:var(--c-surface,#fbf9f5);text-align:left!important}
+#bd-di .di-g{display:block;font-size:11.5px;color:var(--c-muted,#5d6271);font-weight:500}
+@media (max-width:520px){#bd-di table.di-t{font-size:13px}#bd-di .di-t th,#bd-di .di-t td{padding:8px 5px!important}#bd-di .di-t th{font-size:11.5px}}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-di');if(!root)return;
+var D=[{"c":"United States","g":"Americas","s":"FDIC","l":"$250,000","u":250000.0,"n":"Per ownership category; joint and retirement accounts insured separately"},{"c":"Canada","g":"Americas","s":"CDIC","l":"C$100,000","u":71500.0,"n":"Per eligible category"},{"c":"Mexico","g":"Americas","s":"IPAB","l":"400,000 UDIs (≈ MX$3.5m)","u":186300.0,"n":"Set in inflation-linked UDIs; peso value changes daily"},{"c":"Brazil","g":"Americas","s":"FGC","l":"R$250,000","u":49500.0,"n":""},{"c":"Argentina","g":"Americas","s":"SEDESA","l":"ARS 50 million","u":null,"n":"From 1 April 2026"},{"c":"United Kingdom","g":"Europe","s":"FSCS","l":"£120,000","u":160400.0,"n":"From 1 December 2025; temporary high balances up to £1.4m"},{"c":"European Union (all 27)","g":"Europe","s":"National schemes","l":"€100,000","u":111900.0,"n":"Harmonised by EU law; local-currency equivalent outside the euro"},{"c":"Switzerland","g":"Europe","s":"esisuisse","l":"CHF 100,000","u":121300.0,"n":""},{"c":"Norway","g":"Europe","s":"Bankenes sikringsfond","l":"NOK 2 million","u":213900.0,"n":"For banks in the Norwegian scheme"},{"c":"Turkey","g":"Europe","s":"TMSF","l":"TRY 1.2 million","u":24100.0,"n":"Limit for 2026, raised from TRY 950,000"},{"c":"Russia","g":"Europe","s":"DIA","l":"RUB 1.4 million","u":null,"n":"Proposals to raise it are under discussion"},{"c":"South Africa","g":"Africa","s":"CODI","l":"R100,000","u":6000.0,"n":"Scheme launched April 2024"},{"c":"Nigeria","g":"Africa","s":"NDIC","l":"₦5 million","u":null,"n":"Commercial banks; ₦2m for microfinance and mortgage banks"},{"c":"Kenya","g":"Africa","s":"KDIC","l":"KES 500,000","u":null,"n":""},{"c":"Oman","g":"Middle East","s":"Bank Deposits Protection","l":"OMR 20,000","u":52000.0,"n":"Law in force from 2025"},{"c":"Japan","g":"Asia-Pacific","s":"DICJ","l":"¥10 million plus interest","u":63800.0,"n":"Non-interest settlement accounts fully protected"},{"c":"China","g":"Asia-Pacific","s":"Deposit insurance fund","l":"¥500,000 (RMB)","u":75000.0,"n":"Principal and interest"},{"c":"Hong Kong","g":"Asia-Pacific","s":"DPS","l":"HK$800,000","u":102000.0,"n":""},{"c":"Taiwan","g":"Asia-Pacific","s":"CDIC","l":"NT$3 million","u":null,"n":"Principal and interest"},{"c":"South Korea","g":"Asia-Pacific","s":"KDIC","l":"₩100 million","u":75500.0,"n":"Doubled from ₩50m on 1 September 2025"},{"c":"Singapore","g":"Asia-Pacific","s":"SDIC","l":"S$100,000","u":78200.0,"n":""},{"c":"Malaysia","g":"Asia-Pacific","s":"PIDM","l":"RM250,000","u":61200.0,"n":""},{"c":"Thailand","g":"Asia-Pacific","s":"DPA","l":"฿1 million","u":29600.0,"n":""},{"c":"Indonesia","g":"Asia-Pacific","s":"LPS","l":"Rp2 billion","u":110400.0,"n":""},{"c":"Philippines","g":"Asia-Pacific","s":"PDIC","l":"₱1 million","u":15700.0,"n":"Doubled from ₱500,000 on 15 March 2025"},{"c":"Vietnam","g":"Asia-Pacific","s":"DIV","l":"₫125 million","u":null,"n":""},{"c":"India","g":"Asia-Pacific","s":"DICGC","l":"₹5 lakh (₹500,000)","u":5300.0,"n":""},{"c":"Pakistan","g":"Asia-Pacific","s":"DPC","l":"PKR 1 million","u":null,"n":"Doubled from PKR 500,000 in October 2024"},{"c":"Australia","g":"Asia-Pacific","s":"Financial Claims Scheme","l":"A$250,000","u":175600.0,"n":""},{"c":"New Zealand","g":"Asia-Pacific","s":"Depositor Compensation Scheme","l":"NZ$100,000","u":56900.0,"n":"Scheme started 1 July 2025"}];
+var regions=['All'].concat(D.map(function(d){return d.g}).filter(function(g,i,a){return a.indexOf(g)===i}));
+var st={g:'All',k:'u',dir:-1,open:null};
+var fb=root.querySelector('.di-filters');
+regions.forEach(function(g){var b=document.createElement('button');b.type='button';b.textContent=g;b.setAttribute('aria-pressed',g==='All');b.onclick=function(){st.g=g;fb.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});draw()};fb.appendChild(b)});
+root.querySelectorAll('th').forEach(function(th){th.onclick=function(){var k=th.getAttribute('data-k');if(k==='l')k='u';st.dir=st.k===k?-st.dir:(k==='c'?1:-1);st.k=k;draw()}});
+function money(v){return v==null?'—':'$'+v.toLocaleString('en-US')}
+function draw(){
+  var rows=D.filter(function(d){return st.g==='All'||d.g===st.g});
+  rows.sort(function(a,b){var x=a[st.k],y=b[st.k];if(x==null)return 1;if(y==null)return -1;return (typeof x==='string'?x.localeCompare(y):x-y)*st.dir});
+  var mx=Math.max.apply(null,D.map(function(d){return d.u||0}));var h='';
+  rows.forEach(function(d){
+    h+='<tr class="di-row" data-c="'+d.c+'"><td><b>'+d.c+'</b><span class="di-g">'+d.s+'</span></td><td>'+d.l+'</td><td><b>'+money(d.u)+'</b>'+(d.u?'<span class="di-bar" style="width:'+Math.max(3,Math.round(d.u/mx*100))+'%"></span>':'')+'</td></tr>';
+    if(st.open===d.c)h+='<tr class="di-det"><td colspan="3">'+(d.n||'No further notes.')+'</td></tr>';
+  });
+  root.querySelector('tbody').innerHTML=h;
+  root.querySelectorAll('tr.di-row').forEach(function(tr){tr.onclick=function(){var c=tr.getAttribute('data-c');st.open=st.open===c?null:c;draw()}});
+  var us=rows.filter(function(d){return d.u!=null}).map(function(d){return d.u}).sort(function(a,b){return a-b});
+  var med=us.length?us[Math.floor(us.length/2)]:null;
+  document.getElementById('di-note').textContent=rows.length+' countries shown'+(med?'; median limit about '+money(med):'');
+}
+draw();
+})();
+</script>

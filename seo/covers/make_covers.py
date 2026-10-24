@@ -36,6 +36,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "online-accounts-crypto-when-you-die": ("TECHNOLOGY", "What Happens to Your Online Accounts and Crypto When You Die?", "#7a5af5"),
     "insurance-premium-up-no-claims": ("PERSONAL FINANCE", "Why Did My Insurance Premium Go Up With No Claims?", "#2f7de1"),
     "salary-increase-forecast-2027-by-country": ("CAREER \u00b7 DATA", "Salary Increase Forecasts 2027 by Country", "#2f7de1"),
+    "deposit-insurance-limits-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Deposit Insurance Limits by Country 2026", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
