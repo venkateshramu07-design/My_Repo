@@ -66,3 +66,21 @@ which has to be uploaded again (Theme > Restore) for the description to reach Fa
 Each has a cover, an animated chart and a calculator; currency examples are in CALC_EXAMPLES. Their share
 descriptions are in descriptions.json and the regenerated theme, which has to be uploaded again (Theme > Restore).
 The Bitcoin article was republished with the corrected gold figure.
+
+## Batch 2: ten global question articles (published 24 October 2026)
+
+1. Why Is My Credit Score Different on Every App? Which One Do Lenders Actually Use? (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/why-is-my-credit-score-different-on.html
+2. What Happens to Your Money If Your Bank or Fintech App Goes Bust? (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/what-happens-to-your-money-if-your-bank.html
+3. Do You Pay Tax When You Swap One Crypto for Another? The Rules Explained (Cryptocurrency): https://randomthoughtsever.blogspot.com/2026/10/do-you-pay-tax-when-you-swap-one-crypto.html
+4. What Happens to Your Retirement Savings When You Move Abroad? (Countries & Living Abroad): https://randomthoughtsever.blogspot.com/2026/10/what-happens-to-your-retirement-savings.html
+5. Why Are Prices Still So High When Inflation Has Come Down? (Economics): https://randomthoughtsever.blogspot.com/2026/10/why-are-prices-still-so-high-when.html
+6. How to Explain a Layoff or Career Gap in an Interview (Without Lying) (Career & Workplace): https://randomthoughtsever.blogspot.com/2026/10/how-to-explain-layoff-or-career-gap-in.html
+7. What Is a Fair Pay Raise in 2026? How to Work Out Your Real Raise After Inflation (Career & Workplace): https://randomthoughtsever.blogspot.com/2026/10/what-is-fair-pay-raise-in-2026-how-to.html
+8. Lump Sum or Monthly Pension: Which Should You Take? (Break-Even Calculator) (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/lump-sum-or-monthly-pension-which.html
+9. What Happens to Your Online Accounts, Crypto and Money When You Die? (Technology & AI): https://randomthoughtsever.blogspot.com/2026/10/what-happens-to-your-online-accounts.html
+10. Why Did My Insurance Premium Go Up When I Never Made a Claim? (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/why-did-my-insurance-premium-go-up-when.html
+
+Calculators in this batch start in dollars and carry `data-cur` on their currency select, so the design layer
+switches them to euro or pound for readers there (amounts stay the same). Embed text uses <div>, not <p>, so
+AdSense auto ads do not land inside a chart, and chart bar colours are inline so dark mode keeps them.
+Share descriptions are in descriptions.json and the regenerated theme, which has to be uploaded again (Theme > Restore).
