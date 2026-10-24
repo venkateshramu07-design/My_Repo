@@ -44,7 +44,7 @@ POSTS.update({
 COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@4c4199c4a1a12093b2c0656c378fb9f6d5de9425/seo/covers/"
 COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-here",
           "articles/emergency-fund-guide", "articles/good-credit-score-cibil", "articles/prepay-home-loan-or-invest",
-          "articles/gdp-measuring-economy", "articles/bitcoin-losing-its-hype", "articles/interest-rates-rising-money-moves"}
+          "articles/gdp-measuring-economy", "articles/bitcoin-losing-its-hype", "articles/interest-rates-rising-money-moves", "articles/where-to-keep-cash-rates-rise", "articles/10-year-treasury-yield-above-5", "articles/jobs-ai-is-replacing-skills", "articles/stablecoins-explained-interest", "articles/buy-house-mortgage-rates-above-7", "articles/prediction-markets-kalshi-polymarket", "articles/afford-car-2026-calculator", "articles/how-to-buy-ipo-shares", "articles/gold-safe-haven-2026-fall"}
 HUB_NAMES = {"money-start-here": "personal finance guide", "career-start-here": "career guide",
              "mind-start-here": "well-being guide"}
 
