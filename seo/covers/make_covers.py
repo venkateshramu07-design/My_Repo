@@ -33,6 +33,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "explain-layoff-career-gap-interview": ("CAREER & WORKPLACE", "How to explain a layoff or career gap in an interview", "#7a5af5"),
     "fair-pay-raise-2026-real-raise": ("CAREER & WORKPLACE", "What is a fair pay raise in 2026?", "#0f9d76"),
     "lump-sum-or-monthly-pension": ("PERSONAL FINANCE", "Lump sum or monthly pension: which should you take?", "#7a5af5"),
+    "online-accounts-crypto-when-you-die": ("TECHNOLOGY", "What happens to your online accounts and crypto when you die?", "#7a5af5"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
