@@ -1,0 +1,37 @@
+<div class="bd-calc" id="bd-gd">
+<p class="bc-title">How much gold belongs in your portfolio?</p>
+<p class="bc-sub">Test a gold allocation in two kinds of year: a crisis, when shares fall and gold often holds up, and a calm year, when shares usually do better. The calculator compares your portfolio with and without gold.</p>
+<div class="bc-grid">
+<div><label for="gd-total">Total investments</label><input id="gd-total" type="number" min="0" step="10000" value="1000000"></div>
+<div><label for="gd-share">Share in gold (%)</label><input id="gd-share" type="number" min="0" max="100" step="1" value="10"></div>
+<div><label for="gd-cs">Crisis year: shares and other assets (%)</label><input id="gd-cs" type="number" step="1" value="-30"></div>
+<div><label for="gd-cg">Crisis year: gold (%)</label><input id="gd-cg" type="number" step="1" value="10"></div>
+<div><label for="gd-ns">Calm year: shares and other assets (%)</label><input id="gd-ns" type="number" step="1" value="8"></div>
+<div><label for="gd-ng">Calm year: gold (%)</label><input id="gd-ng" type="number" step="1" value="-5"></div>
+<div><label for="gd-cur">Currency</label><select id="gd-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Crisis year, no gold</span><b id="gd-c0">—</b></div>
+<div class="bc-stat bc-main"><span>Crisis year, with your gold</span><b id="gd-c1">—</b></div>
+<div class="bc-stat"><span>Calm year, no gold</span><b id="gd-n0">—</b></div>
+<div class="bc-stat bc-main"><span>Calm year, with your gold</span><b id="gd-n1">—</b></div>
+</div>
+<div class="bc-bar"><i id="gd-bar" style="background:#d4a017;width:0"></i></div>
+<div class="bc-legend"><span id="gd-note">—</span></div>
+<p class="bc-note">Figures show the change in value over one year. Gold has often, but not always, risen when shares fell sharply, as in 2008 and 2020; in 2022 both fell for part of the year, and gold fell about a quarter from its peak in 2026. Many advisers suggest 5% to 10% in gold at most.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-gd');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+function fmt(v,cur){return (v<0?'−':'+')+C.money(Math.abs(v),cur)}
+C.bind(root,function(){
+  var cur=$('gd-cur').value,T=C.num($('gd-total')),g=Math.min(100,Math.max(0,C.num($('gd-share'))))/100,cs=C.num($('gd-cs'))/100,cg=C.num($('gd-cg'))/100,ns=C.num($('gd-ns'))/100,ng=C.num($('gd-ng'))/100;
+  var c0=T*cs,c1=T*((1-g)*cs+g*cg),n0=T*ns,n1=T*((1-g)*ns+g*ng);
+  $('gd-c0').textContent=fmt(c0,cur);$('gd-c1').textContent=fmt(c1,cur);$('gd-n0').textContent=fmt(n0,cur);$('gd-n1').textContent=fmt(n1,cur);
+  $('gd-bar').style.width=Math.min(100,g*100)+'%';
+  var saved=c1-c0,cost=n0-n1;
+  $('gd-note').textContent=T>0?'In the crisis, gold saves you '+C.money(Math.abs(saved),cur)+(saved<0?' less':'')+'; in the calm year it costs you '+C.money(Math.abs(cost),cur)+(cost<0?' less':''):'Enter your investments';
+});
+})();
+</script>

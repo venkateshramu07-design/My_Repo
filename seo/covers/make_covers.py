@@ -24,6 +24,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "prediction-markets-kalshi-polymarket": ("ECONOMICS", "How Prediction Markets Like Kalshi and Polymarket Work", "#7c5cff"),
     "afford-car-2026-calculator": ("PERSONAL FINANCE", "How to Afford a Car When the Average Payment Is $777", "#e2462c"),
     "how-to-buy-ipo-shares": ("INVESTING", "How Small Investors Can Buy IPO Shares", "#2f7de1"),
+    "gold-safe-haven-2026-fall": ("INVESTING", "Is Gold Still a Safe Haven After Its Big 2026 Fall?", "#d4a017"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

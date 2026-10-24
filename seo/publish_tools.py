@@ -28,6 +28,7 @@ POSTS.update({
     "articles/good-credit-score-cibil": ("What Is a Good CIBIL Score? How to Check and Improve It", ["Personal Finance"]),
     "articles/gdp-measuring-economy": ("What Is GDP? Its Role in Measuring an Economy, Explained", ["Economics"]),
     "articles/bitcoin-losing-its-hype": ("Is Bitcoin Losing Its Hype? What the Data Says in 2026", ["Cryptocurrency"]),
+    "articles/gold-safe-haven-2026-fall": ("Is Gold Still a Safe Haven After Its Big 2026 Fall?", ["Investing"]),
     "articles/how-to-buy-ipo-shares": ("How Small Investors Can Buy IPO Shares: Lessons From the SpaceX Listing", ["Investing"]),
     "articles/afford-car-2026-calculator": ("How to Afford a Car in 2026 When the Average Payment Is $777 (Calculator)", ["Personal Finance"]),
     "articles/prediction-markets-kalshi-polymarket": ("How Prediction Markets Like Kalshi and Polymarket Work, and Are They Legal?", ["Economics"]),
