@@ -552,7 +552,14 @@
     'ef-cur': { 'ef-home': [20000, 1500], 'ef-food': [12000, 600], 'ef-bills': [6000, 400], 'ef-other': [7000, 350], 'ef-have': [50000, 3000], 'ef-save': [10000, 500] },
     'in-cur': { 'in-amt': [100000, 1000], 'in-rate': [6, 3] },
     'lu-cur': { 'lu-amt': [600000, 10000], 'lu-rate': [12, 8] },
-    'bt-cur': { 'bt-total': [1000000, 20000] }
+    'bt-cur': { 'bt-total': [1000000, 20000] },
+    'gd-cur': { 'gd-total': [1000000, 50000] },
+    'ip-cur': { 'ip-amt': [200000, 10000] },
+    'ca-cur': { 'ca-price': [1000000, 40000], 'ca-down': [200000, 8000], 'ca-rate': [9, 7], 'ca-run': [6000, 350], 'ca-inc': [150000, 6000] },
+    'rb-cur': { 'rb-price': [8000000, 417500], 'rb-rate': [8.5, 7.4], 'rb-term': [20, 30], 'rb-own': [1, 2], 'rb-grow': [5, 3], 'rb-rent': [25000, 2400], 'rb-rgrow': [5, 3], 'rb-ret': [10, 6] },
+    'ty-cur': { 'ty-fund': [500000, 20000], 'ty-loan': [5000000, 400000], 'ty-rate': [8.5, 7.4], 'ty-yrs': [20, 30] },
+    'cs-cur': { 'cs-bal': [500000, 20000], 'cs-old': [2.7, 0.4], 'cs-new': [6.5, 4.2], 'cs-tax': [20, 22], 'cs-infl': [4, 3.7] },
+    'rr-cur': { 'rr-card': [100000, 6000], 'rr-loan': [2500000, 250000], 'rr-save': [300000, 15000] }
   };
   var DEBT_ROWS = [['Credit card', 80000, 42, 4000, 'Credit card', 3000, 22, 90], ['Personal loan', 150000, 14, 5000, 'Personal loan', 8000, 11, 250],
     ['Phone EMI', 20000, 16, 2000, 'Car loan', 12000, 7, 300]];
