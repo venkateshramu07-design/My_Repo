@@ -1,0 +1,40 @@
+<div class="bd-calc" id="bd-ca">
+<p class="bc-title">Can you afford this car?</p>
+<p class="bc-sub">Enter the car, the loan and your income. The calculator works out the payment, the full cost and how it compares with a common rule of thumb: total car costs at no more than about 15% of take-home pay.</p>
+<div class="bc-grid">
+<div><label for="ca-price">Car price, including taxes and fees</label><input id="ca-price" type="number" min="0" step="10000" value="1000000"></div>
+<div><label for="ca-down">Down payment</label><input id="ca-down" type="number" min="0" step="10000" value="200000"></div>
+<div><label for="ca-trade">Trade-in value minus what you still owe on it</label><input id="ca-trade" type="number" step="10000" value="0"></div>
+<div><label for="ca-rate">Loan interest rate (%)</label><input id="ca-rate" type="number" min="0" step="0.1" value="9"></div>
+<div><label for="ca-term">Loan term (months)</label><input id="ca-term" type="number" min="6" max="96" step="6" value="60"></div>
+<div><label for="ca-run">Monthly insurance, fuel and upkeep</label><input id="ca-run" type="number" min="0" step="500" value="6000"></div>
+<div><label for="ca-inc">Monthly take-home pay</label><input id="ca-inc" type="number" min="0" step="5000" value="150000"></div>
+<div><label for="ca-cur">Currency</label><select id="ca-cur"><option>₹</option><option>$</option><option>€</option><option>£</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Amount borrowed</span><b id="ca-loan">—</b></div>
+<div class="bc-stat"><span>Monthly loan payment</span><b id="ca-pay">—</b></div>
+<div class="bc-stat"><span>Total interest</span><b id="ca-int">—</b></div>
+<div class="bc-stat bc-main"><span>All car costs as share of take-home pay</span><b id="ca-share">—</b></div>
+<div class="bc-stat bc-main"><span>Verdict</span><b id="ca-verdict" style="font-size:18px;line-height:1.3">—</b></div>
+</div>
+<div class="bc-bar"><i id="ca-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="ca-note">—</span></div>
+<p class="bc-note">A widely used guideline, sometimes called the 20/4/10 rule, suggests putting at least 20% down, borrowing for no more than four years, and keeping car costs to about 10% of gross income; 15% of take-home pay is a similar test. A negative trade-in figure means you owe more than the old car is worth, and that amount is added to the new loan.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ca');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var cur=$('ca-cur').value,P=C.num($('ca-price')),down=C.num($('ca-down')),tr=C.num($('ca-trade')),a=C.num($('ca-rate'))/100,n=Math.max(1,Math.round(C.num($('ca-term')))),run=C.num($('ca-run')),inc=C.num($('ca-inc'));
+  var loan=Math.max(0,P-down-tr),r=a/12,pay=loan>0?(r>0?loan*r/(1-Math.pow(1+r,-n)):loan/n):0,intr=pay*n-loan,share=inc>0?(pay+run)/inc:0;
+  $('ca-loan').textContent=C.money(loan,cur);$('ca-pay').textContent=C.money(pay,cur);$('ca-int').textContent=C.money(intr,cur);
+  $('ca-share').textContent=inc>0?(share*100).toFixed(1)+'%':'—';
+  var flags=[];if(P>0&&(down+Math.max(0,tr))/P<0.2)flags.push('less than 20% down');if(n>48)flags.push('longer than 4 years');if(tr<0)flags.push('negative equity rolled in');
+  $('ca-verdict').textContent=inc<=0?'Enter your pay':share<=0.15&&!flags.length?'Comfortably affordable':share<=0.15?'Affordable, with caveats':share<=0.2?'Stretching your budget':'Too expensive for your income';
+  $('ca-bar').style.width=Math.min(100,share/0.3*100)+'%';
+  $('ca-note').textContent=flags.length?'Watch out: '+flags.join(', '):'Down payment and term are within common guidelines';
+});
+})();
+</script>

@@ -22,6 +22,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "stablecoins-explained-interest": ("CRYPTOCURRENCY", "Stablecoins Explained: Can You Earn Interest on Digital Dollars?", "#0f9d76"),
     "buy-house-mortgage-rates-above-7": ("PERSONAL FINANCE", "Should You Buy a House With Mortgage Rates Above 7%?", "#e48b12"),
     "prediction-markets-kalshi-polymarket": ("ECONOMICS", "How Prediction Markets Like Kalshi and Polymarket Work", "#7c5cff"),
+    "afford-car-2026-calculator": ("PERSONAL FINANCE", "How to Afford a Car When the Average Payment Is $777", "#e2462c"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
