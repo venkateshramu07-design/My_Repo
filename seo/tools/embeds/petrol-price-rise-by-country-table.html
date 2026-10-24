@@ -1,0 +1,47 @@
+<div class="bd-calc" id="bd-pp">
+<div class="bc-title">Petrol price rises since the Iran war began</div>
+<div class="bc-sub">Average pump price of regular petrol (Euro-super 95 in Europe, regular in the US) in the week of 23 February 2026, just before the war, and the week of 19 October 2026. Sort by any column and tap a country for the pre-war price and the peak.</div>
+<div class="pp-wrap"><table class="pp-t"><thead><tr><th data-k="c">Country</th><th data-k="u">Price now</th><th data-k="x">Rise</th></tr></thead><tbody></tbody></table></div>
+<div class="bc-legend"><span id="pp-note">—</span></div>
+<div class="bc-note">Sources: European Commission Weekly Oil Bulletin (EU countries, prices including taxes, in euros; non-euro countries are converted to euros by the Commission, so exchange rates affect their change), US Energy Information Administration (US regular gasoline, dollars per US gallon) and UK Department for Energy Security and Net Zero (unleaded, pence per litre). US$ per litre uses ECB rates for 23 October 2026. Malta's prices are set by the state-owned supplier and have not changed.</div>
+</div>
+<style>
+
+#bd-pp .pp-filters button{font:600 13px system-ui,-apple-system,sans-serif;padding:6px 11px;border-radius:999px;border:1.5px solid var(--c-line,#e4e0d8);background:var(--c-paper,#fff);color:var(--c-ink,#15171d);cursor:pointer}
+#bd-pp .pp-filters button[aria-pressed="true"]{background:#0f9d76;border-color:#0f9d76;color:#fff}
+#bd-pp .pp-wrap{max-height:600px;overflow:auto;border-radius:12px;border:1px solid var(--c-line,#e4e0d8)}
+#bd-pp table.pp-t{width:100%;table-layout:fixed;border-collapse:collapse;font:500 14px/1.35 system-ui,-apple-system,sans-serif;margin:0}
+#bd-pp .pp-t th:first-child{width:38%}#bd-pp .pp-t th:nth-child(3){width:26%}
+#bd-pp .pp-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5);font-weight:700;font-size:12.5px;text-align:left;padding:9px 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid var(--c-line,#e4e0d8);color:var(--c-ink,#15171d)}
+#bd-pp .pp-t th:last-child,#bd-pp .pp-t td:last-child{text-align:right}
+#bd-pp .pp-t td{padding:9px 8px;border-bottom:1px solid var(--c-line,#eeeae2);vertical-align:top;color:var(--c-ink,#15171d);overflow-wrap:anywhere;white-space:normal!important;text-align:left}
+#bd-pp .pp-t td:nth-child(2),#bd-pp .pp-t th:nth-child(2){text-align:left!important;width:30%}
+#bd-pp .pp-t tr.pp-row{cursor:pointer}
+#bd-pp .pp-bar{display:block;height:5px;border-radius:3px;background:#0f9d76;margin-top:4px;margin-left:auto}
+#bd-pp .pp-det td{font-size:12.5px;color:var(--c-muted,#5d6271);background:var(--c-surface,#fbf9f5);text-align:left!important}
+#bd-pp .pp-g{display:block;font-size:11.5px;color:var(--c-muted,#5d6271);font-weight:500}
+@media (max-width:520px){#bd-pp table.pp-t{font-size:13px}#bd-pp .pp-t th,#bd-pp .pp-t td{padding:8px 5px!important}#bd-pp .pp-t th{font-size:11.5px}}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-pp');if(!root)return;
+var D=[{"c":"United States","now":"$4.28/gal","pre":"$2.94/gal","pk":"$4.50/gal (11 May)","u":1.13,"x":45.9},{"c":"Finland","now":"€2.33/L","pre":"€1.71/L","pk":"€2.37/L (5 Oct)","u":2.61,"x":35.8},{"c":"Czechia","now":"€1.86/L","pre":"€1.37/L","pk":"€1.88/L (21 Sep)","u":2.08,"x":35.7},{"c":"Bulgaria","now":"€1.65/L","pre":"€1.22/L","pk":"€1.68/L (28 Sep)","u":1.84,"x":35.1},{"c":"Estonia","now":"€1.95/L","pre":"€1.45/L","pk":"€1.95/L (19 Oct)","u":2.19,"x":34.5},{"c":"Denmark","now":"€2.60/L","pre":"€1.94/L","pk":"€2.66/L (12 Oct)","u":2.92,"x":34.4},{"c":"Cyprus","now":"€1.76/L","pre":"€1.31/L","pk":"€1.76/L (12 Oct)","u":1.97,"x":34.1},{"c":"Lithuania","now":"€1.95/L","pre":"€1.46/L","pk":"€1.95/L (28 Sep)","u":2.18,"x":33.8},{"c":"United Kingdom","now":"174.6p/L","pre":"131.7p/L","pk":"175.3p/L (12 Oct)","u":2.33,"x":32.5},{"c":"Belgium","now":"€1.99/L","pre":"€1.50/L","pk":"€2.03/L (28 Sep)","u":2.23,"x":32.2},{"c":"France","now":"€2.23/L","pre":"€1.71/L","pk":"€2.23/L (19 Oct)","u":2.49,"x":30.4},{"c":"Slovakia","now":"€1.89/L","pre":"€1.47/L","pk":"€1.89/L (19 Oct)","u":2.11,"x":27.9},{"c":"Latvia","now":"€1.95/L","pre":"€1.53/L","pk":"€2.04/L (28 Sep)","u":2.18,"x":27.2},{"c":"Greece","now":"€2.19/L","pre":"€1.74/L","pk":"€2.21/L (28 Sep)","u":2.45,"x":26.1},{"c":"Portugal","now":"€2.10/L","pre":"€1.69/L","pk":"€2.11/L (12 Oct)","u":2.35,"x":24.5},{"c":"Slovenia","now":"€1.75/L","pre":"€1.42/L","pk":"€1.76/L (5 Oct)","u":1.96,"x":23.3},{"c":"Croatia","now":"€1.81/L","pre":"€1.47/L","pk":"€1.83/L (5 Oct)","u":2.02,"x":22.8},{"c":"Luxembourg","now":"€1.79/L","pre":"€1.46/L","pk":"€1.89/L (28 Sep)","u":2.0,"x":22.7},{"c":"Romania","now":"€1.90/L","pre":"€1.55/L","pk":"€1.90/L (12 Oct)","u":2.12,"x":22.6},{"c":"Italy","now":"€2.02/L","pre":"€1.66/L","pk":"€2.16/L (28 Sep)","u":2.26,"x":21.8},{"c":"EU average","now":"€1.99/L","pre":"€1.64/L","pk":"€2.10/L (28 Sep)","u":2.23,"x":21.6},{"c":"Hungary","now":"€1.77/L","pre":"€1.46/L","pk":"€1.77/L (19 Oct)","u":1.98,"x":21.1},{"c":"Spain","now":"€1.78/L","pre":"€1.47/L","pk":"€1.94/L (28 Sep)","u":1.99,"x":21.0},{"c":"Austria","now":"€1.82/L","pre":"€1.51/L","pk":"€1.96/L (28 Sep)","u":2.03,"x":20.4},{"c":"Germany","now":"€2.18/L","pre":"€1.82/L","pk":"€2.36/L (14 Sep)","u":2.44,"x":19.5},{"c":"Netherlands","now":"€2.39/L","pre":"€2.06/L","pk":"€2.47/L (7 Sep)","u":2.68,"x":16.0},{"c":"Sweden","now":"€1.64/L","pre":"€1.43/L","pk":"€1.77/L (23 Mar)","u":1.84,"x":14.4},{"c":"Ireland","now":"€1.97/L","pre":"€1.74/L","pk":"€1.98/L (5 Oct)","u":2.21,"x":13.3},{"c":"Poland","now":"€1.56/L","pre":"€1.38/L","pk":"€1.85/L (28 Sep)","u":1.75,"x":13.3},{"c":"Malta","now":"€1.34/L","pre":"€1.34/L","pk":"€1.34/L (23 Feb)","u":1.5,"x":0.0}];
+var st={k:'x',dir:-1,open:null};
+root.querySelectorAll('th').forEach(function(th){th.onclick=function(){var k=th.getAttribute('data-k');st.dir=st.k===k?-st.dir:(k==='c'?1:-1);st.k=k;draw()}});
+function draw(){
+  var rows=D.slice();
+  rows.sort(function(a,b){var x=a[st.k],y=b[st.k];return (typeof x==='string'?x.localeCompare(y):(x-y))*st.dir});
+  var mx=Math.max.apply(null,D.map(function(d){return d.x}));var h='';
+  rows.forEach(function(d){
+    var ref=d.c==='EU average';
+    h+='<tr class="pp-row" data-c="'+d.c+'"'+(ref?' style="background:rgba(47,125,225,.08)"':'')+'><td><b>'+d.c+'</b></td><td>'+d.now+'<span class="pp-g">≈ US$'+d.u.toFixed(2)+'/L</span></td><td><b>'+(d.x>0?'+':'')+d.x.toFixed(1)+'%</b><span class="pp-bar" style="width:'+Math.max(2,Math.round(d.x/mx*100))+'%;background:'+(ref?'#2f7de1':'#e0662f')+'"></span></td></tr>';
+    if(st.open===d.c)h+='<tr class="pp-det"><td colspan="3"><b>Before the war (23 Feb):</b> '+d.pre+' · <b>Peak:</b> '+d.pk+'</td></tr>';
+  });
+  root.querySelector('tbody').innerHTML=h;
+  root.querySelectorAll('tr.pp-row').forEach(function(tr){tr.onclick=function(){var c=tr.getAttribute('data-c');st.open=st.open===c?null:c;draw()}});
+  var xs=D.filter(function(d){return d.c!=='EU average'}).map(function(d){return d.x}).sort(function(a,b){return a-b});
+  document.getElementById('pp-note').textContent=xs.length+' countries; median rise '+xs[Math.floor(xs.length/2)].toFixed(1)+'%';
+}
+draw();
+})();
+</script>

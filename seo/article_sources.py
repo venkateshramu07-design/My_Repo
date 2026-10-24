@@ -438,6 +438,38 @@ S.update({
 })
 A["deposit-insurance-limits-by-country-2026"] = ["fdic", "fdic_prod", "fscs", "eu_dgsd", "cdic", "fcs", "dicj", "dps", "sdic", "dicgc", "kdic_kr", "pdic", "rbnz_dcs", "esisuisse", "bsf_no", "ipab", "fgc_br", "sedesa", "ndic", "kdic_ke", "cdic_tw", "pidm", "dpa_th", "lps", "div", "dpc_pk", "iadi", "ecb_fx"]
 
+S.update({
+ "ec_wob": ("European Commission: Weekly Oil Bulletin (fuel prices in every EU country)", "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en"),
+ "eia_gas": ("US Energy Information Administration: gasoline and diesel fuel update", "https://www.eia.gov/petroleum/gasdiesel/"),
+ "eia_brent": ("US Energy Information Administration: weekly Brent crude oil spot price", "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=W"),
+ "uk_fuel": ("UK Department for Energy Security and Net Zero: weekly road fuel prices", "https://www.gov.uk/government/statistics/weekly-road-fuel-prices"),
+ "caa_gas": ("Canadian Automobile Association: national gas prices", "https://www.caa.ca/gas-prices/"),
+ "kalibrate_feb": ("Kalibrate: Canadian petroleum price snapshot, February 2026", "https://kalibrate.com/insights/blog/february-2026-kalibrates-canadian-petroleum-price-snapshot/"),
+ "nt_fuel_feb": ("Northern Territory Treasury: fuel prices, February 2026 (national averages from AIP and ACCC data)", "https://treasury.nt.gov.au/__data/assets/pdf_file/0007/1595986/Fuel-prices-February-2026.pdf"),
+ "za_oct": ("TimesLIVE: South African fuel prices from 7 October 2026", "https://www.timeslive.co.za/motoring/2026-10-05-record-fuel-price-hikes-what-youll-pay-from-october-7/"),
+ "za_feb": ("IOL: February 2026 fuel price cut in South Africa", "https://iol.co.za/dailynews/news/2026-02-02-fuel-prices-set-for-sharp-cut-from-wednesday-as-petrol-drops-to-lowest-level-since-2022/"),
+ "pk_feb": ("Daily Pakistan: petrol prices from 16 February 2026", "https://en.dailypakistan.com.pk/16-Feb-2026/petrol-price-in-pakistan-increased-by-rs5-diesel-by-rs7-32-per-litre-for-february"),
+ "pk_oct": ("UA.News, citing Dawn: Pakistan petrol prices from 20 October 2026", "https://ua.news/en/world/pakistan-zniziv-tsinu-benzinu-na-5-16-rupiyi-za-litr-dawn"),
+ "jp_gas": ("Qatar Tribune: Japan holds gasoline near 170 yen with subsidies", "https://www.qatar-tribune.com/article/250673/business/japan-keeps-lid-on-gas-prices-as-middle-east-conflict-threatens-supplies"),
+ "in_delhi": ("Upstox: petrol price in Delhi", "https://upstox.com/petrol-price/petrol-price-in-delhi/"),
+ "aj_petrol": ("Al Jazeera: how much more are you spending on petrol since the war began?", "https://www.aljazeera.com/news/2026/8/24/how-much-more-are-you-spending-on-petrol-since-the-war-in-iran-began"),
+ "oecd_pag25": ("OECD: Pensions at a Glance 2025", "https://www.oecd.org/en/publications/pensions-at-a-glance-2025_e40274c1-en.html"),
+ "etk_ages": ("Finnish Centre for Pensions: retirement ages in Europe and other countries", "https://www.etk.fi/en/international-affairs/international-comparisons/retirement-ages/"),
+ "ssa_fra": ("US Social Security Administration: retirement age and benefit reduction", "https://www.ssa.gov/benefits/retirement/planner/agereduction.html"),
+ "uk_spa": ("GOV.UK: check your State Pension age", "https://www.gov.uk/state-pension-age"),
+ "cpp": ("Government of Canada: Canada Pension Plan retirement pension", "https://www.canada.ca/en/services/benefits/publicpensions/cpp.html"),
+ "au_age": ("Services Australia: Age Pension", "https://www.servicesaustralia.gov.au/age-pension"),
+ "drv": ("Deutsche Rentenversicherung (German pension insurance)", "https://www.deutsche-rentenversicherung.de/"),
+ "fr_freeze": ("Connexion: how the suspension of France's pension reform affects workers", "https://www.connexionfrance.com/news/table-how-suspension-of-pension-reforms-would-affect-workers-in-france/752856"),
+ "it_2027": ("La Sicilia: Italian pension age rises one month in 2027 and three months by 2028", "https://en.lasicilia.it/news/economy/3024470/pensions-one-more-month-starting-in-2027-and-three-months-starting-in-2028-some-categories-exempted.html"),
+ "dk_70": ("Denmark raises its retirement age to 70 (May 2025)", "https://www.krdo.com/news/2025/05/23/denmark-raises-retirement-age-to-70-the-highest-in-europe/"),
+ "sg_mom": ("Singapore Ministry of Manpower: retirement and re-employment", "https://www.mom.gov.sg/employment-practices/retirement"),
+ "nz_super": ("Work and Income: New Zealand Superannuation", "https://www.workandincome.govt.nz/eligibility/seniors/superannuation.html"),
+ "jp_nenkin": ("Japan Pension Service: national pension", "https://www.nenkin.go.jp/international/japanese-system/nationalpension/nationalpension.html"),
+})
+A["petrol-prices-since-iran-war-by-country"] = ["ec_wob", "eia_gas", "eia_brent", "uk_fuel", "caa_gas", "kalibrate_feb", "nt_fuel_feb", "za_oct", "za_feb", "pk_feb", "pk_oct", "jp_gas", "in_delhi", "aj_petrol", "ecb_fx"]
+A["retirement-age-by-country-2026"] = ["oecd_pag25", "etk_ages", "ssa_fra", "uk_spa", "cpp", "au_age", "drv", "fr_freeze", "it_2027", "dk_70", "sg_mom", "nz_super", "jp_nenkin"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
