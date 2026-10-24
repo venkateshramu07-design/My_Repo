@@ -34,8 +34,10 @@ HEAD = """<!-- Blog Digest: the design layer loads first, so pages render in the
 
 # Blogger's all-head-content include writes og:description and the meta description from each post's search
 # description, which on this blog are still old comma-separated keyword lists, and the API can't change them. So the
-# theme writes those tags itself: every article gets its one-sentence summary from descriptions.json, and anything
-# else falls back to the post's own search description or the site sentence. The rest of what the include wrote
+# theme writes those tags itself: every article listed in descriptions.json when the theme was built gets its summary,
+# and any other page gets the site sentence. The design layer then sets each article's summary in the page from
+# descriptions.json (or its quick answer), which Google reads, so new posts never need a theme upload; only link
+# previews on Facebook and WhatsApp, which don't run scripts, show the site sentence for posts added later. The rest of what the include wrote
 # (canonical, feeds, favicon, og:url, og:title, og:image) is written out here too.
 import html, json
 DESCS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "descriptions.json"), encoding="utf-8"))
@@ -63,7 +65,6 @@ META = """<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
     <b:if cond='data:view.isHomepage'><meta content='Blog Digest: Practical Guides to Money, Mind and Work' property='og:title'/><b:elseif cond='data:view.isLabelSearch'/><meta expr:content='data:view.search.label + &quot; | Blog Digest&quot;' property='og:title'/><b:elseif cond='data:view.isSingleItem'/><meta expr:content='data:view.title' property='og:title'/><b:else/><meta content='Blog Digest' property='og:title'/></b:if>
     <b:if cond='data:view.isSingleItem and data:view.featuredImage'><meta expr:content='resizeImage(data:view.featuredImage, 1200, &quot;1200:630&quot;)' property='og:image'/><b:else/><meta content='""" + HOME_IMAGE + """' property='og:image'/></b:if>
     """ + CHAIN + """
-      <b:elseif cond='data:view.isPost and data:view.description'/><meta expr:content='data:view.description' name='description'/><meta expr:content='data:view.description' property='og:description'/>
       <b:else/>""" + desc_tags(SITE) + """</b:if>
     <meta content='Blog Digest' property='og:site_name'/>
     <b:if cond='data:view.isSingleItem'><meta content='article' property='og:type'/><b:else/><meta content='website' property='og:type'/></b:if>

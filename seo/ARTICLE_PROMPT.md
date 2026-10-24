@@ -47,9 +47,10 @@ Publish
 - Before publishing, preview it inside a live article page in Playwright on desktop and a Pixel 7: check the
   embeds render, the calculator gives correct results, no page errors, no horizontal overflow. Fix and re-check.
 - Publish with: python3 seo/publish_tools.py publish articles/<name>
-- Add a one-sentence description for its path to seo/theme/descriptions.json, release it (commit, write the
-  commit hash to seo/theme/version.txt, commit, push), then check the live page as a new visitor on phone and
-  desktop and report the URL.
+- Add a one-sentence description for its path to seo/theme/descriptions.json, run python3 seo/theme/build_loader.py
+  (which builds the descriptions into the design layer) and release it (commit, write the commit hash to
+  seo/theme/version.txt, commit, push). No theme upload is needed. Then check the live page as a new visitor on
+  phone and desktop and report the URL.
 - Do not save my Blogger token in any file. Commit and push all other work to ccr-ee047f91-rbyv4x.
 
 Blogger token: <paste a fresh access token here, or set BLOGGER_TOKEN in the environment settings>

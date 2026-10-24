@@ -84,3 +84,12 @@ Calculators in this batch start in dollars and carry `data-cur` on their currenc
 switches them to euro or pound for readers there (amounts stay the same). Embed text uses <div>, not <p>, so
 AdSense auto ads do not land inside a chart, and chart bar colours are inline so dark mode keeps them.
 Share descriptions are in descriptions.json and the regenerated theme, which has to be uploaded again (Theme > Restore).
+
+## Article descriptions without theme uploads (24 October 2026)
+
+The design layer (bd-redesign.js, released through seo/theme/version.txt, no theme upload) now carries
+descriptions.json and sets each article's meta description, og:description and twitter:description in the page, from
+its entry there or, if it has none, from its quick answer cut at a sentence end. Google reads these. The theme's
+own static tags keep the summaries for posts listed when it was built and use the site sentence for anything newer,
+instead of the blog's old keyword list; only Facebook and WhatsApp link previews, which don't run scripts, see that.
+The theme was regenerated once for this change and does not need uploading again for new posts.
