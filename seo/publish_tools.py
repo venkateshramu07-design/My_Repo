@@ -116,7 +116,7 @@ def publish(names):
             r = a.call("POST", f"/blogs/{bid}/posts/", None, body)
         ids[name] = {"id": r["id"], "url": r["url"]}
         json.dump(ids, open(IDS, "w"), indent=1)
-        ok = len(r.get("content", "")) > 5000 and "[[" not in r["content"]
+        ok = len(r.get("content", "")) > 5000 and not re.search(r"\[\[(?:post|embed|tool|hub|\d{4}/)", r["content"])
         print("OK " if ok else "CHECK", name, "|", r["title"], "|", r["url"])
 
 
