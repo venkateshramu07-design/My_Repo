@@ -1,0 +1,48 @@
+<figure class="bd-scflow" aria-label="How a dollar stablecoin works: dollars go in, tokens come out, and the reserves earn interest">
+<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>How a fully backed dollar stablecoin works</title>
+<style>
+.bd-scflow{margin:2em 0!important}
+.bd-scflow svg{display:block;width:100%;height:auto;border-radius:20px}
+.sc-bg{fill:#f1f8f5}
+.sc-box{fill:#ffffff;stroke:#0f9d76;stroke-width:2}
+.sc-res{fill:#ffffff;stroke:#2f7de1;stroke-width:2}
+.sc-t{font:700 16px Georgia,serif;fill:#15171d}
+.sc-s{font:500 12.5px system-ui,-apple-system,sans-serif;fill:#5d6271}
+.sc-lab{font:700 12px system-ui,-apple-system,sans-serif;letter-spacing:.05em;fill:#0b7c5c}
+.sc-lab2{font:700 12px system-ui,-apple-system,sans-serif;letter-spacing:.05em;fill:#2f7de1}
+.sc-lab3{font:700 12px system-ui,-apple-system,sans-serif;letter-spacing:.05em;fill:#e2462c}
+.sc-path{fill:none;stroke:#0f9d76;stroke-opacity:.4;stroke-width:2;stroke-dasharray:6 6}
+.sc-path2{fill:none;stroke:#2f7de1;stroke-opacity:.4;stroke-width:2;stroke-dasharray:6 6}
+.sc-path3{fill:none;stroke:#e2462c;stroke-opacity:.45;stroke-width:2;stroke-dasharray:6 6}
+.sc-usd{fill:#0f9d76}.sc-tok{fill:#f2a33a}.sc-int{fill:#e2462c}
+@media (prefers-reduced-motion:reduce){.bd-scflow animateMotion{display:none}}
+</style>
+<rect class="sc-bg" width="640" height="330" rx="20"/>
+<rect class="sc-box" x="24" y="110" width="150" height="90" rx="16"/>
+<text class="sc-t" x="99" y="150" text-anchor="middle">You</text>
+<text class="sc-s" x="99" y="172" text-anchor="middle">hold digital dollars</text>
+<rect class="sc-box" x="245" y="110" width="150" height="90" rx="16"/>
+<text class="sc-t" x="320" y="150" text-anchor="middle">Issuer</text>
+<text class="sc-s" x="320" y="172" text-anchor="middle">e.g. Circle, Tether</text>
+<rect class="sc-res" x="466" y="110" width="150" height="90" rx="16"/>
+<text class="sc-t" x="541" y="145" text-anchor="middle">Reserves</text>
+<text class="sc-s" x="541" y="166" text-anchor="middle">cash and</text>
+<text class="sc-s" x="541" y="182" text-anchor="middle">Treasury bills</text>
+<path id="sc-a" class="sc-path" d="M174 130 C 205 95, 215 95, 245 130"/>
+<path id="sc-b" class="sc-path" d="M245 180 C 215 215, 205 215, 174 180"/>
+<path id="sc-c" class="sc-path2" d="M395 155 L 466 155"/>
+<path id="sc-d" class="sc-path3" d="M541 200 C 541 270, 340 280, 320 200"/>
+<text class="sc-lab" x="209" y="88" text-anchor="middle">$1 IN</text>
+<text class="sc-lab" x="209" y="232" text-anchor="middle">1 TOKEN OUT</text>
+<text class="sc-lab2" x="430" y="142" text-anchor="middle">INVESTED</text>
+<text class="sc-lab3" x="440" y="292" text-anchor="middle">INTEREST (~4%) KEPT BY ISSUER</text>
+<text class="sc-s" x="320" y="40" text-anchor="middle" style="font-weight:700;fill:#15171d;font-size:15px">Who earns the interest on a stablecoin?</text>
+<text class="sc-s" x="320" y="60" text-anchor="middle">You can redeem 1 token for $1; the issuer keeps the income on the reserves</text>
+<g><circle class="sc-usd" r="7"><animateMotion dur="3s" repeatCount="indefinite"><mpath href="#sc-a"/></animateMotion></circle></g>
+<g><rect class="sc-tok" x="-7" y="-7" width="14" height="14" rx="4"><animateMotion dur="3s" begin="1.2s" repeatCount="indefinite"><mpath href="#sc-b"/></animateMotion></rect></g>
+<g><circle class="sc-usd" r="7"><animateMotion dur="2.2s" begin=".6s" repeatCount="indefinite"><mpath href="#sc-c"/></animateMotion></circle></g>
+<g><circle class="sc-int" r="6"><animateMotion dur="3.6s" repeatCount="indefinite"><mpath href="#sc-d"/></animateMotion></circle></g>
+</svg>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">A fully reserved stablecoin is a claim on dollars held by its issuer. The reserves, mostly short-term US government debt, earn interest; under US law from January 2027, issuers cannot pass that interest to holders, although exchanges may still offer their own rewards.</figcaption>
+</figure>

@@ -1,0 +1,35 @@
+<div class="bd-calc" id="bd-sc">
+<p class="bc-title">Stablecoin rewards or a savings account?</p>
+<p class="bc-sub">Compare what dollars earn as a stablecoin reward with an insured savings account, and test what a temporary loss of the $1 peg would cost.</p>
+<div class="bc-grid">
+<div><label for="sc-amt">Amount in US dollars</label><input id="sc-amt" type="number" min="0" step="500" value="10000"></div>
+<div><label for="sc-rew">Stablecoin reward rate offered (%)</label><input id="sc-rew" type="number" min="0" step="0.1" value="3.5"></div>
+<div><label for="sc-sav">Insured savings rate available (%)</label><input id="sc-sav" type="number" min="0" step="0.1" value="4.2"></div>
+<div><label for="sc-dep">Fall in price to test if the peg breaks (%)</label><input id="sc-dep" type="number" min="0" max="100" step="1" value="13"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Stablecoin reward per year</span><b id="sc-r">—</b></div>
+<div class="bc-stat"><span>Savings interest per year</span><b id="sc-s">—</b></div>
+<div class="bc-stat bc-main"><span>Difference per year</span><b id="sc-d">—</b></div>
+<div class="bc-stat bc-main"><span>Loss if you had to sell during that fall</span><b id="sc-l">—</b></div>
+</div>
+<div class="bc-bar"><i id="sc-bar" style="background:var(--bd-accent,#e2462c);width:0"></i></div>
+<div class="bc-legend"><span id="sc-note">—</span></div>
+<p class="bc-note">USDC fell to about $0.87, a 13% drop, for a weekend in March 2023 before recovering; TerraUSD fell to almost nothing in 2022 and never recovered. Stablecoins are not covered by deposit insurance. Rewards are set by the platform and can change at any time.</p>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-sc');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+C.bind(root,function(){
+  var amt=C.num($('sc-amt')),r=C.num($('sc-rew'))/100,s=C.num($('sc-sav'))/100,dep=Math.min(100,Math.max(0,C.num($('sc-dep'))))/100;
+  var rr=amt*r,ss=amt*s,d=rr-ss,loss=amt*dep;
+  $('sc-r').textContent=C.money(rr,'$');$('sc-s').textContent=C.money(ss,'$');
+  $('sc-d').textContent=(d<0?'−':'+')+C.money(Math.abs(d),'$')+(d<0?' (savings pays more)':' (stablecoin pays more)');
+  $('sc-l').textContent=C.money(loss,'$');
+  var yrs=d>0?loss/d:Infinity;
+  $('sc-bar').style.width=(amt>0?Math.min(100,dep*100):0)+'%';
+  $('sc-note').textContent=d>0?'It would take about '+(isFinite(yrs)?yrs.toFixed(1):'—')+' years of extra rewards to make up for one such fall':'The insured account pays more, with less risk';
+});
+})();
+</script>

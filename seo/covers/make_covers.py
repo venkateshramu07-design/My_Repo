@@ -19,6 +19,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "where-to-keep-cash-rates-rise": ("PERSONAL FINANCE", "Where to Keep Your Cash When Rates Rise", "#0f9d76"),
     "10-year-treasury-yield-above-5": ("ECONOMICS", "Why Is the 10-Year Treasury Yield Above 5%?", "#7c5cff"),
     "jobs-ai-is-replacing-skills": ("CAREER & WORKPLACE", "Jobs AI Is Replacing, and the Skills That Keep You Employed", "#2f7de1"),
+    "stablecoins-explained-interest": ("CRYPTOCURRENCY", "Stablecoins Explained: Can You Earn Interest on Digital Dollars?", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
