@@ -1861,10 +1861,14 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var when = updP ? 'Updated ' + updP.textContent.replace(/^Updated\s*/i, '').trim() : (pubEl ? longDate(pubEl.getAttribute('datetime')) : '');
       if (h1 && !itemPost.querySelector('.bd-byline')) {
         if (topic && !/^home$/i.test(topic)) { var kick = el('a', 'bd-kicker', esc(topic)); kick.href = labelUrl(topic); h1.parentNode.insertBefore(kick, h1); }
-        var nSrc = post.querySelectorAll('ul.bd-sources li').length;
+        // Sources section, found by its heading (older posts lose the class when published).
+        var srcH = Array.prototype.filter.call(post.querySelectorAll('h2'), function (h) { return /^sources( and further reading)?$/i.test(h.textContent.trim()); })[0];
+        var srcL = srcH && srcH.nextElementSibling && srcH.nextElementSibling.tagName === 'UL' ? srcH.nextElementSibling : null;
+        if (srcL) { srcL.classList.add('bd-sources'); if (!srcH.id) srcH.id = 'sources'; }
+        var nSrc = srcL ? srcL.querySelectorAll('li').length : 0;
         h1.parentNode.insertBefore(el('div', 'bd-byline', '<span class="bd-mark" aria-hidden="true">B</span><span><b>Blog Digest</b><small>' +
           esc(when) + (when ? ' · ' : '') + mins + ' min read' +
-          (nSrc ? ' · <a href="#sources">' + nSrc + ' official sources</a> · <a href="/p/editorial-policy.html">How we research</a>' : '') + '</small></span>'), h1.nextSibling);
+          (nSrc ? ' · <a href="#' + srcH.id + '">' + nSrc + (/further reading/i.test(srcH.textContent) ? ' sources' : ' official sources') + '</a> · <a href="/p/editorial-policy.html">How we research</a>' : '') + '</small></span>'), h1.nextSibling);
       }
       var GUC = /^https:\/\/(blogger\.googleusercontent\.com\/img\/|\d\.bp\.blogspot\.com\/)/;
       var widthOnly = function (u, w) {
