@@ -49,3 +49,20 @@ Live at https://randomthoughtsever.blogspot.com/2026/10/is-bitcoin-losing-its-hy
 Embeds: btc-hype-cycle, btc-drawdowns, btc-risk-calculator (currency examples in CALC_EXAMPLES as `bt-cur`).
 Its share description is in descriptions.json and in the theme built by `seo/theme/blogger/optimize_theme.py`,
 which has to be uploaded again (Theme > Restore) for the description to reach Facebook and Google.
+
+## Ten high-demand articles (published 24 October 2026)
+
+1. Interest Rates Are Rising Again: 7 Money Moves to Make Now (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/interest-rates-are-rising-again-7-money.html
+2. Where to Keep Your Cash When Rates Rise: Savings Accounts, T-Bills and Money Market Funds (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/where-to-keep-your-cash-when-rates-rise.html
+3. Why Is the 10-Year Treasury Yield Above 5%? What It Means for Your Money (Economics): https://randomthoughtsever.blogspot.com/2026/10/why-is-10-year-treasury-yield-above-5.html
+4. Jobs AI Is Replacing in 2026, and the Skills That Keep You Employed (Career & Workplace): https://randomthoughtsever.blogspot.com/2026/10/jobs-ai-is-replacing-in-2026-and-skills.html
+5. Stablecoins Explained: Can You Really Earn Interest on Digital Dollars? (Cryptocurrency): https://randomthoughtsever.blogspot.com/2026/10/stablecoins-explained-can-you-really.html
+6. Should You Buy a House With Mortgage Rates Above 7%? (Rent vs Buy Calculator) (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/should-you-buy-house-with-mortgage.html
+7. How Prediction Markets Like Kalshi and Polymarket Work, and Are They Legal? (Economics): https://randomthoughtsever.blogspot.com/2026/10/how-prediction-markets-like-kalshi-and.html
+8. How to Afford a Car in 2026 When the Average Payment Is $777 (Calculator) (Personal Finance): https://randomthoughtsever.blogspot.com/2026/10/how-to-afford-car-in-2026-when-average.html
+9. How Small Investors Can Buy IPO Shares: Lessons From the SpaceX Listing (Investing): https://randomthoughtsever.blogspot.com/2026/10/how-small-investors-can-buy-ipo-shares.html
+10. Is Gold Still a Safe Haven After Its Big 2026 Fall? (Investing): https://randomthoughtsever.blogspot.com/2026/10/is-gold-still-safe-haven-after-its-big.html
+
+Each has a cover, an animated chart and a calculator; currency examples are in CALC_EXAMPLES. Their share
+descriptions are in descriptions.json and the regenerated theme, which has to be uploaded again (Theme > Restore).
+The Bitcoin article was republished with the corrected gold figure.
