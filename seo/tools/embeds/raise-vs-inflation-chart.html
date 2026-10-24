@@ -29,8 +29,8 @@ var f=document.currentScript.closest('figure');if(!f)return;
 var D=[['United States',3.5,3.7],['United Kingdom',3.7,3.5],['Euro area',2.4,3.8],['India',9.0,5.5]];
 var h='';D.forEach(function(d){var r=((1+d[1]/100)/(1+d[2]/100)-1)*100,c=r>=0?'#0b7c5c':'#c23a22';
 h+='<div class="rv-r"><div class="rv-c">'+d[0]+'<em style="color:'+c+'">Real: '+(r>=0?'+':'−')+Math.abs(r).toFixed(1)+'%</em></div>'+
-'<div class="rv-b"><span class="rv-bar"><i style="background:#0f9d76;--w:'+(d[1]*10)+'%"></i></span><span class="rv-v">'+d[1].toFixed(1)+'%</span></div>'+
-'<div class="rv-b"><span class="rv-bar"><i style="background:#e2462c;--w:'+(d[2]*10)+'%"></i></span><span class="rv-v">'+d[2].toFixed(1)+'%</span></div></div>'});
+'<div class="rv-b"><span class="rv-bar" style="background:rgba(120,140,130,.2)"><i style="background:#0f9d76;--w:'+(d[1]*10)+'%"></i></span><span class="rv-v">'+d[1].toFixed(1)+'%</span></div>'+
+'<div class="rv-b"><span class="rv-bar" style="background:rgba(120,140,130,.2)"><i style="background:#e2462c;--w:'+(d[2]*10)+'%"></i></span><span class="rv-v">'+d[2].toFixed(1)+'%</span></div></div>'});
 f.querySelector('.rv-rows').innerHTML=h;
 var on=function(){f.classList.add('rv-on')};
 if('IntersectionObserver' in window){var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){on();io.disconnect()}},{threshold:.3});io.observe(f)}else on();

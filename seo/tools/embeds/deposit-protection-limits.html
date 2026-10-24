@@ -24,7 +24,7 @@ var f=document.currentScript.closest('figure');if(!f)return;
 var D=[['US','$250,000',250000,'#2f7de1'],['Australia','A$250,000',163000],['UK','£120,000',160000],['Japan','¥10 million',66000],['EU','€100,000',116000],['Hong Kong','HK$800,000',103000],['Singapore','S$100,000',77000],['Canada','C$100,000',72000],['Brazil','R$250,000',46000],['India','₹5 lakh',5700]];
 D.sort(function(a,b){return b[2]-a[2]});
 var box=f.querySelector('.dp-rows'),h='';
-D.forEach(function(d){h+='<div class="dp-r"><span class="dp-c">'+d[0]+'</span><span class="dp-b"><i style="--w:'+Math.max(2,d[2]/2500).toFixed(1)+'%"></i></span><span class="dp-v">'+d[1]+(d[0]==='US'?'':' ≈ $'+d[2].toLocaleString('en-US'))+'</span></div>'});
+D.forEach(function(d){h+='<div class="dp-r"><span class="dp-c">'+d[0]+'</span><span class="dp-b" style="background:rgba(120,130,160,.18)"><i style="background:#2f7de1;--w:'+Math.max(2,d[2]/2500).toFixed(1)+'%"></i></span><span class="dp-v">'+d[1]+(d[0]==='US'?'':' ≈ $'+d[2].toLocaleString('en-US'))+'</span></div>'});
 box.innerHTML=h;
 var on=function(){f.classList.add('dp-on')};
 if('IntersectionObserver' in window){var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){on();io.disconnect()}},{threshold:.3});io.observe(f)}else on();
