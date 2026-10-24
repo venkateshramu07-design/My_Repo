@@ -5,7 +5,7 @@
 # published from here, and [[embed:name]] inserts the widget seo/tools/embeds/<name>.html.
 #   python3 seo/publish_tools.py build <name>     # print the assembled post HTML
 #   python3 seo/publish_tools.py publish [name ...]
-import sys, os, json
+import sys, os, json, re
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 TOOLS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools")
 IDS = os.path.join(TOOLS, "published.json")
