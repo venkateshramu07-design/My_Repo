@@ -1,0 +1,39 @@
+<figure class="bd-rvi" aria-label="Typical 2026 pay growth compared with inflation in the US, UK, euro area and India">
+<div class="rv-wrap">
+<div class="rv-t">Are typical raises beating inflation in 2026?</div>
+<div class="rv-s">Typical pay growth or salary increase compared with consumer price inflation (September 2026)</div>
+<div class="rv-key"><span><i style="background:#0f9d76"></i>Pay growth</span><span><i style="background:#e2462c"></i>Inflation</span></div>
+<div class="rv-rows"></div>
+</div>
+<style>
+.bd-rvi{margin:2em 0!important}
+.bd-rvi .rv-wrap{background:#f1f8f5;border-radius:20px;padding:20px 18px 16px;color:#15171d}
+.bd-rvi .rv-t{font:700 17px/1.3 Georgia,serif;margin:0 0 4px;color:#15171d}
+.bd-rvi .rv-s{font:500 13px/1.4 system-ui,-apple-system,sans-serif;color:#5d6271;margin:0 0 10px}
+.bd-rvi .rv-key{display:flex;gap:16px;font:600 12.5px system-ui,-apple-system,sans-serif;color:#3d4252;margin:0 0 14px}
+.bd-rvi .rv-key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.bd-rvi .rv-r{margin:0 0 16px}
+.bd-rvi .rv-c{font:700 14px system-ui,-apple-system,sans-serif;color:#15171d;margin:0 0 6px;display:flex;justify-content:space-between}
+.bd-rvi .rv-c em{font-style:normal;font-weight:700}
+.bd-rvi .rv-b{display:grid;grid-template-columns:1fr 44px;gap:8px;align-items:center;margin:0 0 5px}
+.bd-rvi .rv-bar{height:18px;background:#e0ebe6;border-radius:6px;position:relative;overflow:hidden}
+.bd-rvi .rv-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:6px;transition:width 1.3s cubic-bezier(.2,.7,.2,1)}
+.bd-rvi .rv-v{font:700 12.5px system-ui,-apple-system,sans-serif;color:#3d4252;text-align:right}
+.bd-rvi.rv-on .rv-bar i{width:var(--w)}
+@media (prefers-reduced-motion:reduce){.bd-rvi .rv-bar i{transition:none}}
+</style>
+<figcaption style="font:500 13.5px/1.5 system-ui,sans-serif;color:#5d6271;margin-top:8px">Pay measures differ: US is the average 2026 salary increase budget (WTW, Mercer); UK is average regular pay growth (ONS); euro area is negotiated wages (ECB); India is the average 2026 salary increase (Aon). Individual raises vary widely around these averages.</figcaption>
+<script>
+(function(){
+var f=document.currentScript.closest('figure');if(!f)return;
+var D=[['United States',3.5,3.7],['United Kingdom',3.7,3.5],['Euro area',2.4,3.8],['India',9.0,5.5]];
+var h='';D.forEach(function(d){var r=((1+d[1]/100)/(1+d[2]/100)-1)*100,c=r>=0?'#0b7c5c':'#c23a22';
+h+='<div class="rv-r"><div class="rv-c">'+d[0]+'<em style="color:'+c+'">Real: '+(r>=0?'+':'−')+Math.abs(r).toFixed(1)+'%</em></div>'+
+'<div class="rv-b"><span class="rv-bar"><i style="background:#0f9d76;--w:'+(d[1]*10)+'%"></i></span><span class="rv-v">'+d[1].toFixed(1)+'%</span></div>'+
+'<div class="rv-b"><span class="rv-bar"><i style="background:#e2462c;--w:'+(d[2]*10)+'%"></i></span><span class="rv-v">'+d[2].toFixed(1)+'%</span></div></div>'});
+f.querySelector('.rv-rows').innerHTML=h;
+var on=function(){f.classList.add('rv-on')};
+if('IntersectionObserver' in window){var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){on();io.disconnect()}},{threshold:.3});io.observe(f)}else on();
+})();
+</script>
+</figure>
