@@ -112,7 +112,49 @@ def build(name):
                f'alt="{html.escape(POSTS[name][0], quote=True)}" '
                'width="1200" height="630" fetchpriority="high" decoding="async" style="width:100%;height:auto;border-radius:16px"/>')
         body = body.replace("</p>", "</p>\n" + img, 1)
+    raw = open(os.path.join(TOOLS, "..", name + ".html") if "/" in name else os.path.join(TOOLS, name + ".html"), encoding="utf-8").read()
+    body = machine_readable(name, raw, body)
     return escape_scripts(f"{tool_assets()}\n<div class=\"seo-post\">\n{body}</div>")
+
+
+def _text(h):
+    import html as _h
+    return re.sub(r"\s+", " ", _h.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"\[\[[^\]]+\]\]", "", h)))).strip()
+
+
+def machine_readable(name, raw, body):
+    """Static structured data and a citation line, readable by crawlers that don't run JavaScript (most AI crawlers):
+    FAQPage from the FAQ section, Dataset for data-table articles, and a 'Cite this page' box before Related Guides."""
+    import html as _h
+    ids = load_ids(); url = (ids.get(name) or {}).get("url")
+    title = POSTS[name][0] if name in POSTS else ""
+    org = {"@type": "Organization", "name": "Blog Digest", "url": "https://randomthoughtsever.blogspot.com/"}
+    blocks = []
+    m = re.search(r"<h2[^>]*>Frequently Asked Questions</h2>(.*?)(?=<h2)", body, re.S)
+    if m:
+        qa = re.findall(r"<h3[^>]*>(.*?)</h3>\s*<p>(.*?)</p>", m.group(1), re.S)
+        if qa:
+            blocks.append(('bd-faq-ld', {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+                {"@type": "Question", "name": _text(q), "acceptedAnswer": {"@type": "Answer", "text": _text(a)}} for q, a in qa]}))
+    upd = re.search(r"Updated (\d{1,2} \w+ 20\d\d)", raw)
+    quick = re.search(r"<strong>Quick answer:</strong>(.*?)</p>", raw, re.S)
+    if url and re.search(r"\[\[embed:[a-z0-9-]*(table)\]\]", raw):
+        srcs = re.findall(r'<ul class="bd-sources">(.*?)</ul>', body, re.S)
+        cites = re.findall(r'href="([^"]+)"', srcs[-1]) if srcs else []
+        ds = {"@context": "https://schema.org", "@type": "Dataset", "name": title, "url": url,
+              "description": (_text(quick.group(1)) if quick else title)[:4900], "creator": org, "publisher": org,
+              "isAccessibleForFree": True, "spatialCoverage": "Worldwide", "temporalCoverage": "2026",
+              "keywords": [w for w in re.split(r"[:,?]| and ", title) if w.strip()][:6]}
+        if upd: ds["dateModified"] = __import__("datetime").datetime.strptime(upd.group(1), "%d %B %Y").date().isoformat()
+        if cites: ds["citation"] = cites[:30]
+        blocks.append(("bd-ds-ld", ds))
+    ld = "".join('<script type="application/ld+json" id="%s">%s</script>\n' % (i, json.dumps(d, ensure_ascii=False)) for i, d in blocks)
+    if url and "<h2>Related Guides</h2>" in body:
+        when = upd.group(1) if upd else "2026"
+        cite = ('<div class="bd-cite" style="margin:1.6em 0;padding:14px 16px;border-radius:14px;border:1px solid rgba(120,120,140,.25);font:500 14px/1.55 system-ui,sans-serif">'
+                '<b>Cite this page:</b> Blog Digest, &ldquo;%s&rdquo;, updated %s, %s</div>\n' % (_h.escape(title), when, url))
+        body = body.replace("<h2>Related Guides</h2>", cite + "<h2>Related Guides</h2>", 1)
+    return body + ("\n" + ld if ld else "")
 
 
 def publish(names):

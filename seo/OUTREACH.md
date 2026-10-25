@@ -112,6 +112,48 @@ references).
 - When you see a site citing an out-of-date figure we have current (for example 2.8% inflation in a raise guide),
   email the author: "Your article cites X; the latest figure is Y (source). We explain it here if useful."
 
+## 7. Be found and cited by AI assistants (ChatGPT, Perplexity, Google AI Overviews, Copilot, Claude)
+
+**Already done on the site (October 2026):**
+- Every data table now ships its rows as plain HTML, so AI crawlers that don't run JavaScript can read the figures.
+- Every guide carries static FAQ data (FAQPage), and every data page carries Dataset data listing its official sources.
+- Every article ends with a "Cite this page" line (title, date, address), which makes the page easy to quote.
+- Each article opens with a direct "Quick answer" paragraph, the format AI assistants extract most often.
+
+**Your steps (10 minutes):**
+1. **Bing Webmaster Tools** (bing.com/webmasters): import the site from Google Search Console and submit both sitemaps.
+   ChatGPT search, Microsoft Copilot and DuckDuckGo rely heavily on Bing's index; this is the single biggest AI step.
+2. **Google Search Console:** submit the sitemaps (Google AI Overviews and Gemini use Google's index).
+3. **Optional, robots.txt with AI crawlers named explicitly** (replaces the text in section 1; everything stays open):
+
+```
+User-agent: Mediapartners-Google
+Disallow:
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+Allow: /
+
+User-agent: *
+Disallow: /search?
+Allow: /search/label/
+Allow: /
+
+Sitemap: https://randomthoughtsever.blogspot.com/sitemap.xml
+Sitemap: https://randomthoughtsever.blogspot.com/sitemap-pages.xml
+```
+
+4. **Get mentioned where AI tools look:** answers on Reddit, Quora and Stack Exchange, and links from news sites
+   (section 3), are among the sources AI assistants cite most. One good, sourced answer that links a data page is
+   worth more than many posts.
+
 ## What to expect
 
 New sites typically need three to six months of steady links and content before rankings move a lot. Search
