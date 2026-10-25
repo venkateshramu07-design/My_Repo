@@ -25,6 +25,13 @@ _dat = json.load(open(os.path.join(HERE, "..", "data", "index.json"), encoding="
 dmap = {_re.sub(r"^https?://[^/]+", "", d["url"]): d["csv"] for d in _dat}
 assert js.count("var BD_DATA = {};") == 1
 js = js.replace("var BD_DATA = {};", "var BD_DATA = " + json.dumps(dmap, separators=(",", ":")) + ";")
+_trend = json.load(open(os.path.join(HERE, "trending.json"), encoding="utf-8"))
+assert js.count("var BD_TRENDING = {};") == 1
+js = js.replace("var BD_TRENDING = {};", "var BD_TRENDING = " + json.dumps(_trend, separators=(",", ":"), ensure_ascii=False) + ";")
+_cty = {_pt.POSTS[n][0].split(" in Numbers")[0].replace("The ", ""): _re.sub(r"^https?://[^/]+", "", _ids[n]["url"]) for n in _ids if n.startswith("countries/") and "in Numbers" in _pt.POSTS.get(n, ("",))[0]}
+if "countries/compare-countries-money-facts-2026" in _ids: _cty[" hub"] = _re.sub(r"^https?://[^/]+", "", _ids["countries/compare-countries-money-facts-2026"]["url"])
+assert js.count("var BD_COUNTRIES = {};") == 1
+js = js.replace("var BD_COUNTRIES = {};", "var BD_COUNTRIES = " + json.dumps(_cty, separators=(",", ":"), ensure_ascii=False) + ";")
 links = json.load(open(os.path.join(HERE, "autolinks.json"), encoding="utf-8"))
 assert js.count("var BD_LINKS = {};") == 1
 js = js.replace("var BD_LINKS = {};", "var BD_LINKS = " + json.dumps(links, ensure_ascii=True, separators=(",", ":")) + ";")
