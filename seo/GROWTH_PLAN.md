@@ -38,6 +38,15 @@ target high-volume searches ("qr code generator free no expiration", "merge pdf 
 "heic to jpg", "free resume builder free download", "word counter"), and are the kind of page people bookmark,
 share and link to. Publish with `seo/tools/publish_tool_posts.py`.
 
+## Workstream 12: tools as the front door (added 25 October 2026)
+
+Tools are the most linkable, bookmarkable and AI-resistant pages on the site, so they now lead: the homepage opens
+with a "What do you need to do today?" finder over all 62 tools, calculators and data tables (task shortcuts,
+Everyday tools and Money calculators tabs); every page has a "Free tools" button in the header; on tool pages the
+tool comes first, before the guide (cover hidden on phones), and each tool page carries WebApplication structured
+data; every article without a tool shows a matching "Free tool for this" card after its opening paragraphs; and
+/p/free-tools.html lists all 62 in one searchable page.
+
 ## Content calendar (2 to 3 new pages a week)
 
 - **November 2026:** country pages wave 1 (US, UK, Canada, Australia, Germany, France, Spain, Italy, Netherlands,

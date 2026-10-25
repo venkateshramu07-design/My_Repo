@@ -913,6 +913,45 @@ html.bd-framed body>*:not(#bd-framed){display:none!important}
 .bd-ftools-grid b{display:block;font:700 14.5px/1.25 var(--bd-sans)}.bd-ftools-grid small{display:block;font:500 12.5px/1.35 var(--bd-sans);color:var(--bd-muted)}
 @media (max-width:980px){.bd-ftools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:420px){.bd-ftools-grid a{padding:10px;gap:8px}.bd-ftools-grid i{width:34px;height:34px}.bd-ftools-grid b{font-size:13.5px}.bd-ftools-grid small{font-size:12px}}
+.bd-th{min-width:0;max-width:100%;box-sizing:border-box;overflow:hidden;margin:18px 0 26px;padding:26px 26px 18px;border-radius:26px;background:radial-gradient(circle at 90% 0%,rgba(255,255,255,.16),transparent 40%),linear-gradient(135deg,#0f2a3a 0%,#155e75 55%,#0f9d76 120%);color:#fff;box-shadow:0 20px 50px rgba(15,42,58,.25)}
+.bd-th-k{display:block;font:800 12px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:#b8f0e0}
+.bd-th-h{margin:8px 0 14px!important;font:800 clamp(28px,4.4vw,44px)/1.08 var(--bd-serif)!important;color:#fff!important;border:0!important;padding:0!important}
+.bd-th-s{display:flex;align-items:center;gap:10px;max-width:640px;background:#fff;border-radius:16px;padding:0 16px;color:#5d6271;box-shadow:0 8px 26px rgba(0,0,0,.2)}
+.bd-th-s svg{width:20px;height:20px;flex:none}.bd-th-s input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 17px var(--bd-sans);padding:15px 0;color:#15171d}
+.bd-th-res{max-width:640px;margin-top:8px;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.bd-th-res a{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:11px 16px;border-bottom:1px solid #eee;color:#15171d!important;text-decoration:none!important}
+.bd-th-res a:hover{background:#eefaf5}.bd-th-res b{font:700 15px var(--bd-sans)}.bd-th-res small{grid-column:1;font:500 13px/1.35 var(--bd-sans);color:#5d6271}
+.bd-th-res em{grid-row:1/3;grid-column:2;align-self:center;font:700 11px var(--bd-sans);font-style:normal;text-transform:uppercase;letter-spacing:.05em;color:#0f9d76;background:#e3f6ef;padding:4px 8px;border-radius:999px}
+.bd-th-res p{margin:0;padding:14px 16px;color:#5d6271;font:500 14px var(--bd-sans)}.bd-th-res p a{display:inline;padding:0;border:0;color:#0f9d76!important;text-decoration:underline!important}
+.bd-th-tasks{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;min-width:0;max-width:100%}.bd-th-tasks a{padding:8px 13px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff!important;font:600 13.5px var(--bd-sans);text-decoration:none!important}
+.bd-th-tasks a:hover{background:#fff;color:#155e75!important}
+.bd-th-tabs{display:flex;gap:6px;margin:20px 0 12px}.bd-th-tabs button{border:0;border-radius:999px;padding:9px 16px;font:700 14px var(--bd-sans);background:rgba(255,255,255,.12);color:#fff;cursor:pointer}
+.bd-th-tabs button.bd-on{background:#fff;color:#155e75}
+.bd-th-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.bd-th-grid[hidden]{display:none!important}
+.bd-th-grid a{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:#fff;color:#15171d!important;text-decoration:none!important;transition:transform .15s,box-shadow .15s}
+.bd-th-grid a:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.2)}
+.bd-th-grid i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--tc) 15%,#fff);color:var(--tc)}.bd-th-grid i svg{width:20px;height:20px}
+.bd-th-grid b{display:block;font:700 14.5px/1.25 var(--bd-sans);color:#15171d}.bd-th-grid small{display:block;font:500 12.5px/1.3 var(--bd-sans);color:#5d6271}
+.bd-th-more{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:14px}.bd-th-more a{font:700 14.5px var(--bd-sans);color:#fff!important;text-decoration:none!important}
+html.bd-dark .bd-th-s,html.bd-dark .bd-th-res,html.bd-dark .bd-th-grid a{background:#1b1d24}html.bd-dark .bd-th-s input,html.bd-dark .bd-th-grid b,html.bd-dark .bd-th-res a{color:#e8e9ee!important}
+@media (max-width:980px){.bd-th-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.bd-th{margin:14px 0 22px;padding:20px 14px 14px;border-radius:22px}.bd-th-grid a{padding:10px;gap:8px}.bd-th-grid i{width:34px;height:34px}.bd-th-grid b{font-size:13.5px}.bd-th-grid small{font-size:11.5px}
+  .bd-th-grid a:nth-child(n+7){display:none}.bd-th-tasks{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-14px}.bd-th-tasks a{flex:none}}
+.post-body .bd-toolcard{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 14px;align-items:center;margin:1.6em 0!important;padding:16px 18px!important;border-radius:18px;border:1px solid var(--bd-line);background:linear-gradient(135deg,rgba(15,157,118,.08),rgba(14,155,181,.08))!important}
+.post-body .bd-toolcard i{grid-row:1/3;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:color-mix(in srgb,var(--tc) 16%,transparent)!important;color:var(--tc)!important}.post-body .bd-toolcard i svg{width:24px;height:24px}
+.post-body .bd-toolcard small{display:block;font:800 11.5px var(--bd-sans);letter-spacing:.08em;text-transform:uppercase;color:#0f9d76!important}
+.post-body .bd-toolcard b{display:block;font:800 17px/1.25 var(--bd-sans)}.post-body .bd-toolcard em{display:block;font:500 13.5px/1.4 var(--bd-sans);font-style:normal;color:var(--bd-muted)!important}
+.post-body .bd-toolcard-go{grid-row:1/3;grid-column:3;padding:11px 16px!important;border-radius:12px!important;background:#0f9d76!important;color:#fff!important;font:700 14px var(--bd-sans)!important;text-decoration:none!important;white-space:nowrap}
+.post-body .bd-toolcard-all{grid-column:2;font:600 13px var(--bd-sans);color:var(--bd-muted)!important}
+@media (max-width:560px){.post-body .bd-toolcard{grid-template-columns:auto minmax(0,1fr)}.post-body .bd-toolcard-go{grid-row:auto;grid-column:1/-1;text-align:center}.post-body .bd-toolcard-all{grid-column:1/-1;text-align:center}}
+.bd-tools .bd-toolslink{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:999px;background:linear-gradient(135deg,#0f9d76,#0e9bb5);color:#fff!important;font:700 14px var(--bd-sans);text-decoration:none!important;margin-right:6px;white-space:nowrap}
+.bd-tools .bd-toolslink svg{width:17px;height:17px}
+@media (max-width:640px){.bd-tools:has(.bd-toolslink) .bd-icon-btn[aria-label="Toggle dark mode"]{display:none!important}}
+.bd-tools .bd-tl-s{display:none}
+@media (max-width:440px){.slide-menu-toggle{margin-left:4px!important}.bd-tools{gap:4px!important}.bd-tools .bd-toolslink{padding:0 11px;font-size:13.5px;height:36px;margin-right:0}.bd-tools .bd-toolslink svg,.bd-tools .bd-tl-l{display:none}.bd-tools .bd-tl-s{display:inline}}
+@media (max-width:700px){html.bd-toolpage .post-body img[src*='/seo/covers/']{display:none!important}html.bd-toolpage .post-body .bd-calc{margin-top:.4em!important}}
+@media (max-width:372px){.bd-tools .bd-toolslink{width:36px;padding:0;justify-content:center}.bd-tools .bd-toolslink .bd-tl-s{display:none}.bd-tools .bd-toolslink svg{display:block!important}}
+@media (max-width:345px){.bd-tools .bd-toolslink{display:none!important}}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -1655,6 +1694,23 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   var BD_TRENDING = {};
   var BD_COUNTRIES = {};
   var BD_TOOLS = {};
+  var BD_ALLTOOLS = [];
+  var TOOL_PICKS = ['PDF toolkit', 'Photo converter', 'QR code generator', 'Sign a PDF', 'Resume builder', 'Invoice and receipt maker', 'Subscription tracker', 'Meeting time zone planner', 'Password generator', 'Word counter'];
+  var CALC_PICKS = ['Emergency fund calculator', 'Loan EMI and prepayment calculator', 'SIP and investment growth calculator', 'FIRE calculator', 'Credit card payoff calculator', 'Rent vs buy calculator', 'Debt consolidation calculator', 'EV vs petrol cost calculator', 'Real raise calculator', 'Inflation calculator'];
+  var TASKS = [['Merge PDF', 'PDF toolkit'], ['HEIC to JPG', 'Photo converter'], ['QR code', 'QR code generator'], ['Sign a PDF', 'Sign a PDF'], ['Resume', 'Resume builder'], ['Home loan EMI', 'EMI'], ['Emergency fund', 'Emergency fund'], ['Invoice', 'Invoice and receipt maker'], ['Photo under 100 KB', 'Photo converter'], ['Time zones', 'Meeting time zone planner']];
+  function findTool(name) { var n = name.toLowerCase(); return BD_ALLTOOLS.filter(function (t) { return t[0].toLowerCase() === n; })[0] || BD_ALLTOOLS.filter(function (t) { return t[0].toLowerCase().indexOf(n) > -1; })[0]; }
+  function toolKindIcon(t) { var k = { 'PDF toolkit': 'pdf', 'Sign a PDF': 'sign', 'Photo converter': 'photo', 'QR code generator': 'qr', 'Resume builder': 'resume', 'Invoice and receipt maker': 'invoice', 'Subscription tracker': 'subs', 'Meeting time zone planner': 'tz', 'Password generator': 'pw', 'Word counter': 'words' }[t[0]]; return k; }
+  function shortDesc(d) { d = d.split(/[.;:]| and how| with your/)[0]; return d.length > 46 ? d.slice(0, 44).replace(/\s+\S*$/, '') + '\u2026' : d; }
+  function toolSearch(q) {
+    var toks = norm(q).split(' ').filter(Boolean); if (!toks.length) return [];
+    return BD_ALLTOOLS.map(function (t, i) {
+      var tt = norm(t[0]), dd = norm(t[1] + ' ' + t[4]), s = 0, ok = true;
+      toks.forEach(function (k, j) { var pre = j === toks.length - 1, inT = tt.split(' ').some(function (w) { return pre ? w.indexOf(k) === 0 : w === k || w.indexOf(k) === 0; });
+        if (inT) s += 10; else if (dd.split(' ').some(function (w) { return w.indexOf(k) === 0; })) s += 3; else ok = false; });
+      if (tt.indexOf(norm(q)) === 0) s += 20; if (t[3] === 't') s += 1;
+      return ok ? { t: t, s: s - i / 1000 } : null;
+    }).filter(Boolean).sort(function (a, b) { return b.s - a.s; }).map(function (x) { return x.t; });
+  }
   function toolsPage() { return BD_TOOLS.page || BD_TOOLS.hub || ''; }
   var TOOL_ICON = { qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4h-4"/>',
     pdf: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>', sign: '<path d="M3 21c3-1 4-4 6-4s1 3 3 3 3-2 5-2"/><path d="M15 4l5 5-9 9H6v-5z"/>',
@@ -1870,6 +1926,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         root.classList.toggle('bd-dark'); paint();
         try { localStorage.setItem('bd-theme', root.classList.contains('bd-dark') ? 'dark' : 'light'); } catch (e) {}
       });
+      if (BD_ALLTOOLS.length) { var tl = el('a', 'bd-toolslink', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8M3 21l6-6"/></svg><span class="bd-tl-l">Free tools</span><span class="bd-tl-s">Tools</span>');
+        tl.href = toolsPage() || BLOG + 'p/free-calculators.html'; tools.appendChild(tl); }
       tools.appendChild(s); tools.appendChild(d); menu.appendChild(tools);
     }
     document.querySelectorAll('#main-menu-nav > li > a').forEach(function (a) {
@@ -2030,16 +2088,35 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         '<nav class="bd-secnav" aria-label="Sections">' + NAV.map(function (n) { return '<a href="' + labelUrl(n[1]) + '">' + esc(n[0]) + '</a>'; }).join('') +
         (toolsPage() ? '<a class="bd-secnav-tools" href="' + toolsPage() + '">Tools</a>' : '') + '<a href="' + BLOG + 'p/free-calculators.html">Calculators</a>' +
         '<a href="' + BLOG + '2021/06/sitemap.html">All articles</a></nav>' +
+        (BD_ALLTOOLS.length ? '<div class="bd-th"><div class="bd-th-in"><small class="bd-th-k">' + BD_ALLTOOLS.length + ' free tools \u00b7 no sign-up \u00b7 nothing uploaded</small>' +
+          '<h2 class="bd-th-h">What do you need to do today?</h2>' +
+          '<div class="bd-th-s">' + ICONS.search + '<input type="search" class="bd-th-q" placeholder="Try \u201cmerge PDF\u201d, \u201cEMI\u201d or \u201cHEIC to JPG\u201d" aria-label="Find a free tool" autocomplete="off"/></div>' +
+          '<div class="bd-th-res" hidden></div><div class="bd-th-tasks">' + TASKS.map(function (t) { var f = findTool(t[1]); return f ? '<a href="' + f[2] + '">' + esc(t[0]) + '</a>' : ''; }).join('') + '</div></div>' +
+          '<div class="bd-th-tabs" role="tablist"><button type="button" class="bd-on" data-g="t">Everyday tools</button><button type="button" data-g="c">Money calculators</button></div>' +
+          '<div class="bd-th-grid" data-g="t">' + TOOL_PICKS.map(findTool).filter(Boolean).map(function (t) { var k = toolKindIcon(t); return '<a href="' + t[2] + '" style="--tc:' + (TOOL_COLOR[k] || '#e2462c') + '"><i>' + toolIcon(k, 'spark') + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc((EVERYDAY.filter(function (e) { return e[0] === k; })[0] || [0, 0, t[1]])[2]) + '</small></span></a>'; }).join('') + '</div>' +
+          '<div class="bd-th-grid" data-g="c" hidden>' + CALC_PICKS.map(findTool).filter(Boolean).map(function (t, i) { return '<a href="' + t[2] + '" style="--tc:' + PALETTE[i % PALETTE.length] + '"><i>' + svg(['money', 'coin', 'chart', 'rise', 'coin', 'money', 'coin', 'leaf', 'case', 'chart'][i]) + '</i><span><b>' + esc(t[0].replace(/ (and prepayment |and investment growth )?calculator$/i, '')) + '</b><small>' + esc(shortDesc(t[1])) + '</small></span></a>'; }).join('') + '</div>' +
+          '<div class="bd-th-more"><a href="' + (toolsPage() || BLOG + 'p/free-calculators.html') + '">See all ' + BD_ALLTOOLS.length + ' free tools \u2192</a><a href="' + BLOG + 'p/free-calculators.html">Money calculators \u2192</a></div></div>' : '') +
         '<div class="bd-lead-grid"><div class="bd-lead bd-skel"></div><div class="bd-second"><div class="bd-skel"></div><div class="bd-skel"></div></div>' +
         '<aside class="bd-latest"><h2>Latest</h2><ol class="bd-latest-list"></ol></aside></div>' +
         '<div class="bd-start"><span class="bd-start-label">New here? Start with a guide</span>' + GUIDES.map(function (g) {
           return '<a class="bd-start-card" style="--c:' + g[2] + '" href="' + g[4] + '"><i>' + svg(g[3]) + '</i><span><b>' + g[0] + '</b><small>' + g[1] + '</small></span></a>';
         }).join('') + '</div>' +
-        '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute. <a href="' + BLOG + 'p/free-calculators.html">See all 52 →</a></span></div><div class="bd-toolsbar-list">' +
-        TOOLS_HOME.map(function (t) { return '<a href="' + BLOG + t[2] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span></a>'; }).join('') + '</div></div>' +
         '');
       content.parentNode.insertBefore(front, content);
       instantSearch(front.querySelector('.bd-mast-search input'));
+      (function () {
+        var th = front.querySelector('.bd-th'); if (!th) return;
+        var q = th.querySelector('.bd-th-q'), res = th.querySelector('.bd-th-res'), tm;
+        var paint = function () { var v = q.value.trim(), r = v ? toolSearch(v).slice(0, 6) : [];
+          res.hidden = !v;
+          res.innerHTML = r.length ? r.map(function (t) { return '<a href="' + t[2] + '"><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small><em>' + (t[3] === 't' ? 'Tool' : t[3] === 'd' ? 'Data table' : 'Calculator') + '</em></a>'; }).join('')
+            : '<p>No tool matches \u201c' + esc(v) + '\u201d yet. <a href="/search?q=' + encodeURIComponent(v) + '">Search the articles</a> or <a href="' + BLOG + '2021/06/contact-us.html">suggest a tool</a>.</p>'; };
+        q.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(paint, 60); });
+        q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { var a = res.querySelector('a'); if (a) location.href = a.href; } });
+        th.querySelector('.bd-th-tabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return;
+          [].forEach.call(this.children, function (x) { x.classList.toggle('bd-on', x === b); });
+          th.querySelectorAll('.bd-th-grid').forEach(function (g) { g.hidden = g.dataset.g !== b.dataset.g; }); });
+      })();
       root.classList.add('bd-home-front');
       var secs = el('div', 'bd-sections', '');
       var SECS = [['Money', 'Personal Finance', 'Budgeting, investing, loans and getting out of debt.'],
@@ -2049,7 +2126,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         secs.appendChild(el('section', 'bd-section', '<div class="bd-section-head"><div><h2>' + sec[0] + '</h2><p>' + esc(sec[2]) + '</p></div>' +
           '<a href="' + labelUrl(sec[1]) + '">All ' + esc(sec[1].toLowerCase()) + ' →</a></div><div class="bd-sec-grid"><span class="bd-skel"></span><span class="bd-skel"></span><span class="bd-skel"></span><span class="bd-skel"></span></div>'));
       });
-      if (toolsPage()) {
+      if (toolsPage() && !BD_ALLTOOLS.length) {
         var ft = el('section', 'bd-section bd-ftools', '<div class="bd-section-head"><div><h2>Free tools</h2><p>No upload, no sign-up, no watermark: everything runs in your browser.</p></div>' +
           '<a href="' + toolsPage() + '">All free tools →</a></div><div class="bd-ftools-grid">' +
           EVERYDAY.filter(function (t) { return BD_TOOLS[t[0]]; }).map(function (t) {
@@ -2205,6 +2282,46 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
 
 
 
+    // Tools first: on a tool or calculator page the tool moves straight under the quick answer, because people who
+    // search for a tool want to use it, not scroll past the guide. Other articles get a matching "free tool" card.
+    if (isPost && body && !body.querySelector('.bd-toolcard')) {
+      var calc0 = body.querySelector('.bd-calc');
+      var qa = Array.prototype.filter.call(body.querySelectorAll('p'), function (p) { return /^\s*Quick answer/i.test(p.textContent); })[0];
+      if (calc0 && qa && (qa.compareDocumentPosition(calc0) & 4)) {
+        var gap = 0, n = qa.nextElementSibling;
+        while (n && n !== calc0 && !n.contains(calc0)) { if (n.tagName === 'P' || /^H\d$/.test(n.tagName)) gap++; n = n.nextElementSibling; }
+        if (gap > 0 && calc0.parentNode === qa.parentNode) qa.parentNode.insertBefore(calc0, qa.nextSibling);
+      }
+      if (calc0 && qa && BD_ALLTOOLS.some(function (t) { return t[2] === location.pathname && t[3] !== 'd'; }) && calc0.parentNode === qa.parentNode) {
+        qa.parentNode.insertBefore(calc0, qa); root.classList.add('bd-toolpage');  // a tool page: the tool is the first thing you see
+      }
+      var me = BD_ALLTOOLS.filter(function (t) { return t[2] === location.pathname; })[0];
+      if (me && calc0 && !document.getElementById('bd-app-ld')) {  // free web app markup for search engines
+        var ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.id = 'bd-app-ld';
+        ld.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebApplication', name: me[0], description: me[1], url: location.href.split('#')[0].split('?')[0],
+          applicationCategory: me[3] === 'c' || me[3] === 'd' ? 'FinanceApplication' : 'UtilitiesApplication', operatingSystem: 'Any (runs in the browser)', browserRequirements: 'Requires JavaScript',
+          isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, publisher: { '@type': 'Organization', name: 'Blog Digest', url: BLOG } });
+        document.head.appendChild(ld);
+      }
+      if (!calc0 && BD_ALLTOOLS.length) {
+        var hay = ((document.querySelector('h1.post-title') || {}).textContent || document.title) + ' ' + Array.prototype.map.call(document.querySelectorAll('.post-labels a, .post-tag'), function (a) { return a.textContent; }).join(' ');
+        var MAP = [[/mortgage|home loan|house|rent\b|property/i, 'Rent vs buy calculator'], [/emi|loan|borrow/i, 'Loan EMI and prepayment calculator'], [/credit card|debt/i, 'Credit card payoff calculator'],
+          [/emergency|saving|budget|money habit|frugal/i, 'Emergency fund calculator'], [/subscription|streaming|netflix/i, 'Subscription tracker'], [/retire|pension|fire\b/i, 'FIRE calculator'],
+          [/invest|sip|mutual fund|stock|index fund/i, 'SIP and investment growth calculator'], [/inflation|prices?\b|cost of living/i, 'Inflation calculator'], [/salary|pay rise|raise|wage/i, 'Real raise calculator'],
+          [/resume|cv\b|job|interview|career|hiring|layoff/i, 'Resume builder'], [/freelanc|invoice|small business|side hustle/i, 'Invoice and receipt maker'], [/remote|meeting|time ?zone|team/i, 'Meeting time zone planner'],
+          [/password|hack|security|scam|privacy|phishing/i, 'Password generator'], [/photo|image|camera|iphone/i, 'Photo converter'], [/pdf|document|form|contract/i, 'PDF toolkit'],
+          [/writ|blog|essay|content|study|exam|student/i, 'Word counter'], [/sleep/i, 'Sleep cycle calculator'], [/weight|bmi|diet|fitness|health/i, 'BMI calculator'], [/habit|focus|productiv|procrastinat/i, 'Habit tracker'],
+          [/crypto|bitcoin/i, 'Bitcoin risk calculator'], [/gold/i, 'Gold allocation calculator']];
+        var hit = MAP.filter(function (m) { return m[0].test(hay); })[0], tool = findTool(hit ? hit[1] : 'QR code generator');
+        var ps = Array.prototype.filter.call(body.querySelectorAll('p'), function (p) { return p.textContent.trim().length > 60 && !p.closest('table,ul,ol,blockquote'); });
+        var at = ps[Math.min(2, ps.length - 1)];
+        if (tool && at) {
+          var k = toolKindIcon(tool), card = el('aside', 'bd-toolcard', '<i style="--tc:' + (TOOL_COLOR[k] || '#0f9d76') + '">' + (k ? toolIcon(k, 'spark') : svg('chart')) + '</i><span><small>Free tool' + (hit ? ' for this' : '') + '</small><b>' + esc(tool[0]) + '</b><em>' + esc(tool[1]) + '</em></span>' +
+            '<a class="bd-toolcard-go" href="' + tool[2] + '">Open it free →</a><a class="bd-toolcard-all" href="' + (toolsPage() || BLOG + 'p/free-calculators.html') + '">All ' + BD_ALLTOOLS.length + ' free tools</a>');
+          at.parentNode.insertBefore(card, at.nextSibling);
+        }
+      }
+    }
     // Share bar (every article) and, on data pages, open-data tools: download the CSV and embed the table elsewhere.
     if (isPost && body && !post.querySelector('.bd-share')) {
       var pageUrl = location.href.split('#')[0].split('?')[0], ttl = (document.querySelector('h1.post-title') || {}).textContent || document.title;

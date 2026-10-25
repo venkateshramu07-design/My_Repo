@@ -35,6 +35,14 @@ _tk = {"hub": "free-tools-no-upload-no-signup", "qr": "qr-code-generator-never-e
        "subs": "subscription-tracker-cancel-reminders", "tz": "meeting-time-zone-planner", "pw": "password-passphrase-generator-breach-check", "words": "word-counter-character-limits"}
 _tools = {k: _re.sub(r"^https?://[^/]+", "", _ids["articles/" + v]["url"]) for k, v in _tk.items() if "articles/" + v in _ids}
 if "pages/free-tools" in _ids: _tools["page"] = _re.sub(r"^https?://[^/]+", "", _ids["pages/free-tools"]["url"])
+# One list of every tool and calculator, for the homepage tool finder, article tool cards and app schema.
+_all = []
+for _sec in json.load(open(os.path.join(HERE, "..", "pages", "free-tools.json"), encoding="utf-8"))["sections"]:
+    for _it in _sec["items"]: _all.append([_it["title"], _it["desc"], _it["href"], "t", _sec["name"]])
+for _sec in json.load(open(os.path.join(HERE, "..", "pages", "free-calculators.json"), encoding="utf-8")):
+    for _it in _sec["items"]: _all.append([_it["title"], _it["desc"], _it["href"], "d" if _sec["name"].startswith("Data") else "c", _sec["name"]])
+assert js.count("var BD_ALLTOOLS = [];") == 1
+js = js.replace("var BD_ALLTOOLS = [];", "var BD_ALLTOOLS = " + json.dumps(_all, separators=(",", ":"), ensure_ascii=False) + ";")
 assert js.count("var BD_TOOLS = {};") == 1
 js = js.replace("var BD_TOOLS = {};", "var BD_TOOLS = " + json.dumps(_tools, separators=(",", ":")) + ";")
 assert js.count("var BD_COUNTRIES = {};") == 1
