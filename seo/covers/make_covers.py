@@ -51,6 +51,13 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "retire-abroad-on-2000-a-month": ("LIVING ABROAD \u00b7 DATA", "Retire Abroad on $2,000 a Month", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
+# Country money-facts pages (seo/countries/countries.json): one cover each.
+import json as _json
+_cf = os.path.join(HERE, "..", "countries", "countries.json")
+if os.path.exists(_cf):
+    for _n, (_t, _l) in _json.load(open(_cf, encoding="utf-8")).items():
+        _short = _t.split(":")[0] if "in Numbers" in _t else "Compare Countries 2026: Wages, Tax, Mortgages and Pensions"
+        POSTS[_n.split("/")[1]] = ("COUNTRY DATA \u00b7 2026", _short + (": Wages, Tax, Homes, Energy and Pensions" if "in Numbers" in _t else ""), "#0e7c86")
 W, H = 1200, 630
 
 
@@ -106,7 +113,9 @@ def cover(eyebrow, title, accent):
     return img
 
 
+ONLY = set(sys.argv[2:])  # optional: names to draw; default all
 for name, (eyebrow, title, accent) in POSTS.items():
+    if ONLY and not any(name.startswith(o) for o in ONLY): continue
     im = cover(eyebrow, title, accent).convert("RGB")
     im.save(os.path.join(HERE, name + ".jpg"), quality=84, optimize=True, progressive=True)  # share image (og:image)
     for w, q in ((800, 78), (1200, 80)):  # in-article cover, about a quarter of the JPEG's size
