@@ -1,0 +1,107 @@
+<div class="bd-calc" id="bd-pdf">
+<div class="bc-title">PDF toolkit: merge, split, reorder, rotate and delete pages</div>
+<div class="bc-sub">Add PDFs or photos (JPG, PNG, WebP). Every page appears below: drag to reorder, rotate, delete or tick the ones you want, then download. Your files are processed on your device and never uploaded. No sign-up, no daily limit, no watermark.</div>
+<label class="bt-drop" id="pdf-drop"><input type="file" id="pdf-in" multiple accept="application/pdf,image/jpeg,image/png,image/webp"><b>Choose PDFs or photos</b><small>or drag and drop them here &middot; add more at any time</small></label>
+<div class="bc-row" id="pdf-bar" hidden>
+<button type="button" class="bc-primary" id="pdf-all">Download as one PDF</button>
+<button type="button" id="pdf-sel">Download ticked pages</button>
+<button type="button" id="pdf-split">Split into one PDF per page (.zip)</button>
+<button type="button" id="pdf-clear">Start again</button>
+</div>
+<div class="bc-row" id="pdf-tools" hidden style="font-size:14px">
+<button type="button" id="pdf-tickall">Tick all</button><button type="button" id="pdf-untick">Untick all</button><button type="button" id="pdf-rotsel">Rotate ticked</button><button type="button" id="pdf-delsel">Delete ticked</button>
+<label class="bc-check" style="margin-left:auto">Range <input id="pdf-range" placeholder="e.g. 1-3, 7" style="width:120px;padding:7px 10px;font-size:14px"><button type="button" id="pdf-rangego">Tick</button></label>
+</div>
+<div class="bt-msg" id="pdf-msg"></div>
+<div id="pdf-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;margin-top:14px"></div>
+<div class="bt-safe">Files stay on your device. Close the page and they are gone; nothing is stored or sent.</div>
+</div>
+<style>
+#bd-pdf .pg{position:relative;border:1px solid var(--c-line);border-radius:12px;padding:8px;text-align:center;cursor:grab;background:var(--bd-surface,#fff)!important;transition:transform .15s,box-shadow .15s}
+#bd-pdf .pg.drag{opacity:.4}#bd-pdf .pg.over{box-shadow:0 0 0 3px var(--c-accent)}
+#bd-pdf .pg{overflow:hidden}#bd-pdf .pg canvas{max-width:100%;height:auto;display:block;margin:0 auto 6px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.2);background:#fff!important;transition:transform .2s}
+#bd-pdf .pg small{display:block;font-size:12px;color:var(--c-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bd-pdf .pg .pg-b{display:flex;justify-content:center;gap:4px;margin-top:6px}
+#bd-pdf .pg .pg-b button{padding:5px 8px;font-size:13px;border-radius:8px}
+#bd-pdf .pg input[type=checkbox]{position:absolute;z-index:2;top:8px;left:8px;width:20px;height:20px;accent-color:var(--c-accent)}
+#bd-pdf .pg em{position:absolute;top:6px;right:8px;font:700 12px var(--bd-sans);font-style:normal;color:var(--c-muted)}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-pdf');if(!root)return;
+var $=function(id){return document.getElementById(id);},pages=[],docs=[],dragI=-1;
+var LIBS={lib:'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',js:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',zip:'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'};
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=function(){no(new Error('Could not load '+u));};document.head.appendChild(s);});}
+var ready=null;function libs(){return ready||(ready=Promise.all([window.PDFLib?0:load(LIBS.lib),window.pdfjsLib?0:load(LIBS.js)]).then(function(){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}));}
+function msg(t){$('pdf-msg').textContent=t||'';}
+function readBuf(f){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){ok(r.result);};r.onerror=no;r.readAsArrayBuffer(f);});}
+function imgToPng(f){return new Promise(function(ok,no){var i=new Image();i.onload=function(){var c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;c.getContext('2d').drawImage(i,0,0);c.toBlob(function(b){readBuf(b).then(ok);},f.type==='image/png'?'image/png':'image/jpeg',.92);URL.revokeObjectURL(i.src);};i.onerror=function(){no(new Error('bad image'));};i.src=URL.createObjectURL(f);});}
+async function add(files){
+ msg('Loading…');try{await libs();}catch(e){msg('Could not load the PDF engine. Check your connection and reload.');return;}
+ for(const f of files){
+  try{
+   if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){
+    const buf=await readBuf(f),bytes=new Uint8Array(buf);
+    let src;try{src=await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:false});}catch(e){msg('“'+f.name+'” is password-protected or damaged. Open it with its password and save a copy without one, then add that.');continue;}
+    const d={name:f.name,lib:src,view:await pdfjsLib.getDocument({data:bytes.slice()}).promise};docs.push(d);
+    for(let i=0;i<src.getPageCount();i++)pages.push({d:d,i:i,rot:0,sel:false,label:f.name.replace(/\.pdf$/i,'')+' · p'+(i+1)});
+   }else if(/^image\//.test(f.type)){
+    const png=/jpe?g/.test(f.type)?{buf:await readBuf(f),jpg:true}:{buf:await imgToPng(f),jpg:false};
+    pages.push({img:png,file:f,rot:0,sel:false,label:f.name});
+   }else msg('“'+f.name+'” is not a PDF or photo.');
+  }catch(e){msg('Could not read “'+f.name+'”.');}
+ }
+ msg('');paint();
+}
+async function thumb(p,cv){
+ if(p.img){const i=new Image();i.onload=function(){const s=150/Math.max(i.width,i.height);cv.width=i.width*s;cv.height=i.height*s;cv.getContext('2d').drawImage(i,0,0,cv.width,cv.height);};i.src=URL.createObjectURL(p.file);return;}
+ const pg=await p.d.view.getPage(p.i+1),vp=pg.getViewport({scale:1}),s=150/Math.max(vp.width,vp.height),v2=pg.getViewport({scale:s*(window.devicePixelRatio>1?2:1)});
+ cv.width=v2.width;cv.height=v2.height;cv.style.width=vp.width*s+'px';await pg.render({canvasContext:cv.getContext('2d'),viewport:v2}).promise;
+}
+function rt(r){return 'rotate('+r+'deg)'+(r%180?' scale(.72)':'');}
+function paint(){
+ var g=$('pdf-grid');g.innerHTML='';$('pdf-bar').hidden=$('pdf-tools').hidden=!pages.length;
+ pages.forEach(function(p,k){
+  var c=document.createElement('div');c.className='pg';c.draggable=true;
+  c.innerHTML='<input type="checkbox" aria-label="Tick page"'+(p.sel?' checked':'')+'><em>'+(k+1)+'</em><canvas></canvas><small title="'+p.label.replace(/"/g,'&quot;')+'">'+p.label.replace(/</g,'&lt;')+'</small><div class="pg-b"><button type="button" data-a="l" aria-label="Move earlier">←</button><button type="button" data-a="r" aria-label="Rotate">↻</button><button type="button" data-a="x" aria-label="Delete">✕</button><button type="button" data-a="n" aria-label="Move later">→</button></div>';
+  var cv=c.querySelector('canvas');p.cv=cv;thumb(p,cv).then(function(){cv.style.transform=rt(p.rot);});
+  c.querySelector('input').onchange=function(e){p.sel=e.target.checked;};
+  c.querySelector('.pg-b').onclick=function(e){var a=(e.target.closest('button')||{}).dataset;if(!a)return;a=a.a;
+   if(a==='r'){p.rot=(p.rot+90)%360;cv.style.transform=rt(p.rot);return;}
+   if(a==='x')pages.splice(k,1);else if(a==='l'&&k>0)pages.splice(k-1,0,pages.splice(k,1)[0]);else if(a==='n'&&k<pages.length-1)pages.splice(k+1,0,pages.splice(k,1)[0]);paint();};
+  c.ondragstart=function(){dragI=k;c.classList.add('drag');};c.ondragend=function(){c.classList.remove('drag');};
+  c.ondragover=function(e){e.preventDefault();c.classList.add('over');};c.ondragleave=function(){c.classList.remove('over');};
+  c.ondrop=function(e){e.preventDefault();e.stopPropagation();if(dragI>-1&&dragI!==k){pages.splice(k,0,pages.splice(dragI,1)[0]);}dragI=-1;paint();};
+  g.appendChild(c);
+ });
+ msg(pages.length?pages.length+' page'+(pages.length===1?'':'s')+'. Drag pages to reorder.':'');
+}
+async function build(list){
+ const out=await PDFLib.PDFDocument.create();
+ for(const p of list){
+  let pg;
+  if(p.img){const im=p.img.jpg?await out.embedJpg(p.img.buf):await out.embedPng(p.img.buf);const W=595.28,H=841.89,s=Math.min((W-40)/im.width,(H-40)/im.height,1),w=im.width*s,h=im.height*s;
+   pg=out.addPage([W,H]);pg.drawImage(im,{x:(W-w)/2,y:(H-h)/2,width:w,height:h});}
+  else{[pg]=await out.copyPages(p.d.lib,[p.i]);out.addPage(pg);}
+  if(p.rot)pg.setRotation(PDFLib.degrees((pg.getRotation().angle+p.rot)%360));
+ }
+ return out.save();
+}
+function save(bytes,name,type){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([bytes],{type:type||'application/pdf'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);}
+function base(){return (docs[0]?docs[0].name.replace(/\.pdf$/i,''):'document');}
+async function run(btn,fn){var t=btn.textContent;btn.disabled=true;btn.textContent='Working…';try{await fn();}catch(e){msg('Something went wrong: '+e.message);}btn.disabled=false;btn.textContent=t;}
+$('pdf-all').onclick=function(){run(this,async function(){save(await build(pages),base()+(docs.length>1?'-merged':'-edited')+'.pdf');msg('Downloaded '+pages.length+' pages as one PDF.');});};
+$('pdf-sel').onclick=function(){var s=pages.filter(function(p){return p.sel;});if(!s.length){msg('Tick the pages you want first (or use Range).');return;}run(this,async function(){save(await build(s),base()+'-pages.pdf');msg('Downloaded '+s.length+' ticked pages.');});};
+$('pdf-split').onclick=function(){run(this,async function(){if(!window.JSZip)await load(LIBS.zip);var z=new JSZip();for(var k=0;k<pages.length;k++)z.file(base()+'-page-'+String(k+1).padStart(3,'0')+'.pdf',await build([pages[k]]));save(await z.generateAsync({type:'uint8array'}),base()+'-pages.zip','application/zip');msg('Split into '+pages.length+' files.');});};
+$('pdf-clear').onclick=function(){pages=[];docs=[];paint();};
+$('pdf-tickall').onclick=function(){pages.forEach(function(p){p.sel=true;});paint();};
+$('pdf-untick').onclick=function(){pages.forEach(function(p){p.sel=false;});paint();};
+$('pdf-rotsel').onclick=function(){pages.forEach(function(p){if(p.sel)p.rot=(p.rot+90)%360;});paint();};
+$('pdf-delsel').onclick=function(){pages=pages.filter(function(p){return !p.sel;});paint();};
+$('pdf-rangego').onclick=function(){var r=$('pdf-range').value;pages.forEach(function(p){p.sel=false;});r.split(',').forEach(function(x){var m=x.trim().match(/^(\d+)(?:\s*-\s*(\d+))?$/);if(!m)return;for(var i=+m[1];i<=+(m[2]||m[1]);i++)if(pages[i-1])pages[i-1].sel=true;});paint();};
+var dz=$('pdf-drop');$('pdf-in').onchange=function(e){add([].slice.call(e.target.files));e.target.value='';};
+['dragenter','dragover'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.add('bt-over');});});
+['dragleave','drop'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.remove('bt-over');});});
+dz.addEventListener('drop',function(e){add([].slice.call(e.dataTransfer.files));});
+})();
+</script>

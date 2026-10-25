@@ -1,0 +1,74 @@
+<div class="bd-calc" id="bd-tz">
+<div class="bc-title">Meeting planner across time zones</div>
+<div class="bc-sub">Add the cities of everyone in the meeting. Green hours are normal working hours (9 am to 6 pm) in each place; columns where everyone is green are the best times. Tap an hour to get the time in every city, ready to paste into an invite or add to your calendar. Daylight saving is handled for the date you pick.</div>
+<div class="bc-grid">
+<div><label for="tz-add">Add a city</label><input id="tz-add" list="tz-cities" placeholder="Start typing a city"><datalist id="tz-cities"></datalist></div>
+<div><label for="tz-date">Date</label><input id="tz-date" type="date"></div>
+<div><label for="tz-len">Meeting length</label><select id="tz-len"><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
+<div><label class="bc-check" style="margin-top:28px"><input type="checkbox" id="tz-24"> 24-hour clock</label></div>
+</div>
+<div id="tz-grid" style="margin-top:16px;overflow-x:auto"></div>
+<div id="tz-pick" class="bc-stat" style="margin-top:14px" hidden></div>
+<div class="bc-row"><button type="button" id="tz-share">Copy link to this plan</button><span class="bt-msg" id="tz-msg" style="margin:0"></span></div>
+<div class="bt-safe">Runs in your browser using your device&rsquo;s time-zone database. Nothing is sent anywhere.</div>
+</div>
+<style>
+#bd-tz .tz-row{display:grid;grid-template-columns:112px repeat(24,minmax(34px,1fr));align-items:stretch;min-width:880px;margin-bottom:4px}
+#bd-tz .tz-name{position:sticky;left:0;z-index:2;background:var(--c-surface)!important;display:flex;flex-direction:column;justify-content:center;padding-right:8px;font-size:13px;line-height:1.25}
+#bd-tz .tz-name b{font-size:14px}#bd-tz .tz-name small{color:var(--c-muted)}
+#bd-tz .tz-name button{align-self:flex-start;padding:0;border:0;font-size:12px;color:var(--c-accent);background:none!important}
+#bd-tz .tz-h{display:grid;place-items:center;height:42px;font:600 12px/1.1 var(--bd-sans,sans-serif);border-right:1px solid rgba(0,0,0,.05);cursor:pointer;text-align:center;background:#eef0f4!important;color:#555!important}
+#bd-tz .tz-h.w{background:#d8f3e8!important;color:#0b6b4f!important}#bd-tz .tz-h.n{background:#dde3f0!important;color:#3d4a6b!important}
+#bd-tz .tz-h.all{box-shadow:inset 0 3px 0 #0f9d76}#bd-tz .tz-h.sel{outline:3px solid var(--c-accent);outline-offset:-3px;position:relative;z-index:1}
+#bd-tz .tz-h small{display:block;font-size:9.5px;font-weight:500;opacity:.75}
+#bd-tz .tz-row:first-child .tz-h{border-radius:0}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-tz');if(!root)return;
+var $=function(id){return document.getElementById(id);};
+var C={'New York':'America/New_York','Los Angeles':'America/Los_Angeles','Chicago':'America/Chicago','Denver':'America/Denver','Phoenix':'America/Phoenix','Toronto':'America/Toronto','Vancouver':'America/Vancouver','Mexico City':'America/Mexico_City','São Paulo':'America/Sao_Paulo','Buenos Aires':'America/Argentina/Buenos_Aires','Bogotá':'America/Bogota','Lima':'America/Lima','Santiago':'America/Santiago','Honolulu':'Pacific/Honolulu','Anchorage':'America/Anchorage','Halifax':'America/Halifax',
+ 'London':'Europe/London','Dublin':'Europe/Dublin','Lisbon':'Europe/Lisbon','Madrid':'Europe/Madrid','Paris':'Europe/Paris','Berlin':'Europe/Berlin','Amsterdam':'Europe/Amsterdam','Brussels':'Europe/Brussels','Zurich':'Europe/Zurich','Rome':'Europe/Rome','Stockholm':'Europe/Stockholm','Oslo':'Europe/Oslo','Copenhagen':'Europe/Copenhagen','Helsinki':'Europe/Helsinki','Warsaw':'Europe/Warsaw','Prague':'Europe/Prague','Vienna':'Europe/Vienna','Athens':'Europe/Athens','Istanbul':'Europe/Istanbul','Kyiv':'Europe/Kyiv','Moscow':'Europe/Moscow',
+ 'Dubai':'Asia/Dubai','Riyadh':'Asia/Riyadh','Doha':'Asia/Qatar','Tel Aviv':'Asia/Jerusalem','Cairo':'Africa/Cairo','Lagos':'Africa/Lagos','Nairobi':'Africa/Nairobi','Johannesburg':'Africa/Johannesburg','Casablanca':'Africa/Casablanca','Karachi':'Asia/Karachi',
+ 'Mumbai':'Asia/Kolkata','Delhi':'Asia/Kolkata','Bengaluru':'Asia/Kolkata','Chennai':'Asia/Kolkata','Kolkata':'Asia/Kolkata','Hyderabad':'Asia/Kolkata','Dhaka':'Asia/Dhaka','Kathmandu':'Asia/Kathmandu','Colombo':'Asia/Colombo',
+ 'Bangkok':'Asia/Bangkok','Jakarta':'Asia/Jakarta','Ho Chi Minh City':'Asia/Ho_Chi_Minh','Singapore':'Asia/Singapore','Kuala Lumpur':'Asia/Kuala_Lumpur','Manila':'Asia/Manila','Hong Kong':'Asia/Hong_Kong','Shanghai':'Asia/Shanghai','Beijing':'Asia/Shanghai','Taipei':'Asia/Taipei','Seoul':'Asia/Seoul','Tokyo':'Asia/Tokyo',
+ 'Perth':'Australia/Perth','Adelaide':'Australia/Adelaide','Brisbane':'Australia/Brisbane','Sydney':'Australia/Sydney','Melbourne':'Australia/Melbourne','Auckland':'Pacific/Auckland'};
+$('tz-cities').innerHTML=Object.keys(C).sort().map(function(c){return '<option value="'+c+'">';}).join('');
+var here=Intl.DateTimeFormat().resolvedOptions().timeZone,mine=Object.keys(C).filter(function(k){return C[k]===here;})[0];
+var list=[],sel=null;
+try{var h=decodeURIComponent((location.hash.match(/tz=([^&]+)/)||[])[1]||'');if(h)list=h.split('|').filter(function(c){return C[c];});}catch(e){}
+if(!list.length){try{list=JSON.parse(localStorage.getItem('bd-tz')||'null')||[];}catch(e){}}
+if(!list.length)list=[mine||'New York','London','Mumbai'].filter(function(v,i,a){return a.indexOf(v)===i;});
+if(!mine&&list.indexOf('Your time')<0){C['Your time']=here;list.unshift('Your time');}
+var d0=new Date();$('tz-date').value=d0.toISOString().slice(0,10);
+function parts(date,tz){var o={};new Intl.DateTimeFormat('en-US',{timeZone:tz,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',weekday:'short'}).formatToParts(date).forEach(function(p){o[p.type]=p.value;});o.hour=+o.hour%24;o.minute=+o.minute;return o;}
+function offset(date,tz){var p=parts(date,tz),u=Date.UTC(+p.year,+p.month-1,+p.day,p.hour,p.minute);return Math.round((u-date.getTime())/6e4);}
+function fmtH(p){if($('tz-24').checked)return String(p.hour).padStart(2,'0')+(p.minute?':'+String(p.minute).padStart(2,'0'):'');var h=p.hour%12||12;return h+(p.minute?':'+String(p.minute).padStart(2,'0'):'')+(p.hour<12?'am':'pm');}
+function start(){var b=list[0],tz=C[b],d=$('tz-date').value.split('-');var guess=Date.UTC(+d[0],+d[1]-1,+d[2],0,0);return new Date(guess-offset(new Date(guess),tz)*6e4);}
+function paint(){
+ var s=start(),hrs=[];for(var i=0;i<24;i++)hrs.push(new Date(s.getTime()+i*36e5));
+ var rows=list.map(function(c){return hrs.map(function(t){return parts(t,C[c]);});});
+ var all=hrs.map(function(t,i){return rows.every(function(r){return r[i].hour>=9&&r[i].hour<18;});});
+ $('tz-grid').innerHTML=list.map(function(c,ri){var p0=parts(new Date(),C[c]),off=offset(hrs[12],C[c]);
+  return '<div class="tz-row"><div class="tz-name"><b>'+c+'</b><small>'+fmtH(p0)+' now \u00b7 UTC'+(off>=0?'+':'\u2212')+Math.floor(Math.abs(off)/60)+(Math.abs(off)%60?':'+String(Math.abs(off)%60).padStart(2,'0'):'')+'</small>'+(ri?'<button type="button" data-rm="'+ri+'">remove</button>':'<small>base city</small>')+'</div>'+
+  rows[ri].map(function(p,i){var w=p.hour>=9&&p.hour<18,n=p.hour<7||p.hour>=22;return '<div class="tz-h'+(w?' w':n?' n':'')+(all[i]?' all':'')+(sel===i?' sel':'')+'" data-i="'+i+'">'+fmtH(p)+(p.hour===0||i===0?'<small>'+p.weekday+'</small>':'')+'</div>';}).join('')+'</div>';}).join('');
+ var good=all.filter(Boolean).length;$('tz-msg').textContent=good?good+' hour'+(good>1?'s':'')+' when everyone is in working hours (marked with a green line).':'No hour is inside working hours everywhere; pick the least bad one (light colours are early morning or evening).';
+ try{localStorage.setItem('bd-tz',JSON.stringify(list));}catch(e){}
+ if(sel!=null)pick(sel,hrs[sel]);
+}
+function pick(i,t){sel=i;var len=+$('tz-len').value,end=new Date(t.getTime()+len*6e4);
+ var lines=list.map(function(c){var a=parts(t,C[c]),b=parts(end,C[c]);return c+': '+a.weekday+' '+fmtH(a)+'\u2013'+fmtH(b);});
+ var g=function(d){return d.toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';};
+ var gc='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Meeting')+'&dates='+g(t)+'/'+g(end)+'&details='+encodeURIComponent(lines.join('\n'));
+ var box=$('tz-pick');box.hidden=false;box.innerHTML='<span>Meeting time in each city</span><div style="font:600 16px/1.6 var(--bd-sans,sans-serif);margin:6px 0">'+lines.join('<br>')+'</div><div class="bc-row"><button type="button" class="bc-primary" id="tz-copy">Copy times</button><a href="'+gc+'" target="_blank" rel="noopener" style="font-weight:700">Add to Google Calendar</a><button type="button" id="tz-ics">Download invite (.ics)</button></div>';
+ $('tz-copy').onclick=function(){var b=this;navigator.clipboard.writeText(lines.join('\n')).then(function(){b.textContent='Copied';});};
+ $('tz-ics').onclick=function(){var ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Blog Digest//Meeting planner//EN','BEGIN:VEVENT','UID:bd-'+g(t)+'@blogdigest','DTSTAMP:'+g(new Date()),'DTSTART:'+g(t),'DTEND:'+g(end),'SUMMARY:Meeting','DESCRIPTION:'+lines.join('\\n'),'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='meeting.ics';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();},500);};
+ root.querySelectorAll('.tz-h').forEach(function(x){x.classList.toggle('sel',+x.dataset.i===i);});}
+$('tz-grid').onclick=function(e){var r=e.target.closest('[data-rm]');if(r){list.splice(+r.dataset.rm,1);sel=null;paint();return;}var h=e.target.closest('.tz-h');if(h){sel=+h.dataset.i;paint();}};
+$('tz-add').onchange=function(){var v=this.value.trim(),k=Object.keys(C).filter(function(c){return c.toLowerCase()===v.toLowerCase();})[0];if(k&&list.indexOf(k)<0){list.push(k);paint();}this.value='';};
+['tz-date','tz-24','tz-len'].forEach(function(id){$(id).onchange=paint;});
+$('tz-share').onclick=function(){var u=location.href.split('#')[0]+'#tz='+encodeURIComponent(list.join('|'));var b=this;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){b.textContent='Link copied';},function(){prompt('Copy this link',u);});};
+paint();
+})();
+</script>

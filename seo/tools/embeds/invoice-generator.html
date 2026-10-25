@@ -1,0 +1,93 @@
+<div class="bd-calc" id="bd-inv">
+<div class="bc-title">Invoice and receipt generator (no sign-up, no watermark)</div>
+<div class="bc-sub">Fill in your details, add line items and tax, then download a clean PDF invoice or receipt. Your business details are remembered in this browser and the invoice number goes up by one each time, so the next invoice takes seconds.</div>
+<div class="bt-tabs" id="iv-kind"><button type="button" class="bt-on" data-k="Invoice">Invoice</button><button type="button" data-k="Receipt">Receipt (paid)</button><button type="button" data-k="Quote">Quote / estimate</button></div>
+<div class="bt-two">
+<div>
+<div class="bc-grid">
+<div><label for="iv-from">From (your name or business, address)</label><textarea id="iv-from" data-k="from" rows="3">Lee Design Studio
+12 Market Street
+Austin, TX 78701</textarea></div>
+<div><label for="iv-to">Bill to (client, address)</label><textarea id="iv-to" data-k="to" rows="3">Acme Corp
+400 Main Avenue
+Dallas, TX 75201</textarea></div>
+<div><label for="iv-no">Number</label><input id="iv-no" data-k="no" value="INV-0001"></div>
+<div><label for="iv-date">Date</label><input id="iv-date" data-k="date" type="date"></div>
+<div><label for="iv-due">Due date</label><input id="iv-due" data-k="due" type="date"></div>
+<div><label for="iv-cur">Currency</label><select id="iv-cur" data-k="cur"><option value="USD">US$ (USD)</option><option value="EUR">€ (EUR)</option><option value="GBP">£ (GBP)</option><option value="INR">₹ (INR)</option><option value="CAD">C$ (CAD)</option><option value="AUD">A$ (AUD)</option><option value="SGD">S$ (SGD)</option><option value="AED">AED</option><option value="JPY">¥ (JPY)</option><option value="ZAR">R (ZAR)</option></select></div>
+</div>
+<h4 style="margin:16px 0 6px">Items</h4>
+<div id="iv-items"></div>
+<button type="button" id="iv-add">+ Add a line</button>
+<div class="bc-grid" style="margin-top:14px">
+<div><label for="iv-taxn">Tax name</label><input id="iv-taxn" data-k="taxn" value="Sales tax"></div>
+<div><label for="iv-tax">Tax rate (%)</label><input id="iv-tax" data-k="tax" type="number" step="0.01" value="8.25"></div>
+<div><label for="iv-disc">Discount (%)</label><input id="iv-disc" data-k="disc" type="number" step="0.01" value="0"></div>
+<div><label for="iv-ship">Shipping or other</label><input id="iv-ship" data-k="ship" type="number" step="0.01" value="0"></div>
+</div>
+<label for="iv-pay" style="margin-top:12px">Payment details (bank, UPI, PayPal)</label><textarea id="iv-pay" data-k="pay" rows="2">Bank transfer: Lee Design Studio, account 12345678, routing 111000025</textarea>
+<label for="iv-notes" style="margin-top:12px">Notes or terms</label><textarea id="iv-notes" data-k="notes" rows="2">Payment due within 14 days. Thank you for your business!</textarea>
+<div class="bc-row"><label class="bc-check">Logo <input type="file" id="iv-logo" accept="image/*" style="font-size:13px"></label><button type="button" id="iv-nologo">Remove logo</button><label class="bc-check">Accent <input type="color" id="iv-acc" value="#e2462c" style="width:44px;height:34px;padding:2px"></label></div>
+</div>
+<div>
+<div class="bt-paper" id="iv-out" style="font-size:9.5px;aspect-ratio:8.5/11;overflow:auto"></div>
+<div class="bc-row"><button type="button" class="bc-primary" id="iv-pdf">Download PDF</button><button type="button" id="iv-csv">Items as CSV</button><button type="button" id="iv-next">New invoice (next number)</button></div>
+<div class="bt-msg">PDF opens your device&rsquo;s print window: choose &ldquo;Save as PDF&rdquo;. Totals are worked out for you; check the tax rate that applies to you.</div>
+</div>
+</div>
+<div class="bt-safe">Everything stays in this browser. No account, no watermark, no limit on how many invoices you make.</div>
+</div>
+<style>
+#bd-inv .iv-row{display:grid;grid-template-columns:minmax(0,1fr) 64px 92px 30px;gap:6px;margin-bottom:6px}
+#bd-inv .iv-row input{font-size:14.5px;padding:8px}
+#bd-inv .iv-row button{padding:0;font-size:16px}
+@media (min-width:721px){#bd-inv .bt-two>div:last-child{position:sticky;top:76px;align-self:start}}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-inv');if(!root)return;
+var $=function(id){return document.getElementById(id);},KEY='bd-invoice',kind='Invoice';
+var today=new Date(),iso=function(d){return d.toISOString().slice(0,10);};
+var D={items:[{d:'Logo design',q:1,r:850},{d:'Brand guidelines (10 pages)',q:1,r:600},{d:'Revisions (hourly)',q:3,r:75}]};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function money(n){try{return new Intl.NumberFormat(undefined,{style:'currency',currency:D.cur||'USD'}).format(n||0);}catch(e){return (n||0).toFixed(2);}}
+function rows(){$('iv-items').innerHTML='<div class="iv-row" style="font-size:12px;font-weight:600;color:var(--c-muted)"><span>Description</span><span>Qty</span><span>Price</span><span></span></div>'+D.items.map(function(it,i){return '<div class="iv-row" data-i="'+i+'"><input data-f="d" value="'+esc(it.d)+'" placeholder="What you did or sold"><input data-f="q" type="number" step="any" value="'+esc(it.q)+'"><input data-f="r" type="number" step="any" value="'+esc(it.r)+'"><button type="button" aria-label="Remove line">×</button></div>';}).join('');}
+function read(){root.querySelectorAll('[data-k]').forEach(function(el){D[el.dataset.k]=el.value;});root.querySelectorAll('.iv-row[data-i]').forEach(function(r){var o=D.items[+r.dataset.i];r.querySelectorAll('[data-f]').forEach(function(el){o[el.dataset.f]=el.dataset.f==='d'?el.value:parseFloat(el.value)||0;});});D.kind=kind;D.acc=$('iv-acc').value;}
+function totals(){var sub=D.items.reduce(function(s,i){return s+(i.q||0)*(i.r||0);},0),disc=sub*(parseFloat(D.disc)||0)/100,tax=(sub-disc)*(parseFloat(D.tax)||0)/100,ship=parseFloat(D.ship)||0;return {sub:sub,disc:disc,tax:tax,ship:ship,total:sub-disc+tax+ship};}
+function fmtDate(v){if(!v)return '';var d=new Date(v+'T12:00:00');return d.toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});}
+function html(scope){var a=D.acc||'#e2462c',t=totals(),nl=function(s){return esc(s).replace(/\n/g,'<br>');};
+ var css='.iv{font-family:"Helvetica Neue",Arial,sans-serif;color:#1b1b1b;padding:7% 7.5%;line-height:1.4;position:relative}.iv .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:2em}.iv h1{margin:0;font-size:2.8em;letter-spacing:.02em;color:'+a+'}'+
+  '.iv .meta{text-align:right;font-size:1.05em}.iv .meta b{display:inline-block;min-width:6em;color:#666;font-weight:500}.iv .pt{display:flex;gap:3em;margin:2.2em 0 1.8em}.iv .pt small{display:block;text-transform:uppercase;letter-spacing:.08em;color:#777;font-size:.85em;margin-bottom:.3em}'+
+  '.iv table{width:100%;border-collapse:collapse;font-size:1.05em}.iv th{text-align:left;background:'+a+';color:#fff;padding:.55em .7em;font-weight:600}.iv td{padding:.55em .7em;border-bottom:1px solid #e5e5e5}.iv .n{text-align:right;white-space:nowrap}'+
+  '.iv .tot{margin:1.2em 0 0 auto;width:50%;font-size:1.05em}.iv .tot div{display:flex;justify-content:space-between;padding:.3em .7em}.iv .tot .g{background:'+a+'14;font-weight:700;font-size:1.25em;border-top:2px solid '+a+';margin-top:.3em}'+
+  '.iv .ft{margin-top:2.4em;font-size:1em;color:#333}.iv .ft small{display:block;text-transform:uppercase;letter-spacing:.08em;color:#777;font-size:.85em;margin:1em 0 .3em}.iv .logo{max-height:5em;max-width:12em;display:block;margin-bottom:.6em}'+
+  '.iv .paid{position:absolute;top:54%;left:9%;transform:rotate(-14deg);border:.25em solid #0f9d76;color:#0f9d76;font-weight:800;font-size:3em;padding:.1em .5em;border-radius:.2em;opacity:.8;letter-spacing:.1em}';
+ if(scope)css=css.replace(/\.iv/g,'#bd-inv #iv-out .iv').replace(/(color|background):([^;}]+)/g,'$1:$2!important');
+ return '<style>'+css+'</style><div class="iv">'+(kind==='Receipt'?'<div class="paid">PAID</div>':'')+'<div class="hd"><div>'+(D.logo?'<img class="logo" src="'+D.logo+'" alt="">':'')+'<h1>'+kind.toUpperCase()+'</h1></div><div class="meta">'+
+  '<div><b>Number</b> '+esc(D.no)+'</div><div><b>Date</b> '+fmtDate(D.date)+'</div>'+(kind==='Invoice'&&D.due?'<div><b>Due</b> '+fmtDate(D.due)+'</div>':kind==='Quote'&&D.due?'<div><b>Valid until</b> '+fmtDate(D.due)+'</div>':'')+'</div></div>'+
+  '<div class="pt"><div><small>From</small>'+nl(D.from)+'</div><div><small>'+(kind==='Receipt'?'Received from':kind==='Quote'?'Prepared for':'Bill to')+'</small>'+nl(D.to)+'</div></div>'+
+  '<table><thead><tr><th>Description</th><th class="n">Qty</th><th class="n">Price</th><th class="n">Amount</th></tr></thead><tbody>'+D.items.filter(function(i){return i.d||i.r;}).map(function(i){return '<tr><td>'+esc(i.d)+'</td><td class="n">'+i.q+'</td><td class="n">'+money(i.r)+'</td><td class="n">'+money(i.q*i.r)+'</td></tr>';}).join('')+'</tbody></table>'+
+  '<div class="tot"><div><span>Subtotal</span><span>'+money(t.sub)+'</span></div>'+(t.disc?'<div><span>Discount ('+D.disc+'%)</span><span>−'+money(t.disc)+'</span></div>':'')+(parseFloat(D.tax)?'<div><span>'+esc(D.taxn||'Tax')+' ('+D.tax+'%)</span><span>'+money(t.tax)+'</span></div>':'')+(t.ship?'<div><span>Shipping / other</span><span>'+money(t.ship)+'</span></div>':'')+
+  '<div class="g"><span>'+(kind==='Receipt'?'Total paid':'Total')+'</span><span>'+money(t.total)+'</span></div></div>'+
+  '<div class="ft">'+(D.pay&&kind!=='Receipt'?'<small>Payment details</small>'+nl(D.pay):'')+(D.notes?'<small>Notes</small>'+nl(D.notes):'')+'</div></div>';}
+function render(){read();$('iv-out').innerHTML=html(true);try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){}}
+function fill(){root.querySelectorAll('[data-k]').forEach(function(el){if(D[el.dataset.k]!=null)el.value=D[el.dataset.k];});if(D.acc)$('iv-acc').value=D.acc;
+ if(D.kind){kind=D.kind;root.querySelectorAll('#iv-kind button').forEach(function(b){b.classList.toggle('bt-on',b.dataset.k===kind);});}rows();render();}
+try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.items)D=s;}catch(e){}
+if(!D.date)D.date=iso(today);if(!D.due){var d2=new Date(today);d2.setDate(d2.getDate()+14);D.due=iso(d2);}
+fill();
+var tm;root.addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(render,120);});root.addEventListener('change',function(e){if(e.target.id!=='iv-logo')render();});
+$('iv-items').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;read();D.items.splice(+b.parentNode.dataset.i,1);rows();render();});
+$('iv-add').onclick=function(){read();D.items.push({d:'',q:1,r:0});rows();render();$('iv-items').lastChild.querySelector('input').focus();};
+$('iv-kind').onclick=function(e){var b=e.target.closest('button');if(!b)return;kind=b.dataset.k;[].forEach.call(this.children,function(x){x.classList.toggle('bt-on',x===b);});
+ if(/^(INV|RCT|QTE)-/.test($('iv-no').value))$('iv-no').value={Invoice:'INV',Receipt:'RCT',Quote:'QTE'}[kind]+$('iv-no').value.slice(3);render();};
+$('iv-logo').onchange=function(e){var f=e.target.files[0];if(!f)return;var i=new Image();i.onload=function(){var c=document.createElement('canvas'),s=Math.min(1,400/i.width);c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);D.logo=c.toDataURL('image/png');render();};i.src=URL.createObjectURL(f);};
+$('iv-nologo').onclick=function(){D.logo='';$('iv-logo').value='';render();};
+function save(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);}
+$('iv-pdf').onclick=function(){render();var f=document.createElement('iframe');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);
+ var w=f.contentWindow,d=w.document;d.open();d.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(kind+' '+D.no)+'</title><style>@page{size:auto;margin:0}html,body{margin:0}body{font-size:10.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>'+html()+'</body></html>');d.close();
+ setTimeout(function(){w.focus();w.print();setTimeout(function(){f.remove();},2000);},350);};
+$('iv-csv').onclick=function(){render();var q=function(v){return '"'+String(v).replace(/"/g,'""')+'"';};save(new Blob([['Description,Quantity,Price,Amount'].concat(D.items.map(function(i){return [q(i.d),i.q,i.r,(i.q*i.r).toFixed(2)].join(',');})).join('\n')],{type:'text/csv'}),(D.no||'invoice')+'-items.csv');};
+$('iv-next').onclick=function(){read();var m=String(D.no).match(/^(.*?)(\d+)(\D*)$/);if(m)D.no=m[1]+String(+m[2]+1).padStart(m[2].length,'0')+m[3];D.date=iso(new Date());var d2=new Date();d2.setDate(d2.getDate()+14);D.due=iso(d2);D.to='';D.items=[{d:'',q:1,r:0}];fill();$('iv-to').focus();};
+})();
+</script>

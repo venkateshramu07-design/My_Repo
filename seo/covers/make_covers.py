@@ -49,6 +49,17 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "debt-consolidation-loans-when-they-save": ("PERSONAL FINANCE \u00b7 CALCULATOR", "Debt Consolidation: When It Saves You Money", "#0f9d76"),
     "life-insurance-cost-by-age-calculator": ("PERSONAL FINANCE \u00b7 CALCULATOR", "Life Insurance Cost by Age", "#7a5cd6"),
     "retire-abroad-on-2000-a-month": ("LIVING ABROAD \u00b7 DATA", "Retire Abroad on $2,000 a Month", "#0f9d76"),
+    "free-tools-no-upload-no-signup": ("FREE TOOLS \u00b7 NO UPLOAD \u00b7 NO SIGN-UP", "Free Tools That Never Upload Your Files", "#2f7de1"),
+    "qr-code-generator-never-expires": ("FREE TOOL", "QR Code Generator That Never Expires", "#6b5cff"),
+    "merge-split-pdf-without-uploading": ("FREE TOOL \u00b7 PRIVATE", "Merge, Split and Reorder PDFs Without Uploading", "#e2462c"),
+    "sign-pdf-free-no-account": ("FREE TOOL \u00b7 NO ACCOUNT", "Sign a PDF Free, With No Limit", "#1a3faa"),
+    "heic-to-jpg-remove-photo-location": ("FREE TOOL \u00b7 PRIVATE", "HEIC to JPG, Shrink Photos, Remove Location", "#0e9bb5"),
+    "free-resume-builder-free-pdf-download": ("FREE TOOL \u00b7 CAREER", "Resume Builder With a Free PDF Download", "#7a5cd6"),
+    "free-invoice-generator-no-watermark": ("FREE TOOL \u00b7 FREELANCERS", "Invoice Generator: No Sign-Up, No Watermark", "#0f9d76"),
+    "subscription-tracker-cancel-reminders": ("FREE TOOL \u00b7 MONEY", "Find Forgotten Subscriptions Before They Renew", "#e48b12"),
+    "meeting-time-zone-planner": ("FREE TOOL \u00b7 WORK", "Meeting Planner Across Time Zones", "#2f7de1"),
+    "password-passphrase-generator-breach-check": ("FREE TOOL \u00b7 SECURITY", "Strong Passwords and a Safe Breach Check", "#0f9d76"),
+    "word-counter-character-limits": ("FREE TOOL \u00b7 WRITING", "Word Counter With Every Character Limit", "#c2410c"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 # Country money-facts pages (seo/countries/countries.json): one cover each.

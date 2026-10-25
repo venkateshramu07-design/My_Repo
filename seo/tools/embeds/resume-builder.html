@@ -1,0 +1,93 @@
+<div class="bd-calc" id="bd-cv">
+<div class="bc-title">Resume builder with free PDF download</div>
+<div class="bc-sub">Fill in your details and watch the resume build on the right. Download it as a PDF, Word or plain-text file for free: no account, no trial, no paywall at the end. Your resume is saved in this browser as you type, so you can come back later.</div>
+<div class="bt-two">
+<div id="cv-form">
+<div class="bc-grid">
+<div><label for="cv-name">Full name</label><input id="cv-name" data-k="name" value="Jordan Lee"></div>
+<div><label for="cv-title">Job title you want</label><input id="cv-title" data-k="title" value="Marketing Manager"></div>
+<div><label for="cv-email">Email</label><input id="cv-email" data-k="email" value="jordan.lee@example.com"></div>
+<div><label for="cv-phone">Phone</label><input id="cv-phone" data-k="phone" value="+1 555 010 0142"></div>
+<div><label for="cv-loc">City, country</label><input id="cv-loc" data-k="loc" value="Austin, TX"></div>
+<div><label for="cv-link">LinkedIn or website</label><input id="cv-link" data-k="link" value="linkedin.com/in/jordanlee"></div>
+</div>
+<label for="cv-sum" style="margin-top:14px">Summary (2&ndash;3 lines)</label><textarea id="cv-sum" data-k="sum" rows="3">Marketing manager with 7 years in B2B software. Grew inbound pipeline 3x by rebuilding content and paid search, and led a team of five.</textarea>
+<h4 style="margin:18px 0 6px">Experience</h4><div id="cv-exp"></div><button type="button" id="cv-addexp">+ Add a job</button>
+<h4 style="margin:18px 0 6px">Education</h4><div id="cv-edu"></div><button type="button" id="cv-addedu">+ Add education</button>
+<label for="cv-skills" style="margin-top:16px">Skills (separate with commas)</label><textarea id="cv-skills" data-k="skills" rows="2">SEO, Google Ads, HubSpot, Content strategy, Team leadership, Analytics</textarea>
+<label for="cv-extra" style="margin-top:12px">Extra section (certifications, languages, awards). One per line.</label><textarea id="cv-extra" data-k="extra" rows="2">Google Ads certified (2025)
+Spanish (fluent)</textarea>
+<div class="bc-row"><button type="button" id="cv-export">Save a backup (.json)</button><label class="bc-check" style="cursor:pointer"><input type="file" id="cv-import" accept=".json" hidden><u>Load a backup</u></label><button type="button" id="cv-reset">Clear everything</button></div>
+</div>
+<div>
+<div class="bt-tabs" id="cv-tpl"><button type="button" class="bt-on" data-t="classic">Classic</button><button type="button" data-t="modern">Modern</button><button type="button" data-t="compact">Compact</button></div>
+<div class="bc-row" style="margin-top:0"><label class="bc-check">Accent <input type="color" id="cv-acc" value="#1f4e79" style="width:44px;height:34px;padding:2px"></label><label class="bc-check">Paper <select id="cv-paper" style="width:auto;padding:6px 10px"><option value="letter">US Letter</option><option value="a4">A4</option></select></label></div>
+<div class="bt-paper" id="cv-out" style="margin-top:12px;font-size:10px;aspect-ratio:8.5/11;overflow:auto"></div>
+<div class="bc-row"><button type="button" class="bc-primary" id="cv-pdf">Download PDF</button><button type="button" id="cv-doc">Word (.doc)</button><button type="button" id="cv-txt">Plain text</button></div>
+<div class="bt-msg">PDF opens your device&rsquo;s print window: choose &ldquo;Save as PDF&rdquo;. The text stays selectable, so applicant tracking systems can read it.</div>
+</div>
+</div>
+<div class="bt-safe">Your details stay in this browser. Nothing is uploaded, and there is no account to create.</div>
+</div>
+<style>
+@media (min-width:721px){#bd-cv .bt-two>div:last-child{position:sticky;top:76px;align-self:start}}
+#bd-cv .cv-block{border:1px solid var(--c-line);border-radius:12px;padding:12px;margin-bottom:10px}
+#bd-cv .cv-block .bc-grid{gap:8px 12px}#bd-cv .cv-block label{font-size:12.5px;margin-bottom:3px}#bd-cv .cv-block input,#bd-cv .cv-block textarea{font-size:14.5px;padding:8px 10px}
+#bd-cv .cv-block .cv-del{float:right;padding:4px 10px;font-size:13px}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-cv');if(!root)return;
+var $=function(id){return document.getElementById(id);},KEY='bd-resume',tpl='classic';
+var D={exp:[{role:'Marketing Manager',org:'Brightpath Software',where:'Austin, TX',from:'2022',to:'Present',pts:'Rebuilt the content and paid search programme; inbound pipeline up 3x in 18 months\nManage a team of five and a $1.2m yearly budget\nLaunched a partner webinar series that sourced 20% of new deals'},
+ {role:'Digital Marketing Specialist',org:'Northwind Analytics',where:'Dallas, TX',from:'2019',to:'2022',pts:'Cut cost per lead by 38% by restructuring Google Ads accounts\nWrote and optimised 60+ landing pages'}],
+ edu:[{deg:'BA, Communications',org:'University of Texas at Austin',from:'2014',to:'2018',pts:''}]};
+function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function block(list,i,kind){var e=list[i],f=kind==='exp'?[ ['role','Job title'],['org','Company'],['where','City'],['from','From'],['to','To'] ]:[ ['deg','Degree or course'],['org','School'],['from','From'],['to','To'] ];
+ return '<div class="cv-block" data-kind="'+kind+'" data-i="'+i+'"><button type="button" class="cv-del">Remove</button><div class="bc-grid">'+f.map(function(x){return '<div><label>'+x[1]+'</label><input data-f="'+x[0]+'" value="'+esc(e[x[0]])+'"></div>';}).join('')+'</div>'+
+ '<label style="margin-top:8px">'+(kind==='exp'?'What you achieved (one per line; start with a verb, add numbers)':'Details (optional, one per line)')+'</label><textarea data-f="pts" rows="3">'+esc(e.pts)+'</textarea></div>';}
+function lists(){$('cv-exp').innerHTML=D.exp.map(function(e,i){return block(D.exp,i,'exp');}).join('');$('cv-edu').innerHTML=D.edu.map(function(e,i){return block(D.edu,i,'edu');}).join('');}
+function read(){root.querySelectorAll('[data-k]').forEach(function(el){D[el.dataset.k]=el.value;});
+ root.querySelectorAll('.cv-block').forEach(function(b){var o=D[b.dataset.kind][+b.dataset.i];b.querySelectorAll('[data-f]').forEach(function(el){o[el.dataset.f]=el.value;});});
+ D.tpl=tpl;D.acc=$('cv-acc').value;D.paper=$('cv-paper').value;}
+function bullets(t){var l=String(t||'').split('\n').map(function(x){return x.replace(/^[-•*]\s*/,'').trim();}).filter(Boolean);return l.length?'<ul>'+l.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'';}
+function html(scope){var a=D.acc||'#1f4e79',c=[D.email,D.phone,D.loc,D.link].filter(Boolean).map(esc).join(' &nbsp;|&nbsp; ');
+ var sec=function(t,b){return b?'<section><h2>'+t+'</h2>'+b+'</section>':'';};
+ var exp=D.exp.filter(function(e){return e.role||e.org;}).map(function(e){return '<div class="it"><div class="ln"><b>'+esc(e.role)+'</b><span>'+esc([e.from,e.to].filter(Boolean).join(' – '))+'</span></div><div class="sub">'+esc([e.org,e.where].filter(Boolean).join(', '))+'</div>'+bullets(e.pts)+'</div>';}).join('');
+ var edu=D.edu.filter(function(e){return e.deg||e.org;}).map(function(e){return '<div class="it"><div class="ln"><b>'+esc(e.deg)+'</b><span>'+esc([e.from,e.to].filter(Boolean).join(' – '))+'</span></div><div class="sub">'+esc(e.org)+'</div>'+bullets(e.pts)+'</div>';}).join('');
+ var sk=String(D.skills||'').split(',').map(function(x){return x.trim();}).filter(Boolean);
+ var css='.cv{font-family:'+(tpl==='modern'?'"Helvetica Neue",Arial,sans-serif':tpl==='compact'?'Arial,sans-serif':'Georgia,"Times New Roman",serif')+';color:#1b1b1b;line-height:1.38;padding:'+(tpl==='compact'?'5% 6%':'7% 8%')+';font-size:'+(tpl==='compact'?'0.95em':'1em')+'}'+
+  '.cv h1{margin:0;font-size:2.5em;letter-spacing:.01em;'+(tpl==='modern'?'color:'+a+';':'')+'}.cv .tt{font-size:1.25em;color:#444;margin:.15em 0 .4em}.cv .ct{font-size:.95em;color:#333;padding-bottom:.8em;border-bottom:'+(tpl==='modern'?'3px solid '+a:'1px solid #999')+'}'+
+  '.cv h2{font-size:1.1em;text-transform:uppercase;letter-spacing:.08em;margin:1.1em 0 .45em;color:'+a+';'+(tpl==='classic'?'border-bottom:1px solid #ccc;padding-bottom:.2em':'')+'}'+
+  '.cv .it{margin:0 0 .75em}.cv .ln{display:flex;justify-content:space-between;gap:1em}.cv .ln span{color:#555;white-space:nowrap}.cv .sub{color:#444;font-style:italic}.cv ul{margin:.3em 0 0;padding-left:1.25em}.cv li{margin:.15em 0}.cv p{margin:0}'+
+  '.cv .sk{display:flex;flex-wrap:wrap;gap:.35em .5em}.cv .sk span{'+(tpl==='modern'?'background:'+a+'18;border-radius:3px;padding:.1em .5em':'')+'}';
+ if(scope)css=css.replace(/\.cv/g,'#bd-cv #cv-out .cv').replace(/(color|background|border-bottom):([^;}]+)/g,'$1:$2!important');
+ return '<style>'+css+'</style><div class="cv"><h1>'+esc(D.name)+'</h1>'+(D.title?'<div class="tt">'+esc(D.title)+'</div>':'')+'<div class="ct">'+c+'</div>'+
+  sec('Summary',D.sum?'<p>'+esc(D.sum)+'</p>':'')+sec('Experience',exp)+sec('Education',edu)+
+  sec('Skills',sk.length?'<div class="sk">'+sk.map(function(x,i){return '<span>'+esc(x)+(tpl==='modern'?'':(i<sk.length-1?' ·':''))+'</span>';}).join('')+'</div>':'')+
+  sec('Additional',bullets(D.extra))+'</div>';}
+function render(){read();$('cv-out').innerHTML=html(true);$('cv-out').style.aspectRatio=D.paper==='a4'?'210/297':'8.5/11';try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){}}
+function fill(){root.querySelectorAll('[data-k]').forEach(function(el){if(D[el.dataset.k]!=null)el.value=D[el.dataset.k];});if(D.acc)$('cv-acc').value=D.acc;if(D.paper)$('cv-paper').value=D.paper;
+ if(D.tpl){tpl=D.tpl;root.querySelectorAll('#cv-tpl button').forEach(function(b){b.classList.toggle('bt-on',b.dataset.t===tpl);});}lists();render();}
+try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.exp)D=s;}catch(e){}
+fill();
+var t;root.addEventListener('input',function(){clearTimeout(t);t=setTimeout(render,120);});root.addEventListener('change',render);
+root.addEventListener('click',function(e){var d=e.target.closest('.cv-del');if(!d)return;var b=d.closest('.cv-block');read();D[b.dataset.kind].splice(+b.dataset.i,1);lists();render();});
+$('cv-addexp').onclick=function(){read();D.exp.push({role:'',org:'',where:'',from:'',to:'',pts:''});lists();render();};
+$('cv-addedu').onclick=function(){read();D.edu.push({deg:'',org:'',from:'',to:'',pts:''});lists();render();};
+$('cv-tpl').onclick=function(e){var b=e.target.closest('button');if(!b)return;tpl=b.dataset.t;[].forEach.call(this.children,function(x){x.classList.toggle('bt-on',x===b);});render();};
+function fname(ext){return (D.name||'resume').trim().replace(/\s+/g,'-')+'-resume.'+ext;}
+function save(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);}
+$('cv-pdf').onclick=function(){render();var f=document.createElement('iframe');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);
+ var w=f.contentWindow,d=w.document;d.open();d.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(fname('pdf').replace(/\.pdf$/,''))+'</title><style>@page{size:'+(D.paper==='a4'?'A4':'letter')+';margin:0}html,body{margin:0}body{font-size:10.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>'+html()+'</body></html>');d.close();
+ setTimeout(function(){w.focus();w.print();setTimeout(function(){f.remove();},2000);},350);};
+$('cv-doc').onclick=function(){render();save(new Blob(['<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body style="font-size:11pt">'+html()+'</body></html>'],{type:'application/msword'}),fname('doc'));};
+$('cv-txt').onclick=function(){render();var L=[D.name,D.title,[D.email,D.phone,D.loc,D.link].filter(Boolean).join(' | '),'','SUMMARY',D.sum,'','EXPERIENCE'];
+ D.exp.forEach(function(e){L.push(e.role+(e.org?', '+e.org:'')+(e.where?', '+e.where:'')+' ('+[e.from,e.to].filter(Boolean).join(' - ')+')');String(e.pts).split('\n').filter(Boolean).forEach(function(p){L.push('- '+p.replace(/^[-•*]\s*/,''));});L.push('');});
+ L.push('EDUCATION');D.edu.forEach(function(e){L.push(e.deg+(e.org?', '+e.org:'')+' ('+[e.from,e.to].filter(Boolean).join(' - ')+')');});L.push('','SKILLS',D.skills,'','ADDITIONAL',D.extra);
+ save(new Blob([L.join('\n')],{type:'text/plain'}),fname('txt'));};
+$('cv-export').onclick=function(){render();save(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}),'resume-backup.json');};
+$('cv-import').onchange=function(e){var f=e.target.files[0];if(!f)return;f.text().then(function(t){try{var o=JSON.parse(t);if(o.exp){D=o;fill();}}catch(err){alert('That is not a resume backup file.');}});};
+$('cv-reset').onclick=function(){if(!confirm('Clear every field and start a blank resume?'))return;D={exp:[{role:'',org:'',where:'',from:'',to:'',pts:''}],edu:[{deg:'',org:'',from:'',to:'',pts:''}]};root.querySelectorAll('[data-k]').forEach(function(el){el.value='';});lists();render();};
+})();
+</script>

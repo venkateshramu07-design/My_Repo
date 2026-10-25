@@ -32,3 +32,26 @@
 .bd-calc .bc-chip.bc-best{border-color:var(--c-accent);color:var(--c-accent)}
 .bd-cta{border:1px solid var(--bd-line,#e8e2d6);border-left:4px solid var(--bd-accent,#e2462c);border-radius:12px;padding:14px 18px;margin:1.2em 0 1.8em;background:var(--bd-surface-2,#fbf9f5)}
 .bd-cta p{margin:0!important}
+.bd-calc .bt-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:4px;border-radius:14px;background:var(--c-line)!important;margin:0 0 16px}
+.bd-calc .bt-tabs button{flex:1 1 auto;border:0;border-radius:10px;padding:10px 12px;font-size:14px;color:var(--c-muted)}
+.bd-calc .bt-tabs button.bt-on{background:var(--bd-surface,#fff)!important;color:var(--c-ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.bd-calc .bt-drop{display:grid;place-items:center;gap:6px;text-align:center;padding:28px 16px;border:2px dashed var(--c-line);border-radius:16px;cursor:pointer;transition:border-color .15s,background .15s}
+.bd-calc .bt-drop.bt-over,.bd-calc .bt-drop:hover{border-color:var(--c-accent);background:rgba(226,70,44,.05)!important}
+.bd-calc .bt-drop b{font-size:17px}.bd-calc .bt-drop small{color:var(--c-muted);font-size:13px}
+.bd-calc .bt-drop input{display:none}
+.bd-calc .bt-safe{display:flex;gap:8px;align-items:center;margin:12px 0 0;font-size:13px;color:var(--c-muted)}
+.bd-calc .bt-safe::before{content:'';flex:none;width:18px;height:18px;border-radius:50%;background:#0f9d76 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/12px no-repeat!important}
+.bd-calc .bt-list{display:grid;gap:8px;margin-top:14px}
+.bd-calc .bt-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--c-line);border-radius:12px;font-size:14px}
+.bd-calc .bt-item img,.bd-calc .bt-item canvas{width:54px;height:54px;object-fit:cover;border-radius:8px;flex:none;background:#eee!important}
+.bd-calc .bt-item .bt-meta{flex:1;min-width:0}.bd-calc .bt-item .bt-meta b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bd-calc .bt-item .bt-meta small{color:var(--c-muted)}
+.bd-calc .bt-item button{padding:8px 10px;font-size:13px}
+.bd-calc button.bc-primary{background:var(--c-accent)!important;color:#fff!important}
+.bd-calc button:disabled{opacity:.5;cursor:default}
+.bd-calc .bt-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:720px){.bd-calc .bt-two{grid-template-columns:minmax(0,1fr)}}
+.bd-calc textarea{width:100%;box-sizing:border-box;font-size:15px;line-height:1.5;font-family:inherit;padding:10px 12px;border:1px solid var(--c-line);border-radius:10px;background:transparent;color:var(--c-ink);resize:vertical}
+.bd-calc .bt-msg{margin-top:10px;font-size:14px;color:var(--c-muted)}
+.bd-calc .bt-paper{background:#fff!important;color:#15171d!important;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);overflow:hidden}
+.bd-calc .bt-paper *{color:#15171d!important}

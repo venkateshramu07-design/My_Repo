@@ -1,0 +1,108 @@
+<div class="bd-calc" id="bd-qr">
+<div class="bc-title">QR code generator (free, never expires)</div>
+<div class="bc-sub">Make a QR code for a link, Wi-Fi network, contact card, email, phone number or text. The code is drawn in your browser and holds your information directly, so it never stops working and there is no account, trial or watermark.</div>
+<div class="bt-tabs" role="tablist">
+<button type="button" class="bt-on" data-t="url">Link</button><button type="button" data-t="wifi">Wi-Fi</button><button type="button" data-t="vcard">Contact</button><button type="button" data-t="text">Text</button><button type="button" data-t="email">Email</button><button type="button" data-t="tel">Phone / SMS</button>
+</div>
+<div class="bt-two">
+<div>
+<div class="qr-f" data-f="url"><label for="qr-url">Web address</label><input id="qr-url" type="url" value="https://randomthoughtsever.blogspot.com/" inputmode="url"></div>
+<div class="qr-f" data-f="wifi" hidden>
+<div class="bc-grid">
+<div><label for="qr-ssid">Network name (SSID)</label><input id="qr-ssid" value="My Home WiFi"></div>
+<div><label for="qr-pass">Password</label><input id="qr-pass" value=""></div>
+<div><label for="qr-sec">Security</label><select id="qr-sec"><option value="WPA">WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">None (open network)</option></select></div>
+<div><label class="bc-check"><input id="qr-hid" type="checkbox"> Hidden network</label></div>
+</div>
+<div class="bc-note">Guests point their phone camera at the code and join without typing the password. Print it for your fridge, office or rental.</div>
+</div>
+<div class="qr-f" data-f="vcard" hidden>
+<div class="bc-grid">
+<div><label for="qr-fn">First name</label><input id="qr-fn" value="Alex"></div>
+<div><label for="qr-ln">Last name</label><input id="qr-ln" value="Morgan"></div>
+<div><label for="qr-ph">Phone</label><input id="qr-ph" type="tel" value="+1 555 010 0199"></div>
+<div><label for="qr-em">Email</label><input id="qr-em" type="email" value=""></div>
+<div><label for="qr-org">Company</label><input id="qr-org" value=""></div>
+<div><label for="qr-ti">Job title</label><input id="qr-ti" value=""></div>
+<div><label for="qr-web">Website</label><input id="qr-web" value=""></div>
+<div><label for="qr-adr">Address</label><input id="qr-adr" value=""></div>
+</div>
+<div class="bc-note">Scanning adds you to the phone's contacts. Good for business cards, name badges and stall signs.</div>
+</div>
+<div class="qr-f" data-f="text" hidden><label for="qr-text">Text</label><textarea id="qr-text" rows="4">Thanks for visiting!</textarea></div>
+<div class="qr-f" data-f="email" hidden>
+<div class="bc-grid">
+<div><label for="qr-to">To</label><input id="qr-to" type="email" value="hello@example.com"></div>
+<div><label for="qr-sub">Subject</label><input id="qr-sub" value="Hello"></div>
+</div>
+<label for="qr-body" style="margin-top:12px">Message</label><textarea id="qr-body" rows="3"></textarea>
+</div>
+<div class="qr-f" data-f="tel" hidden>
+<div class="bc-grid">
+<div><label for="qr-num">Phone number</label><input id="qr-num" type="tel" value="+15550100199"></div>
+<div><label for="qr-act">When scanned</label><select id="qr-act"><option value="tel">Call the number</option><option value="sms">Send a text message</option><option value="wa">Open a WhatsApp chat</option></select></div>
+</div>
+<label for="qr-msg" style="margin-top:12px">Message (text or WhatsApp)</label><input id="qr-msg" value="">
+</div>
+<details open><summary>Colours and size</summary>
+<div class="bc-grid" style="margin-top:12px">
+<div><label for="qr-fg">Code colour</label><input id="qr-fg" type="color" value="#15171d" style="height:44px;padding:4px"></div>
+<div><label for="qr-bg">Background</label><input id="qr-bg" type="color" value="#ffffff" style="height:44px;padding:4px"></div>
+<div><label for="qr-size">Download size (pixels)</label><select id="qr-size"><option>512</option><option selected>1024</option><option>2048</option><option>4096</option></select></div>
+<div><label for="qr-ec">Damage tolerance</label><select id="qr-ec"><option value="L">Low (7%)</option><option value="M" selected>Medium (15%)</option><option value="Q">High (25%)</option><option value="H">Highest (30%)</option></select></div>
+</div>
+</details>
+</div>
+<div style="text-align:center">
+<div class="bt-paper" style="display:inline-block;padding:14px;max-width:100%"><canvas id="qr-cv" width="300" height="300" style="width:260px;height:260px;max-width:100%;display:block" aria-label="QR code preview"></canvas></div>
+<div class="bc-row" style="justify-content:center"><button type="button" class="bc-primary" id="qr-png">Download PNG</button><button type="button" id="qr-svg">Download SVG</button><button type="button" id="qr-copy">Copy image</button></div>
+<div class="bt-msg" id="qr-info">—</div>
+</div>
+</div>
+<div class="bt-safe">Made in your browser. Nothing you type is sent anywhere, and the code never expires.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-qr');if(!root)return;
+var $=function(id){return document.getElementById(id);},type='url',lib=null;
+function load(cb){if(window.qrcode)return cb();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';s.onload=cb;s.onerror=function(){$('qr-info').textContent='Could not load the QR drawing code. Check your connection and reload.';};document.head.appendChild(s);}
+function wesc(v){return String(v).replace(/([\\;,:"])/g,'\\$1');}
+function vesc(v){return String(v).replace(/([\\;,])/g,'\\$1').replace(/\n/g,'\\n');}
+function payload(){
+ if(type==='url'){var u=$('qr-url').value.trim();if(u&&!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u;return u;}
+ if(type==='wifi'){var sec=$('qr-sec').value;return 'WIFI:T:'+sec+';S:'+wesc($('qr-ssid').value)+';'+(sec==='nopass'?'':'P:'+wesc($('qr-pass').value)+';')+($('qr-hid').checked?'H:true;':'')+';';}
+ if(type==='vcard'){var L=['BEGIN:VCARD','VERSION:3.0','N:'+vesc($('qr-ln').value)+';'+vesc($('qr-fn').value)+';;;','FN:'+vesc(($('qr-fn').value+' '+$('qr-ln').value).trim())];
+  if($('qr-org').value)L.push('ORG:'+vesc($('qr-org').value));if($('qr-ti').value)L.push('TITLE:'+vesc($('qr-ti').value));
+  if($('qr-ph').value)L.push('TEL;TYPE=CELL:'+$('qr-ph').value.replace(/[^\d+]/g,''));if($('qr-em').value)L.push('EMAIL:'+vesc($('qr-em').value));
+  if($('qr-web').value)L.push('URL:'+vesc($('qr-web').value));if($('qr-adr').value)L.push('ADR:;;'+vesc($('qr-adr').value)+';;;;');L.push('END:VCARD');return L.join('\n');}
+ if(type==='text')return $('qr-text').value;
+ if(type==='email'){var q=[];if($('qr-sub').value)q.push('subject='+encodeURIComponent($('qr-sub').value));if($('qr-body').value)q.push('body='+encodeURIComponent($('qr-body').value));return 'mailto:'+$('qr-to').value.trim()+(q.length?'?'+q.join('&'):'');}
+ var n=$('qr-num').value.replace(/[^\d+]/g,''),a=$('qr-act').value,m=$('qr-msg').value;
+ if(a==='tel')return 'tel:'+n;if(a==='sms')return 'SMSTO:'+n+':'+m;return 'https://wa.me/'+n.replace('+','')+(m?'?text='+encodeURIComponent(m):'');
+}
+function make(){
+ var data=payload();if(!data){$('qr-info').textContent='Type something to encode.';return null;}
+ qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
+ try{var q=qrcode(0,$('qr-ec').value);q.addData(data,'Byte');q.make();return q;}catch(e){$('qr-info').textContent='That is too much text for one QR code. Shorten it, or lower the damage tolerance.';return null;}
+}
+function draw(cv,q,px){
+ var n=q.getModuleCount(),quiet=4,cell=Math.floor(px/(n+quiet*2))||1,size=cell*(n+quiet*2);cv.width=size;cv.height=size;
+ var x=cv.getContext('2d');x.fillStyle=$('qr-bg').value;x.fillRect(0,0,size,size);x.fillStyle=$('qr-fg').value;
+ for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))x.fillRect((c+quiet)*cell,(r+quiet)*cell,cell,cell);return cv;
+}
+function contrast(){var h=function(c){c=parseInt(c.slice(1),16);var v=[c>>16,c>>8&255,c&255].map(function(x){x/=255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4);});return .2126*v[0]+.7152*v[1]+.0722*v[2];};var a=h($('qr-fg').value),b=h($('qr-bg').value);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);}
+var cur=null;
+function render(){load(function(){cur=make();if(!cur)return;draw($('qr-cv'),cur,300);
+ var cr=contrast(),warn=cr<4?' Warning: the colours are too similar for some phones to scan; use a darker code on a light background.':'';
+ if(parseInt($('qr-fg').value.slice(1),16)>parseInt($('qr-bg').value.slice(1),16)&&cr>=4)warn+=' Light-on-dark codes do not scan on every phone; test it first.';
+ $('qr-info').textContent='Version '+((cur.getModuleCount()-17)/4)+' code, '+cur.getModuleCount()+' × '+cur.getModuleCount()+' squares. Test it with your phone camera before printing.'+warn;});}
+function save(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);}
+$('qr-png').onclick=function(){if(!cur)return;var cv=draw(document.createElement('canvas'),cur,+$('qr-size').value);cv.toBlob(function(b){save(b,'qr-code.png');});};
+$('qr-svg').onclick=function(){if(!cur)return;var n=cur.getModuleCount(),m=4,s=n+m*2,p='';for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(cur.isDark(r,c))p+='M'+(c+m)+' '+(r+m)+'h1v1h-1z';
+ save(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+s+' '+s+'" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="'+$('qr-bg').value+'"/><path fill="'+$('qr-fg').value+'" d="'+p+'"/></svg>'],{type:'image/svg+xml'}),'qr-code.svg');};
+$('qr-copy').onclick=function(){var b=this;if(!cur||!navigator.clipboard||!window.ClipboardItem){b.textContent='Use Download instead';return;}var cv=draw(document.createElement('canvas'),cur,1024);cv.toBlob(function(bl){navigator.clipboard.write([new ClipboardItem({'image/png':bl})]).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy image';},1500);},function(){b.textContent='Use Download instead';});});};
+root.querySelectorAll('.bt-tabs button').forEach(function(b){b.onclick=function(){type=b.dataset.t;root.querySelectorAll('.bt-tabs button').forEach(function(x){x.classList.toggle('bt-on',x===b);});root.querySelectorAll('.qr-f').forEach(function(f){f.hidden=f.dataset.f!==type;});render();};});
+var t;root.addEventListener('input',function(){clearTimeout(t);t=setTimeout(render,120);});root.addEventListener('change',render);
+render();
+})();
+</script>

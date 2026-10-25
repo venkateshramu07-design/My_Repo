@@ -1,0 +1,65 @@
+<div class="bd-calc" id="bd-sub">
+<div class="bc-title">Subscription tracker and renewal reminders</div>
+<div class="bc-sub">List what you pay for, including free trials. See your real monthly and yearly total, which ones you could cancel, and what renews this week. Then add reminders to your phone&rsquo;s calendar a few days before each renewal, so a trial never turns into a charge you forgot about.</div>
+<div class="bc-grid">
+<div><label for="sb-name">Service</label><input id="sb-name" list="sb-pre" placeholder="e.g. Netflix"><datalist id="sb-pre"></datalist></div>
+<div><label for="sb-price">Price</label><input id="sb-price" type="number" step="0.01" min="0" placeholder="15.49"></div>
+<div><label for="sb-cyc">Billed</label><select id="sb-cyc"><option value="12">Monthly</option><option value="1">Yearly</option><option value="4">Every 3 months</option><option value="52">Weekly</option></select></div>
+<div><label for="sb-next">Next charge date</label><input id="sb-next" type="date"></div>
+<div><label for="sb-type">Type</label><select id="sb-type"><option value="paid">Paid</option><option value="trial">Free trial (charges after)</option></select></div>
+<div><label for="sb-use">Do you use it?</label><select id="sb-use"><option value="yes">Yes, often</option><option value="some">Sometimes</option><option value="no">Hardly ever</option></select></div>
+</div>
+<div class="bc-row"><button type="button" class="bc-primary" id="sb-add">Add</button><label class="bc-check">Currency <select id="sb-cur" style="width:auto;padding:6px 10px"><option>$</option><option>€</option><option>£</option><option>₹</option><option>A$</option><option>C$</option></select></label></div>
+<div class="bc-out">
+<div class="bc-stat"><span>Per month</span><b id="sb-m">—</b></div>
+<div class="bc-stat bc-main"><span>Per year</span><b id="sb-y">—</b></div>
+<div class="bc-stat"><span>Hardly used (yearly cost)</span><b id="sb-w">—</b></div>
+<div class="bc-stat"><span>Renewing in the next 7 days</span><b id="sb-soon">—</b></div>
+</div>
+<div class="bt-list" id="sb-list"></div>
+<div class="bc-row"><button type="button" id="sb-ics">Add reminders to my calendar (.ics)</button><label class="bc-check">Remind me <select id="sb-days" style="width:auto;padding:6px 10px"><option value="1">1 day</option><option value="3" selected>3 days</option><option value="7">7 days</option></select> before</label><button type="button" id="sb-csv">Export CSV</button></div>
+<div class="bt-msg">The calendar file works with iPhone, Android (Google Calendar), Outlook and Mac Calendar: open it and tap Add. Reminders repeat with each billing cycle.</div>
+<div class="bt-safe">Your list is saved only in this browser. No bank login, no account, nothing uploaded.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-sub');if(!root)return;
+var $=function(id){return document.getElementById(id);},KEY='bd-subs',L=[];
+var PRE=['Netflix','Disney+','Amazon Prime','Spotify','Apple Music','YouTube Premium','Apple TV+','Max','Hulu','Paramount+','Peacock','iCloud+','Google One','Microsoft 365','Adobe Creative Cloud','Canva Pro','ChatGPT Plus','Claude Pro','Dropbox','Audible','Kindle Unlimited','Xbox Game Pass','PlayStation Plus','Nintendo Switch Online','Duolingo','Headspace','Calm','Gym membership','Patreon','LinkedIn Premium','NordVPN','Uber One','DoorDash DashPass','Newspaper','Mobile phone plan','Home internet','Cloud storage','Dating app','Meal kit','Car insurance'];
+$('sb-pre').innerHTML=PRE.map(function(p){return '<option value="'+p+'">';}).join('');
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function cur(){return $('sb-cur').value;}
+function m(n){return cur()+(Math.round(n*100)/100).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function iso(d){return d.toISOString().slice(0,10);}
+function roll(s){var d=new Date((s.next||iso(new Date()))+'T12:00:00'),now=new Date();now.setHours(0,0,0,0);var g=0;
+ while(d<now&&g++<600){if(+s.cyc===12)d.setMonth(d.getMonth()+1);else if(+s.cyc===1)d.setFullYear(d.getFullYear()+1);else if(+s.cyc===4)d.setMonth(d.getMonth()+3);else d.setDate(d.getDate()+7);}return d;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({L:L,cur:cur()}));}catch(e){}}
+function paint(){
+ var now=new Date();now.setHours(0,0,0,0);var yr=0,waste=0,soon=0;
+ L.forEach(function(s){s.d=roll(s);s.y=s.price*s.cyc;yr+=s.y;if(s.use==='no')waste+=s.y;s.days=Math.floor((s.d-now)/864e5);if(s.days<=7)soon++;});
+ L.sort(function(a,b){return a.d-b.d;});
+ $('sb-m').textContent=m(yr/12);$('sb-y').textContent=m(yr);$('sb-w').textContent=waste?m(waste):'None';$('sb-soon').textContent=soon;
+ $('sb-list').innerHTML=L.length?L.map(function(s,i){var badge=s.type==='trial'?'<span style="color:#c2341d;font-weight:700"> · trial ends, then charges</span>':'';
+  var when=s.days===0?'today':s.days===1?'tomorrow':'in '+s.days+' days';
+  return '<div class="bt-item" style="'+(s.days<=7?'border-color:#e48b12;':'')+(s.use==='no'?'background:rgba(226,70,44,.06)!important':'')+'"><div class="bt-meta"><b>'+esc(s.name)+'</b><small>'+m(s.price)+' '+({12:'a month',1:'a year',4:'every 3 months',52:'a week'})[s.cyc]+' = '+m(s.y)+' a year · next charge '+s.d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' ('+when+')'+badge+(s.use==='no'?' · <b style="display:inline;color:#c2341d">consider cancelling</b>':'')+'</small></div><button type="button" data-i="'+i+'" aria-label="Remove">Remove</button></div>';}).join('')
+  :'<div class="bt-msg">Add your first subscription above. Check your bank or card statement for the last two months to find them all; most people find one or two they forgot.</div>';
+ save();
+}
+$('sb-add').onclick=function(){var n=$('sb-name').value.trim(),p=parseFloat($('sb-price').value);if(!n||!(p>=0)){$('sb-name').focus();return;}
+ L.push({name:n,price:p,cyc:+$('sb-cyc').value,next:$('sb-next').value||iso(new Date()),type:$('sb-type').value,use:$('sb-use').value});$('sb-name').value='';$('sb-price').value='';paint();$('sb-name').focus();};
+$('sb-list').onclick=function(e){var b=e.target.closest('button');if(!b)return;L.splice(+b.dataset.i,1);paint();};
+$('sb-cur').onchange=paint;
+$('sb-type').onchange=function(){if(this.value==='trial'&&!$('sb-next').value){var d=new Date();d.setDate(d.getDate()+7);$('sb-next').value=iso(d);}};
+function dl(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);}
+$('sb-ics').onclick=function(){if(!L.length)return;var days=+$('sb-days').value,stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z',out=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Blog Digest//Subscription tracker//EN','CALSCALE:GREGORIAN'];
+ L.forEach(function(s,i){var d=s.d.toISOString().slice(0,10).replace(/-/g,''),rule={12:'FREQ=MONTHLY',1:'FREQ=YEARLY',4:'FREQ=MONTHLY;INTERVAL=3',52:'FREQ=WEEKLY'}[s.cyc];
+  out.push('BEGIN:VEVENT','UID:bd-sub-'+i+'-'+d+'@blogdigest','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'SUMMARY:'+(s.type==='trial'?'Free trial ends: ':'Renews: ')+s.name.replace(/[,;]/g,' ')+' ('+m(s.price)+')',
+   'DESCRIPTION:'+(s.type==='trial'?'Cancel before today to avoid being charged.':'Keep it or cancel it?')+' From the Blog Digest subscription tracker.');
+  if(s.type!=='trial')out.push('RRULE:'+rule);
+  out.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+s.name.replace(/[,;]/g,' ')+' charges in '+days+' day'+(days>1?'s':''),'TRIGGER:-P'+days+'D','END:VALARM','END:VEVENT');});
+ out.push('END:VCALENDAR');dl(new Blob([out.join('\r\n')],{type:'text/calendar'}),'subscription-reminders.ics');};
+$('sb-csv').onclick=function(){dl(new Blob([['Service,Price,Per year,Billing,Next charge,Type,Used'].concat(L.map(function(s){return ['"'+s.name.replace(/"/g,'""')+'"',s.price,s.y.toFixed(2),({12:'monthly',1:'yearly',4:'quarterly',52:'weekly'})[s.cyc],iso(s.d),s.type,s.use].join(',');})).join('\n')],{type:'text/csv'}),'subscriptions.csv');};
+try{var st=JSON.parse(localStorage.getItem(KEY)||'null');if(st){L=st.L||[];if(st.cur)$('sb-cur').value=st.cur;}}catch(e){}
+paint();
+})();
+</script>

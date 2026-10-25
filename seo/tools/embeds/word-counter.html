@@ -1,0 +1,61 @@
+<div class="bd-calc" id="bd-wc">
+<div class="bc-title">Word counter and text clean-up tools</div>
+<div class="bc-sub">Paste or type your text. See words, characters, reading and speaking time, and whether it fits the limits for X, LinkedIn, Instagram, text messages, meta descriptions and essays. One tap fixes capital letters, extra spaces, line breaks and duplicate lines. Your text is saved in this browser only.</div>
+<textarea id="wc-t" rows="9" placeholder="Paste your text here"></textarea>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Words</span><b id="wc-w">0</b></div>
+<div class="bc-stat"><span>Characters</span><b id="wc-c">0</b></div>
+<div class="bc-stat"><span>Without spaces</span><b id="wc-cn">0</b></div>
+<div class="bc-stat"><span>Sentences · paragraphs</span><b id="wc-sp">0 · 0</b></div>
+<div class="bc-stat"><span>Reading time</span><b id="wc-r">0 min</b></div>
+<div class="bc-stat"><span>Speaking time</span><b id="wc-s">0 min</b></div>
+</div>
+<div id="wc-lim" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:14px"></div>
+<h4 style="margin:18px 0 6px">Fix the text</h4>
+<div class="bc-row" style="margin-top:0" id="wc-acts">
+<button type="button" data-a="sent">Sentence case</button><button type="button" data-a="title">Title Case</button><button type="button" data-a="up">UPPERCASE</button><button type="button" data-a="low">lowercase</button>
+<button type="button" data-a="sp">Remove extra spaces</button><button type="button" data-a="br">Join lines into paragraphs</button><button type="button" data-a="dup">Remove duplicate lines</button><button type="button" data-a="sort">Sort lines A&ndash;Z</button><button type="button" data-a="quotes">Straight quotes</button><button type="button" data-a="undo">Undo</button>
+</div>
+<div class="bc-row"><input id="wc-find" placeholder="Find" style="flex:1;min-width:120px"><input id="wc-rep" placeholder="Replace with" style="flex:1;min-width:120px"><button type="button" id="wc-go">Replace all</button></div>
+<div class="bc-row"><button type="button" class="bc-primary" id="wc-copy">Copy text</button><button type="button" id="wc-dl">Download .txt</button><button type="button" id="wc-clear">Clear</button></div>
+<details style="margin-top:14px"><summary>Most used words</summary><div class="bc-chips" id="wc-top"></div></details>
+<div class="bt-safe">Your text never leaves your device.</div>
+</div>
+<style>#bd-wc .bc-out{grid-template-columns:repeat(auto-fit,minmax(105px,1fr))}#bd-wc .bc-stat b{font-size:20px}</style>
+<script>
+(function(){
+var root=document.getElementById('bd-wc');if(!root)return;
+var $=function(id){return document.getElementById(id);},T=$('wc-t'),hist=[];
+var LIM=[ ['X (Twitter) post',280,'c'],['SMS text message',160,'c'],['Meta description',155,'c'],['Page title (SEO)',60,'c'],['LinkedIn post',3000,'c'],['Instagram caption',2200,'c'],['YouTube title',100,'c'],['Essay of 500 words',500,'w'],['Cover letter (400 words)',400,'w'] ];
+var STOP=/^(the|a|an|and|or|but|of|to|in|on|for|with|is|are|was|were|be|it|that|this|as|at|by|from|i|you|we|they|he|she|my|your|our|their|not|have|has|had|will|can|so|if|do|does|did)$/;
+function words(t){return (t.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu)||[]);}
+function mins(w,wpm){var m=w/wpm;return m<1?Math.max(0,Math.round(m*60))+' sec':Math.floor(m)+' min '+(Math.round(m%1*60)?Math.round(m%1*60)+' sec':'');}
+function paint(){var t=T.value,w=words(t),n=w.length,c=[...t].length;
+ $('wc-w').textContent=n.toLocaleString();$('wc-c').textContent=c.toLocaleString();$('wc-cn').textContent=[...t.replace(/\s/g,'')].length.toLocaleString();
+ $('wc-sp').textContent=(t.trim()?(t.match(/[^.!?。]+[.!?。]+(\s|$)/g)||[t]).length:0)+' · '+(t.trim()?t.trim().split(/\n\s*\n/).length:0);
+ $('wc-r').textContent=mins(n,238);$('wc-s').textContent=mins(n,140);
+ $('wc-lim').innerHTML=LIM.map(function(l){var v=l[2]==='c'?c:n,p=Math.min(100,v/l[1]*100),over=v>l[1];
+  return '<div style="border:1px solid var(--c-line);border-radius:10px;padding:8px 10px;font-size:13px"><div style="display:flex;justify-content:space-between;gap:6px"><span>'+l[0]+'</span><b style="color:'+(over?'#c2341d':'inherit')+'!important">'+v.toLocaleString()+' / '+l[1].toLocaleString()+'</b></div><div style="height:5px;border-radius:3px;background:var(--c-line)!important;margin-top:5px;overflow:hidden"><i style="display:block;height:100%;width:'+p+'%;background:'+(over?'#c2341d':p>90?'#e48b12':'#0f9d76')+'!important"></i></div></div>';}).join('');
+ var f={};w.forEach(function(x){x=x.toLowerCase();if(x.length>2&&!STOP.test(x))f[x]=(f[x]||0)+1;});
+ $('wc-top').innerHTML=Object.keys(f).sort(function(a,b){return f[b]-f[a];}).slice(0,15).map(function(k){return '<span class="bc-chip">'+k.replace(/</g,'&lt;')+' · '+f[k]+' ('+(f[k]/n*100).toFixed(1)+'%)</span>';}).join('')||'<span class="bt-msg">Type some text first.</span>';
+ try{localStorage.setItem('bd-wc',t.slice(0,200000));}catch(e){}}
+function set(v){hist.push(T.value);if(hist.length>30)hist.shift();T.value=v;paint();}
+var SMALL=/^(a|an|the|and|but|or|for|nor|on|at|to|by|of|in|up|as|vs|via)$/i;
+var A={sent:function(t){return t.toLowerCase().replace(/(^\s*|[.!?]\s+|\n\s*)(\p{L})/gu,function(m,a,b){return a+b.toUpperCase();}).replace(/\bi\b/g,'I');},
+ title:function(t){return t.split('\n').map(function(line){var ws=line.toLowerCase().split(/(\s+)/);var idx=0,last=ws.filter(function(x){return x.trim();}).length-1;return ws.map(function(x){if(!x.trim())return x;var r=(idx===0||idx===last||!SMALL.test(x))?x.replace(/\p{L}/u,function(c){return c.toUpperCase();}):x;idx++;return r;}).join('');}).join('\n');},
+ up:function(t){return t.toUpperCase();},low:function(t){return t.toLowerCase();},
+ sp:function(t){return t.replace(/[ \t ]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim();},
+ br:function(t){return t.split(/\n\s*\n/).map(function(p){return p.replace(/\s*\n\s*/g,' ').trim();}).join('\n\n');},
+ dup:function(t){var s={};return t.split('\n').filter(function(l){var k=l.trim().toLowerCase();if(!k)return true;if(s[k])return false;s[k]=1;return true;}).join('\n');},
+ sort:function(t){return t.split('\n').filter(function(l){return l.trim();}).sort(function(a,b){return a.localeCompare(b,undefined,{sensitivity:'base',numeric:true});}).join('\n');},
+ quotes:function(t){return t.replace(/[‘’‚′]/g,"'").replace(/[“”„″]/g,'"').replace(/…/g,'...').replace(/[–—]/g,'-');}};
+$('wc-acts').onclick=function(e){var b=e.target.closest('button');if(!b)return;var a=b.dataset.a;if(a==='undo'){if(hist.length){T.value=hist.pop();paint();}return;}set(A[a](T.value));};
+$('wc-go').onclick=function(){var f=$('wc-find').value;if(!f)return;var n=T.value.split(f).length-1;set(T.value.split(f).join($('wc-rep').value));this.textContent=n+' replaced';var b=this;setTimeout(function(){b.textContent='Replace all';},1500);};
+$('wc-copy').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(T.value):Promise.reject()).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy text';},1500);},function(){T.select();document.execCommand('copy');});};
+$('wc-dl').onclick=function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([T.value],{type:'text/plain'}));a.download='text.txt';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();},500);};
+$('wc-clear').onclick=function(){set('');T.focus();};
+T.addEventListener('input',paint);
+try{T.value=localStorage.getItem('bd-wc')||'';}catch(e){}
+paint();
+})();
+</script>

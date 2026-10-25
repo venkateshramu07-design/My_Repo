@@ -1,0 +1,85 @@
+<div class="bd-calc" id="bd-img">
+<div class="bc-title">Photo converter: HEIC to JPG, compress, resize, remove location</div>
+<div class="bc-sub">Convert iPhone HEIC photos to JPG, shrink photos to a file size a form will accept (for example under 100 KB), resize them, or change the format. Every converted photo has its hidden data removed, including GPS location. It all happens in your browser, so your photos are never uploaded.</div>
+<label class="bt-drop" id="im-drop"><input type="file" id="im-in" multiple accept="image/*,.heic,.heif"><b>Choose photos</b><small>JPG, PNG, WebP, HEIC, GIF, BMP &middot; as many as you like</small></label>
+<div class="bc-grid" style="margin-top:16px">
+<div><label for="im-fmt">Convert to</label><select id="im-fmt"><option value="image/jpeg">JPG (best for photos)</option><option value="image/webp">WebP (smallest)</option><option value="image/png">PNG (no quality loss)</option></select></div>
+<div><label for="im-mode">Size</label><select id="im-mode"><option value="q">Set the quality</option><option value="kb">Make it smaller than&hellip;</option></select></div>
+<div id="im-qbox"><label for="im-q">Quality: <span id="im-qv">85</span>%</label><input id="im-q" type="range" min="30" max="100" value="85" style="padding:0"></div>
+<div id="im-kbbox" hidden><label for="im-kb">Maximum file size (KB)</label><input id="im-kb" type="number" min="10" step="10" value="200"></div>
+<div><label for="im-max">Longest side (pixels)</label><select id="im-max"><option value="0">Keep original</option><option>4000</option><option>2560</option><option>1920</option><option>1280</option><option>1080</option><option>800</option><option>600</option><option value="c">Custom&hellip;</option></select></div>
+<div id="im-cbox" hidden><label for="im-cw">Custom longest side (px)</label><input id="im-cw" type="number" min="16" value="1500"></div>
+</div>
+<div class="bc-row"><button type="button" class="bc-primary" id="im-go" disabled>Convert photos</button><button type="button" id="im-zip" hidden>Download all (.zip)</button><button type="button" id="im-clear" hidden>Clear</button></div>
+<div class="bt-msg" id="im-msg"></div>
+<div class="bt-list" id="im-list"></div>
+<div class="bt-safe">Photos are processed on your device and never leave it. Converted copies have no location, camera or date data.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-img');if(!root)return;
+var $=function(id){return document.getElementById(id);},items=[];
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+function kb(n){return n<1048576?Math.round(n/1024)+' KB':(n/1048576).toFixed(1)+' MB';}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+// Reads GPS, camera and date from a JPEG's EXIF block, to show the reader what the original was carrying.
+function exif(buf){try{var v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;var o=2;
+ while(o<v.byteLength-4){var m=v.getUint16(o),len=v.getUint16(o+2);if(m===0xFFE1&&v.getUint32(o+4)===0x45786966){var t=o+10,le=v.getUint16(t)===0x4949,g16=function(p){return v.getUint16(p,le);},g32=function(p){return v.getUint32(p,le);};
+  var res={},ifd=function(p,cb){var n=g16(p);for(var i=0;i<n;i++){var e=p+2+i*12;cb(g16(e),g16(e+2),g32(e+4),e+8);}};
+  var str=function(off,n){var s='';for(var i=0;i<n-1;i++){var c=v.getUint8(t+off+i);if(!c)break;s+=String.fromCharCode(c);}return s;};
+  var rat=function(off,i){return g32(t+off+i*8)/g32(t+off+i*8+4);};
+  ifd(t+g32(t+4),function(tag,type,cnt,val){var off=g32(val);if(tag===0x010F)res.make=cnt>4?str(off,cnt):'';if(tag===0x0110)res.model=cnt>4?str(off,cnt):'';
+   if(tag===0x8769)ifd(t+off,function(t2,ty,c2,v2){if(t2===0x9003)res.date=str(g32(v2),c2);});
+   if(tag===0x8825){var gp={};ifd(t+off,function(t2,ty,c2,v2){var o2=g32(v2);if(t2===1||t2===3)gp[t2]=String.fromCharCode(v.getUint8(v2));if(t2===2||t2===4)gp[t2]=rat(o2,0)+rat(o2,1)/60+rat(o2,2)/3600;});
+    if(gp[2]&&gp[4])res.gps=[(gp[1]==='S'?-1:1)*gp[2],(gp[3]==='W'?-1:1)*gp[4]];}});
+  return res;}o+=2+len;}}catch(e){}return null;}
+function isHeic(f){return /hei[cf]$/i.test(f.name)||/hei[cf]/.test(f.type);}
+function add(files){files.forEach(function(f){if(!/^image\//.test(f.type)&&!isHeic(f))return;var it={f:f,out:null};items.push(it);
+ var row=document.createElement('div');row.className='bt-item';row.innerHTML='<img alt=""><div class="bt-meta"><b>'+esc(f.name)+'</b><small>'+kb(f.size)+(isHeic(f)?' · HEIC':'')+'</small><small class="im-ex" style="display:block"></small></div><button type="button" hidden>Download</button>';
+ it.row=row;$('im-list').appendChild(row);if(!isHeic(f))row.querySelector('img').src=URL.createObjectURL(f);
+ f.arrayBuffer().then(function(b){var e=exif(b),x=row.querySelector('.im-ex');if(!e)return;var p=[];
+  if(e.gps)p.push('<b style="color:#c2341d;display:inline">Contains GPS location</b> ('+e.gps[0].toFixed(4)+', '+e.gps[1].toFixed(4)+') <a href="https://www.openstreetmap.org/?mlat='+e.gps[0]+'&mlon='+e.gps[1]+'#map=16/'+e.gps[0]+'/'+e.gps[1]+'" target="_blank" rel="noopener">see where</a>');
+  if(e.make||e.model)p.push(esc((e.make+' '+e.model).trim()));if(e.date)p.push('taken '+esc(e.date.slice(0,10).replace(/:/g,'-')));x.innerHTML=p.join(' · ');});
+});$('im-go').disabled=!items.length;$('im-clear').hidden=!items.length;$('im-msg').textContent=items.length?items.length+' photo'+(items.length>1?'s':'')+' ready. Choose the settings and press Convert.':'';}
+async function decode(f){
+ var img=function(blob){return new Promise(function(ok,no){var i=new Image();i.onload=function(){ok(i);};i.onerror=function(){no(new Error('Cannot read this image'));};i.src=URL.createObjectURL(blob);});};
+ if(!isHeic(f))return img(f);
+ try{return await img(f);}catch(e){}  // Safari opens HEIC itself
+ if(!window.HeicTo){$('im-msg').textContent='Loading the HEIC decoder (about 3 MB, only once)…';await load('https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js');}
+ return img(await HeicTo({blob:f,type:'image/png'}));
+}
+function encode(cv,type,q){return new Promise(function(ok){cv.toBlob(ok,type,q);});}
+async function convert(it){
+ var img=await decode(it.f),max=$('im-max').value==='c'?+$('im-cw').value:+$('im-max').value,w=img.naturalWidth,h=img.naturalHeight,s=max&&Math.max(w,h)>max?max/Math.max(w,h):1;
+ var type=$('im-fmt').value,cv=document.createElement('canvas');cv.width=Math.round(w*s);cv.height=Math.round(h*s);var x=cv.getContext('2d');
+ if(type==='image/jpeg'){x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);}x.drawImage(img,0,0,cv.width,cv.height);
+ var blob;
+ if($('im-mode').value==='kb'&&type!=='image/png'){var target=+$('im-kb').value*1024,lo=.05,hi=.95,best=null;
+  for(var k=0;k<8;k++){var mid=(lo+hi)/2,b=await encode(cv,type,mid);if(b.size<=target){best=b;lo=mid;}else hi=mid;}
+  while(!best&&cv.width>64){var c2=document.createElement('canvas');c2.width=Math.round(cv.width*.8);c2.height=Math.round(cv.height*.8);var y=c2.getContext('2d');if(type==='image/jpeg'){y.fillStyle='#fff';y.fillRect(0,0,c2.width,c2.height);}y.drawImage(cv,0,0,c2.width,c2.height);cv=c2;var b2=await encode(cv,type,.6);if(b2.size<=target)best=b2;}
+  blob=best;}
+ else blob=await encode(cv,type,type==='image/png'?undefined:+$('im-q').value/100);
+ var ext={'image/jpeg':'jpg','image/webp':'webp','image/png':'png'}[type];
+ it.out={blob:blob,name:it.f.name.replace(/\.[^.]+$/,'')+'.'+ext,w:cv.width,h:cv.height};
+}
+$('im-go').onclick=async function(){var b=this;b.disabled=true;var done=0,saved=0;
+ for(var it of items){try{it.row.querySelector('small').textContent='Converting…';await convert(it);done++;saved+=it.f.size-it.out.blob.size;
+  it.row.querySelector('img').src=URL.createObjectURL(it.out.blob);
+  it.row.querySelector('small').innerHTML=kb(it.f.size)+' → <b style="display:inline;color:#0f9d76">'+kb(it.out.blob.size)+'</b> · '+it.out.w+'×'+it.out.h+' · location and camera data removed';
+  var d=it.row.querySelector('button');d.hidden=false;d.onclick=(function(o){return function(){save(o.blob,o.name);};})(it.out);
+ }catch(e){it.row.querySelector('small').textContent='Could not convert: '+e.message;}}
+ b.disabled=false;$('im-zip').hidden=done<2;$('im-msg').textContent=done+' converted'+(saved>0?', '+kb(saved)+' smaller in total':'')+'.';};
+function save(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);}
+$('im-zip').onclick=async function(){if(!window.JSZip)await load('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');var z=new JSZip(),seen={};
+ items.forEach(function(it){if(!it.out)return;var n=it.out.name;if(seen[n])n=n.replace(/(\.\w+)$/,'-'+(++seen[n])+'$1');else seen[n]=1;z.file(n,it.out.blob);});save(await z.generateAsync({type:'blob'}),'photos.zip');};
+$('im-clear').onclick=function(){items=[];$('im-list').innerHTML='';$('im-go').disabled=true;this.hidden=true;$('im-zip').hidden=true;$('im-msg').textContent='';};
+$('im-q').oninput=function(){$('im-qv').textContent=this.value;};
+$('im-mode').onchange=function(){$('im-qbox').hidden=this.value!=='q';$('im-kbbox').hidden=this.value!=='kb';};
+$('im-max').onchange=function(){$('im-cbox').hidden=this.value!=='c';};
+$('im-fmt').onchange=function(){if(this.value==='image/png'&&$('im-mode').value==='kb')$('im-msg').textContent='PNG has no quality setting, so a size limit works best with JPG or WebP.';};
+var dz=$('im-drop');$('im-in').onchange=function(e){add([].slice.call(e.target.files));e.target.value='';};
+['dragenter','dragover'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.add('bt-over');});});
+['dragleave','drop'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.remove('bt-over');});});
+dz.addEventListener('drop',function(e){add([].slice.call(e.dataTransfer.files));});
+})();
+</script>

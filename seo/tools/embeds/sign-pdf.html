@@ -1,0 +1,121 @@
+<div class="bd-calc" id="bd-sign">
+<div class="bc-title">Sign a PDF (free, no account)</div>
+<div class="bc-sub">Open a PDF, draw, type or upload your signature, place it on the page, add the date or any text, and download the signed copy. The document never leaves your device, and there is no limit on how many you sign.</div>
+<label class="bt-drop" id="sg-drop"><input type="file" id="sg-in" accept="application/pdf"><b>Choose the PDF to sign</b><small>or drag and drop it here</small></label>
+<div id="sg-work" hidden>
+<div class="bt-two" style="margin-top:16px">
+<div>
+<div class="bt-tabs"><button type="button" class="bt-on" data-m="draw">Draw</button><button type="button" data-m="type">Type</button><button type="button" data-m="up">Upload</button></div>
+<div data-p="draw"><canvas id="sg-pad" width="600" height="220" style="width:100%;height:150px;border:1px dashed var(--c-line);border-radius:12px;touch-action:none;background:#fff!important;cursor:crosshair"></canvas>
+<div class="bc-row"><button type="button" id="sg-clr">Clear</button><span class="bt-msg" style="margin:0">Sign with your finger, stylus or mouse</span></div></div>
+<div data-p="type" hidden><input id="sg-name" value="" placeholder="Type your name"><div class="bc-row" id="sg-fonts"></div></div>
+<div data-p="up" hidden><input type="file" id="sg-img" accept="image/*"><div class="bt-msg">A photo of your signature on white paper works; the white background is removed.</div></div>
+<div class="bc-row"><label class="bc-check">Ink <select id="sg-ink" style="width:auto;padding:6px 10px"><option value="#111111">Black</option><option value="#1a3faa">Blue</option></select></label><label class="bc-check"><input type="checkbox" id="sg-keep"> Remember on this device</label></div>
+</div>
+<div>
+<b style="display:block;margin-bottom:8px">Add to the page</b>
+<div class="bc-row" style="margin-top:0"><button type="button" class="bc-primary" id="sg-add">+ Signature</button><button type="button" id="sg-ini">+ Initials</button><button type="button" id="sg-date">+ Date</button><button type="button" id="sg-text">+ Text</button></div>
+<div class="bc-row"><input id="sg-txt" placeholder="Text to add, e.g. your printed name" style="flex:1"></div>
+<div class="bt-msg">Items go on the page you are looking at. Drag to move, pull the corner to resize, tap &times; to remove.</div>
+<div class="bc-row"><button type="button" class="bc-primary" id="sg-save">Download signed PDF</button><button type="button" id="sg-new">Sign another file</button></div>
+</div>
+</div>
+<div id="sg-pages" style="display:grid;gap:16px;margin-top:18px"></div>
+</div>
+<div class="bt-msg" id="sg-msg"></div>
+<div class="bt-safe">Your PDF and signature stay on your device. Nothing is uploaded or stored unless you tick &ldquo;Remember&rdquo;, which keeps the signature in this browser only.</div>
+</div>
+<style>
+#bd-sign .sg-page{position:relative;box-shadow:0 2px 12px rgba(0,0,0,.18);border-radius:4px;background:#fff!important;overflow:hidden;margin:0 auto;max-width:100%}
+#bd-sign .sg-page canvas{display:block;width:100%;height:auto}
+#bd-sign .sg-it{position:absolute;border:1.5px dashed #2f7de1;cursor:move;touch-action:none;box-sizing:border-box}
+#bd-sign .sg-it img{width:100%;height:100%;display:block;pointer-events:none}
+#bd-sign .sg-it b{position:absolute;right:-9px;bottom:-9px;width:18px;height:18px;border-radius:50%;background:#2f7de1!important;cursor:nwse-resize}
+#bd-sign .sg-it i{position:absolute;right:-10px;top:-10px;width:20px;height:20px;border-radius:50%;background:#e2462c!important;color:#fff!important;font:700 13px/20px sans-serif;text-align:center;font-style:normal;cursor:pointer}
+#bd-sign #sg-fonts button{font-size:26px;padding:6px 14px}
+#bd-sign #sg-fonts button.bt-on{border-color:var(--c-accent);color:var(--c-accent)}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-sign');if(!root)return;
+var $=function(id){return document.getElementById(id);},bytes=null,view=null,fileName='document',pagesEl=[],mode='draw',font='Dancing Script',upImg=null,drawn=false;
+var FONTS=['Dancing Script','Great Vibes','Caveat','Homemade Apple'];
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+function libs(){return Promise.all([window.PDFLib?0:load('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'),window.pdfjsLib?0:load('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js')]).then(function(){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';});}
+if(!document.getElementById('sg-fontcss')){var l=document.createElement('link');l.id='sg-fontcss';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Dancing+Script:wght@600&family=Great+Vibes&family=Homemade+Apple&display=swap';document.head.appendChild(l);}
+function msg(t){$('sg-msg').textContent=t||'';}
+// signature pad
+var pad=$('sg-pad'),px=pad.getContext('2d'),down=false;
+function padPos(e){var r=pad.getBoundingClientRect();return [(e.clientX-r.left)*pad.width/r.width,(e.clientY-r.top)*pad.height/r.height];}
+pad.addEventListener('pointerdown',function(e){down=true;drawn=true;pad.setPointerCapture(e.pointerId);var p=padPos(e);px.beginPath();px.moveTo(p[0],p[1]);px.lineWidth=4.5;px.lineCap=px.lineJoin='round';px.strokeStyle=$('sg-ink').value;});
+pad.addEventListener('pointermove',function(e){if(!down)return;var p=padPos(e);px.lineTo(p[0],p[1]);px.stroke();});
+pad.addEventListener('pointerup',function(){down=false;keep();});
+$('sg-clr').onclick=function(){px.clearRect(0,0,pad.width,pad.height);drawn=false;};
+$('sg-fonts').innerHTML=FONTS.map(function(f,i){return '<button type="button" data-f="'+f+'"'+(i?'':' class="bt-on"')+' style="font-family:\''+f+'\',cursive">Aa</button>';}).join('');
+$('sg-fonts').onclick=function(e){var b=e.target.closest('button');if(!b)return;font=b.dataset.f;[].forEach.call(this.children,function(x){x.classList.toggle('bt-on',x===b);});};
+root.querySelectorAll('.bt-tabs button').forEach(function(b){b.onclick=function(){mode=b.dataset.m;root.querySelectorAll('.bt-tabs button').forEach(function(x){x.classList.toggle('bt-on',x===b);});root.querySelectorAll('[data-p]').forEach(function(p){p.hidden=p.dataset.p!==mode;});};});
+$('sg-img').onchange=function(e){var f=e.target.files[0];if(!f)return;var i=new Image();i.onload=function(){var c=document.createElement('canvas');var s=Math.min(1,1200/i.width);c.width=i.width*s;c.height=i.height*s;var x=c.getContext('2d');x.drawImage(i,0,0,c.width,c.height);
+ var d=x.getImageData(0,0,c.width,c.height),a=d.data;for(var k=0;k<a.length;k+=4){var l=(a[k]+a[k+1]+a[k+2])/3;a[k+3]=l>200?0:l>140?Math.round((200-l)*4.25):255;}x.putImageData(d,0,0);upImg=trim(c);};i.src=URL.createObjectURL(f);};
+function trim(c){var x=c.getContext('2d'),d=x.getImageData(0,0,c.width,c.height).data,minx=c.width,miny=c.height,maxx=0,maxy=0;
+ for(var y=0;y<c.height;y++)for(var X=0;X<c.width;X++)if(d[(y*c.width+X)*4+3]>20){if(X<minx)minx=X;if(X>maxx)maxx=X;if(y<miny)miny=y;if(y>maxy)maxy=y;}
+ if(maxx<minx)return null;var o=document.createElement('canvas');o.width=maxx-minx+12;o.height=maxy-miny+12;o.getContext('2d').drawImage(c,minx-6,miny-6,o.width,o.height,0,0,o.width,o.height);return o;}
+function textImg(t,f,size){var c=document.createElement('canvas'),x=c.getContext('2d');x.font=size+'px '+f;var w=Math.ceil(x.measureText(t).width)+20;c.width=w;c.height=Math.ceil(size*1.5);x.font=size+'px '+f;x.fillStyle=$('sg-ink').value;x.textBaseline='middle';x.fillText(t,10,c.height/2);return trim(c)||c;}
+async function sigCanvas(initials){
+ if(mode==='draw'&&!initials){if(!drawn){msg('Draw your signature in the box first.');return null;}return trim(pad);}
+ if(mode==='up'&&!initials){if(!upImg){msg('Choose a photo of your signature first.');return null;}return upImg;}
+ var n=$('sg-name').value.trim();if(!n){if(mode!=='type')mode='type',root.querySelector('[data-m=type]').click();msg('Type your name to make '+(initials?'initials':'a typed signature')+'.');return null;}
+ if(initials)n=n.split(/\s+/).map(function(w){return w[0].toUpperCase();}).join('');
+ await document.fonts.load('96px "'+font+'"');return textImg(n,'"'+font+'", cursive',96);
+}
+function keep(){if(!$('sg-keep').checked)return;try{var c=trim(pad);if(c)localStorage.setItem('bd-sign',c.toDataURL());}catch(e){}}
+$('sg-keep').onchange=function(){if(this.checked)keep();else try{localStorage.removeItem('bd-sign');}catch(e){}};
+try{var saved=localStorage.getItem('bd-sign');if(saved){$('sg-keep').checked=true;var im=new Image();im.onload=function(){px.drawImage(im,(pad.width-im.width)/2,(pad.height-im.height)/2);drawn=true;};im.src=saved;}}catch(e){}
+// document
+async function open(f){
+ msg('Opening…');try{await libs();}catch(e){msg('Could not load the PDF engine. Check your connection.');return;}
+ var buf=await f.arrayBuffer();bytes=new Uint8Array(buf);fileName=f.name.replace(/\.pdf$/i,'');
+ try{await PDFLib.PDFDocument.load(bytes.slice());}catch(e){msg('This PDF is password-protected or damaged. Remove the password first.');return;}
+ view=await pdfjsLib.getDocument({data:bytes.slice()}).promise;$('sg-pages').innerHTML='';pagesEl=[];
+ $('sg-drop').hidden=true;$('sg-work').hidden=false;
+ for(var i=1;i<=view.numPages;i++){var pg=await view.getPage(i),vp=pg.getViewport({scale:1}),w=Math.min(820,$('sg-pages').clientWidth||600),s=w/vp.width,v2=pg.getViewport({scale:s*2});
+  var d=document.createElement('div');d.className='sg-page';d.style.width=w+'px';var cv=document.createElement('canvas');cv.width=v2.width;cv.height=v2.height;d.appendChild(cv);$('sg-pages').appendChild(d);
+  await pg.render({canvasContext:cv.getContext('2d'),viewport:v2}).promise;pagesEl.push({el:d,vp:pg.getViewport({scale:s}),items:[]});}
+ msg(view.numPages+' page'+(view.numPages>1?'s':'')+'. Create your signature, then press “+ Signature”.');
+}
+function current(){var best=pagesEl[0],bd=1e9;pagesEl.forEach(function(p){var r=p.el.getBoundingClientRect(),d=Math.abs(r.top+r.height/2-innerHeight/2);if(r.top<innerHeight&&r.bottom>0&&d<bd){bd=d;best=p;}});return best;}
+function place(c,wFrac){
+ var p=current();if(!p)return;var W=p.el.clientWidth,H=p.el.clientHeight,w=W*wFrac,h=w*c.height/c.width;
+ var it={url:c.toDataURL('image/png'),x:(W-w)/2,y:Math.max(10,(Math.min(H,innerHeight)-h)/2),w:w,h:h};
+ var r=p.el.getBoundingClientRect();if(r.top<0)it.y=Math.min(H-h-10,-r.top+innerHeight/2-h/2);
+ p.items.forEach(function(o){if(Math.abs(o.y-it.y)<o.h&&Math.abs(o.x-it.x)<o.w)it.y=Math.min(H-h-4,o.y+o.h+8);});
+ var d=document.createElement('div');d.className='sg-it';d.innerHTML='<img alt=""><b></b><i>×</i>';d.querySelector('img').src=it.url;p.el.appendChild(d);it.el=d;p.items.push(it);
+ var pos=function(){d.style.left=it.x+'px';d.style.top=it.y+'px';d.style.width=it.w+'px';d.style.height=it.h+'px';};pos();
+ d.querySelector('i').onclick=function(e){e.stopPropagation();d.remove();p.items.splice(p.items.indexOf(it),1);};
+ var mv=null;d.addEventListener('pointerdown',function(e){if(e.target.tagName==='I')return;e.preventDefault();d.setPointerCapture(e.pointerId);mv={x:e.clientX,y:e.clientY,ox:it.x,oy:it.y,ow:it.w,oh:it.h,rs:e.target.tagName==='B'};});
+ d.addEventListener('pointermove',function(e){if(!mv)return;var dx=e.clientX-mv.x,dy=e.clientY-mv.y;
+  if(mv.rs){it.w=Math.max(30,mv.ow+dx);it.h=it.w*mv.oh/mv.ow;}else{it.x=Math.max(0,Math.min(p.el.clientWidth-it.w,mv.ox+dx));it.y=Math.max(0,Math.min(p.el.clientHeight-it.h,mv.oy+dy));}pos();});
+ d.addEventListener('pointerup',function(){mv=null;});
+ msg('Added. Drag it into place, then download.');
+}
+$('sg-add').onclick=async function(){var c=await sigCanvas(false);if(c){msg('');place(c,.32);}};
+$('sg-ini').onclick=async function(){var c=await sigCanvas(true);if(c){msg('');place(c,.12);}};
+$('sg-date').onclick=function(){place(textImg(new Date().toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'}),'Helvetica, Arial, sans-serif',56),.22);};
+$('sg-text').onclick=function(){var t=$('sg-txt').value.trim();if(!t){msg('Type the text first.');$('sg-txt').focus();return;}place(textImg(t,'Helvetica, Arial, sans-serif',56),Math.min(.6,.03*t.length+.06));};
+$('sg-save').onclick=async function(){
+ var b=this;b.disabled=true;b.textContent='Working…';
+ try{var doc=await PDFLib.PDFDocument.load(bytes.slice()),pg=doc.getPages(),n=0;
+  for(var k=0;k<pagesEl.length;k++){var P=pagesEl[k];for(var it of P.items){n++;
+   var png=await doc.embedPng(it.url),a=P.vp.convertToPdfPoint(it.x,it.y+it.h),c2=P.vp.convertToPdfPoint(it.x+it.w,it.y),rot=pg[k].getRotation().angle%360;
+   var w=Math.abs(rot%180?c2[1]-a[1]:c2[0]-a[0]),h=Math.abs(rot%180?c2[0]-a[0]:c2[1]-a[1]);
+   pg[k].drawImage(png,{x:a[0],y:a[1],width:w,height:h,rotate:PDFLib.degrees(rot)});}}
+  if(!n){msg('Add your signature to a page first.');}
+  else{var out=await doc.save(),l=document.createElement('a');l.href=URL.createObjectURL(new Blob([out],{type:'application/pdf'}));l.download=fileName+'-signed.pdf';document.body.appendChild(l);l.click();setTimeout(function(){URL.revokeObjectURL(l.href);l.remove();},800);msg('Downloaded '+fileName+'-signed.pdf.');}
+ }catch(e){msg('Could not save: '+e.message);}
+ b.disabled=false;b.textContent='Download signed PDF';};
+$('sg-new').onclick=function(){bytes=null;$('sg-pages').innerHTML='';pagesEl=[];$('sg-work').hidden=true;$('sg-drop').hidden=false;msg('');};
+var dz=$('sg-drop');$('sg-in').onchange=function(e){if(e.target.files[0])open(e.target.files[0]);e.target.value='';};
+['dragenter','dragover'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.add('bt-over');});});
+['dragleave','drop'].forEach(function(t){dz.addEventListener(t,function(e){e.preventDefault();dz.classList.remove('bt-over');});});
+dz.addEventListener('drop',function(e){var f=e.dataTransfer.files[0];if(f)open(f);});
+})();
+</script>

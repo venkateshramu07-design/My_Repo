@@ -593,6 +593,50 @@ S.update({
 })
 A["retire-abroad-on-2000-a-month"] = ["visa_2026", "mx_solv", "th_ret", "co_pen", "cr_pen", "il_gri26", "wb_ppp", "wb_fx", "uk_sp_abroad", "ssa_abroad"]
 
+S.update({
+ "qr_denso": ("Denso Wave (inventor of the QR code): QR code FAQ", "https://www.qrcode.com/en/faq.html"),
+ "qr_wpforms": ("WPForms: do QR codes expire? How long they really last", "https://wpforms.com/do-qr-codes-expire/"),
+ "qr_tp": ("Trustpilot: user reviews of QR.io (codes disabled after trials)", "https://ca.trustpilot.com/review/qr.io?page=3"),
+ "pdf_cmp": ("Edesy: free PDF tool limits compared (Smallpdf, iLovePDF, PDF Candy)", "https://edesy.in/tools/compare/pdf-tools-alternatives"),
+ "pdf_o2p": ("PDNob: Online2PDF review, privacy and limits", "https://www.pdnob.com/alternative/online2pdf.html"),
+ "ds_cap": ("DocuSign Community: envelope limit on the free account", "https://community.docusign.com/esignature-111/envelope-limit-reached-2775"),
+ "ds_vendr": ("Vendr: is DocuSign really free?", "https://www.vendr.com/blog/can-you-use-docusign-for-free"),
+ "esign_us": ("US Code, Title 15, Chapter 96: Electronic Signatures in Global and National Commerce (ESIGN Act)", "https://www.law.cornell.edu/uscode/text/15/chapter-96"),
+ "esign_uk": ("Law Commission (England and Wales): electronic execution of documents", "https://www.lawcom.gov.uk/project/electronic-execution-of-documents/"),
+ "esign_eu": ("European Commission: the eIDAS regulation", "https://digital-strategy.ec.europa.eu/en/policies/eidas-regulation"),
+ "apple_heif": ("Apple Support: using HEIF or HEVC media on Apple devices", "https://support.apple.com/en-us/116944"),
+ "gt_heic": ("Guiding Tech: how to convert HEIC to JPG on Windows", "https://www.guidingtech.com/convert-heic-jpg-windows/"),
+ "exif_fast": ("Fast.io: how to remove EXIF data before sharing photos", "https://fast.io/resources/exif-data-removal-before-sharing-photos/"),
+ "exif_kfox": ("KFOX14: do your photos put your privacy at risk?", "https://www.kfoxtv.com/news/special-assignments/how-to-remove-exif-data-yourself"),
+ "gphotos_loc": ("Google Photos Help: understand, find and edit your photos' locations", "https://support.google.com/photos/answer/6153599"),
+ "cv_paywall": ("JobShinobi: how to spot paywalls in free resume builders", "https://jobshinobi.com/blog/how-to-spot-paywalls-in-free-resume-builders"),
+ "cv_lc": ("LiveCareer: ResumeBuilder.com review (trial pricing)", "https://www.livecareer.com/resources/product-reviews/resumebuilder-com-reviews"),
+ "uk_invoice": ("GOV.UK: invoices, what they must include", "https://www.gov.uk/invoicing-and-taking-payment-from-customers/invoices-what-they-must-include"),
+ "irs_records": ("IRS: what kind of records should I keep", "https://www.irs.gov/businesses/small-businesses-self-employed/what-kind-of-records-should-i-keep"),
+ "sub_cnet": ("Cord Cutters News: Americans spend over $200 a year on unused subscriptions (CNET/YouGov survey)", "https://cordcuttersnews.com/americans-spend-over-200-a-year-on-unused-subscriptions-here-is-how-to-easily-stop-them/"),
+ "sub_westpac": ("Westpac: subscription spending analysis, August 2025", "https://www.westpac.com.au/about-westpac/media/media-releases/2025/11-august1/"),
+ "sub_monzo": ("Monzo: time to spring clean your subscriptions?", "https://monzo.com/blog/spring-clean-subscriptions"),
+ "sub_self": ("Self Financial: the cost of unused subscriptions 2025", "https://self.inc/info/cost-of-unused-paid-subscriptions"),
+ "iana_tz": ("IANA: time zone database", "https://www.iana.org/time-zones"),
+ "nist_pw": ("NIST SP 800-63B-4: Digital Identity Guidelines, authentication (2025)", "https://csrc.nist.gov/pubs/sp/800/63/b/4/final"),
+ "eff_dice": ("Electronic Frontier Foundation: dice-generated passphrases and word lists", "https://www.eff.org/dice"),
+ "hibp": ("Have I Been Pwned: Pwned Passwords", "https://haveibeenpwned.com/Passwords"),
+ "ncsc_pw": ("UK National Cyber Security Centre: use a strong and separate password for your email", "https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online/use-a-strong-and-separate-password-for-email"),
+ "read_rate": ("Brysbaert (2019): how many words do we read per minute? Journal of Memory and Language", "https://doi.org/10.1016/j.jml.2019.104047"),
+ "g_snippet": ("Google Search Central: control your snippets in search results", "https://developers.google.com/search/docs/appearance/snippet"),
+})
+A["qr-code-generator-never-expires"] = ["qr_denso", "qr_wpforms", "qr_tp"]
+A["merge-split-pdf-without-uploading"] = ["pdf_cmp", "pdf_o2p"]
+A["sign-pdf-free-no-account"] = ["ds_cap", "ds_vendr", "esign_us", "esign_uk", "esign_eu"]
+A["heic-to-jpg-remove-photo-location"] = ["apple_heif", "gt_heic", "exif_fast", "exif_kfox", "gphotos_loc"]
+A["free-resume-builder-free-pdf-download"] = ["cv_paywall", "cv_lc"]
+A["free-invoice-generator-no-watermark"] = ["uk_invoice", "irs_records"]
+A["subscription-tracker-cancel-reminders"] = ["sub_cnet", "sub_westpac", "sub_monzo", "sub_self"]
+A["meeting-time-zone-planner"] = ["iana_tz"]
+A["password-passphrase-generator-breach-check"] = ["nist_pw", "eff_dice", "hibp", "ncsc_pw"]
+A["word-counter-character-limits"] = ["read_rate", "g_snippet"]
+A["free-tools-no-upload-no-signup"] = ["qr_wpforms", "cv_paywall", "pdf_cmp", "ds_cap", "exif_fast", "sub_cnet"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
