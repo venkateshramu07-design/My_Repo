@@ -44,6 +44,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "income-tax-by-country-take-home-pay": ("PERSONAL FINANCE \u00b7 DATA", "Income Tax by Country: How Much of Your Salary You Keep", "#c2410c"),
     "state-pension-amounts-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "State Pension Amounts by Country 2026", "#7a5cd6"),
     "mortgage-rates-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Mortgage Rates by Country 2026", "#2f7de1"),
+    "inheritance-tax-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Inheritance Tax by Country 2026", "#b45309"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

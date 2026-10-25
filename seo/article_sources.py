@@ -541,6 +541,20 @@ S.update({
 })
 A["mortgage-rates-by-country-2026"] = ["ecb_mir", "fm_pmms", "uk_mf_oct", "ca_5yr", "au_rba_oct", "jp_boj_mort", "cn_lpr", "ch_pf", "rbi", "br_mort", "mx_mort"]
 
+S.update({
+ "uk_iht": ("GOV.UK: how Inheritance Tax works", "https://www.gov.uk/inheritance-tax"),
+ "irs_estate": ("IRS: estate tax", "https://www.irs.gov/businesses/small-businesses-self-employed/estate-tax"),
+ "ml_15m": ("Morgan Lewis: new $15 million federal estate tax exemption becomes law", "https://www.morganlewis.com/pubs/2025/08/estate-tax-alert-new-15-million-federal-exemption-becomes-law"),
+ "ie_cat": ("Revenue (Ireland): eBrief 149/26 on new CAT thresholds", "https://www.revenue.ie/en/tax-professionals/ebrief/2026/no-1492026.aspx"),
+ "fr_succ": ("Service-Public.fr: inheritance tax (droits de succession)", "https://www.service-public.fr/particuliers/vosdroits/F14198"),
+ "kr_inh": ("Asia News Network: South Korea to revamp inheritance tax", "https://asianews.network/south-korea-to-revamp-inheritance-tax-for-1st-time-in-75-years/"),
+ "uk_apr": ("Brodies: inheritance tax changes for farms, businesses and pensions", "https://brodies.com/insights/tax-implications/how-will-inheritance-tax-changes-impact-your-farm-business-or-private-pension/"),
+ "ca_death": ("Canada Revenue Agency: doing taxes for someone who died", "https://www.canada.ca/en/revenue-agency/services/tax/individuals/life-events/doing-taxes-someone-died.html"),
+ "sars_ed": ("South African Revenue Service: estate duty", "https://www.sars.gov.za/types-of-tax/estate-duty/"),
+ "oecd_inh": ("OECD: Inheritance Taxation in OECD Countries", "https://www.oecd.org/en/publications/inheritance-taxation-in-oecd-countries_e2879a7d-en.html"),
+})
+A["inheritance-tax-by-country-2026"] = ["uk_iht", "uk_apr", "irs_estate", "ml_15m", "ie_cat", "fr_succ", "kr_inh", "ca_death", "sars_ed", "oecd_inh"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

@@ -1,0 +1,52 @@
+<div class="bd-calc" id="bd-it">
+<div class="bc-title">Inheritance tax by country (2026)</div>
+<div class="bc-sub">Top rate of inheritance or estate tax on assets left to children, and the tax-free amount. Sort by any column, filter by region, and tap a country for details.</div>
+<div class="it-filters" role="group" aria-label="Region"></div>
+<div class="it-wrap"><table class="it-t"><thead><tr><th data-k="c">Country</th><th data-k="l">Tax-free amount</th><th data-k="u">Top rate (children)</th></tr></thead><tbody></tbody></table></div>
+<div class="bc-legend"><span id="it-note">—</span></div>
+<div class="bc-note">Rules for 2026, checked against national tax authorities and advisers' summaries. Rates are for children; spouses are exempt in most countries, and rates for other relatives and unrelated heirs are often much higher. Thresholds may apply to each heir's share or to the whole estate, as noted. This is a summary, not tax advice.</div>
+</div>
+<style>
+#bd-it .it-filters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+#bd-it .it-filters button{font:600 13px system-ui,-apple-system,sans-serif;padding:6px 11px;border-radius:999px;border:1.5px solid var(--c-line,#e4e0d8);background:var(--c-paper,#fff);color:var(--c-ink,#15171d);cursor:pointer}
+#bd-it .it-filters button[aria-pressed="true"]{background:#b45309;border-color:#b45309;color:#fff}
+#bd-it .it-wrap{max-height:600px;overflow:auto;border-radius:12px;border:1px solid var(--c-line,#e4e0d8)}
+#bd-it table.it-t{width:100%;table-layout:fixed;border-collapse:collapse;font:500 14px/1.35 system-ui,-apple-system,sans-serif;margin:0}
+#bd-it .it-t th:first-child{width:38%}#bd-it .it-t th:nth-child(3){width:26%}
+#bd-it .it-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5);font-weight:700;font-size:12.5px;text-align:left;padding:9px 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid var(--c-line,#e4e0d8);color:var(--c-ink,#15171d)}
+#bd-it .it-t th:last-child,#bd-it .it-t td:last-child{text-align:right}
+#bd-it .it-t td{padding:9px 8px;border-bottom:1px solid var(--c-line,#eeeae2);vertical-align:top;color:var(--c-ink,#15171d);overflow-wrap:anywhere;white-space:normal!important;text-align:left}
+#bd-it .it-t td:nth-child(2),#bd-it .it-t th:nth-child(2){text-align:left!important;width:30%}
+#bd-it .it-t tr.it-row{cursor:pointer}
+#bd-it .it-bar{display:block;height:5px;border-radius:3px;background:#b45309;margin-top:4px;margin-left:auto}
+#bd-it .it-det td{font-size:12.5px;color:var(--c-muted,#5d6271);background:var(--c-surface,#fbf9f5);text-align:left!important}
+#bd-it .it-g{display:block;font-size:11.5px;color:var(--c-muted,#5d6271);font-weight:500}
+@media (max-width:520px){#bd-it table.it-t{font-size:13px}#bd-it .it-t th,#bd-it .it-t td{padding:8px 5px!important}#bd-it .it-t th{font-size:11.5px}}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-it');if(!root)return;
+var D=[{"c":"Japan","g":"Asia-Pacific","s":"Inheritance tax","l":"¥30 million + ¥6 million per heir (whole estate)","u":55,"n":"Rates rise from 10% to 55% above ¥600 million per heir's share; spouses get a large deduction."},{"c":"South Korea","g":"Asia-Pacific","s":"Estate tax","l":"₩500 million lump-sum deduction (typical)","u":50,"n":"Rates 10% to 50% above ₩3 billion; a move to taxing each heir's share is planned for 2028."},{"c":"France","g":"Europe","s":"Inheritance tax","l":"€100,000 per child","u":45,"n":"Rates 5% to 45% above about €1.8 million per child; spouses are exempt. Rates for other relatives reach 60%."},{"c":"United Kingdom","g":"Europe","s":"Estate tax","l":"£325,000 + £175,000 for a home left to children","u":40,"n":"40% above the allowances, which pass between spouses (up to £1 million for a couple); unused pensions taxable from April 2027."},{"c":"United States","g":"Americas","s":"Federal estate tax","l":"$15 million per person","u":40,"n":"Exemption made permanent and indexed by the 2025 tax law; about a dozen states and DC add their own estate or inheritance taxes."},{"c":"Spain","g":"Europe","s":"Inheritance tax (regional)","l":"From about €16,000; most regions much higher","u":34,"n":"State scale 7.65% to 34%, but regions such as Madrid and Andalusia give 99% relief to children and spouses."},{"c":"Ireland","g":"Europe","s":"Capital acquisitions tax","l":"€420,000 per child (from 7 October 2026)","u":33,"n":"Flat 33% above the lifetime threshold; spouses are exempt."},{"c":"Germany","g":"Europe","s":"Inheritance tax","l":"€400,000 per child (€500,000 spouse)","u":30,"n":"Rates 7% to 30% for close family; generous reliefs for family homes and businesses."},{"c":"Belgium","g":"Europe","s":"Inheritance tax (regional)","l":"Low; varies by region","u":27,"n":"Flanders 3% to 27% for children; Brussels and Wallonia have higher top rates."},{"c":"Netherlands","g":"Europe","s":"Inheritance tax","l":"About €26,000 per child","u":20,"n":"10% up to about €150,000 and 20% above; spouses get a larger exemption."},{"c":"Denmark","g":"Europe","s":"Estate duty","l":"About DKK 340,000","u":15,"n":"Flat 15% above the exemption for children; spouses exempt."},{"c":"Brazil","g":"Americas","s":"ITCMD (state tax)","l":"Varies by state","u":8,"n":"States set rates up to 8%; the 2023 tax reform requires progressive rates."},{"c":"Italy","g":"Europe","s":"Inheritance tax","l":"€1 million per child","u":4,"n":"4% above €1 million for spouses and children; one of the lowest in Europe."},{"c":"South Africa","g":"Middle East & Africa","s":"Estate duty","l":"R3.5 million","u":25,"n":"20% above the abatement and 25% on estates above R30 million; spouses exempt."},{"c":"Switzerland","g":"Europe","s":"Cantonal tax","l":"Most cantons exempt children","u":0,"n":"Spouses and children are exempt in almost all cantons; a few, such as Vaud, tax descendants at low rates. Voters rejected a 50% federal tax on large estates in 2025."},{"c":"Canada","g":"Americas","s":"No inheritance tax","l":"Capital gains tax at death instead","u":0,"n":"Assets are treated as sold at death, so capital gains tax is due on the gain; transfers to a spouse are deferred."},{"c":"Australia","g":"Asia-Pacific","s":"No inheritance tax","l":"—","u":0,"n":"Abolished in the late 1970s; heirs take on the capital gains tax position of the assets."},{"c":"New Zealand","g":"Asia-Pacific","s":"No inheritance tax","l":"—","u":0,"n":"Estate duty abolished in 1992."},{"c":"Sweden","g":"Europe","s":"No inheritance tax","l":"—","u":0,"n":"Abolished in 2005."},{"c":"Norway","g":"Europe","s":"No inheritance tax","l":"—","u":0,"n":"Abolished in 2014."},{"c":"Austria","g":"Europe","s":"No inheritance tax","l":"—","u":0,"n":"Abolished in 2008; property transfer tax still applies."},{"c":"Portugal","g":"Europe","s":"Stamp duty","l":"Spouses, children and parents exempt","u":0,"n":"10% stamp duty applies to other heirs."},{"c":"India","g":"Asia-Pacific","s":"No inheritance tax","l":"—","u":0,"n":"Estate duty abolished in 1985."},{"c":"China","g":"Asia-Pacific","s":"No inheritance tax","l":"—","u":0,"n":""},{"c":"Mexico","g":"Americas","s":"No inheritance tax","l":"—","u":0,"n":""},{"c":"Singapore","g":"Asia-Pacific","s":"No inheritance tax","l":"—","u":0,"n":"Estate duty abolished in 2008."},{"c":"Hong Kong","g":"Asia-Pacific","s":"No inheritance tax","l":"—","u":0,"n":"Estate duty abolished in 2006."},{"c":"United Arab Emirates","g":"Middle East & Africa","s":"No inheritance tax","l":"—","u":0,"n":"Inheritance follows Sharia rules for Muslims unless a registered will says otherwise."}];
+var regions=['All'].concat(D.map(function(d){return d.g}).filter(function(g,i,a){return a.indexOf(g)===i}));
+var st={g:'All',k:'u',dir:-1,open:null};
+var fb=root.querySelector('.it-filters');
+regions.forEach(function(g){var b=document.createElement('button');b.type='button';b.textContent=g;b.setAttribute('aria-pressed',g==='All');b.onclick=function(){st.g=g;fb.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});draw()};fb.appendChild(b)});
+root.querySelectorAll('th').forEach(function(th){th.onclick=function(){var k=th.getAttribute('data-k');if(k==='l')k='u';st.dir=st.k===k?-st.dir:(k==='c'?1:-1);st.k=k;draw()}});
+function money(v){return v==null?'—':""+v.toLocaleString('en-US')+"%"}
+function draw(){
+  var rows=D.filter(function(d){return st.g==='All'||d.g===st.g});
+  rows.sort(function(a,b){var x=a[st.k],y=b[st.k];if(x==null)return 1;if(y==null)return -1;return (typeof x==='string'?x.localeCompare(y):x-y)*st.dir});
+  var mx=Math.max.apply(null,D.map(function(d){return d.u||0}));var h='';
+  rows.forEach(function(d){
+    h+='<tr class="it-row" data-c="'+d.c+'"><td><b>'+d.c+'</b><span class="it-g">'+d.s+'</span></td><td>'+d.l+'</td><td><b>'+money(d.u)+'</b>'+(d.u?'<span class="it-bar" style="width:'+Math.max(3,Math.round(d.u/mx*100))+'%"></span>':'')+'</td></tr>';
+    if(st.open===d.c)h+='<tr class="it-det"><td colspan="3">'+(d.n||'No further notes.')+'</td></tr>';
+  });
+  root.querySelector('tbody').innerHTML=h;
+  root.querySelectorAll('tr.it-row').forEach(function(tr){tr.onclick=function(){var c=tr.getAttribute('data-c');st.open=st.open===c?null:c;draw()}});
+  var us=rows.filter(function(d){return d.u!=null}).map(function(d){return d.u}).sort(function(a,b){return a-b});
+  var med=us.length?us[Math.floor(us.length/2)]:null;
+  document.getElementById('it-note').textContent=rows.length+' countries shown'+(med?'; median about '+money(med):'');
+}
+draw();
+})();
+</script>
