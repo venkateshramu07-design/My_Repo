@@ -26,6 +26,18 @@
 | 9 | **AI readability**: static tables, FAQ and Dataset data, and a "Cite this page" line | AI answer engines cite pages they can read. Each citation is a visit, and builds the brand | Done |
 | 10 | **Seasonal content calendar**: November (tax-year planning, Black Friday credit card debt), December (budgets, minimum wage changes in January), January (new tax rates, pay rises), April (UK tax year, US tax deadline) | Publishing two to four weeks before the searches peak lets new pages rank in time | Calendar below |
 
+## Workstream 11: everyday tools people struggle to find (added 25 October 2026)
+
+Research into complaints about "free" online tools showed the same traps again and again: QR codes that stop working
+when a trial ends, resume builders that charge at the download step, PDF sites with 1-3 free tasks a day that keep
+uploaded files, e-signature services capped at 3 documents, and photo converters that need private photos uploaded.
+Ten tools now fix these, all running in the browser (no upload, no sign-up, no watermark, no limit), each with a
+guide: QR codes, PDF toolkit, PDF signing, HEIC/photo converter, resume builder, invoice maker, subscription
+tracker, time-zone planner, password generator and word counter, plus a hub page. They widen the site beyond money,
+target high-volume searches ("qr code generator free no expiration", "merge pdf without uploading", "sign pdf free",
+"heic to jpg", "free resume builder free download", "word counter"), and are the kind of page people bookmark,
+share and link to. Publish with `seo/tools/publish_tool_posts.py`.
+
 ## Content calendar (2 to 3 new pages a week)
 
 - **November 2026:** country pages wave 1 (US, UK, Canada, Australia, Germany, France, Spain, Italy, Netherlands,
