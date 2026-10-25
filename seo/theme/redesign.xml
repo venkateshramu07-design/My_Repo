@@ -2978,12 +2978,14 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var lang = (navigator.language || '').toLowerCase();
       var india = /Kolkata|Calcutta/.test(tz) || /-in$/.test(lang) || /^(hi|ta|te|bn|mr|kn|ml|gu|pa)/.test(lang);
       var EURO = /^Europe\/(Paris|Berlin|Madrid|Rome|Amsterdam|Brussels|Vienna|Dublin|Lisbon|Athens|Helsinki|Luxembourg|Bratislava|Ljubljana|Tallinn|Riga|Vilnius|Valletta|Nicosia|Zagreb)$/;
+      if (!cfg.paypalMe && !india) return;  // UPI only works for people with an Indian bank account
       var cur = india && cfg.upiId ? 'INR' : /^Europe\/London$/.test(tz) ? 'GBP' : EURO.test(tz) ? 'EUR' : /^Australia\//.test(tz) ? 'AUD' : /^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|Regina|St_Johns)$/.test(tz) ? 'CAD' : 'USD';
       var SYM = { USD: '$', EUR: '€', GBP: '£', INR: '₹', AUD: 'A$', CAD: 'C$' }, AMT = cur === 'INR' ? [100, 250] : [3, 5];
       var askedRecently = function () { var t = store('bd-tip-ask') || 0, d = store('bd-tip-done') || 0; return Date.now() - t < 7 * 864e5 || Date.now() - d < 60 * 864e5; };
       var mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       var payUrl = function (method, amt) {
-        if (method === 'upi') return 'upi://pay?pa=' + encodeURIComponent(cfg.upiId).replace('%40', '@') + '&pn=' + encodeURIComponent(cfg.upiName || 'Blog Digest') + '&am=' + amt + '&cu=INR&tn=' + encodeURIComponent('Coffee for Blog Digest');
+        var INR = { INR: 1, USD: 88, EUR: 102, GBP: 117, AUD: 58, CAD: 63 };  // rough rates, rounded, for the UPI amount
+        if (method === 'upi') return 'upi://pay?pa=' + encodeURIComponent(cfg.upiId).replace('%40', '@') + '&pn=' + encodeURIComponent(cfg.upiName || 'Blog Digest') + '&am=' + (cur === 'INR' ? amt : Math.round(amt * INR[cur] / 10) * 10) + '&cu=INR&tn=' + encodeURIComponent('Coffee for Blog Digest');
         var c = cur === 'INR' ? 'USD' : cur, a = cur === 'INR' ? (amt >= 250 ? 5 : 3) : amt;
         return 'https://paypal.me/' + encodeURIComponent(cfg.paypalMe) + '/' + a + c;
       };
@@ -2999,7 +3001,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
             (cfg.paypalMe ? '<a class="bd-tip-pp" data-m="pp" href="#" target="_blank" rel="noopener">Pay with PayPal or card</a>' : '') +
             (cfg.upiId && cur !== 'INR' ? '<a class="bd-tip-upi bd-tip-alt" data-m="upi" href="#">In India? Pay with UPI</a>' : '') + '</div>' +
             '<div class="bd-tip-qr" hidden><canvas width="220" height="220"></canvas><small>Scan with any UPI app</small></div>' +
-            '<small class="bd-tip-fine">Payments go through PayPal or your UPI app. Blog Digest never sees your card or bank details.</small></div>');
+            '<small class="bd-tip-fine">Payments go through ' + (cfg.paypalMe && cfg.upiId ? 'PayPal or your UPI app' : cfg.paypalMe ? 'PayPal' : 'your UPI app') + '. Blog Digest never sees your card or bank details.</small></div>');
           document.body.appendChild(sheet);
           var amt = AMT[1], box = sheet.querySelector('.bd-tip-box'), custom = sheet.querySelector('.bd-tip-custom input');
           sheet.addEventListener('click', function (e) { if (e.target === sheet || e.target.closest('.bd-tip-x')) sheet.classList.remove('bd-open'); });
