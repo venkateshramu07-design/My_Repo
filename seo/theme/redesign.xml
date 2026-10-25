@@ -952,6 +952,32 @@ html.bd-dark .bd-th-s,html.bd-dark .bd-th-res,html.bd-dark .bd-th-grid a{backgro
 @media (max-width:700px){html.bd-toolpage .post-body img[src*='/seo/covers/']{display:none!important}html.bd-toolpage .post-body .bd-calc{margin-top:.4em!important}}
 @media (max-width:372px){.bd-tools .bd-toolslink{width:36px;padding:0;justify-content:center}.bd-tools .bd-toolslink .bd-tl-s{display:none}.bd-tools .bd-toolslink svg{display:block!important}}
 @media (max-width:345px){.bd-tools .bd-toolslink{display:none!important}}
+.bd-latest-list li{padding:10px 0!important}
+.bd-latest-list a{display:grid!important;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:center;border-radius:14px;transition:background .15s}
+.bd-latest-list a:hover{background:var(--bd-accent-soft)}
+.bd-lt-img{display:block;aspect-ratio:1200/630;border-radius:10px;overflow:hidden;background:var(--bd-surface-2);box-shadow:0 4px 12px rgba(20,20,40,.12)}
+.bd-lt-img img{width:100%;height:100%;object-fit:cover;object-position:left center;display:block;transition:transform .4s}
+.bd-latest-list a:hover .bd-lt-img img{transform:scale(1.06)}
+.bd-lt-txt small{display:flex;align-items:center;gap:8px;font:600 12px var(--bd-sans)!important;color:var(--bd-muted)}
+.bd-lt-txt small em{font-style:normal;font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:var(--lc)}
+.bd-lt-txt small em::after{content:'';display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--bd-muted);margin-left:8px;vertical-align:middle}
+.bd-lt-txt b{font-size:16px!important;line-height:1.28!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bd-latest h2{display:flex;align-items:center;gap:8px}.bd-latest h2::before{content:'';width:8px;height:8px;border-radius:50%;background:#e2462c;box-shadow:0 0 0 0 rgba(226,70,44,.5);animation:bdPulseR 2s infinite}
+@keyframes bdPulseR{70%{box-shadow:0 0 0 8px rgba(226,70,44,0)}100%{box-shadow:0 0 0 0 rgba(226,70,44,0)}}
+.post-body .seo-related{padding:22px!important}
+.post-body .bd-relgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0 6px!important}
+.post-body .bd-rel{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--bd-surface)!important;border:1px solid var(--bd-line);text-decoration:none!important;color:var(--bd-ink)!important;transition:transform .2s,box-shadow .2s,border-color .2s}
+.post-body .bd-rel:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,20,40,.12);border-color:var(--lc)}
+.post-body .bd-rel-img{display:block;aspect-ratio:1200/630;overflow:hidden;background:var(--bd-surface-2)!important}
+.post-body .bd-rel-img img{width:100%!important;height:100%!important;object-fit:cover;object-position:left center;margin:0!important;border-radius:0!important;transition:transform .4s}
+.post-body .bd-rel:hover .bd-rel-img img{transform:scale(1.05)}
+.post-body .bd-rel-txt{display:block;padding:10px 12px 14px}
+.post-body .bd-rel-txt small{display:block;font:800 10.5px var(--bd-sans)!important;letter-spacing:.06em;text-transform:uppercase;color:var(--lc)!important;margin-bottom:4px}
+.post-body .bd-rel-txt b{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:700 15px/1.3 var(--bd-serif)!important;color:var(--bd-ink)!important}
+@media (min-width:900px){.post-body .bd-relgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.post-body .seo-related>p:first-of-type{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 4px!important;padding:12px 14px!important;border-radius:14px;background:var(--bd-surface)!important;border:1px dashed var(--bd-line);font:600 14.5px/1.4 var(--bd-sans)!important}
+.post-body .seo-related>p:first-of-type strong{font:800 11.5px var(--bd-sans)!important;letter-spacing:.08em;text-transform:uppercase;color:#fff!important;background:var(--bd-accent)!important;padding:4px 9px;border-radius:999px}
+.post-body .seo-related>p:first-of-type a{text-decoration:none!important;font-weight:700}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -1728,6 +1754,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     if (!m) { m = document.createElement('meta'); m.setAttribute(attr, key); document.head.appendChild(m); }
     m.setAttribute('content', val);
   }
+  function ago(iso) {
+    var d = new Date(iso || ''); if (isNaN(d)) return '';
+    var days = Math.floor((Date.now() - d.getTime()) / 864e5);
+    return days < 1 ? 'Today' : days < 2 ? 'Yesterday' : days < 7 ? days + ' days ago' : days < 30 ? Math.floor(days / 7) + ' wk ago' : longDate(iso);
+  }
   function longDate(iso) {
     var d = new Date(iso || '');
     return isNaN(d) ? '' : d.getDate() + ' ' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()] + ' ' + d.getFullYear();
@@ -2165,7 +2196,9 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
             '<small class="bd-kick">' + esc(p.label || 'Blog Digest') + '</small><b>' + esc(p.title) + '</b>' + dekSlot(p, 'bd-dek-sm') + '</a>';
         }).join('');
         front.querySelector('.bd-latest-list').innerHTML = latest.map(function (p) {
-          return '<li><a href="' + esc(p.url) + '"><small>' + metaLine(p) + '</small><b>' + esc(p.title) + '</b></a></li>';
+          var col = (COLORS[(p.label || '').toLowerCase()] || ['#e2462c'])[0];
+          return '<li><a href="' + esc(p.url) + '" style="--lc:' + col + '"><span class="bd-lt-img"><img alt="" loading="lazy" decoding="async" src="' + esc(pic(p, 400)) + '"/></span>' +
+            '<span class="bd-lt-txt"><small><em>' + esc(p.label || 'Blog Digest') + '</em>' + esc(ago(p.date)) + '</small><b>' + esc(p.title) + '</b></span></a></li>';
         }).join('');
         applyDeks(front);
         return used;
@@ -2321,6 +2354,27 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           at.parentNode.insertBefore(card, at.nextSibling);
         }
       }
+    }
+    // Related reading as picture cards: the "Related articles" box in older posts and the "Related Guides" list in new
+    // ones become a grid with the cover, topic and title of each article (from the search index).
+    if (isPost && body && !body.querySelector('.bd-relgrid')) {
+      var lists = [];
+      body.querySelectorAll('.seo-related ul').forEach(function (u) { lists.push(u); });
+      Array.prototype.forEach.call(body.querySelectorAll('h2'), function (h) { if (/^Related Guides$/i.test(h.textContent.trim()) && h.nextElementSibling && h.nextElementSibling.tagName === 'UL') lists.push(h.nextElementSibling); });
+      if (lists.length) withIndex(function (idx) {
+        var by = {}; idx.forEach(function (p) { by[pathOf(p.url)] = p; });
+        lists.forEach(function (u) {
+          var links = Array.prototype.map.call(u.querySelectorAll('a'), function (a) { return a; }).filter(function (a) { return a.pathname && by[a.pathname] && a.pathname !== location.pathname; });
+          if (links.length < 2) return;
+          var g = el('div', 'bd-relgrid', links.slice(0, 8).map(function (a) {
+            var p = by[a.pathname], col = (COLORS[(p.label || '').toLowerCase()] || ['#e2462c'])[0];
+            var img = BD_COVERS['t:' + p.title.trim()] ? cover(p.title, p.label, true) : p.thumb ? sized(p.thumb, 400) : cover(p.title, p.label, true);
+            return '<a class="bd-rel" href="' + esc(a.href) + '" style="--lc:' + col + '"><span class="bd-rel-img"><img alt="" loading="lazy" decoding="async" src="' + esc(img) + '"/></span>' +
+              '<span class="bd-rel-txt"><small>' + esc(p.label || 'Blog Digest') + '</small><b>' + esc(p.title) + '</b></span></a>';
+          }).join(''));
+          u.parentNode.insertBefore(g, u); u.style.display = 'none';
+        });
+      });
     }
     // Share bar (every article) and, on data pages, open-data tools: download the CSV and embed the table elsewhere.
     if (isPost && body && !post.querySelector('.bd-share')) {
