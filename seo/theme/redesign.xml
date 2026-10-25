@@ -904,6 +904,15 @@ html.bd-trend-ready #content-wrapper{display:none!important}
 @media (max-width:560px){.bd-tr-head{padding:26px 20px;border-radius:22px}.bd-tr-tools,.bd-tr-secs{grid-template-columns:1fr}.bd-tr-txt b{font-size:21px}.bd-tr-row{grid-template-columns:26px 64px 1fr}.bd-tr-row img{width:64px;height:48px}}
 html.bd-framed body>*:not(#bd-framed){display:none!important}
 #bd-framed{display:grid!important;place-items:center;min-height:100vh;font:700 18px system-ui,sans-serif}#bd-framed a{color:#e2462c!important}
+.bd-secnav a.bd-secnav-tools{background:linear-gradient(135deg,#0f9d76,#0e9bb5);color:#fff!important}
+.bd-ftools-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.bd-ftools-grid a{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:var(--bd-surface);border:1px solid var(--bd-line);color:var(--bd-ink)!important;text-decoration:none!important;transition:transform .15s,box-shadow .15s,border-color .15s}
+.bd-ftools-grid a:hover{transform:translateY(-2px);box-shadow:var(--bd-shadow-lg);border-color:var(--tc)}
+.bd-ftools-grid i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--tc) 15%,transparent);color:var(--tc)}
+.bd-ftools-grid i svg{width:20px;height:20px}
+.bd-ftools-grid b{display:block;font:700 14.5px/1.25 var(--bd-sans)}.bd-ftools-grid small{display:block;font:500 12.5px/1.35 var(--bd-sans);color:var(--bd-muted)}
+@media (max-width:980px){.bd-ftools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.bd-ftools-grid a{padding:10px;gap:8px}.bd-ftools-grid i{width:34px;height:34px}.bd-ftools-grid b{font-size:13.5px}.bd-ftools-grid small{font-size:12px}}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -1646,6 +1655,14 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   var BD_TRENDING = {};
   var BD_COUNTRIES = {};
   var BD_TOOLS = {};
+  function toolsPage() { return BD_TOOLS.page || BD_TOOLS.hub || ''; }
+  var TOOL_ICON = { qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4h-4"/>',
+    pdf: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>', sign: '<path d="M3 21c3-1 4-4 6-4s1 3 3 3 3-2 5-2"/><path d="M15 4l5 5-9 9H6v-5z"/>',
+    photo: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 9"/>', resume: '<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="9" r="2.5"/><path d="M8 17c.8-2 2.2-3 4-3s3.2 1 4 3"/>',
+    invoice: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>', subs: '<path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h-4M6 22v-4h4"/>',
+    tz: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pw: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>', words: '<path d="M4 7V5h16v2M12 5v14M9 19h6"/>' };
+  function toolIcon(k, fallback) { return TOOL_ICON[k] ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + TOOL_ICON[k] + '</svg>' : svg(fallback); }
+  var TOOL_COLOR = { qr: '#6b5cff', pdf: '#e2462c', sign: '#1a3faa', photo: '#0e9bb5', resume: '#7a5cd6', invoice: '#0f9d76', subs: '#e48b12', tz: '#2f7de1', pw: '#15803d', words: '#c2410c' };
   var EVERYDAY = [['qr', 'QR code maker', 'Codes that never expire', 'spark'], ['pdf', 'PDF toolkit', 'Merge, split, reorder', 'book'], ['sign', 'Sign a PDF', 'No account, no limit', 'flag'],
     ['photo', 'HEIC to JPG', 'Shrink, convert, remove location', 'globe'], ['resume', 'Resume builder', 'Free PDF download', 'case'], ['invoice', 'Invoice maker', 'No watermark', 'money'],
     ['subs', 'Subscription tracker', 'Renewal reminders', 'coin'], ['tz', 'Time zone planner', 'Meet across cities', 'globe'], ['pw', 'Password generator', 'With breach check', 'chip'], ['words', 'Word counter', 'Every character limit', 'book']];
@@ -1896,7 +1913,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         }).join('') + '</div></div>' +
         '<div class="bd-pn-sec"><h5>Tools</h5><div class="bd-pn-tools">' +
           '<a href="/"><i>' + svg('flag') + '</i><span><b>Home</b><small>Latest guides and data</small></span></a>' +
-          (BD_TOOLS.hub ? '<a href="' + BD_TOOLS.hub + '"><i>' + svg('spark') + '</i><span><b>Free everyday tools</b><small>QR codes, PDFs, photos, resume, invoices</small></span></a>' : '') +
+          (toolsPage() ? '<a href="' + toolsPage() + '"><i>' + svg('spark') + '</i><span><b>Free everyday tools</b><small>QR codes, PDFs, photos, resume, invoices</small></span></a>' : '') +
           '<a href="' + BLOG + 'p/free-calculators.html"><i>' + svg('chart') + '</i><span><b>Free calculators</b><small>52 money tools, no sign-up</small></span></a>' +
           '<a href="' + BLOG + 'p/trending-posts_53.html"><i>' + svg('rise') + '</i><span><b>Trending now</b><small>What readers are asking this week</small></span></a>' +
           (BD_COUNTRIES[' hub'] ? '<a href="' + BD_COUNTRIES[' hub'] + '"><i>' + svg('globe') + '</i><span><b>Compare 35 countries</b><small>Wages, tax, mortgages, pensions</small></span></a>' : '') +
@@ -2011,6 +2028,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         '<div class="bd-mast"><span class="bd-date">' + esc(dateLine) + '</span><span class="bd-tagline">Practical guides to money, mind and work</span>' +
         '<form class="bd-mast-search" action="/search" method="get" role="search"><input name="q" type="search" placeholder="Search articles" aria-label="Search articles"/></form></div>' +
         '<nav class="bd-secnav" aria-label="Sections">' + NAV.map(function (n) { return '<a href="' + labelUrl(n[1]) + '">' + esc(n[0]) + '</a>'; }).join('') +
+        (toolsPage() ? '<a class="bd-secnav-tools" href="' + toolsPage() + '">Tools</a>' : '') + '<a href="' + BLOG + 'p/free-calculators.html">Calculators</a>' +
         '<a href="' + BLOG + '2021/06/sitemap.html">All articles</a></nav>' +
         '<div class="bd-lead-grid"><div class="bd-lead bd-skel"></div><div class="bd-second"><div class="bd-skel"></div><div class="bd-skel"></div></div>' +
         '<aside class="bd-latest"><h2>Latest</h2><ol class="bd-latest-list"></ol></aside></div>' +
@@ -2019,8 +2037,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         }).join('') + '</div>' +
         '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute. <a href="' + BLOG + 'p/free-calculators.html">See all 52 →</a></span></div><div class="bd-toolsbar-list">' +
         TOOLS_HOME.map(function (t) { return '<a href="' + BLOG + t[2] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span></a>'; }).join('') + '</div></div>' +
-        (BD_TOOLS.hub ? '<div class="bd-toolsbar bd-everyday"><div class="bd-toolsbar-head"><b>Free everyday tools</b><span>No upload, no sign-up, no watermark. <a href="' + BD_TOOLS.hub + '">See all 10 \u2192</a></span></div><div class="bd-toolsbar-list">' +
-          EVERYDAY.filter(function (t) { return BD_TOOLS[t[0]]; }).slice(0, 5).map(function (t) { return '<a href="' + BD_TOOLS[t[0]] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[1]) + '</b><small>' + esc(t[2]) + '</small></span></a>'; }).join('') + '</div></div>' : ''));
+        '');
       content.parentNode.insertBefore(front, content);
       instantSearch(front.querySelector('.bd-mast-search input'));
       root.classList.add('bd-home-front');
@@ -2032,6 +2049,14 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         secs.appendChild(el('section', 'bd-section', '<div class="bd-section-head"><div><h2>' + sec[0] + '</h2><p>' + esc(sec[2]) + '</p></div>' +
           '<a href="' + labelUrl(sec[1]) + '">All ' + esc(sec[1].toLowerCase()) + ' →</a></div><div class="bd-sec-grid"><span class="bd-skel"></span><span class="bd-skel"></span><span class="bd-skel"></span><span class="bd-skel"></span></div>'));
       });
+      if (toolsPage()) {
+        var ft = el('section', 'bd-section bd-ftools', '<div class="bd-section-head"><div><h2>Free tools</h2><p>No upload, no sign-up, no watermark: everything runs in your browser.</p></div>' +
+          '<a href="' + toolsPage() + '">All free tools →</a></div><div class="bd-ftools-grid">' +
+          EVERYDAY.filter(function (t) { return BD_TOOLS[t[0]]; }).map(function (t) {
+            return '<a href="' + BD_TOOLS[t[0]] + '" style="--tc:' + (TOOL_COLOR[t[0]] || '#e2462c') + '"><i>' + toolIcon(t[0], t[3]) + '</i><span><b>' + esc(t[1]) + '</b><small>' + esc(t[2]) + '</small></span></a>';
+          }).join('') + '</div>');
+        secs.insertBefore(ft, secs.children[1] || null);
+      }
       content.parentNode.insertBefore(secs, content);
       var ht = document.querySelector('.home-title span');
       if (ht) ht.textContent = 'More stories';
@@ -2069,7 +2094,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         return used;
       };
       var renderSections = function (used) {
-        Array.prototype.forEach.call(secs.querySelectorAll('.bd-section'), function (box, i) {
+        Array.prototype.forEach.call(secs.querySelectorAll('.bd-section:not(.bd-ftools)'), function (box, i) {
           var sec = SECS[i];
           feed('', 16, function (posts) {
             var fresh = posts.filter(function (p) { return !used[p.url]; });

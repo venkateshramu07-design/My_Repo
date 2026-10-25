@@ -29,7 +29,7 @@ print("OK privacy", r["url"], len(r["content"]))
 # Static pages: /p/editorial-policy.html and /p/free-calculators.html (Blogger makes the address from the title).
 ids = load_ids()
 existing = {p["title"].strip().lower(): p["id"] for p in a.call("GET", f"/blogs/{bid}/pages", {"fetchBodies": "false"}).get("items", [])}
-for key, title in (("editorial-policy", "Editorial Policy"), ("free-calculators", "Free Calculators")):
+for key, title in (("editorial-policy", "Editorial Policy"), ("free-calculators", "Free Calculators"), ("free-tools", "Free Tools")):
     page = {"title": title, "content": body(key)}
     pid = (ids.get("pages/" + key) or {}).get("id") or existing.get(title.lower())
     r = a.call("PUT" if pid else "POST", f"/blogs/{bid}/pages/" + (pid or ""), None, page)

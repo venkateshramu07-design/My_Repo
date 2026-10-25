@@ -34,6 +34,7 @@ _tk = {"hub": "free-tools-no-upload-no-signup", "qr": "qr-code-generator-never-e
        "photo": "heic-to-jpg-remove-photo-location", "resume": "free-resume-builder-free-pdf-download", "invoice": "free-invoice-generator-no-watermark",
        "subs": "subscription-tracker-cancel-reminders", "tz": "meeting-time-zone-planner", "pw": "password-passphrase-generator-breach-check", "words": "word-counter-character-limits"}
 _tools = {k: _re.sub(r"^https?://[^/]+", "", _ids["articles/" + v]["url"]) for k, v in _tk.items() if "articles/" + v in _ids}
+if "pages/free-tools" in _ids: _tools["page"] = _re.sub(r"^https?://[^/]+", "", _ids["pages/free-tools"]["url"])
 assert js.count("var BD_TOOLS = {};") == 1
 js = js.replace("var BD_TOOLS = {};", "var BD_TOOLS = " + json.dumps(_tools, separators=(",", ":")) + ";")
 assert js.count("var BD_COUNTRIES = {};") == 1
