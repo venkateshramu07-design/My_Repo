@@ -2,10 +2,10 @@
 #   python3 seo/backup/backup_blog.py            # writes site-backup/ at the repository root
 # What it saves (all from Blogger's public feeds, no login needed):
 #   data/         every post, page and comment as JSON, exactly as Blogger returns it, plus a clean per-post JSON
-#   files/        every image and file the posts use (Blogger image hosting, jsDelivr, cdnjs, fonts), downloaded
 #   site/         a complete static copy of the blog at the same addresses (/2026/10/slug.html, /p/page.html), with
 #                 every link to an image or library pointing at the local copy, plus index, topic pages, sitemap,
 #                 RSS, robots.txt, ads.txt and 404 page. Upload this folder to any web host and the site works.
+#                 site/files/ holds every image and file the posts use (Blogger image hosting, jsDelivr, cdnjs, fonts).
 #   wordpress.xml a WordPress (WXR) export of all posts, pages, labels and comments, for WordPress or any CMS that
 #                 imports it (Ghost, Squarespace, Wix and others accept WordPress files).
 #   manifest.json counts, sizes and SHA-256 checksums of everything, and a check that nothing is missing.
@@ -59,9 +59,11 @@ EXT = {"image/jpeg": ".jpg", "image/png": ".png", "image/gif": ".gif", "image/we
 def fetch_files(urls):
     """Download every URL once; returns {url: local path under files/} (served as /files/... in site/)."""
     mp, fail = {}, []
-    os.makedirs(os.path.join(OUT, "files"), exist_ok=True)
+    os.makedirs(os.path.join(OUT, "site", "files"), exist_ok=True)
     for i, u in enumerate(sorted(urls)):
         name = hashlib.sha1(u.encode()).hexdigest()[:16]
+        have = [f for f in os.listdir(os.path.join(OUT, "site", "files")) if f.startswith(name + ".")]
+        if have: mp[u] = "files/" + have[0]; continue
         try:
             b, ct = get(u, binary=True)
         except Exception as e:
@@ -72,16 +74,24 @@ def fetch_files(urls):
             css = b.decode("utf-8")
             for fu in set(re.findall(r"url\((https://fonts\.gstatic\.com/[^)]+)\)", css)):
                 fb, _ = get(fu, binary=True); fn = hashlib.sha1(fu.encode()).hexdigest()[:16] + ".woff2"
-                open(os.path.join(OUT, "files", fn), "wb").write(fb); css = css.replace(fu, "/files/" + fn)
+                open(os.path.join(OUT, "site", "files", fn), "wb").write(fb); css = css.replace(fu, "/files/" + fn)
             b = css.encode("utf-8")
         p = "files/" + name + ext
-        open(os.path.join(OUT, p), "wb").write(b); mp[u] = p
+        open(os.path.join(OUT, "site", p), "wb").write(b); mp[u] = p
         if i % 50 == 0: print(f"  files {i}/{len(urls)}", flush=True)
     return mp, fail
 
 
+BLOGGER_IMG = re.compile(r"https?://(?:[a-z0-9-]+\.)*(?:googleusercontent\.com|bp\.blogspot\.com)/[^\s\"<>]*", re.I)
+
+
 def scan(text):
-    return {u.rstrip(".,;") for u in FILE_HOSTS.findall(text or "")}
+    out = {u.rstrip(".,;") for u in FILE_HOSTS.findall(text or "")}
+    for u in BLOGGER_IMG.findall(text or ""):  # Blogger image names can contain ( ) and ', e.g. photo(1).jpg
+        u = u.rstrip(".,;")
+        while u.endswith(")") and u.count("(") < u.count(")"): u = u[:-1]
+        out.add(u)
+    return out
 
 
 def rewrite(text, mp):
@@ -132,8 +142,13 @@ def page(title, body, canon, desc="", img=""):
 
 def main():
     t0 = time.time()
-    if os.path.isdir(OUT): shutil.rmtree(OUT)
-    os.makedirs(os.path.join(OUT, "data"))
+    keep = os.path.join(OUT, "site", "files")  # downloaded files are reused between runs (names come from their URL)
+    if os.path.isdir(OUT):
+        for n in os.listdir(OUT):
+            if n != "site": shutil.rmtree(os.path.join(OUT, n)) if os.path.isdir(os.path.join(OUT, n)) else os.remove(os.path.join(OUT, n))
+        for n in os.listdir(os.path.join(OUT, "site")) if os.path.isdir(os.path.join(OUT, "site")) else []:
+            if n != "files": q = os.path.join(OUT, "site", n); shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
+    os.makedirs(os.path.join(OUT, "data"), exist_ok=True)
     raw = {}
     for kind in ("posts", "pages", "comments"):
         raw[kind], total = feed(kind)
@@ -164,7 +179,6 @@ def main():
         p["comments"] = [c for c in comments if c["post_url"] == p["url"]]
     json.dump(posts, open(os.path.join(OUT, "data", "posts.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     # Static site
-    shutil.copytree(os.path.join(OUT, "files"), os.path.join(OUT, "site", "files"))
     open(os.path.join(OUT, "site", "style.css"), "w").write(CSS)
     labels = {}
     for p in posts:

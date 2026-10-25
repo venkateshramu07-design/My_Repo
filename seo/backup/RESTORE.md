@@ -8,13 +8,12 @@ downloaded from Blogger's image servers, and every library, font and data file t
 
 | Path | Contents |
 |---|---|
-| `site/` | The whole blog as a static website at the same addresses as today (`/2026/10/slug.html`, `/p/page.html`), with a home page, a page per topic, `/topics.html`, `sitemap.xml`, `feed.xml` (RSS), `robots.txt`, `ads.txt`, `404.html` and `_redirects` (old `/search/label/...` addresses). All tools and calculators work, because their code is inside the posts and their libraries are in `site/files/`. |
+| `site/` | The whole blog as a static website at the same addresses as today (`/2026/10/slug.html`, `/p/page.html`), with a home page, a page per topic, `/topics.html`, `sitemap.xml`, `feed.xml` (RSS), `robots.txt`, `ads.txt`, `404.html` and `_redirects` (old `/search/label/...` addresses). All tools and calculators work, because their code is inside the posts and their libraries are in `site/files/`, which holds every image and file used by the posts. |
 | `wordpress.xml` | Every post, page, label and comment in WordPress export format. |
 | `data/posts.json` | Every post and page: title, address, dates, labels, author, original HTML and HTML with local file paths, and its comments. |
 | `data/feed-*.json` | The raw Blogger feeds for posts, pages and comments, exactly as Blogger returned them. |
 | `data/file-map.json` | Original address of every downloaded file and its local name. |
 | `data/blogger-*` | The live `robots.txt`, `ads.txt` and sitemaps; `homepage-snapshot.html` is the rendered home page. |
-| `files/` | Every image and file used by the posts. |
 | `manifest.json` | Counts, sizes and SHA-256 checksums of every file, plus lists of anything that failed (should be empty). |
 
 The rest of this repository is also part of the backup: article sources (`seo/articles/`, `seo/countries/`), the tools
