@@ -489,6 +489,20 @@ S.update({
 })
 A["minimum-wage-by-country-2026"] = ["es_mw", "uk_nmw", "au_awr", "nz_mw", "ca_fmw", "jp_mw", "br_mw", "mx_mw", "za_mw", "cn_mw", "id_mw", "vn_mw", "co_mw", "us_state_mw", "oecd_mw", "ecb_fx"]
 
+S.update({
+ "es_el": ("Eurostat: household electricity prices (nrg_pc_204)", "https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_204/default/table"),
+ "es_gas": ("Eurostat: household gas prices (nrg_pc_202)", "https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_202/default/table"),
+ "ofgem_oct26": ("Ofgem: energy price cap will rise by 4% from October 2026", "https://ofgem.gov.uk/press-release/energy-price-cap-will-rise-4-october-2026"),
+ "eia_epm": ("US Energy Information Administration: Electric Power Monthly", "https://www.eia.gov/electricity/monthly/"),
+ "us_el_jul": ("ElectricRates.org: US electricity rate report, July 2026 (EIA data)", "https://electricrates.org/states/report/"),
+ "cornwall_jan": ("Money to the Masses: Cornwall Insight forecast for the January 2027 price cap", "https://moneytothemasses.com/news/energy-bills-to-rise-by-4-from-october-with-14-rise-predicted-for-january"),
+ "jp_el": ("The Nation: Japan faces record electricity bills as subsidy ends", "https://www.nationthailand.com/news/world/40071723"),
+ "au_dmo": ("Canstar: Default Market Offer prices for 2026–27", "https://www.canstar.com.au/news/default-market-offer-power-prices-set-to-fall-in-most-of-australia/"),
+ "ttf_mar": ("Upstream: gas price soars as Iran fallout hits the LNG market", "https://www.upstreamonline.com/lng/gas-price-soars-as-iran-fallout-triggers-worries-for-lng-market/2-1-1952211"),
+ "ttf_oct": ("France Épargne: TTF gas passes €90/MWh for the first time since 2022", "https://www.france-epargne.fr/news/gaz-le-ttf-depasse-90-euros-le-mwh-une-premiere-depuis-decembre-2022"),
+})
+A["electricity-prices-by-country-2026"] = ["es_el", "es_gas", "ofgem_oct26", "eia_epm", "us_el_jul", "cornwall_jan", "jp_el", "au_dmo", "ttf_mar", "ttf_oct", "ecb_fx"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

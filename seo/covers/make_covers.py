@@ -40,6 +40,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "petrol-prices-since-iran-war-by-country": ("ECONOMICS \u00b7 DATA", "Petrol Price Rises Since the Iran War, by Country", "#e0662f"),
     "retirement-age-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Retirement Age by Country 2026", "#7a5cd6"),
     "minimum-wage-by-country-2026": ("CAREER \u00b7 DATA", "Minimum Wage by Country 2026", "#2f7de1"),
+    "electricity-prices-by-country-2026": ("ECONOMICS \u00b7 DATA", "Electricity Prices by Country 2026", "#e0a52f"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
