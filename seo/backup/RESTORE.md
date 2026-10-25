@@ -1,7 +1,8 @@
 # Restoring Blog Digest on a new domain (if Blogger or Google is unavailable)
 
-The backup lives on the `site-backup` branch of this repository (folder `site-backup/`) and can be rebuilt at any time
-with `python3 seo/backup/backup_blog.py`. Everything in it is independent of Google: images are full-size originals
+The backup lives in the **private** repository `blog-digest-backup` (folder `site-backup/`), refreshed every Sunday by
+its own workflow, and can be rebuilt at any time with `python3 seo/backup/backup_blog.py`. To download it, open the
+repository on GitHub and choose Code, then Download ZIP. Everything in it is independent of Google: images are full-size originals
 downloaded from Blogger's image servers, and every library, font and data file the posts use is a local copy.
 
 ## What is in the backup
