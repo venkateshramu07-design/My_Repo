@@ -91,6 +91,12 @@ COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-he
 COUNTRY_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@f454e428cfeba8f707641b3c3ce3ad0e603c3b37/seo/covers/"
 COVERS |= {n for n in POSTS if n.startswith("countries/")}
 COVERS |= set(TOOL_POSTS)
+TOOL_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@1ac2d86551d465d2cc58492b22f9e91a22ce6c8d/seo/covers/"
+
+
+def cover_base(name):
+    return COUNTRY_COVER_BASE if name.startswith("countries/") else TOOL_COVER_BASE if name in TOOL_POSTS else COVER_BASE
+
 HUB_NAMES = {"money-start-here": "personal finance guide", "career-start-here": "career guide",
              "mind-start-here": "well-being guide"}
 
@@ -133,7 +139,7 @@ def build(name):
                        else os.path.join(TOOLS, name + ".html"), encoding="utf-8").read())
     body = body.replace("IMGBASE/", COVER_BASE.replace("/seo/covers/", "/seo/images/"))  # article illustrations
     if name in COVERS:  # after the opening "Updated" line
-        c = (COUNTRY_COVER_BASE if name.startswith("countries/") else COVER_BASE) + name.split("/")[1]
+        c = cover_base(name) + name.split("/")[1]
         img = (f'<img src="{c}-800.webp" srcset="{c}-800.webp 800w, {c}-1200.webp 1200w" sizes="(max-width: 780px) 92vw, 680px" '
                f'alt="{html.escape(POSTS[name][0], quote=True)}" '
                'width="1200" height="630" fetchpriority="high" decoding="async" style="width:100%;height:auto;border-radius:16px"/>')

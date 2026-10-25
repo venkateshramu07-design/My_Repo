@@ -805,6 +805,8 @@ form.bd-has-drop{position:relative}
 .bd-pn-tools a{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;color:var(--bd-ink)!important;text-decoration:none!important;line-height:1.25!important}
 .bd-pn-tools a:hover,.bd-pn-grid a:hover{background:var(--bd-accent-soft)}
 .bd-pn-tools b{display:block;font:700 14px var(--bd-sans)}.bd-pn-tools small{display:block;font:500 12px var(--bd-sans);color:var(--bd-muted)}
+.bd-pn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.bd-pn-chips a{padding:7px 11px;border-radius:999px;border:1px solid var(--bd-line);color:var(--bd-ink)!important;text-decoration:none!important;font:600 12.5px var(--bd-sans);line-height:1.2!important}.bd-pn-chips a:hover{border-color:var(--bd-accent);color:var(--bd-accent)!important}
+.bd-toolsbar.bd-everyday{margin-top:14px}
 .bd-pn-country{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:12px;border:1px solid var(--bd-line);background:var(--bd-bg);color:var(--bd-ink);font:600 14px var(--bd-sans)}
 .bd-pn-tabs{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--bd-bg);margin-bottom:10px}
 .bd-pn-tabs button{flex:1;border:0;background:transparent;border-radius:9px;padding:8px 4px;font:600 12.5px var(--bd-sans);color:var(--bd-muted);cursor:pointer}
@@ -1622,6 +1624,10 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   var BD_DATA = {};
   var BD_TRENDING = {};
   var BD_COUNTRIES = {};
+  var BD_TOOLS = {};
+  var EVERYDAY = [['qr', 'QR code maker', 'Codes that never expire', 'spark'], ['pdf', 'PDF toolkit', 'Merge, split, reorder', 'book'], ['sign', 'Sign a PDF', 'No account, no limit', 'flag'],
+    ['photo', 'HEIC to JPG', 'Shrink, convert, remove location', 'globe'], ['resume', 'Resume builder', 'Free PDF download', 'case'], ['invoice', 'Invoice maker', 'No watermark', 'money'],
+    ['subs', 'Subscription tracker', 'Renewal reminders', 'coin'], ['tz', 'Time zone planner', 'Meet across cities', 'globe'], ['pw', 'Password generator', 'With breach check', 'chip'], ['words', 'Word counter', 'Every character limit', 'book']];
   var BD_DATA_BASE = 'https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@ccr-ee047f91-rbyv4x/seo/data/', BD_WIDGET = 'https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@ccr-ee047f91-rbyv4x/seo/widgets/table.js';
   function setMeta(attr, key, val) {
     var m = document.head.querySelector('meta[' + attr + '="' + key + '"]');
@@ -1869,12 +1875,13 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         }).join('') + '</div></div>' +
         '<div class="bd-pn-sec"><h5>Tools</h5><div class="bd-pn-tools">' +
           '<a href="/"><i>' + svg('flag') + '</i><span><b>Home</b><small>Latest guides and data</small></span></a>' +
-          '<a href="' + BLOG + 'p/free-calculators.html"><i>' + svg('chart') + '</i><span><b>Free calculators</b><small>52 tools, no sign-up</small></span></a>' +
+          (BD_TOOLS.hub ? '<a href="' + BD_TOOLS.hub + '"><i>' + svg('spark') + '</i><span><b>Free everyday tools</b><small>QR codes, PDFs, photos, resume, invoices</small></span></a>' : '') +
+          '<a href="' + BLOG + 'p/free-calculators.html"><i>' + svg('chart') + '</i><span><b>Free calculators</b><small>52 money tools, no sign-up</small></span></a>' +
           '<a href="' + BLOG + 'p/trending-posts_53.html"><i>' + svg('rise') + '</i><span><b>Trending now</b><small>What readers are asking this week</small></span></a>' +
           (BD_COUNTRIES[' hub'] ? '<a href="' + BD_COUNTRIES[' hub'] + '"><i>' + svg('globe') + '</i><span><b>Compare 35 countries</b><small>Wages, tax, mortgages, pensions</small></span></a>' : '') +
           '<a href="https://github.com/venkateshramu07-design/My_Repo/tree/ccr-ee047f91-rbyv4x/seo/data" target="_blank" rel="noopener"><i>' + svg('book') + '</i><span><b>Open data</b><small>Download every table as CSV</small></span></a>' +
           '<a href="' + BLOG + '2021/06/sitemap.html"><i>' + svg('flag') + '</i><span><b>All articles</b><small>Every guide by topic</small></span></a>' +
-        '</div></div>' +
+        '</div>' + (BD_TOOLS.hub ? '<div class="bd-pn-chips">' + EVERYDAY.filter(function (t) { return BD_TOOLS[t[0]]; }).map(function (t) { return '<a href="' + BD_TOOLS[t[0]] + '">' + esc(t[1]) + '</a>'; }).join('') + '</div>' : '') + '</div>' +
         (countries.length > 1 ? '<div class="bd-pn-sec"><h5>Country quick look</h5><select class="bd-pn-country" aria-label="Choose a country"><option value="">Choose a country…</option>' +
           countries.filter(function (c) { return c !== ' hub'; }).map(function (c) { return '<option value="' + esc(BD_COUNTRIES[c]) + '">' + esc(c) + '</option>'; }).join('') + '</select></div>' : '') +
         '<div class="bd-pn-sec"><h5>Quick money check</h5><div class="bd-pn-tabs">' + Object.keys(MINI).map(function (k, i) { return '<button type="button" data-k="' + k + '"' + (i ? '' : ' class="bd-on"') + '>' + MINI[k][0] + '</button>'; }).join('') +
@@ -1990,7 +1997,9 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           return '<a class="bd-start-card" style="--c:' + g[2] + '" href="' + g[4] + '"><i>' + svg(g[3]) + '</i><span><b>' + g[0] + '</b><small>' + g[1] + '</small></span></a>';
         }).join('') + '</div>' +
         '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute. <a href="' + BLOG + 'p/free-calculators.html">See all 52 →</a></span></div><div class="bd-toolsbar-list">' +
-        TOOLS_HOME.map(function (t) { return '<a href="' + BLOG + t[2] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span></a>'; }).join('') + '</div></div>');
+        TOOLS_HOME.map(function (t) { return '<a href="' + BLOG + t[2] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span></a>'; }).join('') + '</div></div>' +
+        (BD_TOOLS.hub ? '<div class="bd-toolsbar bd-everyday"><div class="bd-toolsbar-head"><b>Free everyday tools</b><span>No upload, no sign-up, no watermark. <a href="' + BD_TOOLS.hub + '">See all 10 \u2192</a></span></div><div class="bd-toolsbar-list">' +
+          EVERYDAY.filter(function (t) { return BD_TOOLS[t[0]]; }).slice(0, 5).map(function (t) { return '<a href="' + BD_TOOLS[t[0]] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[1]) + '</b><small>' + esc(t[2]) + '</small></span></a>'; }).join('') + '</div></div>' : ''));
       content.parentNode.insertBefore(front, content);
       instantSearch(front.querySelector('.bd-mast-search input'));
       root.classList.add('bd-home-front');
@@ -2011,6 +2020,13 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var renderFront = function (posts) {
         if (!posts || !posts.length) return {};
         posts = posts.filter(function (p) { return !/^quotes?$/i.test(p.label) && !/^quote of the day/i.test(p.title); });
+        // Series published in one go (35 country pages, the tool guides) would fill the whole front: show a few of each.
+        var toolPaths = Object.keys(BD_TOOLS).map(function (k) { return BD_TOOLS[k]; }), nCountry = 0, nTool = 0;
+        posts = posts.filter(function (p) {
+          if (/ in Numbers 20\d\d:/.test(p.title)) return nCountry++ < 1;
+          if (toolPaths.indexOf(pathOf(p.url)) > -1) return nTool++ < 3;
+          return true;
+        });
         var used = {}, withPic = posts.filter(function (p) { return p.thumb; });
         var lead = withPic[0] || posts[0]; used[lead.url] = 1;
         var second = withPic.filter(function (p) { return !used[p.url]; }).slice(0, 2); second.forEach(function (p) { used[p.url] = 1; });
@@ -2089,7 +2105,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       };
       var cached = store('bd-front'), painted = false;
       if (cached && cached.p && Date.now() - cached.t < 6 * 3600e3) { renderFront(cached.p); painted = true; }
-      feed('', 25, function (posts) {
+      feed('', 60, function (posts) {
         if (posts.length) store('bd-front', { t: Date.now(), p: posts });
         var used = renderFront(posts.length ? posts : (cached && cached.p) || []);
         if (!painted || posts.length) renderSections(used);

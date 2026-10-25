@@ -16,7 +16,7 @@ import sys, re as _re
 sys.path.insert(0, os.path.join(HERE, ".."))
 import publish_tools as _pt
 _ids = json.load(open(os.path.join(HERE, "..", "tools", "published.json"), encoding="utf-8"))
-_cb = lambda n: (_pt.COUNTRY_COVER_BASE if n.startswith("countries/") else _pt.COVER_BASE) + n.split("/")[1]
+_cb = lambda n: _pt.cover_base(n) + n.split("/")[1]
 covers = {_re.sub(r"^https?://[^/]+", "", _ids[n]["url"]): _cb(n) for n in _pt.COVERS if n in _ids}
 covers.update({"t:" + _pt.POSTS[n][0]: _cb(n) for n in _pt.COVERS if n in _ids and n in _pt.POSTS})
 assert js.count("var BD_COVERS = {};") == 1
@@ -30,6 +30,12 @@ assert js.count("var BD_TRENDING = {};") == 1
 js = js.replace("var BD_TRENDING = {};", "var BD_TRENDING = " + json.dumps(_trend, separators=(",", ":"), ensure_ascii=False) + ";")
 _cty = {_pt.POSTS[n][0].split(" in Numbers")[0].replace("The ", ""): _re.sub(r"^https?://[^/]+", "", _ids[n]["url"]) for n in _ids if n.startswith("countries/") and "in Numbers" in _pt.POSTS.get(n, ("",))[0]}
 if "countries/compare-countries-money-facts-2026" in _ids: _cty[" hub"] = _re.sub(r"^https?://[^/]+", "", _ids["countries/compare-countries-money-facts-2026"]["url"])
+_tk = {"hub": "free-tools-no-upload-no-signup", "qr": "qr-code-generator-never-expires", "pdf": "merge-split-pdf-without-uploading", "sign": "sign-pdf-free-no-account",
+       "photo": "heic-to-jpg-remove-photo-location", "resume": "free-resume-builder-free-pdf-download", "invoice": "free-invoice-generator-no-watermark",
+       "subs": "subscription-tracker-cancel-reminders", "tz": "meeting-time-zone-planner", "pw": "password-passphrase-generator-breach-check", "words": "word-counter-character-limits"}
+_tools = {k: _re.sub(r"^https?://[^/]+", "", _ids["articles/" + v]["url"]) for k, v in _tk.items() if "articles/" + v in _ids}
+assert js.count("var BD_TOOLS = {};") == 1
+js = js.replace("var BD_TOOLS = {};", "var BD_TOOLS = " + json.dumps(_tools, separators=(",", ":")) + ";")
 assert js.count("var BD_COUNTRIES = {};") == 1
 js = js.replace("var BD_COUNTRIES = {};", "var BD_COUNTRIES = " + json.dumps(_cty, separators=(",", ":"), ensure_ascii=False) + ";")
 links = json.load(open(os.path.join(HERE, "autolinks.json"), encoding="utf-8"))
