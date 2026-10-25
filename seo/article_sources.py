@@ -526,6 +526,21 @@ S.update({
 })
 A["state-pension-amounts-by-country-2026"] = ["oecd_pag25", "oecd_prr", "uk_nsp", "ssa_cola", "ncpssm_ss", "ca_oas_q4", "au_ap_sep", "jp_basic", "de_rente26", "ecb_fx"]
 
+S.update({
+ "ecb_mir": ("European Central Bank: cost of borrowing for house purchase (MIR)", "https://data.ecb.europa.eu/data/datasets/MIR/MIR.M.U2.B.A2C.AM.R.A.2250.EUR.N"),
+ "fm_pmms": ("Freddie Mac: Primary Mortgage Market Survey", "https://www.freddiemac.com/pmms"),
+ "uk_mf_oct": ("ITV News: average five-year fixed mortgage hits 6% (Moneyfacts)", "https://www.itv.com/news/2026-10-05/mortgage-misery-as-average-five-year-deal-hits-6-for-first-time-in-three-years"),
+ "ca_5yr": ("nesto: 5-year fixed mortgage rates in Canada", "https://www.nesto.ca/mortgage-rates/fixed/5-year/"),
+ "au_rba_oct": ("Integrated Finance Group: banks pass on the RBA rate rise, October 2026", "https://integratedfinancegroup.com.au/blog/banks-pass-on-rba-rate-rise-october-2026/"),
+ "jp_boj_mort": ("Nippon.com: BOJ rate hike and higher housing loan costs", "https://www.nippon.com/en/japan-data/h02898/"),
+ "cn_lpr": ("ECNS: China keeps the 5-year loan prime rate at 3.5%", "https://www.ecns.cn/news/2026-10-20/detail-ihfmiwhm0736120.shtml"),
+ "ch_pf": ("PostFinance: Swiss mortgage interest rates", "https://www.postfinance.ch/en/private/financing/mortgages/mortgage-interest-rates.html"),
+ "rbi": ("Reserve Bank of India", "https://www.rbi.org.in/"),
+ "br_mort": ("MySide: Brazilian mortgage interest rates by bank, 2026", "https://myside.com.br/guia-imoveis/taxa-juros-financiamento-imobiliario"),
+ "mx_mort": ("Bancario: Mexican mortgage interest rates", "https://bancario.com.mx/tasa-de-interes-credito-hipotecario"),
+})
+A["mortgage-rates-by-country-2026"] = ["ecb_mir", "fm_pmms", "uk_mf_oct", "ca_5yr", "au_rba_oct", "jp_boj_mort", "cn_lpr", "ch_pf", "rbi", "br_mort", "mx_mort"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
