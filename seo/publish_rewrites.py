@@ -33,7 +33,12 @@ for s in sys.argv[1:]:
     before=p.get("content","").count("<img"); after=u.get("content","").count("<img")
     if after<before: print("IMAGE LOSS, skipped",s,before,after); continue
     body={"title":u.get("title",p["title"]),"labels":u.get("labels",p.get("labels",[])),"content":u["content"],"published":p["published"]}
-    r=a.call("PATCH",f"/blogs/{bid}/posts/{p['id']}",{"fetchBody":"true"},body)
+    import time
+    for _t in range(8):
+        try: r=a.call("PATCH",f"/blogs/{bid}/posts/{p['id']}",{"fetchBody":"true"},body); break
+        except SystemExit as e:
+            if "rateLimitExceeded" in str(e) or " 429 " in str(e) or " 503 " in str(e): print("  rate limited, waiting", flush=True); time.sleep(60); continue
+            raise
     c=r.get("content","")
     ok=len(c)>1000 and c.count("<img")==after and r["published"]==p["published"]
     print("OK " if ok else "CHECK",s,"|",r["title"],"| imgs",after,"| len",len(c),"|",r["url"])
