@@ -53,6 +53,28 @@ finance bloggers, expat forums and student or journalist contacts:
 > central banks). You're welcome to embed it on your site with one line of code, or download the CSV. It updates
 > automatically when I refresh the data: {guide link}
 
+## Step 1d. Request indexing for the free tools (added 25 October 2026)
+
+These target big, everyday searches ("qr code generator free", "merge pdf", "sign pdf free", "heic to jpg", "free
+resume builder", "word counter"). Submit the hub first, then the rest:
+
+- https://randomthoughtsever.blogspot.com/2026/10/free-online-tools-that-dont-upload-your.html
+- https://randomthoughtsever.blogspot.com/2026/10/free-qr-code-generator-that-never.html
+- https://randomthoughtsever.blogspot.com/2026/10/merge-split-and-reorder-pdfs-free.html
+- https://randomthoughtsever.blogspot.com/2026/10/how-to-sign-pdf-for-free-without.html
+- https://randomthoughtsever.blogspot.com/2026/10/convert-heic-to-jpg-shrink-photos-and.html
+- https://randomthoughtsever.blogspot.com/2026/10/free-resume-builder-with-free-pdf.html
+- https://randomthoughtsever.blogspot.com/2026/10/free-invoice-generator-no-sign-up-no.html
+- https://randomthoughtsever.blogspot.com/2026/10/subscription-tracker-find-forgotten.html
+- https://randomthoughtsever.blogspot.com/2026/10/meeting-time-zone-planner-find-time.html
+- https://randomthoughtsever.blogspot.com/2026/10/strong-password-and-passphrase.html
+- https://randomthoughtsever.blogspot.com/2026/10/word-counter-with-character-limits-for.html
+
+Good places to share them (each is a genuine answer to a common question, so post the link only where it helps):
+Reddit threads asking "free resume builder that doesn't charge to download", "QR code stopped working", "merge PDF
+without uploading" or "sign a PDF without DocuSign"; Quora answers to the same; and small-business and freelancer
+groups for the invoice maker.
+
 ## Step 2. Pinterest (free, about 10 minutes for 5 pins; pins keep sending visitors for months)
 
 Create a free business account. For each pin, use **Create Pin**, then upload the image from the link (open it and
