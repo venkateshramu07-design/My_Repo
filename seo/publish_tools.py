@@ -105,6 +105,7 @@ def build(name):
     from apply import escape_scripts, tool_assets
     body = expand(open(os.path.join(TOOLS, "..", name + ".html") if "/" in name
                        else os.path.join(TOOLS, name + ".html"), encoding="utf-8").read())
+    body = body.replace("IMGBASE/", COVER_BASE.replace("/seo/covers/", "/seo/images/"))  # article illustrations
     if name in COVERS:  # after the opening "Updated" line
         c = COVER_BASE + name.split("/")[1]
         img = (f'<img src="{c}-800.webp" srcset="{c}-800.webp 800w, {c}-1200.webp 1200w" sizes="(max-width: 780px) 92vw, 680px" '
