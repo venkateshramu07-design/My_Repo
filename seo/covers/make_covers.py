@@ -48,6 +48,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "ev-vs-petrol-running-costs-2026": ("PERSONAL FINANCE \u00b7 CALCULATOR", "EV or Petrol: Which Is Cheaper to Run Now?", "#0f9d76"),
     "debt-consolidation-loans-when-they-save": ("PERSONAL FINANCE \u00b7 CALCULATOR", "Debt Consolidation: When It Saves You Money", "#0f9d76"),
     "life-insurance-cost-by-age-calculator": ("PERSONAL FINANCE \u00b7 CALCULATOR", "Life Insurance Cost by Age", "#7a5cd6"),
+    "retire-abroad-on-2000-a-month": ("LIVING ABROAD \u00b7 DATA", "Retire Abroad on $2,000 a Month", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

@@ -1,0 +1,52 @@
+<div class="bd-calc" id="bd-ra2">
+<div class="bc-title">Retiring abroad: visa income rules and living costs</div>
+<div class="bc-sub">Monthly income a retiree must show for a residence visa, and how far $2,000 a month goes compared with the US. Sort by any column, filter by region, and tap a country for prices and tax.</div>
+<div class="ra2-filters" role="group" aria-label="Region"></div>
+<div class="ra2-wrap"><table class="ra2-t"><thead><tr><th data-k="c">Country</th><th data-k="l">Income rule</th><th data-k="u">≈ US$/mo</th></tr></thead><tbody></tbody></table></div>
+<div class="bc-legend"><span id="ra2-note">—</span></div>
+<div class="bc-note">Visa rules for main applicants in 2026, from governments, consulates and immigration advisers; requirements change and vary by consulate, so confirm before applying. Price levels: World Bank, private consumption purchasing power parity divided by the market exchange rate, 2024 (US = 100). Tax notes are a simplified summary, not advice.</div>
+</div>
+<style>
+#bd-ra2 .ra2-filters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+#bd-ra2 .ra2-filters button{font:600 13px system-ui,-apple-system,sans-serif;padding:6px 11px;border-radius:999px;border:1.5px solid var(--c-line,#e4e0d8);background:var(--c-paper,#fff);color:var(--c-ink,#15171d);cursor:pointer}
+#bd-ra2 .ra2-filters button[aria-pressed="true"]{background:#0f9d76;border-color:#0f9d76;color:#fff}
+#bd-ra2 .ra2-wrap{max-height:600px;overflow:auto;border-radius:12px;border:1px solid var(--c-line,#e4e0d8)}
+#bd-ra2 table.ra2-t{width:100%;table-layout:fixed;border-collapse:collapse;font:500 14px/1.35 system-ui,-apple-system,sans-serif;margin:0}
+#bd-ra2 .ra2-t th:first-child{width:38%}#bd-ra2 .ra2-t th:nth-child(3){width:26%}
+#bd-ra2 .ra2-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5);font-weight:700;font-size:12.5px;text-align:left;padding:9px 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid var(--c-line,#e4e0d8);color:var(--c-ink,#15171d)}
+#bd-ra2 .ra2-t th:last-child,#bd-ra2 .ra2-t td:last-child{text-align:right}
+#bd-ra2 .ra2-t td{padding:9px 8px;border-bottom:1px solid var(--c-line,#eeeae2);vertical-align:top;color:var(--c-ink,#15171d);overflow-wrap:anywhere;white-space:normal!important;text-align:left}
+#bd-ra2 .ra2-t td:nth-child(2),#bd-ra2 .ra2-t th:nth-child(2){text-align:left!important;width:30%}
+#bd-ra2 .ra2-t tr.ra2-row{cursor:pointer}
+#bd-ra2 .ra2-bar{display:block;height:5px;border-radius:3px;background:#0f9d76;margin-top:4px;margin-left:auto}
+#bd-ra2 .ra2-det td{font-size:12.5px;color:var(--c-muted,#5d6271);background:var(--c-surface,#fbf9f5);text-align:left!important}
+#bd-ra2 .ra2-g{display:block;font-size:11.5px;color:var(--c-muted,#5d6271);font-weight:500}
+@media (max-width:520px){#bd-ra2 table.ra2-t{font-size:13px}#bd-ra2 .ra2-t th,#bd-ra2 .ra2-t td{padding:8px 5px!important}#bd-ra2 .ra2-t th{font-size:11.5px}}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-ra2');if(!root)return;
+var D=[{"c":"Portugal","g":"Europe","s":"D7 passive income visa","l":"€920 a month (+50% spouse)","u":1030,"n":"Prices are about <b>60%</b> of US levels, so $2,000 buys roughly what <b>$3,310</b> would in the US. Foreign pensions taxed at normal Portuguese rates since the NHR regime closed to new applicants in 2024."},{"c":"Spain","g":"Europe","s":"Non-lucrative visa","l":"€2,400 a month (+€600 per dependant)","u":2690,"n":"Prices are about <b>64%</b> of US levels, so $2,000 buys roughly what <b>$3,140</b> would in the US. Residents taxed on worldwide income, including pensions; wealth taxes in some regions."},{"c":"Greece","g":"Europe","s":"Financially independent person visa","l":"About €3,500 a month","u":3920,"n":"Prices are about <b>60%</b> of US levels, so $2,000 buys roughly what <b>$3,310</b> would in the US. Optional 7% flat tax on foreign income, including pensions, for up to 15 years for new residents."},{"c":"Italy","g":"Europe","s":"Elective residence visa","l":"No fixed figure (often about €31,000 a year)","u":null,"n":"Prices are about <b>68%</b> of US levels, so $2,000 buys roughly what <b>$2,950</b> would in the US. Optional 7% flat tax on foreign pensions for retirees moving to small towns in the south."},{"c":"France","g":"Europe","s":"Long-stay visitor visa","l":"No fixed figure (usually at least the net minimum wage)","u":null,"n":"Prices are about <b>78%</b> of US levels, so $2,000 buys roughly what <b>$2,580</b> would in the US. Pensions taxed under tax treaties; US Social Security is taxed only in the US."},{"c":"Mexico","g":"Americas","s":"Temporary residency","l":"About $4,400–4,700 a month or about $75,000 in savings","u":4500,"n":"Prices are about <b>59%</b> of US levels, so $2,000 buys roughly what <b>$3,390</b> would in the US. Residents can be taxed on worldwide income; many foreign pensions are covered by tax treaties."},{"c":"Panama","g":"Americas","s":"Pensionado visa","l":"$1,000 a month lifetime pension (+$250 per dependant)","u":1000,"n":"Prices are about <b>51%</b> of US levels, so $2,000 buys roughly what <b>$3,910</b> would in the US. Territorial tax system: foreign pensions are not taxed in Panama."},{"c":"Costa Rica","g":"Americas","s":"Pensionado residency","l":"$1,000 a month lifetime pension","u":1000,"n":"Prices are about <b>64%</b> of US levels, so $2,000 buys roughly what <b>$3,140</b> would in the US. Territorial tax system: foreign pensions are generally not taxed."},{"c":"Colombia","g":"Americas","s":"M-Pensionado visa","l":"3 × minimum wage (COP 5.25 million, about $1,300–1,600)","u":1450,"n":"Prices are about <b>38%</b> of US levels, so $2,000 buys roughly what <b>$5,280</b> would in the US. Tax residents are taxed on worldwide income above allowances."},{"c":"Dominican Republic","g":"Americas","s":"Pensioner residency","l":"$1,500 a month pension","u":1500,"n":"Prices are about <b>40%</b> of US levels, so $2,000 buys roughly what <b>$5,060</b> would in the US."},{"c":"Belize","g":"Americas","s":"Qualified Retired Persons programme","l":"$2,000 a month, age 45+","u":2000,"n":"Prices are about <b>55%</b> of US levels, so $2,000 buys roughly what <b>$3,620</b> would in the US. Foreign income of programme participants is exempt from Belize tax."},{"c":"Uruguay","g":"Americas","s":"Legal residency","l":"No fixed figure; stable income must be shown","u":null,"n":"Prices are about <b>73%</b> of US levels, so $2,000 buys roughly what <b>$2,740</b> would in the US."},{"c":"Thailand","g":"Asia-Pacific","s":"Retirement visa (age 50+)","l":"฿65,000 a month (about $1,930) or ฿800,000 in a Thai bank","u":1930,"n":"Prices are about <b>31%</b> of US levels, so $2,000 buys roughly what <b>$6,470</b> would in the US. Since 2024, foreign income brought into Thailand by tax residents can be taxed."},{"c":"Philippines","g":"Asia-Pacific","s":"SRRV Classic (age 50+, with pension)","l":"$800 a month pension plus a $10,000 deposit","u":800,"n":"Prices are about <b>36%</b> of US levels, so $2,000 buys roughly what <b>$5,520</b> would in the US."},{"c":"Malaysia","g":"Asia-Pacific","s":"Malaysia My Second Home","l":"Large fixed deposit required (tiered since 2024)","u":null,"n":"Prices are about <b>32%</b> of US levels, so $2,000 buys roughly what <b>$6,310</b> would in the US. Foreign income remitted by individuals is currently exempt."}];
+var regions=['All'].concat(D.map(function(d){return d.g}).filter(function(g,i,a){return a.indexOf(g)===i}));
+var st={g:'All',k:'u',dir:-1,open:null};
+var fb=root.querySelector('.ra2-filters');
+regions.forEach(function(g){var b=document.createElement('button');b.type='button';b.textContent=g;b.setAttribute('aria-pressed',g==='All');b.onclick=function(){st.g=g;fb.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});draw()};fb.appendChild(b)});
+root.querySelectorAll('th').forEach(function(th){th.onclick=function(){var k=th.getAttribute('data-k');if(k==='l')k='u';st.dir=st.k===k?-st.dir:(k==='c'?1:-1);st.k=k;draw()}});
+function money(v){return v==null?'—':"$"+v.toLocaleString('en-US')+""}
+function draw(){
+  var rows=D.filter(function(d){return st.g==='All'||d.g===st.g});
+  rows.sort(function(a,b){var x=a[st.k],y=b[st.k];if(x==null)return 1;if(y==null)return -1;return (typeof x==='string'?x.localeCompare(y):x-y)*st.dir});
+  var mx=Math.max.apply(null,D.map(function(d){return d.u||0}));var h='';
+  rows.forEach(function(d){
+    h+='<tr class="ra2-row" data-c="'+d.c+'"><td><b>'+d.c+'</b><span class="ra2-g">'+d.s+'</span></td><td>'+d.l+'</td><td><b>'+money(d.u)+'</b>'+(d.u?'<span class="ra2-bar" style="width:'+Math.max(3,Math.round(d.u/mx*100))+'%"></span>':'')+'</td></tr>';
+    if(st.open===d.c)h+='<tr class="ra2-det"><td colspan="3">'+(d.n||'No further notes.')+'</td></tr>';
+  });
+  root.querySelector('tbody').innerHTML=h;
+  root.querySelectorAll('tr.ra2-row').forEach(function(tr){tr.onclick=function(){var c=tr.getAttribute('data-c');st.open=st.open===c?null:c;draw()}});
+  var us=rows.filter(function(d){return d.u!=null}).map(function(d){return d.u}).sort(function(a,b){return a-b});
+  var med=us.length?us[Math.floor(us.length/2)]:null;
+  document.getElementById('ra2-note').textContent=rows.length+' countries shown'+(med?'; median about '+money(med):'');
+}
+draw();
+})();
+</script>

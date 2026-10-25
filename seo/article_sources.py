@@ -579,6 +579,20 @@ S.update({
 })
 A["life-insurance-cost-by-age-calculator"] = ["mg_term", "ig_term", "iii_life"]
 
+S.update({
+ "wb_ppp": ("World Bank: PPP conversion factor, private consumption", "https://data.worldbank.org/indicator/PA.NUS.PRVT.PP"),
+ "wb_fx": ("World Bank: official exchange rate", "https://data.worldbank.org/indicator/PA.NUS.FCRF"),
+ "il_gri26": ("401(k) Specialist: Greece tops International Living's 2026 Global Retirement Index", "https://401kspecialistmag.com/greece-tops-2026-global-retirement-index-for-first-time/"),
+ "visa_2026": ("WhereNext: retirement visa requirements 2026", "https://getwherenext.com/data/retirement-visa-requirements-2026"),
+ "mx_solv": ("Consulate of Mexico in Houston: temporary resident visa financial solvency", "https://consulmex.sre.gob.mx/houston/index.php/tempresvisafinsolvency"),
+ "th_ret": ("Royal Thai Embassy, Oslo: non-immigrant long-stay (retirement) visa", "https://oslo.thaiembassy.org/en/page/non-immigrant-visa-long-stay-retirement"),
+ "co_pen": ("Nexo Legal: Colombia retirement visa requirements 2026", "https://nexo.legal/colombia-retirement-visa-requirements-2026/"),
+ "cr_pen": ("Expatsi: Costa Rica pensionado visa", "https://expatsi.com/visas/costa-rica/pensionado"),
+ "uk_sp_abroad": ("GOV.UK: State Pension if you retire abroad", "https://www.gov.uk/state-pension-if-you-retire-abroad"),
+ "ssa_abroad": ("US Social Security Administration: payments abroad", "https://www.ssa.gov/international/payments.html"),
+})
+A["retire-abroad-on-2000-a-month"] = ["visa_2026", "mx_solv", "th_ret", "co_pen", "cr_pen", "il_gri26", "wb_ppp", "wb_fx", "uk_sp_abroad", "ssa_abroad"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
