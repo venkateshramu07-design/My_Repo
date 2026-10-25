@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 
 BLOG = "https://randomthoughtsever.blogspot.com"
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-OUT = os.path.join(ROOT, "site-backup")
+OUT = os.path.abspath(os.environ.get("BACKUP_DIR") or os.path.join(ROOT, "site-backup"))  # BACKUP_DIR: used by the weekly workflow
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 FILE_HOSTS = re.compile(r"https?://(?:[a-z0-9-]+\.)*(?:googleusercontent\.com|bp\.blogspot\.com|blogger\.com/img|cdn\.jsdelivr\.net|"
                         r"cdnjs\.cloudflare\.com|fonts\.googleapis\.com|fonts\.gstatic\.com|i\.ytimg\.com)[^\s\"'<>()\\]*", re.I)
