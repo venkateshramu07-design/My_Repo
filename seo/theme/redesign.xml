@@ -978,6 +978,33 @@ html.bd-dark .bd-th-s,html.bd-dark .bd-th-res,html.bd-dark .bd-th-grid a{backgro
 .post-body .seo-related>p:first-of-type{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 4px!important;padding:12px 14px!important;border-radius:14px;background:var(--bd-surface)!important;border:1px dashed var(--bd-line);font:600 14.5px/1.4 var(--bd-sans)!important}
 .post-body .seo-related>p:first-of-type strong{font:800 11.5px var(--bd-sans)!important;letter-spacing:.08em;text-transform:uppercase;color:#fff!important;background:var(--bd-accent)!important;padding:4px 9px;border-radius:999px}
 .post-body .seo-related>p:first-of-type a{text-decoration:none!important;font-weight:700}
+.bd-tip-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;align-items:center;margin:1.8em 0!important;padding:16px 18px!important;border-radius:18px;background:linear-gradient(135deg,#fff7ea,#ffeede)!important;border:1px solid #f5d6b0}
+.bd-tip-mini{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#fff;font-size:26px;box-shadow:0 4px 12px rgba(180,90,20,.15)}
+.bd-tip-card b{display:block;font:800 17px/1.3 var(--bd-sans)!important;color:#5b2b05!important}.bd-tip-card small{display:block;font:500 13.5px/1.45 var(--bd-sans)!important;color:#8a5a2b!important}
+.bd-tip-quick{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.bd-tip-quick button{border:1px solid #f0c48f!important;background:#fff!important;color:#7a3e08!important;border-radius:999px!important;padding:9px 14px!important;font:700 14px var(--bd-sans)!important;cursor:pointer;margin:0!important}
+.bd-tip-quick .bd-tip-go{background:linear-gradient(135deg,#ff9f1c,#e2462c)!important;color:#fff!important;border:0!important;margin-left:auto!important}
+html.bd-dark .post-body .bd-tip-quick button{background:#2b2116!important;border-color:#6a4a24!important;color:#ffd9a8!important}html.bd-dark .post-body .bd-tip-quick .bd-tip-go{background:linear-gradient(135deg,#ff9f1c,#e2462c)!important;color:#fff!important}html.bd-dark .bd-tip-mini{background:#3a2a18!important}
+html.bd-dark .bd-tip-card{background:linear-gradient(135deg,#2a1f12,#2b1913)!important;border-color:#5a3a1a}html.bd-dark .bd-tip-card b{color:#ffd9a8!important}html.bd-dark .bd-tip-card small{color:#d9b48c!important}
+.bd-tip-sheet{position:fixed;inset:0;z-index:10010;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,11,15,.5);opacity:0;pointer-events:none;transition:opacity .2s}
+.bd-tip-sheet.bd-open{opacity:1;pointer-events:auto}
+.bd-tip-box{position:relative;width:min(440px,100%);margin:0 0 0;padding:26px 22px 20px;border-radius:24px 24px 0 0;background:var(--bd-surface);color:var(--bd-ink);font-family:var(--bd-sans);text-align:center;transform:translateY(30px);transition:transform .25s}
+.bd-tip-sheet.bd-open .bd-tip-box{transform:none}
+@media (min-width:600px){.bd-tip-sheet{align-items:center}.bd-tip-box{border-radius:24px}}
+.bd-tip-x{position:absolute;right:12px;top:10px;border:0;background:none;font-size:24px;color:var(--bd-muted);cursor:pointer}
+.bd-tip-cup{font-size:40px;line-height:1}.bd-tip-box h3{margin:8px 0 6px;font:800 24px var(--bd-serif)}.bd-tip-box p{margin:0 0 16px;font:500 14.5px/1.5 var(--bd-sans);color:var(--bd-muted)}
+.bd-tip-amts{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px;margin-bottom:14px}
+.bd-tip-amts button,.bd-tip-custom{border:2px solid var(--bd-line);background:var(--bd-bg);color:var(--bd-ink);border-radius:14px;padding:12px 6px;font:800 18px var(--bd-sans);cursor:pointer}
+.bd-tip-amts button.bd-on{border-color:#ff9f1c;background:#fff4e2;color:#7a3e08}
+.bd-tip-custom{display:flex;align-items:center;gap:2px;padding:0 10px;font-size:17px}.bd-tip-custom input{width:100%;min-width:0;border:0;outline:0;background:transparent;font:800 17px var(--bd-sans);color:var(--bd-ink);padding:12px 0}
+.bd-tip-pay{display:grid;gap:8px}.bd-tip-pay a{display:block;padding:14px;border-radius:14px;font:800 15.5px var(--bd-sans);text-decoration:none!important}
+.bd-tip-pp{background:#ffc439;color:#003087!important}.bd-tip-upi{background:#0f9d76;color:#fff!important}.bd-tip-alt{background:transparent;color:#0f9d76!important;border:1px solid var(--bd-line);font-weight:700!important}
+.bd-tip-qr{margin-top:12px}.bd-tip-qr canvas{border-radius:12px;background:#fff}.bd-tip-qr small{display:block;color:var(--bd-muted);font:600 13px var(--bd-sans)}
+.bd-tip-fine{display:block;margin-top:12px;font:500 12px/1.4 var(--bd-sans);color:var(--bd-muted)}
+.bd-tip-toast{position:fixed;left:50%;bottom:18px;z-index:10005;display:flex;align-items:center;gap:10px;width:min(460px,calc(100vw - 24px));padding:12px 12px 12px 14px;border-radius:18px;background:#15171d;color:#fff;box-shadow:0 20px 50px rgba(0,0,0,.35);font-family:var(--bd-sans);transform:translate(-50%,140%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.bd-tip-toast.bd-show{transform:translate(-50%,0)}.bd-tip-toast>span{font-size:26px}.bd-tip-toast p{margin:0;flex:1;font:500 13.5px/1.4 var(--bd-sans)}.bd-tip-toast b{display:block;font-weight:800}
+.bd-tip-yes{border:0;border-radius:12px;padding:10px 12px;background:linear-gradient(135deg,#ff9f1c,#e2462c);color:#fff;font:800 13.5px var(--bd-sans);white-space:nowrap;cursor:pointer}.bd-tip-no{border:0;background:none;color:#a9aebb;font-size:22px;cursor:pointer;padding:0 4px}
+#bd-hub .bd-tip-card{margin-top:22px!important}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -2941,6 +2968,88 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       if (area && !area.querySelector('.bd-copy')) area.insertBefore(el('span', 'bd-copy', '© ' + new Date().getFullYear() + ' Blog Digest · '), area.firstChild);
     }
 
+
+    // Support ("buy me a coffee"): shown only where a reader has just got value (after using a tool, at the end of an
+    // article, on the tools page) and in the menu and footer. Amounts in the visitor's currency; PayPal for everyone,
+    // UPI for India. Nothing appears until follow.json has paypalMe or upiId. Asks at most once a week, never after a tip.
+    withFollow(function (cfg) {
+      if (!cfg.paypalMe && !cfg.upiId) return;
+      var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+      var lang = (navigator.language || '').toLowerCase();
+      var india = /Kolkata|Calcutta/.test(tz) || /-in$/.test(lang) || /^(hi|ta|te|bn|mr|kn|ml|gu|pa)/.test(lang);
+      var EURO = /^Europe\/(Paris|Berlin|Madrid|Rome|Amsterdam|Brussels|Vienna|Dublin|Lisbon|Athens|Helsinki|Luxembourg|Bratislava|Ljubljana|Tallinn|Riga|Vilnius|Valletta|Nicosia|Zagreb)$/;
+      var cur = india && cfg.upiId ? 'INR' : /^Europe\/London$/.test(tz) ? 'GBP' : EURO.test(tz) ? 'EUR' : /^Australia\//.test(tz) ? 'AUD' : /^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|Regina|St_Johns)$/.test(tz) ? 'CAD' : 'USD';
+      var SYM = { USD: '$', EUR: '€', GBP: '£', INR: '₹', AUD: 'A$', CAD: 'C$' }, AMT = cur === 'INR' ? [100, 250] : [3, 5];
+      var askedRecently = function () { var t = store('bd-tip-ask') || 0, d = store('bd-tip-done') || 0; return Date.now() - t < 7 * 864e5 || Date.now() - d < 60 * 864e5; };
+      var mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      var payUrl = function (method, amt) {
+        if (method === 'upi') return 'upi://pay?pa=' + encodeURIComponent(cfg.upiId).replace('%40', '@') + '&pn=' + encodeURIComponent(cfg.upiName || 'Blog Digest') + '&am=' + amt + '&cu=INR&tn=' + encodeURIComponent('Coffee for Blog Digest');
+        var c = cur === 'INR' ? 'USD' : cur, a = cur === 'INR' ? (amt >= 250 ? 5 : 3) : amt;
+        return 'https://paypal.me/' + encodeURIComponent(cfg.paypalMe) + '/' + a + c;
+      };
+      var sheet = null;
+      var open = function (from) {
+        store('bd-tip-ask', Date.now());
+        if (!sheet) {
+          sheet = el('div', 'bd-tip-sheet', '<div class="bd-tip-box" role="dialog" aria-modal="true" aria-label="Buy me a coffee"><button type="button" class="bd-tip-x" aria-label="Close">×</button>' +
+            '<div class="bd-tip-cup">☕</div><h3>Buy me a coffee</h3><p>Every guide here is researched and sourced, and every tool runs privately on your device, all free: no paywalls, no sign-ups. If something here saved you time or money, a small tip keeps it going.</p>' +
+            '<div class="bd-tip-amts">' + AMT.map(function (v, i) { return '<button type="button" data-v="' + v + '"' + (i ? ' class="bd-on"' : '') + '>' + SYM[cur] + v + '</button>'; }).join('') +
+            '<label class="bd-tip-custom">' + SYM[cur] + '<input type="number" min="1" step="1" inputmode="numeric" placeholder="Other"/></label></div>' +
+            '<div class="bd-tip-pay">' + (cfg.upiId && cur === 'INR' ? '<a class="bd-tip-upi" data-m="upi" href="#">Pay with UPI (GPay, PhonePe, Paytm)</a>' : '') +
+            (cfg.paypalMe ? '<a class="bd-tip-pp" data-m="pp" href="#" target="_blank" rel="noopener">Pay with PayPal or card</a>' : '') +
+            (cfg.upiId && cur !== 'INR' ? '<a class="bd-tip-upi bd-tip-alt" data-m="upi" href="#">In India? Pay with UPI</a>' : '') + '</div>' +
+            '<div class="bd-tip-qr" hidden><canvas width="220" height="220"></canvas><small>Scan with any UPI app</small></div>' +
+            '<small class="bd-tip-fine">Payments go through PayPal or your UPI app. Blog Digest never sees your card or bank details.</small></div>');
+          document.body.appendChild(sheet);
+          var amt = AMT[1], box = sheet.querySelector('.bd-tip-box'), custom = sheet.querySelector('.bd-tip-custom input');
+          sheet.addEventListener('click', function (e) { if (e.target === sheet || e.target.closest('.bd-tip-x')) sheet.classList.remove('bd-open'); });
+          sheet.querySelector('.bd-tip-amts').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; amt = +b.dataset.v; custom.value = '';
+            this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('bd-on', x === b); }); });
+          custom.addEventListener('input', function () { var v = Math.round(+custom.value); if (v > 0) { amt = v; sheet.querySelectorAll('.bd-tip-amts button').forEach(function (x) { x.classList.remove('bd-on'); }); } });
+          sheet.querySelector('.bd-tip-pay').addEventListener('click', function (e) {
+            var a = e.target.closest('a'); if (!a) return; var m = a.dataset.m, url = payUrl(m, amt);
+            store('bd-tip-done', Date.now());
+            if (m === 'upi' && !mobile) {  // desktop: show a QR to scan with a phone
+              e.preventDefault(); var q = sheet.querySelector('.bd-tip-qr'); q.hidden = false;
+              var draw = function () { qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8']; var c = qrcode(0, 'M'); c.addData(url, 'Byte'); c.make(); var n = c.getModuleCount(), cv = q.querySelector('canvas'), s = Math.floor(220 / (n + 8)), x = cv.getContext('2d');
+                x.fillStyle = '#fff'; x.fillRect(0, 0, 220, 220); x.fillStyle = '#15171d'; var o = Math.floor((220 - n * s) / 2); for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (c.isDark(r, k)) x.fillRect(o + k * s, o + r * s, s, s); };
+              if (window.qrcode) draw(); else { var sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; sc.crossOrigin = 'anonymous';
+                sc.integrity = 'sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1'; sc.onload = draw; document.head.appendChild(sc); }
+              return;
+            }
+            a.href = url;
+            setTimeout(function () { box.innerHTML = '<div class="bd-tip-cup">❤️</div><h3>Thank you!</h3><p>That really helps keep Blog Digest free for everyone.</p>'; setTimeout(function () { sheet.classList.remove('bd-open'); }, 2600); }, 600);
+          });
+        }
+        requestAnimationFrame(function () { sheet.classList.add('bd-open'); });
+      };
+      var cta = function (cls, title, text) {
+        var c = el('aside', 'bd-tip-card ' + (cls || ''), '<span class="bd-tip-mini">☕</span><span><b>' + title + '</b><small>' + text + '</small></span>' +
+          '<span class="bd-tip-quick">' + AMT.map(function (v) { return '<button type="button" data-v="' + v + '">' + SYM[cur] + v + '</button>'; }).join('') + '<button type="button" class="bd-tip-go">Buy me a coffee</button></span>');
+        c.addEventListener('click', function (e) { if (e.target.closest('button')) open(cls); }); return c;
+      };
+      // 1. End of every article, just before the related reading
+      if (isPost && body) {
+        var anchor = body.querySelector('.seo-related') || Array.prototype.filter.call(body.querySelectorAll('h2'), function (h) { return /^Related Guides$/i.test(h.textContent.trim()); })[0] || document.querySelector('.bd-share-wrap');
+        if (anchor && !body.querySelector('.bd-tip-card')) anchor.parentNode.insertBefore(cta('bd-tip-post', 'Found this useful?', 'Blog Digest is free with no paywalls. A coffee keeps the guides and tools coming.'), anchor);
+      }
+      // 2. Straight after someone uses a tool (a download, copy or convert), once a week at most
+      document.addEventListener('click', function (e) {
+        var b = e.target.closest('.bd-calc button, .bd-calc a[download]'); if (!b || askedRecently() || document.querySelector('.bd-tip-toast')) return;
+        if (!/download|copy|convert|save|split|merge|sign|export|calendar/i.test(b.textContent)) return;
+        setTimeout(function () {
+          var t = el('div', 'bd-tip-toast', '<span>☕</span><p><b>Glad that worked!</b> This tool is free and private. If it saved you time, you can buy me a coffee.</p><button type="button" class="bd-tip-yes">Tip ' + SYM[cur] + AMT[0] + '+</button><button type="button" class="bd-tip-no" aria-label="No thanks">×</button>');
+          document.body.appendChild(t); store('bd-tip-ask', Date.now()); requestAnimationFrame(function () { t.classList.add('bd-show'); });
+          t.querySelector('.bd-tip-yes').onclick = function () { t.remove(); open('tool'); };
+          t.querySelector('.bd-tip-no').onclick = function () { t.remove(); };
+          setTimeout(function () { if (t.parentNode) t.remove(); }, 14000);
+        }, 1400);
+      }, true);
+      // 3. Tools page, menu and footer
+      if (/^\/p\/free-(tools|calculators)\.html$/.test(location.pathname)) { var hub = document.getElementById('bd-hub'); if (hub) hub.appendChild(cta('bd-tip-hub', 'Keep these tools free', 'No accounts, no limits, and your files never leave your device. A coffee helps pay for the time they take to build.')); }
+      document.querySelectorAll('.bd-pn-tools').forEach(function (t) { var a = el('a', '', '<i>☕</i><span><b>Buy me a coffee</b><small>Support Blog Digest</small></span>'); a.href = '#'; a.onclick = function (e) { e.preventDefault(); open('menu'); }; t.appendChild(a); });
+      var fcs = document.querySelectorAll('.bd-foot-col ul'), fc = fcs[fcs.length - 1]; if (fc) { var li = el('li', '', '<a href="#">☕ Buy me a coffee</a>'); li.firstChild.onclick = function (e) { e.preventDefault(); open('footer'); }; fc.appendChild(li); }
+    });
 
     // Follow: a "Get new articles" card at the end of articles, a one-time invitation after half an article, and a
     // row in the footer. Nothing appears until follow.json has at least one channel.
