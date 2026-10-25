@@ -561,6 +561,17 @@ S.update({
 })
 A["ev-vs-petrol-running-costs-2026"] = ["eia_gas", "uk_fuel", "ec_wob", "eia_epm", "ofgem_oct26", "es_el", "zapmap_idx", "iea_gevo26"]
 
+S.update({
+ "fed_g19": ("Federal Reserve: Consumer Credit G.19 (credit card and personal loan rates)", "https://www.federalreserve.gov/releases/g19/current/"),
+ "cfpb_dc": ("CFPB: what to know about consolidating credit card debt", "https://www.consumerfinance.gov/ask-cfpb/what-is-debt-consolidation-en-1861/"),
+ "uk_card_rate": ("ClearScore: average UK credit card interest rate (Bank of England data)", "https://www.clearscore.com/learn/credit-cards/average-credit-card-interest-rate-apr-uk"),
+ "nfcc": ("National Foundation for Credit Counseling", "https://www.nfcc.org/"),
+ "stepchange": ("StepChange Debt Charity", "https://www.stepchange.org/"),
+ "mh_cons": ("MoneyHelper: consolidation loans for debt", "https://www.moneyhelper.org.uk/en/money-troubles/dealing-with-debt/consolidation-loans-for-debt"),
+ "ftc_debt": ("FTC: how to get out of debt", "https://consumer.ftc.gov/articles/how-get-out-debt"),
+})
+A["debt-consolidation-loans-when-they-save"] = ["fed_g19", "cfpb_dc", "uk_card_rate", "mh_cons", "ftc_debt", "nfcc", "stepchange"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
