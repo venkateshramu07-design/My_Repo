@@ -514,6 +514,18 @@ S.update({
 })
 A["income-tax-by-country-take-home-pay"] = ["oecd_tw26", "oecd_tw_data", "uk_itr", "uk_ni", "ca_itr", "tf_state", "ato_super"]
 
+S.update({
+ "oecd_prr": ("OECD Data Explorer: pension replacement rates (Pensions at a Glance 2025)", "https://data-explorer.oecd.org/vis?df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_PAG%40DF_PRR&df[ag]=OECD.ELS.SPD"),
+ "uk_nsp": ("GOV.UK: the new State Pension, what you'll get", "https://www.gov.uk/new-state-pension/what-youll-get"),
+ "ssa_cola": ("US Social Security Administration: latest cost-of-living adjustment", "https://www.ssa.gov/oact/cola/latestCOLA.html"),
+ "ncpssm_ss": ("NCPSSM: fast facts about Social Security, 2026", "https://www.ncpssm.org/documents/social-security-facts/fast-facts-about-social-security/"),
+ "ca_oas_q4": ("Government of Canada: CPP and OAS maximum amounts, October–December 2026", "https://www.canada.ca/en/employment-social-development/programs/pensions/pension/statistics/2026-quarterly-october-december.html"),
+ "au_ap_sep": ("Centrelink payment rates from 20 September 2026", "https://fairworkmate.com.au/blog/centrelink-payment-rates-increase-20-september-2026"),
+ "jp_basic": ("Japan Pension Service: old-age basic pension", "https://www.nenkin.go.jp/international/english/japanese-system/benefit/oldage_basic.html"),
+ "de_rente26": ("t-online: German pensions rise 4.24% from July 2026", "https://www.t-online.de/finanzen/ratgeber/altersvorsorge/gesetzlicherente/id_100980648/renten-erhoehung-ab-juli-2026-so-viel-mehr-geld-gibt-es-fuer-rentner.html"),
+})
+A["state-pension-amounts-by-country-2026"] = ["oecd_pag25", "oecd_prr", "uk_nsp", "ssa_cola", "ncpssm_ss", "ca_oas_q4", "au_ap_sep", "jp_basic", "de_rente26", "ecb_fx"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
