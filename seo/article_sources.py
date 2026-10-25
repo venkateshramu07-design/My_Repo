@@ -470,6 +470,25 @@ S.update({
 A["petrol-prices-since-iran-war-by-country"] = ["ec_wob", "eia_gas", "eia_brent", "uk_fuel", "caa_gas", "kalibrate_feb", "nt_fuel_feb", "za_oct", "za_feb", "pk_feb", "pk_oct", "jp_gas", "in_delhi", "aj_petrol", "ecb_fx"]
 A["retirement-age-by-country-2026"] = ["oecd_pag25", "etk_ages", "ssa_fra", "uk_spa", "cpp", "au_age", "drv", "fr_freeze", "it_2027", "dk_70", "sg_mom", "nz_super", "jp_nenkin"]
 
+S.update({
+ "es_mw": ("Eurostat: monthly minimum wages (earn_mw_cur)", "https://ec.europa.eu/eurostat/databrowser/view/earn_mw_cur/default/table"),
+ "uk_nmw": ("GOV.UK: National Minimum Wage and National Living Wage rates", "https://www.gov.uk/national-minimum-wage-rates"),
+ "au_awr": ("Squire Patton Boggs: Fair Work Commission 2026 Annual Wage Review decision", "https://www.squirepattonboggs.com/insights/publications/2026-annual-wage-review-decision-fwc-increases-the-national-minimum-wage-and-award-rates/"),
+ "nz_mw": ("Employment New Zealand: minimum wage increase from 1 April 2026", "https://www.employment.govt.nz/news-and-updates/minimum-wage-is-increasing-on-1-april-2026"),
+ "ca_fmw": ("Immigration.ca: federal minimum wage from 1 April 2026", "https://immigration.ca/canada-just-boosted-its-federal-minimum-wage/"),
+ "jp_mw": ("Jiji via Adnkronos: Japan's minimum wage panel recommends a ¥55 rise for fiscal 2026", "https://english.adnkronos.com/2026/07/28/japan-govt-panel-proposes-55-yen-minimum-wage-hike/"),
+ "br_mw": ("Presidency of Brazil: Decree 12,797 setting the 2026 minimum wage", "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/decreto/d12797.htm"),
+ "mx_mw": ("CONASAMI: Mexico's National Minimum Wage Commission", "https://www.gob.mx/conasami"),
+ "za_mw": ("South Africa Department of Employment and Labour", "https://www.labour.gov.za/"),
+ "cn_mw": ("China Briefing: minimum wages in China, 2026", "https://china-briefing.com/news/minimum-wages-china"),
+ "vn_mw": ("ASEAN Briefing: Vietnam's regional minimum wage from 1 January 2026", "https://www.aseanbriefing.com/vietnam-news/vietnams-new-minimum-wage-january-1-2026"),
+ "co_mw": ("Consultorsalud: Colombia's 2026 minimum wage decrees", "https://consultorsalud.com/aumento-del-salario-minimo-en-colombia-2026/"),
+ "id_mw": ("Databoks: Indonesia's 2026 provincial minimum wages", "https://databoks.katadata.co.id/en/employment/statistics/695206d6675b6/indonesias-2026-provincial-minimum-wage-highest-in-jakarta"),
+ "us_state_mw": ("US Department of Labor: state minimum wage laws", "https://www.dol.gov/agencies/whd/minimum-wage/state"),
+ "oecd_mw": ("OECD: minimum wages relative to median wages", "https://www.oecd.org/en/data/datasets/minimum-wages-relative-to-median-wages.html"),
+})
+A["minimum-wage-by-country-2026"] = ["es_mw", "uk_nmw", "au_awr", "nz_mw", "ca_fmw", "jp_mw", "br_mw", "mx_mw", "za_mw", "cn_mw", "id_mw", "vn_mw", "co_mw", "us_state_mw", "oecd_mw", "ecb_fx"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

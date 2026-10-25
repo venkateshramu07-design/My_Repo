@@ -1,0 +1,52 @@
+<div class="bd-calc" id="bd-mw">
+<div class="bc-title">Minimum wage by country (2026)</div>
+<div class="bc-sub">The legal minimum wage for adult workers in each country, and what it comes to for a month of full-time work in US dollars. Sort by any column, filter by region, and tap a country for details.</div>
+<div class="mw-filters" role="group" aria-label="Region"></div>
+<div class="mw-wrap"><table class="mw-t"><thead><tr><th data-k="c">Country</th><th data-k="l">Minimum wage</th><th data-k="u">≈ US$/month</th></tr></thead><tbody></tbody></table></div>
+<div class="bc-legend"><span id="mw-note">—</span></div>
+<div class="bc-note">Rates in force in October 2026. EU countries, Serbia, Türkiye and the US federal rate: Eurostat, July 2026 (monthly). Others: official rates converted to a month of full-time work (40 hours a week; Australia 38; daily rates × 26 days, Mexico × 30.4). Dollar values use ECB reference rates for 23 October 2026 and are blank where the ECB publishes no rate. Denmark, Italy, Austria, Finland, Sweden, Norway and Switzerland have no national statutory minimum wage; pay floors are set by collective agreements.</div>
+</div>
+<style>
+#bd-mw .mw-filters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+#bd-mw .mw-filters button{font:600 13px system-ui,-apple-system,sans-serif;padding:6px 11px;border-radius:999px;border:1.5px solid var(--c-line,#e4e0d8);background:var(--c-paper,#fff);color:var(--c-ink,#15171d);cursor:pointer}
+#bd-mw .mw-filters button[aria-pressed="true"]{background:#0f9d76;border-color:#0f9d76;color:#fff}
+#bd-mw .mw-wrap{max-height:600px;overflow:auto;border-radius:12px;border:1px solid var(--c-line,#e4e0d8)}
+#bd-mw table.mw-t{width:100%;table-layout:fixed;border-collapse:collapse;font:500 14px/1.35 system-ui,-apple-system,sans-serif;margin:0}
+#bd-mw .mw-t th:first-child{width:38%}#bd-mw .mw-t th:nth-child(3){width:26%}
+#bd-mw .mw-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5);font-weight:700;font-size:12.5px;text-align:left;padding:9px 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid var(--c-line,#e4e0d8);color:var(--c-ink,#15171d)}
+#bd-mw .mw-t th:last-child,#bd-mw .mw-t td:last-child{text-align:right}
+#bd-mw .mw-t td{padding:9px 8px;border-bottom:1px solid var(--c-line,#eeeae2);vertical-align:top;color:var(--c-ink,#15171d);overflow-wrap:anywhere;white-space:normal!important;text-align:left}
+#bd-mw .mw-t td:nth-child(2),#bd-mw .mw-t th:nth-child(2){text-align:left!important;width:30%}
+#bd-mw .mw-t tr.mw-row{cursor:pointer}
+#bd-mw .mw-bar{display:block;height:5px;border-radius:3px;background:#0f9d76;margin-top:4px;margin-left:auto}
+#bd-mw .mw-det td{font-size:12.5px;color:var(--c-muted,#5d6271);background:var(--c-surface,#fbf9f5);text-align:left!important}
+#bd-mw .mw-g{display:block;font-size:11.5px;color:var(--c-muted,#5d6271);font-weight:500}
+@media (max-width:520px){#bd-mw table.mw-t{font-size:13px}#bd-mw .mw-t th,#bd-mw .mw-t td{padding:8px 5px!important}#bd-mw .mw-t th{font-size:11.5px}}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-mw');if(!root)return;
+var D=[{"c":"Luxembourg","g":"Europe","s":"","l":"€2,771/month","u":3102,"n":""},{"c":"Ireland","g":"Europe","s":"","l":"€2,391/month","u":2676,"n":"€14.15 an hour from January 2026"},{"c":"Netherlands","g":"Europe","s":"","l":"€2,338/month","u":2617,"n":""},{"c":"Germany","g":"Europe","s":"","l":"€2,343/month","u":2623,"n":"€13.90 an hour from January 2026"},{"c":"Belgium","g":"Europe","s":"","l":"€2,234/month","u":2501,"n":""},{"c":"France","g":"Europe","s":"","l":"€1,867/month","u":2090,"n":"SMIC; raised in 2026"},{"c":"Slovenia","g":"Europe","s":"","l":"€1,482/month","u":1659,"n":""},{"c":"Spain","g":"Europe","s":"","l":"€1,425/month","u":1595,"n":""},{"c":"Lithuania","g":"Europe","s":"","l":"€1,153/month","u":1291,"n":""},{"c":"Poland","g":"Europe","s":"","l":"€1,119/month","u":1252,"n":""},{"c":"Cyprus","g":"Europe","s":"","l":"€1,088/month","u":1218,"n":""},{"c":"Greece","g":"Europe","s":"","l":"€1,073/month","u":1201,"n":""},{"c":"Portugal","g":"Europe","s":"","l":"€1,073/month","u":1201,"n":""},{"c":"Croatia","g":"Europe","s":"","l":"€1,050/month","u":1175,"n":""},{"c":"Malta","g":"Europe","s":"","l":"€994/month","u":1113,"n":""},{"c":"Estonia","g":"Europe","s":"","l":"€946/month","u":1059,"n":""},{"c":"Czechia","g":"Europe","s":"","l":"€923/month","u":1033,"n":""},{"c":"Slovakia","g":"Europe","s":"","l":"€915/month","u":1024,"n":""},{"c":"Hungary","g":"Europe","s":"","l":"€906/month","u":1014,"n":""},{"c":"Romania","g":"Europe","s":"","l":"€825/month","u":923,"n":""},{"c":"Latvia","g":"Europe","s":"","l":"€780/month","u":873,"n":""},{"c":"Bulgaria","g":"Europe","s":"","l":"€620/month","u":694,"n":""},{"c":"Türkiye","g":"Europe","s":"","l":"€621/month","u":695,"n":"Converted at falling exchange rates; set in lira"},{"c":"Serbia","g":"Europe","s":"","l":"€743/month","u":832,"n":""},{"c":"United States (federal)","g":"Americas","s":"","l":"$7.25/hour","u":1257,"n":"$7.25 an hour, unchanged since 2009; 30 states and DC set higher rates, up to $17.13 in Washington state"},{"c":"United Kingdom","g":"Europe","s":"","l":"£12.71/hour","u":2945,"n":"National Living Wage for 21+ from 1 April 2026"},{"c":"Australia","g":"Asia-Pacific","s":"","l":"A$26.44/hour","u":3058,"n":"A$1,004.90 a week (38 hours) from 1 July 2026, up about 6%"},{"c":"New Zealand","g":"Asia-Pacific","s":"","l":"NZ$23.95/hour","u":2361,"n":"Adult rate from 1 April 2026"},{"c":"Canada (federal)","g":"Americas","s":"","l":"C$18.15/hour","u":2248,"n":"Federally regulated sectors from 1 April 2026; provinces set their own rates"},{"c":"Japan","g":"Asia-Pacific","s":"","l":"¥1,177/hour (average)","u":1301,"n":"National weighted average for fiscal 2026; set by prefecture, from ¥1,280 in Tokyo"},{"c":"South Korea","g":"Asia-Pacific","s":"","l":"₩10,320/hour","u":1351,"n":"2026 rate"},{"c":"Brazil","g":"Americas","s":"","l":"R$1,621/month","u":321,"n":"From 1 January 2026, up 6.8%"},{"c":"Mexico","g":"Americas","s":"","l":"MX$315.04/day","u":510,"n":"General rate from 1 January 2026, up 13%; higher in the northern border zone"},{"c":"South Africa","g":"Africa","s":"","l":"R30.23/hour","u":316,"n":"From 1 March 2026"},{"c":"China (Shanghai)","g":"Asia-Pacific","s":"","l":"¥2,740/month","u":411,"n":"Highest provincial rate; set by province"},{"c":"Indonesia (Jakarta)","g":"Asia-Pacific","s":"","l":"Rp5,729,876/month","u":316,"n":"Highest provincial rate, 2026"},{"c":"Thailand (Bangkok)","g":"Asia-Pacific","s":"","l":"฿400/day","u":308,"n":"Highest rate; THB 337–400 by province"},{"c":"India","g":"Asia-Pacific","s":"","l":"₹178/day (national floor)","u":49,"n":"Non-binding national floor; states set their own, often higher, rates"},{"c":"Colombia","g":"Americas","s":"","l":"COP 1,750,905/month","u":null,"n":"Up 23% from January 2026, plus a COP 249,095 transport allowance"},{"c":"Chile","g":"Americas","s":"","l":"CLP 539,000/month","u":null,"n":"From January 2026"},{"c":"Vietnam (Region I)","g":"Asia-Pacific","s":"","l":"₫5,310,000/month","u":null,"n":"Highest of four regions, from 1 January 2026"}];
+var regions=['All'].concat(D.map(function(d){return d.g}).filter(function(g,i,a){return a.indexOf(g)===i}));
+var st={g:'All',k:'u',dir:-1,open:null};
+var fb=root.querySelector('.mw-filters');
+regions.forEach(function(g){var b=document.createElement('button');b.type='button';b.textContent=g;b.setAttribute('aria-pressed',g==='All');b.onclick=function(){st.g=g;fb.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});draw()};fb.appendChild(b)});
+root.querySelectorAll('th').forEach(function(th){th.onclick=function(){var k=th.getAttribute('data-k');if(k==='l')k='u';st.dir=st.k===k?-st.dir:(k==='c'?1:-1);st.k=k;draw()}});
+function money(v){return v==null?'—':"$"+v.toLocaleString('en-US')+""}
+function draw(){
+  var rows=D.filter(function(d){return st.g==='All'||d.g===st.g});
+  rows.sort(function(a,b){var x=a[st.k],y=b[st.k];if(x==null)return 1;if(y==null)return -1;return (typeof x==='string'?x.localeCompare(y):x-y)*st.dir});
+  var mx=Math.max.apply(null,D.map(function(d){return d.u||0}));var h='';
+  rows.forEach(function(d){
+    h+='<tr class="mw-row" data-c="'+d.c+'"><td><b>'+d.c+'</b><span class="mw-g">'+d.s+'</span></td><td>'+d.l+'</td><td><b>'+money(d.u)+'</b>'+(d.u?'<span class="mw-bar" style="width:'+Math.max(3,Math.round(d.u/mx*100))+'%"></span>':'')+'</td></tr>';
+    if(st.open===d.c)h+='<tr class="mw-det"><td colspan="3">'+(d.n||'No further notes.')+'</td></tr>';
+  });
+  root.querySelector('tbody').innerHTML=h;
+  root.querySelectorAll('tr.mw-row').forEach(function(tr){tr.onclick=function(){var c=tr.getAttribute('data-c');st.open=st.open===c?null:c;draw()}});
+  var us=rows.filter(function(d){return d.u!=null}).map(function(d){return d.u}).sort(function(a,b){return a-b});
+  var med=us.length?us[Math.floor(us.length/2)]:null;
+  document.getElementById('mw-note').textContent=rows.length+' countries shown'+(med?'; median about '+money(med):'');
+}
+draw();
+})();
+</script>

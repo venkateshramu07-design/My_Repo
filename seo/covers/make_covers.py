@@ -39,6 +39,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "deposit-insurance-limits-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Deposit Insurance Limits by Country 2026", "#0f9d76"),
     "petrol-prices-since-iran-war-by-country": ("ECONOMICS \u00b7 DATA", "Petrol Price Rises Since the Iran War, by Country", "#e0662f"),
     "retirement-age-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Retirement Age by Country 2026", "#7a5cd6"),
+    "minimum-wage-by-country-2026": ("CAREER \u00b7 DATA", "Minimum Wage by Country 2026", "#2f7de1"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630
