@@ -63,9 +63,11 @@
 </div>
 <script>
 (function(){
+var SRI={"https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js":"sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1"};
+function sri(s,u){s.crossOrigin='anonymous';if(SRI[u])s.integrity=SRI[u];}
 var root=document.getElementById('bd-qr');if(!root)return;
 var $=function(id){return document.getElementById(id);},type='url',lib=null;
-function load(cb){if(window.qrcode)return cb();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';s.onload=cb;s.onerror=function(){$('qr-info').textContent='Could not load the QR drawing code. Check your connection and reload.';};document.head.appendChild(s);}
+function load(cb){if(window.qrcode)return cb();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';sri(s,s.src);s.onload=cb;s.onerror=function(){$('qr-info').textContent='Could not load the QR drawing code. Check your connection and reload.';};document.head.appendChild(s);}
 function wesc(v){return String(v).replace(/([\\;,:"])/g,'\\$1');}
 function vesc(v){return String(v).replace(/([\\;,])/g,'\\$1').replace(/\n/g,'\\n');}
 function payload(){

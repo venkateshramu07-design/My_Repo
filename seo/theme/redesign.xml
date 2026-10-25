@@ -902,6 +902,8 @@ html.bd-trend-ready #content-wrapper{display:none!important}
 .bd-tr-more{display:inline-block;margin-top:8px;font:700 13px var(--bd-sans);color:var(--c)!important;text-decoration:none!important}
 @media (max-width:860px){.bd-tr-top{grid-template-columns:1fr}.bd-tr-lead{grid-row:auto}.bd-tr-tools,.bd-tr-secs{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.bd-tr-head{padding:26px 20px;border-radius:22px}.bd-tr-tools,.bd-tr-secs{grid-template-columns:1fr}.bd-tr-txt b{font-size:21px}.bd-tr-row{grid-template-columns:26px 64px 1fr}.bd-tr-row img{width:64px;height:48px}}
+html.bd-framed body>*:not(#bd-framed){display:none!important}
+#bd-framed{display:grid!important;place-items:center;min-height:100vh;font:700 18px system-ui,sans-serif}#bd-framed a{color:#e2462c!important}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -1107,6 +1109,25 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   }
 
   var BLOG = 'https://randomthoughtsever.blogspot.com/';
+  // Security: refuse to be framed by other sites (Blogger sends no X-Frame-Options), except Blogger's own editor and
+  // preview, Google services and Translate; block plugins and <base> hijacking; open new tabs without a window.opener.
+  try {
+    if (window.top !== window.self && !/^https:\/\/([a-z0-9-]+\.)*(blogger\.com|blogspot\.com|google\.[a-z.]+|googleusercontent\.com|translate\.goog|gstatic\.com)(\/|$)/.test(document.referrer))
+      document.documentElement.classList.add('bd-framed');
+  } catch (e) {}
+  if (document.documentElement.classList.contains('bd-framed')) {
+    var bdFr = function () { if (!document.body || document.getElementById('bd-framed')) return; var d = document.createElement('div'); d.id = 'bd-framed';
+      d.innerHTML = '<a href="' + location.href.replace(/"/g, '%22') + '" target="_top" rel="noopener">Open this page on Blog Digest</a>'; document.body.appendChild(d); };
+    if (document.body) bdFr(); else document.addEventListener('DOMContentLoaded', bdFr);
+  }
+  try {
+    var bdCsp = document.createElement('meta'); bdCsp.httpEquiv = 'Content-Security-Policy'; bdCsp.content = "object-src 'none'; base-uri 'self'; upgrade-insecure-requests";
+    document.head.appendChild(bdCsp);
+  } catch (e) {}
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest && ev.target.closest('a[target="_blank"]');
+    if (a && !/noopener/.test(a.rel || '')) a.rel = ((a.rel || '') + ' noopener').trim();
+  }, true);
 
   // An older gadget may still load this layer from jsDelivr's branch URL, which can serve a version days old that
   // does not know to stand aside. Stop that script before it runs and hide its empty gadget box.
@@ -1879,7 +1900,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           '<a href="' + BLOG + 'p/free-calculators.html"><i>' + svg('chart') + '</i><span><b>Free calculators</b><small>52 money tools, no sign-up</small></span></a>' +
           '<a href="' + BLOG + 'p/trending-posts_53.html"><i>' + svg('rise') + '</i><span><b>Trending now</b><small>What readers are asking this week</small></span></a>' +
           (BD_COUNTRIES[' hub'] ? '<a href="' + BD_COUNTRIES[' hub'] + '"><i>' + svg('globe') + '</i><span><b>Compare 35 countries</b><small>Wages, tax, mortgages, pensions</small></span></a>' : '') +
-          '<a href="https://github.com/venkateshramu07-design/My_Repo/tree/ccr-ee047f91-rbyv4x/seo/data" target="_blank" rel="noopener"><i>' + svg('book') + '</i><span><b>Open data</b><small>Download every table as CSV</small></span></a>' +
+          (BD_COUNTRIES[' hub'] ? '<a href="' + BD_COUNTRIES[' hub'] + '#downloads"><i>' + svg('book') + '</i><span><b>Open data</b><small>Every table, free to download</small></span></a>' : '') +
           '<a href="' + BLOG + '2021/06/sitemap.html"><i>' + svg('flag') + '</i><span><b>All articles</b><small>Every guide by topic</small></span></a>' +
         '</div>' + (BD_TOOLS.hub ? '<div class="bd-pn-chips">' + EVERYDAY.filter(function (t) { return BD_TOOLS[t[0]]; }).map(function (t) { return '<a href="' + BD_TOOLS[t[0]] + '">' + esc(t[1]) + '</a>'; }).join('') + '</div>' : '') + '</div>' +
         (countries.length > 1 ? '<div class="bd-pn-sec"><h5>Country quick look</h5><select class="bd-pn-country" aria-label="Choose a country"><option value="">Choose a country…</option>' +

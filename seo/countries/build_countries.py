@@ -323,6 +323,12 @@ def hub(countries, names):
 </tbody></table></div>
 <p><small>"None": no statutory minimum wage (collective agreements). "—": not in that dataset.</small></p>
 
+<h2 id="downloads">Download the Data</h2>
+<p>Every table behind these pages is free to download as a CSV file and reuse with credit to Blog Digest (CC BY 4.0):</p>
+<ul>
+{chr(10).join(f'<li><a href="{CSV_URL}{k}.csv">{html.escape(k.replace("-", " ").capitalize())}</a> (from [[post:{g}]])</li>' for k, g in GUIDE.items())}
+</ul>
+
 <h2>How to Use These Comparisons</h2>
 <ul>
 <li><strong>Wages and tax together:</strong> a high minimum wage can come with high tax. Compare the US-dollar minimum wage with the share of pay the average worker keeps.</li>
