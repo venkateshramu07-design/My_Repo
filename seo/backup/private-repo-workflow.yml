@@ -1,0 +1,46 @@
+# Weekly full backup of the blog into this private repository. Copy to .github/workflows/weekly-backup.yml in the
+# private backup repository. The backup script is read from the public site repository; the backup itself is saved
+# here, so it is never public.
+name: Weekly blog backup
+
+on:
+  schedule:
+    - cron: "17 2 * * 0"   # Sundays 02:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Get the backup script (public site repository)
+        uses: actions/checkout@v4
+        with:
+          repository: venkateshramu07-design/My_Repo
+          ref: ccr-ee047f91-rbyv4x
+          path: src
+      - name: Get the current backup (this private repository)
+        uses: actions/checkout@v4
+        with:
+          path: bk
+      - name: Refresh the backup from the live blog
+        env:
+          BACKUP_DIR: bk/site-backup
+        run: |
+          python3 src/seo/backup/backup_blog.py
+          cp src/seo/backup/RESTORE.md bk/README.md
+          python3 -c "import json;m=json.load(open('bk/site-backup/manifest.json'));assert not m['files_failed'] and not m['pages_missing_in_static_site'], (m['files_failed'][:5], m['pages_missing_in_static_site'][:5]);print('posts',m['posts'],'pages',m['pages'],'comments',m['comments'],'files',m['files_downloaded'])"
+      - name: Save the backup
+        working-directory: bk
+        run: |
+          git config user.name "blog-digest-bot"
+          git config user.email "blog-digest-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || (git commit -q -m "Weekly backup $(date -u +%F)" && git push)
