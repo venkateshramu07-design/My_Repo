@@ -576,6 +576,7 @@ html.bd-article .post-body .seo-related li::marker{content:''}
 @media (min-width:1280px){.bd-rail{display:block}html.bd-article .bd-readbar{display:none!important}}
 
 /* Article illustrations */
+img[src*='/seo/covers/']:not(.post-body img){object-fit:cover!important;object-position:left center!important}
 .post-body .bd-ill{margin:2.2em 0 1.6em!important;padding:0!important;border:0!important}
 .post-body .bd-ill svg{display:block;width:100%;height:auto;border-radius:20px;overflow:hidden}
 .bd-ill .ill-bg{fill:color-mix(in srgb,var(--c) 9%,var(--bd-surface))}
@@ -1285,6 +1286,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   function labelUrl(t) { return '/search/label/' + encodeURIComponent(t); }
   function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
 
+  var BD_COVERS = {};
   // Cover art for posts without an image, in place of the theme's grey "no image" picture.
   var PLACEHOLDER = /(\/nth\.png|no[-_]?thumb\.png|no[-_]?image[^/]*)(\?|$)/i;
   var DEEP = ['#12141b', '#1e1b3a', '#2a1530', '#0f2a2a', '#2b1a10'];
@@ -1294,6 +1296,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     ['globe', /countr|world|global|abroad/i], ['book', /book|learn|study|education|school/i], ['flag', /guide|start here/i]];
   var PALETTE = ['#e2462c', '#0f9d76', '#6b5cff', '#e48b12', '#e5487d', '#2f7de1', '#16a34a', '#0e9bb5'];
   function cover(title, label, big) {
+    var realT = BD_COVERS['t:' + String(title || '').trim()];
+    if (realT) return realT + '-800.webp';
     var key = (label || '').trim().toLowerCase(), c = COLORS[key] || [PALETTE[hash(title || key) % PALETTE.length], 'spark'];
     if (key === 'start here') GUIDES.forEach(function (g) { if (g[5].test(title)) c = [g[2], g[3]]; });
     var W = big ? 800 : 200, H = big ? 500 : 200, letter = esc(((title || label || 'B').trim().charAt(0) || 'B').toUpperCase());
@@ -1317,10 +1321,18 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     }
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s + '</svg>');
   }
-  function fixImage(img, title, label, big) {
+  // Article covers hosted outside Blogger (which only makes thumbnails of its own images), by post path and title.
+  function coverFor(href) {
+    if (!href) return '';
+    var m = String(href).match(/\/\d{4}\/\d{2}\/[^?#]+\.html/);
+    return m && BD_COVERS[m[0]] ? BD_COVERS[m[0]] : '';
+  }
+  function fixImage(img, title, label, big, href) {
     var src = img.getAttribute('data-src') || img.getAttribute('src') || '';
     if (!src || PLACEHOLDER.test(src)) {
       img.removeAttribute('data-src'); img.removeAttribute('srcset');
+      var real = coverFor(href);
+      if (real) { img.src = real + '-800.webp'; img.srcset = real + '-800.webp 800w, ' + real + '-1200.webp 1200w'; img.classList.add('lazy-yard'); if (!img.alt) img.alt = title || ''; img.style.objectFit = 'cover'; return true; }
       img.src = cover(title, label, big); img.classList.add('bd-cover', 'lazy-yard');
       if (!img.alt) img.alt = '';
       return true;
@@ -1605,7 +1617,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var img = p.querySelector('.post-thumb'), a = p.querySelector('.post-title a'), tag = p.querySelector('.post-tag');
       if (!img) return;
       var first = cardNo++ < 2;
-      if (!fixImage(img, a ? a.textContent : '', tag ? tag.textContent : '', true)) {
+      if (!fixImage(img, a ? a.textContent : '', tag ? tag.textContent : '', true, a && a.href)) {
         var orig = img.getAttribute('data-src') || img.getAttribute('src');
         if (!first) img.loading = 'lazy';
         else img.setAttribute('fetchpriority', 'high');
@@ -1622,7 +1634,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         var a = img.closest('a'), li = img.closest('li, .post, .related-item'), t = (li && (li.querySelector('.post-title') || li.querySelector('div > a, h2, h3'))) || a;
         var tag = li && li.querySelector('.post-tag');
         var wide = img.closest('.related-posts, .FeaturedPost, .related-wrap');
-        fixImage(img, (t && t.textContent) || img.alt || '', tag ? tag.textContent : '', !!wide);
+        var link = (a && a.href) || (t && t.href) || (li && li.querySelector('a[href]') && li.querySelector('a[href]').href);
+        fixImage(img, (t && t.textContent) || img.alt || '', tag ? tag.textContent : '', !!wide, link);
       });
       document.querySelectorAll('#random-posts .random-info').forEach(function (r) {
         if (r.dataset.bd) return; r.dataset.bd = 1;
@@ -1666,7 +1679,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         '<div class="bd-start"><span class="bd-start-label">New here? Start with a guide</span>' + GUIDES.map(function (g) {
           return '<a class="bd-start-card" style="--c:' + g[2] + '" href="' + g[4] + '"><i>' + svg(g[3]) + '</i><span><b>' + g[0] + '</b><small>' + g[1] + '</small></span></a>';
         }).join('') + '</div>' +
-        '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute. <a href="' + BLOG + 'p/free-calculators.html">See all 38 →</a></span></div><div class="bd-toolsbar-list">' +
+        '<div class="bd-toolsbar"><div class="bd-toolsbar-head"><b>Free calculators</b><span>Work out your own numbers in a minute. <a href="' + BLOG + 'p/free-calculators.html">See all 52 →</a></span></div><div class="bd-toolsbar-list">' +
         TOOLS_HOME.map(function (t) { return '<a href="' + BLOG + t[2] + '"><i>' + svg(t[3]) + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span></a>'; }).join('') + '</div></div>');
       content.parentNode.insertBefore(front, content);
       root.classList.add('bd-home-front');

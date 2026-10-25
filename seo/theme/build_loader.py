@@ -11,6 +11,15 @@ js = re.search(r"<script>//<!\[CDATA\[\n(.*?)//\]\]></script>", src, re.S).group
 descs = json.load(open(os.path.join(HERE, "descriptions.json"), encoding="utf-8"))
 assert js.count("var BD_DESCS = {};") == 1
 js = js.replace("var BD_DESCS = {};", "var BD_DESCS = " + json.dumps(descs, ensure_ascii=True, separators=(",", ":")) + ";")
+# Covers for articles whose cover image is hosted on jsDelivr: post path -> cover base URL.
+import sys, re as _re
+sys.path.insert(0, os.path.join(HERE, ".."))
+import publish_tools as _pt
+_ids = json.load(open(os.path.join(HERE, "..", "tools", "published.json"), encoding="utf-8"))
+covers = {_re.sub(r"^https?://[^/]+", "", _ids[n]["url"]): _pt.COVER_BASE + n.split("/")[1] for n in _pt.COVERS if n in _ids}
+covers.update({"t:" + _pt.POSTS[n][0]: _pt.COVER_BASE + n.split("/")[1] for n in _pt.COVERS if n in _ids and n in _pt.POSTS})
+assert js.count("var BD_COVERS = {};") == 1
+js = js.replace("var BD_COVERS = {};", "var BD_COVERS = " + json.dumps(covers, separators=(",", ":")) + ";")
 links = json.load(open(os.path.join(HERE, "autolinks.json"), encoding="utf-8"))
 assert js.count("var BD_LINKS = {};") == 1
 js = js.replace("var BD_LINKS = {};", "var BD_LINKS = " + json.dumps(links, ensure_ascii=True, separators=(",", ":")) + ";")
