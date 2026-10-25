@@ -1,0 +1,31 @@
+Country,Region,Scheme,Limit (local currency),Limit (US$),Notes
+United States,Americas,FDIC,"$250,000",250000.0,Per ownership category; joint and retirement accounts insured separately
+Canada,Americas,CDIC,"C$100,000",71500.0,Per eligible category
+Mexico,Americas,IPAB,"400,000 UDIs (≈ MX$3.5m)",186300.0,Set in inflation-linked UDIs; peso value changes daily
+Brazil,Americas,FGC,"R$250,000",49500.0,
+Argentina,Americas,SEDESA,ARS 50 million,,From 1 April 2026
+United Kingdom,Europe,FSCS,"£120,000",160400.0,From 1 December 2025; temporary high balances up to £1.4m
+European Union (all 27),Europe,National schemes,"€100,000",111900.0,Harmonised by EU law; local-currency equivalent outside the euro
+Switzerland,Europe,esisuisse,"CHF 100,000",121300.0,
+Norway,Europe,Bankenes sikringsfond,NOK 2 million,213900.0,For banks in the Norwegian scheme
+Turkey,Europe,TMSF,TRY 1.2 million,24100.0,"Limit for 2026, raised from TRY 950,000"
+Russia,Europe,DIA,RUB 1.4 million,,Proposals to raise it are under discussion
+South Africa,Africa,CODI,"R100,000",6000.0,Scheme launched April 2024
+Nigeria,Africa,NDIC,₦5 million,,Commercial banks; ₦2m for microfinance and mortgage banks
+Kenya,Africa,KDIC,"KES 500,000",,
+Oman,Middle East,Bank Deposits Protection,"OMR 20,000",52000.0,Law in force from 2025
+Japan,Asia-Pacific,DICJ,¥10 million plus interest,63800.0,Non-interest settlement accounts fully protected
+China,Asia-Pacific,Deposit insurance fund,"¥500,000 (RMB)",75000.0,Principal and interest
+Hong Kong,Asia-Pacific,DPS,"HK$800,000",102000.0,
+Taiwan,Asia-Pacific,CDIC,NT$3 million,,Principal and interest
+South Korea,Asia-Pacific,KDIC,₩100 million,75500.0,Doubled from ₩50m on 1 September 2025
+Singapore,Asia-Pacific,SDIC,"S$100,000",78200.0,
+Malaysia,Asia-Pacific,PIDM,"RM250,000",61200.0,
+Thailand,Asia-Pacific,DPA,฿1 million,29600.0,
+Indonesia,Asia-Pacific,LPS,Rp2 billion,110400.0,
+Philippines,Asia-Pacific,PDIC,₱1 million,15700.0,"Doubled from ₱500,000 on 15 March 2025"
+Vietnam,Asia-Pacific,DIV,₫125 million,,
+India,Asia-Pacific,DICGC,"₹5 lakh (₹500,000)",5300.0,
+Pakistan,Asia-Pacific,DPC,PKR 1 million,,"Doubled from PKR 500,000 in October 2024"
+Australia,Asia-Pacific,Financial Claims Scheme,"A$250,000",175600.0,
+New Zealand,Asia-Pacific,Depositor Compensation Scheme,"NZ$100,000",56900.0,Scheme started 1 July 2025

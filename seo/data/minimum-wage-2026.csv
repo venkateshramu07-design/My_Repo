@@ -1,0 +1,42 @@
+Country,Region,Minimum wage (local),Monthly full-time (US$),Notes
+Luxembourg,Europe,"€2,771/month",3102,
+Ireland,Europe,"€2,391/month",2676,€14.15 an hour from January 2026
+Netherlands,Europe,"€2,338/month",2617,
+Germany,Europe,"€2,343/month",2623,€13.90 an hour from January 2026
+Belgium,Europe,"€2,234/month",2501,
+France,Europe,"€1,867/month",2090,SMIC; raised in 2026
+Slovenia,Europe,"€1,482/month",1659,
+Spain,Europe,"€1,425/month",1595,
+Lithuania,Europe,"€1,153/month",1291,
+Poland,Europe,"€1,119/month",1252,
+Cyprus,Europe,"€1,088/month",1218,
+Greece,Europe,"€1,073/month",1201,
+Portugal,Europe,"€1,073/month",1201,
+Croatia,Europe,"€1,050/month",1175,
+Malta,Europe,€994/month,1113,
+Estonia,Europe,€946/month,1059,
+Czechia,Europe,€923/month,1033,
+Slovakia,Europe,€915/month,1024,
+Hungary,Europe,€906/month,1014,
+Romania,Europe,€825/month,923,
+Latvia,Europe,€780/month,873,
+Bulgaria,Europe,€620/month,694,
+Türkiye,Europe,€621/month,695,Converted at falling exchange rates; set in lira
+Serbia,Europe,€743/month,832,
+United States (federal),Americas,$7.25/hour,1257,"$7.25 an hour, unchanged since 2009; 30 states and DC set higher rates, up to $17.13 in Washington state"
+United Kingdom,Europe,£12.71/hour,2945,National Living Wage for 21+ from 1 April 2026
+Australia,Asia-Pacific,A$26.44/hour,3058,"A$1,004.90 a week (38 hours) from 1 July 2026, up about 6%"
+New Zealand,Asia-Pacific,NZ$23.95/hour,2361,Adult rate from 1 April 2026
+Canada (federal),Americas,C$18.15/hour,2248,Federally regulated sectors from 1 April 2026; provinces set their own rates
+Japan,Asia-Pacific,"¥1,177/hour (average)",1301,"National weighted average for fiscal 2026; set by prefecture, from ¥1,280 in Tokyo"
+South Korea,Asia-Pacific,"₩10,320/hour",1351,2026 rate
+Brazil,Americas,"R$1,621/month",321,"From 1 January 2026, up 6.8%"
+Mexico,Americas,MX$315.04/day,510,"General rate from 1 January 2026, up 13%; higher in the northern border zone"
+South Africa,Africa,R30.23/hour,316,From 1 March 2026
+China (Shanghai),Asia-Pacific,"¥2,740/month",411,Highest provincial rate; set by province
+Indonesia (Jakarta),Asia-Pacific,"Rp5,729,876/month",316,"Highest provincial rate, 2026"
+Thailand (Bangkok),Asia-Pacific,฿400/day,308,Highest rate; THB 337–400 by province
+India,Asia-Pacific,₹178/day (national floor),49,"Non-binding national floor; states set their own, often higher, rates"
+Colombia,Americas,"COP 1,750,905/month",,"Up 23% from January 2026, plus a COP 249,095 transport allowance"
+Chile,Americas,"CLP 539,000/month",,From January 2026
+Vietnam (Region I),Asia-Pacific,"₫5,310,000/month",,"Highest of four regions, from 1 January 2026"

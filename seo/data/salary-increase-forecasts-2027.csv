@@ -1,0 +1,30 @@
+Country,Region,2027 raise forecast (%),2026 raise (%),Forecasts by survey (%),Latest inflation (%),Inflation month,Real raise vs inflation (points)
+United States,North America,3.4,3.4,"[[""Payscale"", 3.5], [""Korn Ferry"", 3.3], [""WTW"", 3.4], [""Mercer"", 3.5]]",3.7,Sep,-0.3
+Canada,North America,3.2,3.4,"[[""Payscale"", 3.5], [""Korn Ferry"", 3.1], [""Mercer"", 3.2], [""Normandin Beaudry"", 3.1]]",3.1,Sep,0.1
+Mexico,Latin America,4.9,4.8,"[[""Payscale"", 4.9]]",,,
+Brazil,Latin America,4.5,4.2,"[[""Payscale"", 4.2], [""Korn Ferry"", 4.8]]",,,
+United Kingdom,Europe,3.3,3.4,"[[""Payscale"", 3.5], [""Korn Ferry"", 3.1]]",3.5,Sep,-0.2
+Ireland,Europe,3.4,3.5,"[[""Payscale"", 3.4]]",,,
+Germany,Europe,3.1,3.2,"[[""Payscale"", 3.3], [""Korn Ferry"", 3.0]]",3.3,Sep,-0.2
+France,Europe,2.9,3.1,"[[""Payscale"", 3.2], [""Korn Ferry"", 2.6]]",3.4,Sep,-0.5
+Italy,Europe,3.4,,"[[""Korn Ferry"", 3.4]]",4.1,Sep,-0.7
+Spain,Europe,3.2,3.2,"[[""Payscale"", 3.2], [""Korn Ferry"", 3.2]]",5.0,Sep,-1.7
+Netherlands,Europe,3.3,3.3,"[[""Payscale"", 3.4], [""Korn Ferry"", 3.3]]",,,
+Finland,Europe,2.9,2.6,"[[""Payscale"", 2.9]]",,,
+Sweden,Europe,3.0,3.3,"[[""Payscale"", 3.0]]",,,
+Poland,Europe,5.0,4.8,"[[""Payscale"", 5.0]]",,,
+United Arab Emirates,Middle East,3.3,,"[[""Korn Ferry"", 3.3]]",,,
+Saudi Arabia,Middle East,3.4,,"[[""Korn Ferry"", 3.4]]",,,
+South Africa,Africa,5.0,4.1,"[[""Payscale"", 5.0]]",,,
+India,Asia-Pacific,8.9,9.5,"[[""Payscale"", 8.8], [""Aon"", 9.1]]",5.5,Sep,3.2
+China,Asia-Pacific,4.3,4.2,"[[""Payscale"", 4.5], [""Korn Ferry"", 4.2]]",,,
+Japan,Asia-Pacific,3.0,3.1,"[[""Payscale"", 3.1], [""Korn Ferry"", 3.0]]",1.7,"Aug, core",1.3
+South Korea,Asia-Pacific,4.1,4.0,"[[""Payscale"", 4.1]]",,,
+Australia,Asia-Pacific,3.3,3.4,"[[""Payscale"", 3.2], [""Korn Ferry"", 3.4]]",4.0,Aug,-0.7
+New Zealand,Asia-Pacific,3.2,3.2,"[[""Payscale"", 3.2]]",,,
+Singapore,Asia-Pacific,4.0,3.6,"[[""Payscale"", 3.8], [""WTW"", 4.0], [""Aon"", 4.1]]",,,
+Vietnam,Asia-Pacific,6.8,,"[[""WTW"", 7.0], [""Aon"", 6.7]]",,,
+Indonesia,Asia-Pacific,5.8,,"[[""WTW"", 6.0], [""Aon"", 5.5]]",,,
+Philippines,Asia-Pacific,5.2,,"[[""WTW"", 5.1], [""Aon"", 5.3]]",,,
+Malaysia,Asia-Pacific,4.8,,"[[""WTW"", 4.7], [""Aon"", 4.8]]",,,
+Thailand,Asia-Pacific,4.6,,"[[""WTW"", 4.6], [""Aon"", 4.6]]",,,

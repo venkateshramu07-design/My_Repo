@@ -1,0 +1,33 @@
+Country,Region,Type of loan,Interest rate (%),Notes
+Austria,Europe,"New home loans, August 2026",3.61,"Up 0.18 points since February 2026 (3.43%). Monthly payment per €100,000 over 25 years: €507 ."
+Belgium,Europe,"New home loans, August 2026",3.7,"Up 0.23 points since February 2026 (3.47%). Monthly payment per €100,000 over 25 years: €511 ."
+Bulgaria,Europe,"New home loans, August 2026",2.42,"Down 0.05 points since February 2026 (2.47%). Monthly payment per €100,000 over 25 years: €445 ."
+Cyprus,Europe,"New home loans, August 2026",3.39,"Up 0.27 points since February 2026 (3.12%). Monthly payment per €100,000 over 25 years: €495 ."
+Germany,Europe,"New home loans, August 2026",4.0,"Up 0.23 points since February 2026 (3.77%). Monthly payment per €100,000 over 25 years: €528 ."
+Estonia,Europe,"New home loans, August 2026",4.27,"Up 0.48 points since February 2026 (3.79%). Monthly payment per €100,000 over 25 years: €543 ."
+Spain,Europe,"New home loans, August 2026",3.04,"Up 0.29 points since February 2026 (2.75%). Monthly payment per €100,000 over 25 years: €476 ."
+Finland,Europe,"New home loans, August 2026",3.24,"Up 0.47 points since February 2026 (2.77%). Monthly payment per €100,000 over 25 years: €487 ."
+France,Europe,"New home loans, August 2026",3.2,"Up 0.10 points since February 2026 (3.10%). Monthly payment per €100,000 over 25 years: €485 ."
+Greece,Europe,"New home loans, August 2026",3.3,"Down 0.15 points since February 2026 (3.45%). Monthly payment per €100,000 over 25 years: €490 ."
+Croatia,Europe,"New home loans, August 2026",2.91,"Down 0.14 points since February 2026 (3.05%). Monthly payment per €100,000 over 25 years: €470 ."
+Ireland,Europe,"New home loans, August 2026",3.52,"Up 0.02 points since February 2026 (3.50%). Monthly payment per €100,000 over 25 years: €502 ."
+Italy,Europe,"New home loans, August 2026",3.58,"Up 0.12 points since February 2026 (3.46%). Monthly payment per €100,000 over 25 years: €505 ."
+Lithuania,Europe,"New home loans, August 2026",4.16,"Up 0.49 points since February 2026 (3.67%). Monthly payment per €100,000 over 25 years: €537 ."
+Luxembourg,Europe,"New home loans, August 2026",3.63,"Up 0.17 points since February 2026 (3.46%). Monthly payment per €100,000 over 25 years: €508 ."
+Latvia,Europe,"New home loans, August 2026",4.35,"Up 0.38 points since February 2026 (3.97%). Monthly payment per €100,000 over 25 years: €547 ."
+Malta,Europe,"New home loans, August 2026",1.94,"Down 0.12 points since February 2026 (2.06%). Monthly payment per €100,000 over 25 years: €421 ."
+Netherlands,Europe,"New home loans, August 2026",3.91,"Up 0.37 points since February 2026 (3.54%). Monthly payment per €100,000 over 25 years: €523 ."
+Portugal,Europe,"New home loans, August 2026",3.03,"Up 0.20 points since February 2026 (2.83%). Monthly payment per €100,000 over 25 years: €476 ."
+Slovenia,Europe,"New home loans, August 2026",3.22,"Up 0.31 points since February 2026 (2.91%). Monthly payment per €100,000 over 25 years: €486 ."
+Slovakia,Europe,"New home loans, August 2026",3.73,"Up 0.35 points since February 2026 (3.38%). Monthly payment per €100,000 over 25 years: €513 ."
+Euro area average,Europe,"New home loans, August 2026",3.6,"Up 0.23 points since February 2026 (3.37%). Monthly payment per €100,000 over 25 years: €506 ."
+United States,Americas,"30-year fixed, 22 Oct 2026",7.32,"Freddie Mac average; up from 5.98% in late February. Per $100,000 over 30 years: $687 a month."
+United Kingdom,Europe,"5-year fixed, 5 Oct 2026",6.0,"Moneyfacts average, the highest since 2023; 2-year fixes average 5.98%. Per £100,000 over 25 years: £644 a month."
+Canada,Americas,"5-year fixed, big bank, Oct 2026",5.14,BMO's standard 5-year fixed from 7 October; the best broker rates are around 4.1% to 4.4%. Bank of Canada rate 2.25%.
+Australia,Asia-Pacific,"Average variable, Oct 2026",6.49,"Canstar's estimate after the RBA raised the cash rate to 4.60% on 29 September 2026. Per A$100,000 over 25 years: A$675 a month."
+Japan,Asia-Pacific,"Variable rate, Oct 2026",1.45,Estimate by Mizuho Research after the Bank of Japan raised its rate to 1.25% in September 2026; fixed rates about 3.5%.
+China,Asia-Pacific,"5-year LPR, Oct 2026",3.5,"The loan prime rate that mortgages are priced from, unchanged for 17 months; many new mortgages are priced below it."
+Switzerland,Europe,"SARON mortgage, 2026",1.1,Three-month SARON close to zero plus a bank margin from about 1%; SNB policy rate 0%.
+India,Asia-Pacific,"Bank home loans, 2026",7.25,"SBI's starting rate in mid-2026, before the RBI raised the repo rate to 5.50% on 7 October 2026; floating rates reset with the repo rate."
+Mexico,Americas,"Bank fixed rates, 2026",10.8,"Typical bank fixed rate in mid-2026; offers range from about 9.9% to 11.5%, with a total annual cost (CAT) near 14%. Banxico's policy rate 6.50%."
+Brazil,Americas,"Caixa, from, 2026",11.19,Caixa's lowest rate plus TR (reference rate); private banks 10.3% to 11.7% plus TR. Subsidised Minha Casa Minha Vida loans are far lower.

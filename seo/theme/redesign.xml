@@ -577,6 +577,19 @@ html.bd-article .post-body .seo-related li::marker{content:''}
 
 /* Article illustrations */
 img[src*='/seo/covers/']:not(.post-body img){object-fit:cover!important;object-position:left center!important}
+.post-body .bd-share-wrap{margin:2.2em 0 1.4em}
+.post-body .bd-share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:14px 16px;border-radius:16px;border:1px solid var(--bd-line);background:var(--bd-surface)}
+.post-body .bd-share .bd-share-l{width:100%;font:700 13px var(--bd-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--bd-muted)!important;margin-bottom:2px}
+.post-body .bd-share a,.post-body .bd-share button{font:600 13.5px/1 var(--bd-sans)!important;padding:9px 13px!important;border-radius:999px!important;border:0!important;background:var(--sc,#15171d)!important;color:#fff!important;text-decoration:none!important;cursor:pointer;margin:0!important}
+.post-body .bd-share button{background:var(--bd-ink)!important;color:var(--bd-surface)!important}
+.post-body .bd-datatools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:-6px 0 22px;padding:12px 14px;border-radius:14px;border:1px dashed var(--bd-line)}
+.post-body .bd-datatools a.bd-dl,.post-body .bd-datatools .bd-emb{font:700 13.5px/1 var(--bd-sans)!important;padding:10px 14px!important;border-radius:10px!important;border:0!important;cursor:pointer;text-decoration:none!important;margin:0!important}
+.post-body .bd-datatools a.bd-dl{background:#0f9d76!important;color:#fff!important}
+.post-body .bd-datatools .bd-emb{background:var(--bd-ink)!important;color:var(--bd-surface)!important}
+.post-body .bd-dt-note{font:500 12.5px var(--bd-sans);color:var(--bd-muted)!important}
+.post-body .bd-embcode{width:100%}.post-body .bd-embcode label{display:block;font:600 13px var(--bd-sans);margin:4px 0 6px}
+.post-body .bd-embcode textarea{width:100%;box-sizing:border-box;font:12.5px/1.45 ui-monospace,Menlo,monospace;padding:10px;border-radius:10px;border:1px solid var(--bd-line);background:var(--bd-bg)!important;color:var(--bd-ink)!important}
+.post-body .bd-embcopy{margin-top:6px!important;font:700 13px var(--bd-sans)!important;padding:8px 12px!important;border-radius:9px!important;border:0!important;background:#e2462c!important;color:#fff!important;cursor:pointer}
 .post-body .bd-ill{margin:2.2em 0 1.6em!important;padding:0!important;border:0!important}
 .post-body .bd-ill svg{display:block;width:100%;height:auto;border-radius:20px;overflow:hidden}
 .bd-ill .ill-bg{fill:color-mix(in srgb,var(--c) 9%,var(--bd-surface))}
@@ -1395,6 +1408,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   function isHomePath() { return (location.pathname === '/' || location.pathname === '') && !/[?&](q|updated-max|start)=/.test(location.search); }
   var BD_DESCS = {};
   var BD_LINKS = {};
+  var BD_DATA = {};
+  var BD_DATA_BASE = 'https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@ccr-ee047f91-rbyv4x/seo/data/', BD_WIDGET = 'https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@ccr-ee047f91-rbyv4x/seo/widgets/table.js';
   function setMeta(attr, key, val) {
     var m = document.head.querySelector('meta[' + attr + '="' + key + '"]');
     if (!m) { m = document.createElement('meta'); m.setAttribute(attr, key); document.head.appendChild(m); }
@@ -1832,6 +1847,44 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
 
 
 
+    // Share bar (every article) and, on data pages, open-data tools: download the CSV and embed the table elsewhere.
+    if (isPost && body && !post.querySelector('.bd-share')) {
+      var pageUrl = location.href.split('#')[0].split('?')[0], ttl = (document.querySelector('h1.post-title') || {}).textContent || document.title;
+      ttl = ttl.trim(); var eu = encodeURIComponent(pageUrl), et = encodeURIComponent(ttl);
+      var SH = [['WhatsApp', 'https://wa.me/?text=' + et + '%20' + eu, '#25d366'], ['X', 'https://twitter.com/intent/tweet?text=' + et + '&url=' + eu, '#111'],
+        ['Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + eu, '#1877f2'], ['LinkedIn', 'https://www.linkedin.com/sharing/share-offsite/?url=' + eu, '#0a66c2'],
+        ['Reddit', 'https://www.reddit.com/submit?url=' + eu + '&title=' + et, '#ff4500'], ['Telegram', 'https://t.me/share/url?url=' + eu + '&text=' + et, '#229ed9'],
+        ['Email', 'mailto:?subject=' + et + '&body=' + eu, '#5d6271']];
+      var shareHtml = function (label) {
+        return '<div class="bd-share"><span class="bd-share-l">' + label + '</span>' + SH.map(function (x) { return '<a href="' + esc(x[1]) + '" target="_blank" rel="noopener nofollow" style="--sc:' + x[2] + '">' + x[0] + '</a>'; }).join('') +
+          '<button type="button" class="bd-copy">Copy link</button></div>';
+      };
+      var wireShare = function (box) {
+        var cp = box.querySelector('.bd-copy'); if (!cp) return;
+        cp.onclick = function () {
+          if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) { navigator.share({ title: ttl, url: pageUrl }).catch(function () {}); return; }
+          (navigator.clipboard ? navigator.clipboard.writeText(pageUrl) : Promise.reject()).then(function () { cp.textContent = 'Copied'; setTimeout(function () { cp.textContent = 'Copy link'; }, 1800); }, function () { prompt('Copy this link', pageUrl); });
+        };
+      };
+      var endAt = Array.prototype.filter.call(post.querySelectorAll('h2'), function (h) { return /Related Guides|Sources and further reading|^Sources$/i.test(h.textContent.trim()); })[0];
+      var shareEnd = el('div', 'bd-share-wrap', shareHtml('Found this useful? Share it'));
+      if (endAt) endAt.parentNode.insertBefore(shareEnd, endAt); else body.appendChild(shareEnd);
+      wireShare(shareEnd);
+      var pathKey = location.pathname, dat = BD_DATA[pathKey];
+      var tbl = dat && post.querySelector('.bd-calc table');
+      if (tbl) {
+        var calcBox = tbl.closest('.bd-calc'), csvUrl = BD_DATA_BASE + dat + '.csv';
+        var code = '<div data-bd-table="' + dat + '"></div>\n<script src="' + BD_WIDGET + '" async></' + 'script>';
+        var tools = el('div', 'bd-datatools',
+          '<a class="bd-dl" href="' + esc(csvUrl) + '" download>Download the data (CSV)</a>' +
+          '<button type="button" class="bd-emb">Embed this table</button>' +
+          '<span class="bd-dt-note">Free to reuse with credit (CC BY 4.0)</span>' +
+          '<div class="bd-embcode" hidden><label>Paste this into your website or blog:</label><textarea readonly rows="3">' + esc(code) + '</textarea><button type="button" class="bd-embcopy">Copy code</button></div>');
+        calcBox.parentNode.insertBefore(tools, calcBox.nextSibling);
+        tools.querySelector('.bd-emb').onclick = function () { var b = tools.querySelector('.bd-embcode'); b.hidden = !b.hidden; };
+        tools.querySelector('.bd-embcopy').onclick = function () { var ta = tools.querySelector('textarea'); ta.select(); try { navigator.clipboard.writeText(ta.value); } catch (e) { document.execCommand('copy'); } this.textContent = 'Copied'; };
+      }
+    }
     // Article illustrations: five small animated drawings at evenly spaced section breaks, each chosen from the
     // heading it introduces (falling back to the post's topic). Added at view time; the post itself is unchanged.
     if (isPost && body && !post.querySelector('.bd-ill')) {

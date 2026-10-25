@@ -20,6 +20,10 @@ covers = {_re.sub(r"^https?://[^/]+", "", _ids[n]["url"]): _pt.COVER_BASE + n.sp
 covers.update({"t:" + _pt.POSTS[n][0]: _pt.COVER_BASE + n.split("/")[1] for n in _pt.COVERS if n in _ids and n in _pt.POSTS})
 assert js.count("var BD_COVERS = {};") == 1
 js = js.replace("var BD_COVERS = {};", "var BD_COVERS = " + json.dumps(covers, separators=(",", ":")) + ";")
+_dat = json.load(open(os.path.join(HERE, "..", "data", "index.json"), encoding="utf-8"))
+dmap = {_re.sub(r"^https?://[^/]+", "", d["url"]): d["csv"] for d in _dat}
+assert js.count("var BD_DATA = {};") == 1
+js = js.replace("var BD_DATA = {};", "var BD_DATA = " + json.dumps(dmap, separators=(",", ":")) + ";")
 links = json.load(open(os.path.join(HERE, "autolinks.json"), encoding="utf-8"))
 assert js.count("var BD_LINKS = {};") == 1
 js = js.replace("var BD_LINKS = {};", "var BD_LINKS = " + json.dumps(links, ensure_ascii=True, separators=(",", ":")) + ";")
