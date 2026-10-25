@@ -28,6 +28,31 @@ to reach that.
 3. **Bing Webmaster Tools:** go to bing.com/webmasters and choose "Import from Google Search Console". This covers
    Bing, Yahoo, DuckDuckGo, ChatGPT search and Copilot. Then use **URL Submission** for the same 10 addresses.
 
+## Step 1b. Request indexing for the country pages too (added 25 October 2026)
+
+The 35 country pages target searches such as "Germany minimum wage 2026" and "retirement age in Japan". Submit the
+hub first (it links to all 35), then these, in Search Console (URL Inspection) and Bing (URL Submission):
+
+- https://randomthoughtsever.blogspot.com/2026/10/compare-countries-2026-minimum-wage-tax.html
+- https://randomthoughtsever.blogspot.com/2026/10/the-united-states-in-numbers-2026.html
+- https://randomthoughtsever.blogspot.com/2026/10/the-united-kingdom-in-numbers-2026.html
+- https://randomthoughtsever.blogspot.com/2026/10/india-in-numbers-2026-minimum-wage.html
+- https://randomthoughtsever.blogspot.com/2026/10/germany-in-numbers-2026-minimum-wage.html
+- https://randomthoughtsever.blogspot.com/2026/10/canada-in-numbers-2026-minimum-wage-tax.html
+- https://randomthoughtsever.blogspot.com/2026/10/australia-in-numbers-2026-minimum-wage.html
+- https://randomthoughtsever.blogspot.com/2026/10/spain-in-numbers-2026-minimum-wage-tax.html
+- https://randomthoughtsever.blogspot.com/2026/10/france-in-numbers-2026-minimum-wage-tax.html
+- https://randomthoughtsever.blogspot.com/2026/10/japan-in-numbers-2026-minimum-wage-tax.html
+
+## Step 1c. Offer the free tables to sites that write about these topics (the embed creates a backlink)
+
+Every data guide now has **Download the data (CSV)** and **Embed this table** buttons. Short message to send to
+finance bloggers, expat forums and student or journalist contacts:
+
+> Hi, I keep a free, regularly updated table of {topic} for 35+ countries, from official sources (OECD, Eurostat,
+> central banks). You're welcome to embed it on your site with one line of code, or download the CSV. It updates
+> automatically when I refresh the data: {guide link}
+
 ## Step 2. Pinterest (free, about 10 minutes for 5 pins; pins keep sending visitors for months)
 
 Create a free business account. For each pin, use **Create Pin**, then upload the image from the link (open it and
