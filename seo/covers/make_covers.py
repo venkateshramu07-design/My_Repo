@@ -45,6 +45,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "state-pension-amounts-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "State Pension Amounts by Country 2026", "#7a5cd6"),
     "mortgage-rates-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Mortgage Rates by Country 2026", "#2f7de1"),
     "inheritance-tax-by-country-2026": ("PERSONAL FINANCE \u00b7 DATA", "Inheritance Tax by Country 2026", "#b45309"),
+    "ev-vs-petrol-running-costs-2026": ("PERSONAL FINANCE \u00b7 CALCULATOR", "EV or Petrol: Which Is Cheaper to Run Now?", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 W, H = 1200, 630

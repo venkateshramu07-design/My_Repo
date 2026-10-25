@@ -1,0 +1,58 @@
+<div class="bd-calc" id="bd-ev">
+<div class="bc-title">EV vs petrol running cost calculator</div>
+<div class="bc-sub">Enter how far you drive, your fuel and electricity prices and how efficient each car is. See the yearly fuel cost of each, and how much an electric car saves or costs.</div>
+<div class="bc-grid">
+<div><label for="ev-cur">Currency</label><select id="ev-cur" data-cur><option>$</option><option>€</option><option>£</option></select></div>
+<div><label for="ev-unit">Units</label><select id="ev-unit"><option value="mi">Miles and US gallons</option><option value="km">Kilometres and litres</option></select></div>
+<div><label for="ev-dist" id="ev-l-dist">Distance per year (miles)</label><input id="ev-dist" type="number" min="0" step="500" value="12000"></div>
+<div><label for="ev-fuel" id="ev-l-fuel">Petrol price per gallon</label><input id="ev-fuel" type="number" min="0" step="0.01" value="4.28"></div>
+<div><label for="ev-eff" id="ev-l-eff">Petrol car fuel economy (mpg)</label><input id="ev-eff" type="number" min="0" step="0.5" value="28"></div>
+<div><label for="ev-home">Home electricity price per kWh</label><input id="ev-home" type="number" min="0" step="0.01" value="0.18"></div>
+<div><label for="ev-evf" id="ev-l-evf">EV efficiency (miles per kWh)</label><input id="ev-evf" type="number" min="0" step="0.1" value="3.5"></div>
+<div><label for="ev-pub">Share of charging at public chargers (%)</label><input id="ev-pub" type="number" min="0" max="100" step="5" value="20"></div>
+<div><label for="ev-pp">Public charging price per kWh</label><input id="ev-pp" type="number" min="0" step="0.01" value="0.48"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat"><span>Petrol car, fuel per year</span><b id="ev-pc">—</b></div>
+<div class="bc-stat"><span>Electric car, charging per year</span><b id="ev-ec">—</b></div>
+<div class="bc-stat bc-main"><span>Difference per year</span><b id="ev-diff">—</b></div>
+<div class="bc-stat"><span id="ev-l-per">Cost per 100 miles</span><b id="ev-per">—</b></div>
+</div>
+<div class="bc-bar"><i id="ev-bar" style="background:#0f9d76;width:0"></i></div>
+<div class="bc-legend"><span id="ev-note">—</span></div>
+<div class="bc-note">Defaults: US national averages for October 2026 (regular petrol $4.28 a gallon, home electricity about 18¢ per kWh). Choosing € or £ loads typical European or UK values in kilometres and litres. Electricity used while charging includes losses of about 10%, so use a slightly worse efficiency than the car's display shows. Running costs only: purchase price, insurance, maintenance and depreciation are not included.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-ev');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+var P={'$':{u:'mi',d:12000,f:4.28,e:28,h:0.18,v:3.5,s:20,p:0.48},'€':{u:'km',d:15000,f:1.99,e:6.5,h:0.28,v:18,s:25,p:0.59},'£':{u:'km',d:12000,f:1.75,e:6.0,h:0.26,v:18,s:20,p:0.79}};
+var last=$('ev-cur').value;
+function labels(){var mi=$('ev-unit').value==='mi';
+  $('ev-l-dist').textContent='Distance per year ('+(mi?'miles':'km')+')';
+  $('ev-l-fuel').textContent='Petrol price per '+(mi?'gallon':'litre');
+  $('ev-l-eff').textContent=mi?'Petrol car fuel economy (mpg)':'Petrol car fuel use (litres per 100 km)';
+  $('ev-l-evf').textContent=mi?'EV efficiency (miles per kWh)':'EV energy use (kWh per 100 km)';
+  $('ev-l-per').textContent='Cost per 100 '+(mi?'miles':'km')+' (petrol / EV)';}
+function load(c){var x=P[c];if(!x)return;$('ev-unit').value=x.u;$('ev-dist').value=x.d;$('ev-fuel').value=x.f;$('ev-eff').value=x.e;$('ev-home').value=x.h;$('ev-evf').value=x.v;$('ev-pub').value=x.s;$('ev-pp').value=x.p;labels();}
+$('ev-unit').addEventListener('change',function(){
+  var mi=this.value==='mi',d=C.num($('ev-dist')),f=C.num($('ev-fuel')),e=C.num($('ev-eff')),v=C.num($('ev-evf'));
+  if(mi){$('ev-dist').value=Math.round(d/1.609344/100)*100;$('ev-fuel').value=(f*3.785411).toFixed(2);$('ev-eff').value=e>0?(235.215/e).toFixed(1):0;$('ev-evf').value=v>0?(62.1371/v).toFixed(1):0;}
+  else{$('ev-dist').value=Math.round(d*1.609344/100)*100;$('ev-fuel').value=(f/3.785411).toFixed(2);$('ev-eff').value=e>0?(235.215/e).toFixed(1):0;$('ev-evf').value=v>0?(62.1371/v).toFixed(1):0;}
+  labels();
+});
+labels();
+C.bind(root,function(){
+  var cur=$('ev-cur').value;if(cur!==last){last=cur;load(cur);}
+  var mi=$('ev-unit').value==='mi',d=Math.max(0,C.num($('ev-dist'))),f=Math.max(0,C.num($('ev-fuel'))),e=Math.max(0,C.num($('ev-eff'))),h=Math.max(0,C.num($('ev-home'))),v=Math.max(0,C.num($('ev-evf'))),s=Math.min(100,Math.max(0,C.num($('ev-pub'))))/100,p=Math.max(0,C.num($('ev-pp')));
+  var kwhPrice=h*(1-s)+p*s,pc,ec;
+  if(mi){pc=e>0?d/e*f:0;ec=v>0?d/v*kwhPrice:0;}else{pc=d/100*e*f;ec=d/100*v*kwhPrice;}
+  var diff=pc-ec,per=d>0?[pc/d*100,ec/d*100]:[0,0];
+  $('ev-pc').textContent=C.money(pc,cur);$('ev-ec').textContent=C.money(ec,cur);
+  $('ev-diff').textContent=(diff>=0?'EV saves ':'EV costs ')+C.money(Math.abs(diff),cur);
+  $('ev-per').textContent=C.money(per[0],cur)+' / '+C.money(per[1],cur);
+  var r=pc>0?ec/pc:1;$('ev-bar').style.width=Math.min(100,Math.max(0,(1-r)*100))+'%';$('ev-bar').style.background=diff>=0?'#0f9d76':'#e2462c';
+  $('ev-note').textContent=d<=0?'Enter how far you drive':diff>=0?'Charging costs about '+Math.round(r*100)+'% of what you would spend on petrol':'At these prices, charging costs more than petrol, usually because of heavy use of public rapid chargers';
+});
+})();
+</script>

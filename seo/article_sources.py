@@ -555,6 +555,12 @@ S.update({
 })
 A["inheritance-tax-by-country-2026"] = ["uk_iht", "uk_apr", "irs_estate", "ml_15m", "ie_cat", "fr_succ", "kr_inh", "ca_death", "sars_ed", "oecd_inh"]
 
+S.update({
+ "zapmap_idx": ("Zapmap: UK EV charging price index", "https://www.zapmap.com/ev-stats/charging-price-index"),
+ "iea_gevo26": ("International Energy Agency: close to 30% of cars sold in 2026 set to be electric", "https://www.iea.org/news/close-to-30-of-cars-sold-this-year-are-set-to-be-electric-as-countries-and-consumers-respond-to-energy-crisis"),
+})
+A["ev-vs-petrol-running-costs-2026"] = ["eia_gas", "uk_fuel", "ec_wob", "eia_epm", "ofgem_oct26", "es_el", "zapmap_idx", "iea_gevo26"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
