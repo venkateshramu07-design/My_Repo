@@ -503,6 +503,17 @@ S.update({
 })
 A["electricity-prices-by-country-2026"] = ["es_el", "es_gas", "ofgem_oct26", "eia_epm", "us_el_jul", "cornwall_jan", "jp_el", "au_dmo", "ttf_mar", "ttf_oct", "ecb_fx"]
 
+S.update({
+ "oecd_tw26": ("OECD: Taxing Wages 2026", "https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en.html"),
+ "oecd_tw_data": ("OECD Data Explorer: Taxing Wages comparative tables", "https://data-explorer.oecd.org/vis?df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_TAX_WAGES_COMP%40DF_TW_COMP&df[ag]=OECD.CTP.TPS"),
+ "uk_itr": ("GOV.UK: Income Tax rates and Personal Allowances", "https://www.gov.uk/income-tax-rates"),
+ "uk_ni": ("GOV.UK: National Insurance rates", "https://www.gov.uk/national-insurance-rates-letters"),
+ "ca_itr": ("Canada Revenue Agency: tax rates and income brackets", "https://www.canada.ca/en/revenue-agency/services/tax/individuals/frequently-asked-questions-individuals/canadian-income-tax-rates-individuals-current-previous-years.html"),
+ "tf_state": ("Tax Foundation: state income tax rates and brackets", "https://taxfoundation.org/data/all/state/state-income-tax-rates/"),
+ "ato_super": ("Australian Taxation Office: how much super to pay", "https://www.ato.gov.au/businesses-and-organisations/super-for-employers/paying-super-contributions/how-much-super-to-pay"),
+})
+A["income-tax-by-country-take-home-pay"] = ["oecd_tw26", "oecd_tw_data", "uk_itr", "uk_ni", "ca_itr", "tf_state", "ato_super"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
