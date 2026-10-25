@@ -16,8 +16,9 @@ import sys, re as _re
 sys.path.insert(0, os.path.join(HERE, ".."))
 import publish_tools as _pt
 _ids = json.load(open(os.path.join(HERE, "..", "tools", "published.json"), encoding="utf-8"))
-covers = {_re.sub(r"^https?://[^/]+", "", _ids[n]["url"]): _pt.COVER_BASE + n.split("/")[1] for n in _pt.COVERS if n in _ids}
-covers.update({"t:" + _pt.POSTS[n][0]: _pt.COVER_BASE + n.split("/")[1] for n in _pt.COVERS if n in _ids and n in _pt.POSTS})
+_cb = lambda n: (_pt.COUNTRY_COVER_BASE if n.startswith("countries/") else _pt.COVER_BASE) + n.split("/")[1]
+covers = {_re.sub(r"^https?://[^/]+", "", _ids[n]["url"]): _cb(n) for n in _pt.COVERS if n in _ids}
+covers.update({"t:" + _pt.POSTS[n][0]: _cb(n) for n in _pt.COVERS if n in _ids and n in _pt.POSTS})
 assert js.count("var BD_COVERS = {};") == 1
 js = js.replace("var BD_COVERS = {};", "var BD_COVERS = " + json.dumps(covers, separators=(",", ":")) + ";")
 _dat = json.load(open(os.path.join(HERE, "..", "data", "index.json"), encoding="utf-8"))

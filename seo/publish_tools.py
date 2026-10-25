@@ -73,6 +73,8 @@ COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@5343548
 COVERS = {"hubs/money-start-here", "hubs/mind-start-here", "hubs/career-start-here",
           "articles/emergency-fund-guide", "articles/good-credit-score-cibil", "articles/prepay-home-loan-or-invest",
           "articles/gdp-measuring-economy", "articles/bitcoin-losing-its-hype", "articles/interest-rates-rising-money-moves", "articles/where-to-keep-cash-rates-rise", "articles/10-year-treasury-yield-above-5", "articles/jobs-ai-is-replacing-skills", "articles/stablecoins-explained-interest", "articles/buy-house-mortgage-rates-above-7", "articles/prediction-markets-kalshi-polymarket", "articles/afford-car-2026-calculator", "articles/how-to-buy-ipo-shares", "articles/gold-safe-haven-2026-fall", "articles/credit-score-different-every-app", "articles/bank-fintech-app-goes-bust", "articles/crypto-swap-tax-rules", "articles/retirement-savings-moving-abroad", "articles/why-prices-still-high-inflation-down", "articles/explain-layoff-career-gap-interview", "articles/fair-pay-raise-2026-real-raise", "articles/lump-sum-or-monthly-pension", "articles/online-accounts-crypto-when-you-die", "articles/insurance-premium-up-no-claims", "articles/salary-increase-forecast-2027-by-country", "articles/deposit-insurance-limits-by-country-2026", "articles/petrol-prices-since-iran-war-by-country", "articles/retirement-age-by-country-2026", "articles/minimum-wage-by-country-2026", "articles/electricity-prices-by-country-2026", "articles/income-tax-by-country-take-home-pay", "articles/state-pension-amounts-by-country-2026", "articles/mortgage-rates-by-country-2026", "articles/inheritance-tax-by-country-2026", "articles/ev-vs-petrol-running-costs-2026", "articles/debt-consolidation-loans-when-they-save", "articles/life-insurance-cost-by-age-calculator", "articles/retire-abroad-on-2000-a-month"}
+COUNTRY_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@f454e428cfeba8f707641b3c3ce3ad0e603c3b37/seo/covers/"
+COVERS |= {n for n in POSTS if n.startswith("countries/")}
 HUB_NAMES = {"money-start-here": "personal finance guide", "career-start-here": "career guide",
              "mind-start-here": "well-being guide"}
 
@@ -115,7 +117,7 @@ def build(name):
                        else os.path.join(TOOLS, name + ".html"), encoding="utf-8").read())
     body = body.replace("IMGBASE/", COVER_BASE.replace("/seo/covers/", "/seo/images/"))  # article illustrations
     if name in COVERS:  # after the opening "Updated" line
-        c = COVER_BASE + name.split("/")[1]
+        c = (COUNTRY_COVER_BASE if name.startswith("countries/") else COVER_BASE) + name.split("/")[1]
         img = (f'<img src="{c}-800.webp" srcset="{c}-800.webp 800w, {c}-1200.webp 1200w" sizes="(max-width: 780px) 92vw, 680px" '
                f'alt="{html.escape(POSTS[name][0], quote=True)}" '
                'width="1200" height="630" fetchpriority="high" decoding="async" style="width:100%;height:auto;border-radius:16px"/>')

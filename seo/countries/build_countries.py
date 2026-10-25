@@ -53,6 +53,10 @@ def short(r, n, hi="highest", lo="lowest"):
     return f"{ordinal(r)} {hi} of {n}" if r <= n / 2 or r == 1 else f"{ordinal(n - r + 1)} {lo} of {n}"
 
 
+def lc(t):
+    return t[0].lower() + t[1:] if t.split()[0] in {"New", "Bank", "Average", "Variable"} else t
+
+
 def clean(t):
     return re.sub(r"\s+\.", ".", (t or "").strip())
 
@@ -136,11 +140,11 @@ def country_page(c):
     if c in t:
         r = t[c]; rk, n = rank(t, "Interest rate (%)", c); avg = num(t.get("Euro area average", {}).get("Interest rate (%)"))
         quick.append(f"mortgage rates are about {num(r['Interest rate (%)']):g}%")
-        add("mortgage-rates-2026", "Mortgage rate", f"{num(r['Interest rate (%)']):g}% ({r['Type of loan'][0].lower() + r['Type of loan'][1:]})", short(rk, n),
+        add("mortgage-rates-2026", "Mortgage rate", f"{num(r['Interest rate (%)']):g}% ({lc(r['Type of loan'])})", short(rk, n),
             f"Mortgage Rates in {T} (2026)",
-            [f"The typical mortgage rate in {T} is <strong>{num(r['Interest rate (%)']):g}%</strong> ({r['Type of loan'][0].lower() + r['Type of loan'][1:]}), {pos(rk, n)}"
+            [f"The typical mortgage rate in {T} is <strong>{num(r['Interest rate (%)']):g}%</strong> ({lc(r['Type of loan'])}), {pos(rk, n)}"
              + (f"; the euro area average is {avg:g}%." if avg and c in EU else "."), clean(r["Notes"])],
-            (f"What are mortgage rates in {T} right now?", f"Mortgage rates in {T} are about {num(r['Interest rate (%)']):g}% ({r['Type of loan'][0].lower() + r['Type of loan'][1:]}). " + clean(r["Notes"])))
+            (f"What are mortgage rates in {T} right now?", f"Mortgage rates in {T} are about {num(r['Interest rate (%)']):g}% ({lc(r['Type of loan'])}). " + clean(r["Notes"])))
 
     t = D["household-electricity-prices-2026"]
     if c in t:
@@ -257,6 +261,7 @@ def country_page(c):
 </ul>
 <p><em>Figures checked against the official sources listed in each linked guide in October 2026. Exchange-rate conversions are approximate. This page is for information and isn't financial or legal advice.</em></p>
 """
+    out = re.sub(r"\) \(about ([^()]*)\)", r"), about \1", out)  # "¥1,177/hour (average), about $1,301 ..."
     return title, out, len(used)
 
 
