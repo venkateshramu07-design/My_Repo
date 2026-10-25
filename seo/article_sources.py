@@ -572,6 +572,13 @@ S.update({
 })
 A["debt-consolidation-loans-when-they-save"] = ["fed_g19", "cfpb_dc", "uk_card_rate", "mh_cons", "ftc_debt", "nfcc", "stepchange"]
 
+S.update({
+ "mg_term": ("MoneyGeek: how much does term life insurance cost? (2026 rates)", "https://www.moneygeek.com/insurance/life/rates/term-life-insurance-cost/"),
+ "ig_term": ("InsuranceGeek: term life insurance rates by age", "https://www.insurancegeek.com/life-insurance/rates/term-life/"),
+ "iii_life": ("Insurance Information Institute: life insurance basics", "https://www.iii.org/insurance-basics/life-insurance"),
+})
+A["life-insurance-cost-by-age-calculator"] = ["mg_term", "ig_term", "iii_life"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

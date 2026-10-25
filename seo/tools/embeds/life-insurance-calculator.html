@@ -1,0 +1,41 @@
+<div class="bd-calc" id="bd-li">
+<div class="bc-title">Life insurance calculator: how much cover, and what it costs</div>
+<div class="bc-sub">Work out how much term life insurance your family would need, then see a typical monthly premium for that amount at your age.</div>
+<div class="bc-grid">
+<div><label for="li-cur">Currency</label><select id="li-cur" data-cur><option>$</option><option>€</option><option>£</option></select></div>
+<div><label for="li-inc">Your yearly take-home income</label><input id="li-inc" type="number" min="0" step="1000" value="60000"></div>
+<div><label for="li-yrs">Years your family would need it</label><input id="li-yrs" type="number" min="0" max="40" step="1" value="10"></div>
+<div><label for="li-debt">Mortgage and other debts</label><input id="li-debt" type="number" min="0" step="1000" value="250000"></div>
+<div><label for="li-edu">Future costs (education, childcare)</label><input id="li-edu" type="number" min="0" step="1000" value="50000"></div>
+<div><label for="li-sav">Savings and existing cover</label><input id="li-sav" type="number" min="0" step="1000" value="40000"></div>
+<div><label for="li-age">Your age</label><input id="li-age" type="number" min="18" max="70" step="1" value="35"></div>
+<div><label for="li-sex">Sex (for pricing)</label><select id="li-sex"><option value="m">Male</option><option value="f">Female</option></select></div>
+<div><label for="li-smk">Smoker?</label><select id="li-smk"><option value="0">No</option><option value="1">Yes</option></select></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>Suggested cover</span><b id="li-need">—</b></div>
+<div class="bc-stat"><span>Typical monthly premium (20-year term)</span><b id="li-prem">—</b></div>
+<div class="bc-stat"><span>Typical yearly premium</span><b id="li-year">—</b></div>
+<div class="bc-stat"><span>Cost per 100,000 of cover a month</span><b id="li-per">—</b></div>
+</div>
+<div class="bc-bar"><i id="li-bar" style="background:#0f9d76;width:0"></i></div>
+<div class="bc-legend"><span id="li-note">—</span></div>
+<div class="bc-note">Cover = income × years + debts + future costs − savings and existing cover, rounded to the nearest 50,000. Premiums are estimates based on MoneyGeek's October 2026 averages across 21 US insurers for a $500,000 20-year level term policy for non-smokers in average health, scaled to your cover, with smokers at about 2.5 times the rate. People in excellent health often pay 40% to 50% less; actual quotes depend on your health, family history, job and insurer. These are US averages; premiums in other countries differ. Not financial advice.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('bd-li');if(!root||!window.bdCalc)return;var C=window.bdCalc;
+function $(id){return document.getElementById(id)}
+var A=[25,30,35,40,45,50,55,60,65],M=[32,38,47,59,90,137,231,395,591],F=[30,32,37,47,69,102,168,286,415];
+function rate(age,t){if(age<=A[0])return t[0];for(var i=1;i<A.length;i++){if(age<=A[i]){var f=(age-A[i-1])/(A[i]-A[i-1]);return t[i-1]*Math.pow(t[i]/t[i-1],f);}}var g=t[8]/t[7];return t[8]*Math.pow(g,(age-65)/5);}
+C.bind(root,function(){
+  var cur=$('li-cur').value,inc=Math.max(0,C.num($('li-inc'))),y=Math.max(0,C.num($('li-yrs'))),d=Math.max(0,C.num($('li-debt'))),e=Math.max(0,C.num($('li-edu'))),s=Math.max(0,C.num($('li-sav'))),age=Math.min(75,Math.max(18,C.num($('li-age'))));
+  var need=Math.max(0,Math.round((inc*y+d+e-s)/50000)*50000);
+  var base=rate(age,$('li-sex').value==='f'?F:M)*($('li-smk').value==='1'?2.5:1);
+  var per=base/5,prem=need>0?Math.max(10,base*need/500000):0;
+  $('li-need').textContent=C.money(need,cur);$('li-prem').textContent=need>0?C.money(prem,cur):'—';$('li-year').textContent=need>0?C.money(prem*12,cur):'—';$('li-per').textContent=C.money(per,cur);
+  var share=inc>0?prem*12/inc:0;$('li-bar').style.width=Math.min(100,share*100*10)+'%';$('li-bar').style.background=share<0.03?'#0f9d76':'#e0a52f';
+  $('li-note').textContent=need<=0?'Your savings already cover these needs':'About '+(share*100).toFixed(1)+'% of your take-home income'+(age>=55?'; premiums rise steeply with age, so a shorter term may be cheaper':'');
+});
+})();
+</script>
