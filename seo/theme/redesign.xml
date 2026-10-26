@@ -2232,7 +2232,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         });
         var used = {}, withPic = posts.filter(function (p) { return p.thumb; });
         var lead = withPic[0] || posts[0]; used[lead.url] = 1;
-        var second = withPic.filter(function (p) { return !used[p.url]; }).slice(0, 2); second.forEach(function (p) { used[p.url] = 1; });
+        // Posts without a photo use their cover
+        var second = withPic.concat(posts).filter(function (p, i, all) { return !used[p.url] && all.indexOf(p) === i; }).slice(0, 2); second.forEach(function (p) { used[p.url] = 1; });
         var latest = posts.filter(function (p) { return !used[p.url]; }).slice(0, 6); latest.forEach(function (p) { used[p.url] = 1; });
         var leadEl = front.querySelector('.bd-lead');
         leadEl.className = 'bd-lead';
@@ -2852,7 +2853,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         tp.querySelector('.bd-tp-count').textContent = posts.length + ' article' + (posts.length === 1 ? '' : 's') + ' · latest ' + longDate(posts[0].date);
         var withPic = posts.filter(function (p) { return p.thumb; }), used = {};
         var lead = withPic[0] || posts[0]; used[lead.url] = 1;
-        var second = withPic.filter(function (p) { return !used[p.url]; }).slice(0, 2); second.forEach(function (p) { used[p.url] = 1; });
+        // Posts without a photo use their cover
+        var second = withPic.concat(posts).filter(function (p, i, all) { return !used[p.url] && all.indexOf(p) === i; }).slice(0, 2); second.forEach(function (p) { used[p.url] = 1; });
         tp.querySelector('.bd-tp-lead').innerHTML = '<div class="bd-lead"><a href="' + esc(lead.url) + '"><span class="bd-lead-img"><img alt="" fetchpriority="high" decoding="async" src="' + esc(tpPic(lead, 960)) + '"/></span>' +
           '<small class="bd-kick">Featured</small><h1>' + esc(lead.title) + '</h1>' + dekSlot(lead) + '<span class="bd-meta">' + esc(longDate(lead.date)) + '</span></a></div>' +
           '<div class="bd-second">' + second.map(function (p) {
