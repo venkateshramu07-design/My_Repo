@@ -3002,13 +3002,13 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       var EURO = /^Europe\/(Paris|Berlin|Madrid|Rome|Amsterdam|Brussels|Vienna|Dublin|Lisbon|Athens|Helsinki|Luxembourg|Bratislava|Ljubljana|Tallinn|Riga|Vilnius|Valletta|Nicosia|Zagreb)$/;
       if (!cfg.paypalMe && !india) return;  // UPI only works for people with an Indian bank account
       var cur = india && cfg.upiId ? 'INR' : /^Europe\/London$/.test(tz) ? 'GBP' : EURO.test(tz) ? 'EUR' : /^Australia\//.test(tz) ? 'AUD' : /^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|Regina|St_Johns)$/.test(tz) ? 'CAD' : 'USD';
-      var SYM = { USD: '$', EUR: '€', GBP: '£', INR: '₹', AUD: 'A$', CAD: 'C$' }, AMT = cur === 'INR' ? [100, 250] : [3, 5];
+      var SYM = { USD: '$', EUR: '€', GBP: '£', INR: '₹', AUD: 'A$', CAD: 'C$' }, AMT = cur === 'INR' ? [50, 100, 200] : [3, 5];
       var askedRecently = function () { var t = store('bd-tip-ask') || 0, d = store('bd-tip-done') || 0; return Date.now() - t < 7 * 864e5 || Date.now() - d < 60 * 864e5; };
       var mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       var payUrl = function (method, amt) {
         var INR = { INR: 1, USD: 88, EUR: 102, GBP: 117, AUD: 58, CAD: 63 };  // rough rates, rounded, for the UPI amount
         if (method === 'upi') return 'upi://pay?pa=' + encodeURIComponent(cfg.upiId).replace('%40', '@') + '&pn=' + encodeURIComponent(cfg.upiName || 'Blog Digest') + '&am=' + (cur === 'INR' ? amt : Math.round(amt * INR[cur] / 10) * 10) + '&cu=INR&tn=' + encodeURIComponent('Coffee for Blog Digest');
-        var c = cur === 'INR' ? 'USD' : cur, a = cur === 'INR' ? (amt >= 250 ? 5 : 3) : amt;
+        var c = cur === 'INR' ? 'USD' : cur, a = cur === 'INR' ? (amt >= 200 ? 5 : 3) : amt;
         return 'https://paypal.me/' + encodeURIComponent(cfg.paypalMe) + '/' + a + c;
       };
       var sheet = null;
@@ -3017,8 +3017,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         if (!sheet) {
           sheet = el('div', 'bd-tip-sheet', '<div class="bd-tip-box" role="dialog" aria-modal="true" aria-label="Buy me a coffee"><button type="button" class="bd-tip-x" aria-label="Close">×</button>' +
             '<div class="bd-tip-cup">☕</div><h3>Buy me a coffee</h3><p>Every guide here is researched and sourced, and every tool runs privately on your device, all free: no paywalls, no sign-ups. If something here saved you time or money, a small tip keeps it going.</p>' +
-            '<div class="bd-tip-amts">' + AMT.map(function (v, i) { return '<button type="button" data-v="' + v + '"' + (i ? ' class="bd-on"' : '') + '>' + SYM[cur] + v + '</button>'; }).join('') +
-            '<label class="bd-tip-custom">' + SYM[cur] + '<input type="number" min="1" step="1" inputmode="numeric" placeholder="Other"/></label></div>' +
+            '<div class="bd-tip-amts" style="grid-template-columns:repeat(' + AMT.length + ',1fr) 1.3fr">' + AMT.map(function (v, i) { return '<button type="button" data-v="' + v + '"' + (i === 1 ? ' class="bd-on"' : '') + '>' + SYM[cur] + v + '</button>'; }).join('') +
+            '<label class="bd-tip-custom">' + SYM[cur] + '<input type="number" min="1" step="1" inputmode="numeric" placeholder="Any" aria-label="Custom amount"/></label></div>' +
             '<div class="bd-tip-pay">' + (cfg.upiId && cur === 'INR' ? '<a class="bd-tip-upi" data-m="upi" href="#">Pay with UPI (GPay, PhonePe, Paytm)</a>' : '') +
             (cfg.paypalMe ? '<a class="bd-tip-pp" data-m="pp" href="#" target="_blank" rel="noopener">Pay with PayPal or card</a>' : '') +
             (cfg.upiId && cur !== 'INR' ? '<a class="bd-tip-upi bd-tip-alt" data-m="upi" href="#">In India? Pay with UPI</a>' : '') + '</div>' +
