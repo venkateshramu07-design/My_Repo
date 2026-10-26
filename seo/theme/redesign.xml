@@ -1004,6 +1004,28 @@ html.bd-dark .bd-tip-card{background:linear-gradient(135deg,#2a1f12,#2b1913)!imp
 .bd-tip-toast{position:fixed;left:50%;bottom:18px;z-index:10005;display:flex;align-items:center;gap:10px;width:min(460px,calc(100vw - 24px));padding:12px 12px 12px 14px;border-radius:18px;background:#15171d;color:#fff;box-shadow:0 20px 50px rgba(0,0,0,.35);font-family:var(--bd-sans);transform:translate(-50%,140%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
 .bd-tip-toast.bd-show{transform:translate(-50%,0)}.bd-tip-toast>span{font-size:26px}.bd-tip-toast p{margin:0;flex:1;font:500 13.5px/1.4 var(--bd-sans)}.bd-tip-toast b{display:block;font-weight:800}
 .bd-tip-yes{border:0;border-radius:12px;padding:10px 12px;background:linear-gradient(135deg,#ff9f1c,#e2462c);color:#fff;font:800 13.5px var(--bd-sans);white-space:nowrap;cursor:pointer}.bd-tip-no{border:0;background:none;color:#a9aebb;font-size:22px;cursor:pointer;padding:0 4px}
+.bd-tipbtn{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 13px 0 10px;margin-right:6px;border:0;border-radius:999px;background:linear-gradient(135deg,#ff9f1c,#e2462c);color:#fff;font:700 14px var(--bd-sans);cursor:pointer;box-shadow:0 4px 14px rgba(226,70,44,.35);animation:bd-tip-pulse 2.6s ease-in-out infinite}
+.bd-tipbtn svg{width:20px;height:20px;flex:none}
+.bd-tipbtn .bd-steam,.bd-tip-mini .bd-steam{animation:bd-steam 1.8s ease-in-out infinite}
+@keyframes bd-steam{0%,100%{opacity:.25;transform:translateY(1px)}50%{opacity:1;transform:translateY(-1px)}}
+@keyframes bd-tip-pulse{0%,100%{box-shadow:0 4px 14px rgba(226,70,44,.35)}50%{box-shadow:0 0 0 6px rgba(255,159,28,.18),0 4px 18px rgba(226,70,44,.45)}}
+@media (max-width:640px){.bd-tipbtn{width:36px;height:36px;padding:0;justify-content:center;margin-right:0}.bd-tipbtn span{display:none}}
+@media (max-width:400px){.bd-tools:has(.bd-tipbtn) .bd-toolslink .bd-tl-s{display:none}.bd-tools:has(.bd-tipbtn) .bd-toolslink{width:36px;padding:0;justify-content:center}.bd-tools:has(.bd-tipbtn) .bd-toolslink svg{display:block!important}}
+@media (max-width:440px){.header-menu:has(.bd-tipbtn){padding-left:0!important;padding-right:0!important}}
+@media (max-width:330px){.bd-tipbtn{display:none}}
+.bd-tip-post{position:relative;border:0!important;box-shadow:0 10px 30px rgba(226,70,44,.15);isolation:isolate}
+.bd-tip-post::before{content:"";position:absolute;inset:0;z-index:-2;border-radius:18px;background:linear-gradient(90deg,#ff9f1c,#e2462c,#ff5e8a,#ff9f1c);background-size:300% 100%;animation:bd-tip-glow 4s linear infinite}
+.bd-tip-post::after{content:"";position:absolute;inset:3px;z-index:-1;border-radius:15px;background:linear-gradient(135deg,#fff7ea,#ffe9d6)}
+@keyframes bd-tip-glow{to{background-position:300% 0}}
+.bd-tip-mini{color:#e2462c}.bd-tip-mini svg{width:28px;height:28px}
+.bd-tip-post .bd-tip-mini{animation:bd-tip-bob 2.2s ease-in-out infinite}
+@keyframes bd-tip-bob{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-4px) rotate(-6deg)}75%{transform:translateY(-2px) rotate(5deg)}}
+.bd-tip-quick .bd-tip-go{position:relative;overflow:hidden}
+.bd-tip-post .bd-tip-go::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:bd-tip-shine 2.8s ease-in-out infinite}
+@keyframes bd-tip-shine{0%,55%{left:-60%}100%{left:130%}}
+html.bd-dark .bd-tip-post::after{background:linear-gradient(135deg,#2a1f12,#2b1913)}
+html.bd-dark .bd-tip-mini{color:#ffb15c}
+@media (prefers-reduced-motion:reduce){.bd-tipbtn,.bd-tip-post::before,.bd-tip-post .bd-tip-mini,.bd-tip-post .bd-tip-go::after,.bd-tipbtn .bd-steam,.bd-tip-mini .bd-steam{animation:none!important}}
 #bd-hub .bd-tip-card{margin-top:22px!important}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
@@ -3026,7 +3048,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
         requestAnimationFrame(function () { sheet.classList.add('bd-open'); });
       };
       var cta = function (cls, title, text) {
-        var c = el('aside', 'bd-tip-card ' + (cls || ''), '<span class="bd-tip-mini">☕</span><span><b>' + title + '</b><small>' + text + '</small></span>' +
+        var c = el('aside', 'bd-tip-card ' + (cls || ''), '<span class="bd-tip-mini"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path class="bd-steam" d="M7 2v2M11 2v2M15 2v2"/><path d="M10 16.2c-1.6-1-2.6-1.9-2.6-3a1.3 1.3 0 0 1 2.6-.3 1.3 1.3 0 0 1 2.6.3c0 1.1-1 2-2.6 3Z" fill="currentColor" stroke="none"/></svg></span><span><b>' + title + '</b><small>' + text + '</small></span>' +
           '<span class="bd-tip-quick">' + AMT.map(function (v) { return '<button type="button" data-v="' + v + '">' + SYM[cur] + v + '</button>'; }).join('') + '<button type="button" class="bd-tip-go">Buy me a coffee</button></span>');
         c.addEventListener('click', function (e) { if (e.target.closest('button')) open(cls); }); return c;
       };
@@ -3050,7 +3072,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       // 3. Tools page, menu and footer
       if (/^\/p\/free-(tools|calculators)\.html$/.test(location.pathname)) { var hub = document.getElementById('bd-hub'); if (hub) hub.appendChild(cta('bd-tip-hub', 'Keep these tools free', 'No accounts, no limits, and your files never leave your device. A coffee helps pay for the time they take to build.')); }
       document.querySelectorAll('.bd-pn-tools').forEach(function (t) { var a = el('a', '', '<i>☕</i><span><b>Buy me a coffee</b><small>Support Blog Digest</small></span>'); a.href = '#'; a.onclick = function (e) { e.preventDefault(); open('menu'); }; t.appendChild(a); });
-      var fcs = document.querySelectorAll('.bd-foot-col ul'), fc = fcs[fcs.length - 1]; if (fc) { var li = el('li', '', '<a href="#">☕ Buy me a coffee</a>'); li.firstChild.onclick = function (e) { e.preventDefault(); open('footer'); }; fc.appendChild(li); }
+      // 4. A coffee-cup-with-heart button in the header, on every page
+      var hdr = document.querySelector('.bd-tools');
+      if (hdr && !hdr.querySelector('.bd-tipbtn')) { var hb = el('button', 'bd-tipbtn', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path class="bd-steam" d="M7 2v2M11 2v2M15 2v2"/><path d="M10 16.2c-1.6-1-2.6-1.9-2.6-3a1.3 1.3 0 0 1 2.6-.3 1.3 1.3 0 0 1 2.6.3c0 1.1-1 2-2.6 3Z" fill="currentColor" stroke="none"/></svg><span>Support</span>'); hb.type = 'button';
+        hb.setAttribute('aria-label', 'Buy me a coffee'); hb.title = 'Buy me a coffee'; hb.onclick = function () { open('header'); };
+        var tl = hdr.querySelector('.bd-toolslink'); hdr.insertBefore(hb, tl ? tl.nextSibling : hdr.firstChild); }
     });
 
     // Follow: a "Get new articles" card at the end of articles, a one-time invitation after half an article, and a
