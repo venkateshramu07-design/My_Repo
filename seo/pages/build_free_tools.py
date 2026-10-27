@@ -5,6 +5,7 @@ import html, json, os, re
 HERE = os.path.dirname(os.path.abspath(__file__))
 J = json.load(open(os.path.join(HERE, "free-tools.json"), encoding="utf-8")); D = J["sections"]
 CAT = {
+ "India: Forms, ID and Payments": ("india", "India", "#c2410c", '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M14 10h4M14 14h4M6 16.5c.6-1.4 1.7-2 3-2s2.4.6 3 2"/>'),
  "Documents and PDFs": ("docs", "Documents", "#e2462c", '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'),
  "Photos and Images": ("photos", "Photos", "#0e9bb5", '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 9"/>'),
  "Work and Writing": ("work", "Work", "#2f7de1", '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),

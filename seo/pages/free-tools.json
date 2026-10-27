@@ -80,6 +80,29 @@
      "kind": "Generator"
     }
    ]
+  },
+  {
+   "name": "India: Forms, ID and Payments",
+   "items": [
+    {
+     "href": "/2026/10/exam-photo-and-signature-resizer-exact.html",
+     "title": "Exam photo and signature resizer",
+     "desc": "Exact pixels and KB for SSC, UPSC, IBPS, SBI, RRB and NEET forms: photo, signature, thumb and declaration.",
+     "kind": "Resizer"
+    },
+    {
+     "href": "/2026/10/how-to-mask-your-aadhaar-or-pan-before.html",
+     "title": "Mask Aadhaar or PAN",
+     "desc": "Hide numbers and add a purpose watermark on an ID photo or PDF before you share a copy.",
+     "kind": "Privacy"
+    },
+    {
+     "href": "/2026/10/free-upi-qr-code-generator-make-scan.html",
+     "title": "UPI QR code generator",
+     "desc": "A scan-and-pay QR for Google Pay, PhonePe and Paytm, with an optional amount and a printable poster.",
+     "kind": "Generator"
+    }
+   ]
   }
  ]
 }

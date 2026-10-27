@@ -7,6 +7,7 @@ NEW = {"/2026/10/is-it-cheaper-to-charge-ev-or-fill-up.html", "/2026/10/debt-con
        "/2026/10/how-much-does-life-insurance-cost-by.html"}
 NEW_DATA_FROM = "2026/10/"  # data tables are all new this month
 CAT = {  # name -> (slug, short label, colour, svg path)
+ "India: Tax and Savings": ("indiatax", "India tax", "#c2410c", '<path d="M7 4h10M7 8h10M7 4c5 0 5 8 0 8l7 8"/>'),
  "Saving and Emergencies": ("save", "Saving", "#0f9d76", '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 11h5v5h-5a2.5 2.5 0 0 1 0-5z"/><path d="M6 6l9-3 1 3"/>'),
  "Borrowing and Debt": ("debt", "Borrowing", "#2f7de1", '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
  "Investing and Retirement": ("invest", "Investing", "#7a5cd6", '<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>'),
