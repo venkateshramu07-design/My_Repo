@@ -1088,6 +1088,10 @@ html.bd-dark .bd-tbadges span{background:#12352b!important;color:#8fe0bf!importa
 .bd-th-mine{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0 -6px}
 .bd-th-mine b{font:800 12px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:#ffd38a;margin-right:4px}
 .bd-th-mine a{padding:7px 13px;border-radius:999px;background:#fff;color:#155e75!important;font:700 13px var(--bd-sans);text-decoration:none!important}
+html.bd-hubpage #sidebar-wrapper{display:none!important}
+html.bd-hubpage #main-wrapper{width:100%!important;max-width:none!important;float:none!important;padding:0!important}
+html.bd-hubpage .post-body{max-width:1080px;margin:0 auto}
+@media (max-width:640px){html.bd-hubpage .item-post-wrap,html.bd-hubpage .post-body{padding-left:0!important;padding-right:0!important}}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -2049,6 +2053,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     document.querySelectorAll('.bd-reveal').forEach(function (e) { e.classList.remove('bd-reveal', 'bd-in'); e.style.transitionDelay = ''; });
     var path = location.pathname, isHome = (path === '/' || path === '') && !location.search.match(/[?&](q|updated-max|start)=/);
     var isPost = /^\/\d{4}\/\d{2}\/.+\.html$/.test(path);
+    if (/^\/p\/free-(tools|calculators)\.html$/.test(path)) root.classList.add('bd-hubpage');  // tool hubs use the full width
 
     // Header tools: search + dark mode.
     var menu = document.querySelector('.header-menu');

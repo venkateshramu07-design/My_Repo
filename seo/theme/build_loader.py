@@ -40,7 +40,8 @@ _all = []
 for _sec in json.load(open(os.path.join(HERE, "..", "pages", "free-tools.json"), encoding="utf-8"))["sections"]:
     for _it in _sec["items"]: _all.append([_it["title"], _it["desc"], _it["href"], "t", _sec["name"]])
 for _sec in json.load(open(os.path.join(HERE, "..", "pages", "free-calculators.json"), encoding="utf-8")):
-    for _it in _sec["items"]: _all.append([_it["title"], _it["desc"], _it["href"], "d" if _sec["name"].startswith("Data") else "c", _sec["name"]])
+    for _it in _sec["items"]:
+        if not _it.get("retired"): _all.append([_it["title"], _it["desc"], _it["href"], "d" if _sec["name"].startswith("Data") else "c", _sec["name"]])
 assert js.count("var BD_ALLTOOLS = [];") == 1
 js = js.replace("var BD_ALLTOOLS = [];", "var BD_ALLTOOLS = " + json.dumps(_all, separators=(",", ":"), ensure_ascii=False) + ";")
 assert js.count("var BD_TOOLS = {};") == 1

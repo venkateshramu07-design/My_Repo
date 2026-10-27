@@ -125,12 +125,14 @@
    {
     "href": "/2026/10/what-happens-to-your-retirement-savings.html",
     "title": "Cash out or keep your pension",
-    "desc": "What cashing out before a move abroad really costs."
+    "desc": "What cashing out before a move abroad really costs.",
+    "retired": true
    },
    {
     "href": "/2026/10/why-is-10-year-treasury-yield-above-5.html",
     "title": "Bond yield impact calculator",
-    "desc": "What a 10-year Treasury yield above 5% means for your bonds and mortgage."
+    "desc": "What a 10-year Treasury yield above 5% means for your bonds and mortgage.",
+    "retired": true
    },
    {
     "href": "/2026/10/is-gold-still-safe-haven-after-its-big.html",
@@ -140,7 +142,8 @@
    {
     "href": "/2026/10/how-small-investors-can-buy-ipo-shares.html",
     "title": "IPO allocation calculator",
-    "desc": "What you&#x27;re likely to receive in an oversubscribed IPO, and the real gain."
+    "desc": "What you&#x27;re likely to receive in an oversubscribed IPO, and the real gain.",
+    "retired": true
    }
   ]
  },
@@ -160,7 +163,8 @@
    {
     "href": "/2026/10/what-is-gdp-its-role-in-measuring.html",
     "title": "GDP calculator",
-    "desc": "Build a country&#x27;s GDP from spending, and see per-person figures."
+    "desc": "Build a country&#x27;s GDP from spending, and see per-person figures.",
+    "retired": true
    },
    {
     "href": "/2023/11/why-currency-value-varies-with-each.html",
@@ -170,7 +174,8 @@
    {
     "href": "/2026/10/how-prediction-markets-like-kalshi-and.html",
     "title": "Prediction market calculator",
-    "desc": "What a contract costs, pays and implies about the odds."
+    "desc": "What a contract costs, pays and implies about the odds.",
+    "retired": true
    }
   ]
  },
@@ -190,7 +195,8 @@
    {
     "href": "/2026/10/stablecoins-explained-can-you-really.html",
     "title": "Stablecoin rewards vs savings",
-    "desc": "Compare stablecoin rewards with an insured savings account."
+    "desc": "Compare stablecoin rewards with an insured savings account.",
+    "retired": true
    }
   ]
  },

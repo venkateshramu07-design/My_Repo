@@ -63,3 +63,21 @@ page on phone and desktop, light and dark, with no errors or sideways scrolling.
 - Seasonal refreshes: tax pages each February (Budget) and April; savings rates each quarter; exam sizes when big
   notifications come out.
 - Speed: lazy-load homepage thumbnails, move the layer loader earlier in the theme, larger tap targets in the footer.
+
+## Phase 5: tool hub redesign (done, October 2026)
+The Free Tools page had grown to 68 equal-weight cards (about 23,000 px of scrolling on a phone), with "New" and
+type labels on every card, a repeated "Most used" block, data tables mixed in with tools, and the blog sidebar
+beside it on desktop. Rebuilt both hub pages with `seo/pages/build_tool_hub.py` (replaces build_calculators.py
+and build_free_tools.py):
+- Grouped by what people want to do: Documents and PDFs; Photos, forms and QR codes; Tax, saving and investing;
+  Loans and debt; Everyday, work and health (32 main tools).
+- "Most popular" strip of 8 tiles, with an India set for visitors in India and a global set for everyone else.
+- One-line rows (icon, short name, one benefit) instead of tall cards; sticky jump chips; full width (no sidebar).
+- Search over every listed tool with everyday words (compress, 50 KB, CV, Aadhaar, EMI), main tools ranked first.
+- 19 niche calculators folded into "More calculators inside our guides"; 11 data tables behind one
+  "Money data by country" card.
+- Retired from the listings (their articles and calculators are unchanged): GDP, prediction market, bond yield
+  impact, IPO allocation, stablecoin rewards, pension cash-out. They were tied to single news stories.
+- ItemList and FAQPage structured data for search engines.
+- Free Calculators page: the same design with only the money groups, linking to Free Tools for file tools.
+Result: the phone page is about 5,400 px (down 77%), and every main tool is one tap from the top of the page.
