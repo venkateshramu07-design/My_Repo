@@ -81,3 +81,19 @@ and build_free_tools.py):
 - ItemList and FAQPage structured data for search engines.
 - Free Calculators page: the same design with only the money groups, linking to Free Tools for file tools.
 Result: the phone page is about 5,400 px (down 77%), and every main tool is one tap from the top of the page.
+
+## Phase 6: global focus, passport and visa photos (built October 2026)
+Why this is the site's real edge: the tools already run on the visitor's device (competitors upload faces and
+ID documents), the need is urgent and exact (a wrong size means a rejected application), search results are
+thin or paid apps, and every country has the same problem.
+- Passport and visa photo maker (`passport-photo-maker` embed): official presets for the US passport, US visa /
+  Green Card / DV lottery, UK passport, Schengen visa and EU passports, Canada, Australia, China visa and India
+  OCI, plus a custom size. Head-height oval guide, background check, a digital file at the exact pixels and KB
+  limit, or a 4 x 6 inch print sheet with the most copies that fit (either orientation), at 300 dpi.
+- One guide per document with the official rules, what gets photos rejected and country quirks (Canada's studio
+  stamp, Australia's professional-print rule, China's 40-120 KB upload, OCI's conflicting mission limits),
+  plus a main guide comparing all eight. Sources are the official government pages.
+- After publishing: a "Passport and visa photos" group on the Free Tools page, the photo maker first in the
+  global "Most popular" strip and the homepage finder (`add_photo_tools.py` step in the session scratchpad).
+Next countries to add, in order of likely demand: Germany and France passports, Japan visa, UAE visa and
+Emirates ID, Saudi visa, Brazil, Mexico, Nigeria, Philippines, Pakistan, South Africa, New Zealand.
