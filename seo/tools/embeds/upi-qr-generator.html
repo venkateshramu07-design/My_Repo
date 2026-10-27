@@ -1,0 +1,59 @@
+<div class="bd-calc" id="bd-upi">
+<div class="bc-title">UPI QR code generator (free, never expires)</div>
+<div class="bc-sub">Make a QR code that any UPI app can scan to pay you: Google Pay, PhonePe, Paytm, BHIM or a bank app. Add a fixed amount for a bill, or leave it open. Download a printable "Scan and pay" poster for your shop counter, stall or invoice.</div>
+<div class="bt-two">
+<div>
+<div class="bc-grid" style="grid-template-columns:minmax(0,1fr)">
+<div><label for="upi-id">Your UPI ID (VPA)</label><input id="upi-id" placeholder="yourname@okhdfcbank" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+<div><label for="upi-name">Name shown to the payer</label><input id="upi-name" placeholder="Sharma General Store"></div>
+<div><label for="upi-amt">Amount in ₹ (leave empty to let the payer type it)</label><input id="upi-amt" type="number" min="1" step="1" inputmode="decimal" placeholder="Optional"></div>
+<div><label for="upi-note">Note (optional, up to 50 letters)</label><input id="upi-note" maxlength="50" placeholder="Invoice 1042"></div>
+<div><label for="upi-style">Download</label><select id="upi-style"><option value="poster">Poster with name and UPI ID</option><option value="plain">QR code only</option></select></div>
+</div>
+<p class="bt-msg" id="upi-msg"></p>
+</div>
+<div>
+<div class="upi-poster bt-paper"><canvas id="upi-cv" width="900" height="1200"></canvas></div>
+<div class="bc-row"><button type="button" class="bc-primary" id="upi-dl" disabled>Download PNG</button><a class="upi-test" id="upi-test" hidden>Test in my UPI app</a></div>
+</div>
+</div>
+<p class="bc-note">Before printing, scan the code with your own phone and check that your name appears correctly. Pay ₹1 to yourself from a second app to be sure. The code holds your UPI ID directly, so it never expires and works without this website.</p>
+<p class="bt-safe">Made on your device. Your UPI ID is not sent anywhere.</p>
+<style>
+#bd-upi [hidden]{display:none!important}
+#bd-upi .upi-poster canvas{display:block;width:100%;height:auto}
+#bd-upi .upi-test{display:inline-flex;align-items:center;padding:10px 14px;border-radius:10px;border:1px solid var(--c-line);font:600 15px/1 inherit;color:var(--c-ink)!important;text-decoration:none!important}
+</style>
+<script>
+(function(){
+var SRI={"https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js":"sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1"};
+function sri(s,u){s.crossOrigin='anonymous';if(SRI[u])s.integrity=SRI[u];}
+var root=document.getElementById('bd-upi');if(!root)return;
+var $=function(id){return document.getElementById(id);},cv=$('upi-cv'),x=cv.getContext('2d'),LIB='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js',ready=null,link='';
+function lib(){return ready||(ready=window.qrcode?Promise.resolve():new Promise(function(ok,no){var s=document.createElement('script');s.src=LIB;sri(s,LIB);s.onload=ok;s.onerror=no;document.head.appendChild(s);}));}
+// NPCI's UPI link format: pa = payee address, pn = payee name, am = amount, cu = currency, tn = note.
+function build(){var id=$('upi-id').value.trim(),name=$('upi-name').value.trim(),am=parseFloat($('upi-amt').value),note=$('upi-note').value.trim();
+ var ok=/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z][a-zA-Z0-9.\-]{1,64}$/.test(id);
+ var q='pa='+encodeURIComponent(id).replace('%40','@')+(name?'&pn='+encodeURIComponent(name):'')+(am>0?'&am='+am.toFixed(2):'')+'&cu=INR'+(note?'&tn='+encodeURIComponent(note):'');
+ return {ok:ok,id:id,name:name,am:am>0?am:0,url:'upi://pay?'+q};}
+function text(s,y,size,w,col){x.fillStyle=col;x.font=w+' '+size+'px system-ui,-apple-system,"Segoe UI",sans-serif';x.textAlign='center';
+ while(x.measureText(s).width>800&&size>20){size-=2;x.font=w+' '+size+'px system-ui,sans-serif';}x.fillText(s,450,y);}
+async function draw(){var d=build();$('upi-dl').disabled=!d.ok;$('upi-test').hidden=!d.ok||!/Android|iPhone|iPad/i.test(navigator.userAgent);link=d.url;$('upi-test').href=d.url;
+ $('upi-msg').textContent=$('upi-id').value.trim()&&!d.ok?'That doesn\'t look like a UPI ID. It should look like name@bank, for example 9876543210@ybl or shop@okaxis.':'';
+ await lib();qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];var q=qrcode(0,'M');q.addData(d.ok?d.url:'upi://pay?pa=yourname@bank&cu=INR','Byte');q.make();
+ var n=q.getModuleCount(),poster=$('upi-style').value==='poster';
+ cv.width=900;cv.height=poster?1200:900;x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);
+ var size=poster?620:820,cell=Math.floor(size/(n+8)),qs=cell*(n+8),ox=(900-qs)/2,oy=poster?250:(900-qs)/2;
+ if(poster){x.fillStyle='#e8f6f0';x.fillRect(0,0,900,200);text('Scan and pay with any UPI app',90,44,'800','#0b6b4f');text('Google Pay · PhonePe · Paytm · BHIM · bank apps',150,28,'500','#2d5c4c');
+  x.strokeStyle='#d6e9e1';x.lineWidth=4;x.strokeRect(ox-2,oy-2,qs+4,qs+4);}
+ x.fillStyle='#15171d';for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))x.fillRect(ox+(c+4)*cell,oy+(r+4)*cell,cell,cell);
+ if(!d.ok){x.fillStyle='rgba(255,255,255,.82)';x.fillRect(ox,oy,qs,qs);text('Enter your UPI ID',oy+qs/2+12,40,'700','#5d6271');}
+ if(poster){var y=oy+qs+70;text(d.name||'Your name',y,46,'800','#15171d');text('UPI ID: '+(d.id||'yourname@bank'),y+56,32,'500','#3d4250');
+  if(d.am)text('Amount: ₹'+d.am.toLocaleString('en-IN',{minimumFractionDigits:d.am%1?2:0,maximumFractionDigits:2}),y+110,36,'800','#0b6b4f');}
+ root.dataset.share='';}
+['upi-id','upi-name','upi-amt','upi-note'].forEach(function(i){$(i).addEventListener('input',draw);});$('upi-style').addEventListener('change',draw);
+$('upi-dl').addEventListener('click',function(){cv.toBlob(function(b){var a=document.createElement('a'),d=build();a.href=URL.createObjectURL(b);a.download='upi-qr-'+(d.id.split('@')[0]||'code')+'.png';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);},'image/png');});
+draw();
+})();
+</script>
+</div>

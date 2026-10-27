@@ -1,0 +1,74 @@
+<div class="bd-calc" id="bd-mk">
+<div class="bc-title">Mask Aadhaar, PAN or any ID before you share it</div>
+<div class="bc-sub">Cover your Aadhaar number, date of birth, address, QR code or signature with solid boxes, add a "for this purpose only" watermark, and save a safe copy as JPG or PDF. The file is opened and changed on your device only.</div>
+<label class="bt-drop" id="mk-drop"><input type="file" accept="image/*,application/pdf" multiple id="mk-file"><b>Choose a photo, scan or PDF of your ID</b><small>JPG, PNG, WebP or PDF · several pages are fine</small></label>
+<div id="mk-work" hidden>
+<div class="bc-row" style="margin-top:14px"><button type="button" id="mk-prev">&#8592;</button><span id="mk-page" style="font-weight:700"></span><button type="button" id="mk-next">&#8594;</button>
+<button type="button" id="mk-undo">Undo box</button><button type="button" id="mk-clear">Clear page</button><button type="button" id="mk-new">Start again</button></div>
+<div class="mk-stage"><canvas id="mk-cv"></canvas></div>
+<p class="bc-note">Drag across anything you want hidden: a black box covers it. For an Aadhaar card, cover the <b>first 8 digits</b> of the number (keep the last 4), plus the QR code if you don't want your details read from it.</p>
+<div class="bc-grid">
+<div><label for="mk-wm">Watermark (recommended)</label><input id="mk-wm" placeholder="For KYC at ABC Bank only, 27 Oct 2026"></div>
+<div><label for="mk-col">Box colour</label><select id="mk-col"><option value="#000">Black</option><option value="#fff">White</option></select></div>
+</div>
+<div class="bc-row"><button type="button" class="bc-primary" id="mk-pdf">Download PDF (all pages)</button><button type="button" id="mk-jpg">Download this page as JPG</button></div>
+<p class="bt-msg" id="mk-msg"></p>
+</div>
+<p class="bt-safe">Your document never leaves this device. Saved pages are flattened into images, so hidden numbers cannot be uncovered or copied from the file.</p>
+<style>
+#bd-mk [hidden]{display:none!important}
+#bd-mk .mk-stage{margin-top:12px;border-radius:14px;overflow:hidden;background:#d9dce3!important;touch-action:none;cursor:crosshair}
+#bd-mk .mk-stage canvas{display:block;width:100%;height:auto}
+</style>
+<script>
+(function(){
+var SRI={"https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js":"sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI","https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js":"sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e","https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js":"sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2"};
+function sri(s,u){s.crossOrigin='anonymous';if(SRI[u])s.integrity=SRI[u];}
+var root=document.getElementById('bd-mk');if(!root)return;
+var $=function(id){return document.getElementById(id);},pages=[],cur=0,cv=$('mk-cv'),cx=cv.getContext('2d'),drag=null;
+var LIB='https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',JS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',WK='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;sri(s,u);s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+var pdfReady=null;function pdfjs(){return pdfReady||(pdfReady=(window.pdfjsLib?Promise.resolve():load(JS)).then(function(){return fetch(WK,{integrity:SRI[WK]}).then(function(r){return r.blob();}).then(function(b){pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(b);});}));}
+function msg(t){$('mk-msg').textContent=t;}
+async function add(files){msg('Opening…');
+ for(const f of files){
+  if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){await pdfjs();var doc;try{doc=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;}catch(e){msg('"'+f.name+'" could not be opened. If it is password-protected (like the e-Aadhaar PDF), open it with the password and save or print a copy without one first.');continue;}
+   for(var i=1;i<=doc.numPages;i++){var pg=await doc.getPage(i),vp=pg.getViewport({scale:Math.min(2.5,1800/pg.getViewport({scale:1}).width)}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+    var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:x,viewport:vp}).promise;pages.push({c:c,boxes:[],name:f.name});}}
+  else if(/^image\//.test(f.type)){var im=await new Promise(function(ok,no){var i=new Image();i.onload=function(){ok(i);};i.onerror=no;i.src=URL.createObjectURL(f);}).catch(function(){return null;});
+   if(!im){msg('"'+f.name+'" could not be opened.');continue;}var s=Math.min(1,2400/Math.max(im.naturalWidth,im.naturalHeight)),c2=document.createElement('canvas');c2.width=Math.round(im.naturalWidth*s);c2.height=Math.round(im.naturalHeight*s);
+   c2.getContext('2d').drawImage(im,0,0,c2.width,c2.height);pages.push({c:c2,boxes:[],name:f.name});}}
+ if(!pages.length){msg('Choose a JPG, PNG, WebP or PDF file.');return;}
+ $('mk-drop').hidden=true;$('mk-work').hidden=false;msg('');show();}
+// Draws a page with its boxes and the watermark; used both on screen and for the saved file.
+function compose(p,ctx,live){var c=p.c;ctx.drawImage(c,0,0);ctx.fillStyle=$('mk-col').value;p.boxes.forEach(function(b){ctx.fillRect(b.x,b.y,b.w,b.h);});
+ if(live){ctx.fillStyle='rgba(226,70,44,.35)';ctx.fillRect(live.x,live.y,live.w,live.h);}
+ var t=$('mk-wm').value.trim();if(t){ctx.save();var fs=Math.max(18,Math.round(c.width/28));ctx.font='700 '+fs+'px system-ui,sans-serif';ctx.fillStyle='rgba(90,90,100,.38)';ctx.translate(c.width/2,c.height/2);ctx.rotate(-Math.atan2(c.height,c.width));
+  var w=ctx.measureText(t).width+fs*3,diag=Math.hypot(c.width,c.height);for(var y=-diag/2;y<diag/2;y+=fs*4)for(var x=-diag/2-((y/(fs*4))%2?w/2:0);x<diag/2;x+=w)ctx.fillText(t,x,y);ctx.restore();}}
+function show(live){var p=pages[cur];cv.width=p.c.width;cv.height=p.c.height;compose(p,cx,live);$('mk-page').textContent='Page '+(cur+1)+' of '+pages.length;$('mk-prev').disabled=cur===0;$('mk-next').disabled=cur>=pages.length-1;}
+function pt(e){var r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height};}
+function rect(a,b){return{x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),w:Math.abs(a.x-b.x),h:Math.abs(a.y-b.y)};}
+cv.addEventListener('pointerdown',function(e){drag=pt(e);cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointermove',function(e){if(drag)show(rect(drag,pt(e)));});
+cv.addEventListener('pointerup',function(e){if(!drag)return;var r=rect(drag,pt(e));drag=null;if(r.w>4&&r.h>4)pages[cur].boxes.push(r);show();});
+cv.addEventListener('pointercancel',function(){drag=null;show();});
+$('mk-undo').addEventListener('click',function(){pages[cur].boxes.pop();show();});$('mk-clear').addEventListener('click',function(){pages[cur].boxes=[];show();});
+$('mk-prev').addEventListener('click',function(){if(cur>0){cur--;show();}});$('mk-next').addEventListener('click',function(){if(cur<pages.length-1){cur++;show();}});
+$('mk-wm').addEventListener('input',function(){show();});$('mk-col').addEventListener('change',function(){show();});
+$('mk-new').addEventListener('click',function(){pages=[];cur=0;$('mk-work').hidden=true;$('mk-drop').hidden=false;msg('');});
+$('mk-file').addEventListener('change',function(){add(Array.from(this.files));this.value='';});
+['dragover','dragenter'].forEach(function(t){$('mk-drop').addEventListener(t,function(e){e.preventDefault();this.classList.add('bt-over');});});
+$('mk-drop').addEventListener('dragleave',function(){this.classList.remove('bt-over');});
+$('mk-drop').addEventListener('drop',function(e){e.preventDefault();this.classList.remove('bt-over');add(Array.from(e.dataTransfer.files));});
+function flat(p){var c=document.createElement('canvas');c.width=p.c.width;c.height=p.c.height;compose(p,c.getContext('2d'));return new Promise(function(ok){c.toBlob(ok,'image/jpeg',.9);});}
+function save(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
+function base(){return (pages[0].name||'document').replace(/\.[^.]+$/,'')+'-masked';}
+function warn(){return pages.some(function(p){return p.boxes.length;})||$('mk-wm').value.trim()?'':' Nothing is masked yet: drag over the parts you want hidden.';}
+$('mk-jpg').addEventListener('click',async function(){save(await flat(pages[cur]),base()+(pages.length>1?'-p'+(cur+1):'')+'.jpg');msg('Saved.'+warn());});
+$('mk-pdf').addEventListener('click',async function(){msg('Making the PDF…');if(!window.PDFLib)await load(LIB);var doc=await PDFLib.PDFDocument.create();
+ for(const p of pages){var jpg=await doc.embedJpg(new Uint8Array(await (await flat(p)).arrayBuffer())),w=595.28,h=w*p.c.height/p.c.width;if(p.c.width>p.c.height){h=595.28;w=h*p.c.width/p.c.height;}
+  doc.addPage([w,h]).drawImage(jpg,{x:0,y:0,width:w,height:h});}
+ save(new Blob([await doc.save()],{type:'application/pdf'}),base()+'.pdf');msg('Saved '+pages.length+' page'+(pages.length>1?'s':'')+' as a PDF.'+warn());});
+})();
+</script>
+</div>

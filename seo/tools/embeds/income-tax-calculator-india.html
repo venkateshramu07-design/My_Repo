@@ -1,0 +1,63 @@
+<div class="bd-calc" id="bd-it">
+<p class="bc-title">Income tax calculator: new vs old regime (FY 2026-27)</p>
+<p class="bc-sub">Enter your yearly income and deductions to see your tax under both regimes, which one saves more, and your monthly take-home. Rates for income earned from 1 April 2026 to 31 March 2027, for resident individuals.</p>
+<div class="bc-grid">
+<div><label for="it-sal">Gross salary for the year (CTC minus employer PF)</label><input id="it-sal" type="number" min="0" step="10000" value="1500000"></div>
+<div><label for="it-oth">Other income (interest, rent after 30%, freelance profit)</label><input id="it-oth" type="number" min="0" step="5000" value="20000"></div>
+<div><label for="it-age">Your age</label><select id="it-age"><option value="0">Below 60</option><option value="1">60 to 79</option><option value="2">80 or above</option></select></div>
+<div><label class="bc-check" style="margin-top:30px"><input type="checkbox" id="it-salaried" checked> I am salaried or a pensioner</label></div>
+</div>
+<details open><summary>Deductions (old regime, except employer NPS)</summary>
+<div class="bc-grid" style="margin-top:12px">
+<div><label for="it-80c">80C: PF, PPF, ELSS, LIC, home loan principal, school fees (max ₹1.5 lakh)</label><input id="it-80c" type="number" min="0" step="5000" value="150000"></div>
+<div><label for="it-80d">80D: health insurance premiums</label><input id="it-80d" type="number" min="0" step="1000" value="25000"></div>
+<div><label for="it-hra">HRA exemption (from your payslip or HRA calculation)</label><input id="it-hra" type="number" min="0" step="5000" value="0"></div>
+<div><label for="it-hl">Home loan interest, self-occupied (max ₹2 lakh)</label><input id="it-hl" type="number" min="0" step="5000" value="0"></div>
+<div><label for="it-nps">80CCD(1B): your own extra NPS (max ₹50,000)</label><input id="it-nps" type="number" min="0" step="5000" value="0"></div>
+<div><label for="it-othd">Other deductions: 80E, 80G, 80TTA, professional tax</label><input id="it-othd" type="number" min="0" step="1000" value="2500"></div>
+<div><label for="it-enps">Employer's NPS contribution, 80CCD(2) (both regimes)</label><input id="it-enps" type="number" min="0" step="5000" value="0"></div>
+<div><label for="it-basic">Basic pay + DA for the year (for the NPS limit)</label><input id="it-basic" type="number" min="0" step="10000" value="600000"></div>
+</div></details>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span>New regime tax</span><b id="it-new">—</b><span id="it-newr"></span></div>
+<div class="bc-stat bc-main"><span>Old regime tax</span><b id="it-old">—</b><span id="it-oldr"></span></div>
+<div class="bc-stat"><span>Better for you</span><b id="it-best">—</b><span id="it-save"></span></div>
+<div class="bc-stat"><span>Monthly take-home (better regime)</span><b id="it-month">—</b></div>
+</div>
+<p class="bc-note" id="it-be"></p>
+<details><summary>How each regime was worked out</summary><div class="bc-table"><table><thead><tr><th></th><th>New regime</th><th>Old regime</th></tr></thead><tbody id="it-tab"></tbody></table></div></details>
+<p class="bc-note">Includes the ₹60,000 rebate (zero tax up to ₹12 lakh of taxable income in the new regime, with marginal relief just above it), surcharge with marginal relief, and 4% health and education cess. Not included: capital gains and other income taxed at special rates, agricultural income, and rules for non-residents. Check your final figure on the Income Tax Department's e-filing calculator.</p>
+<script>
+(function(){
+var root=document.getElementById('bd-it');if(!root)return;var C=window.bdCalc,$=function(i){return document.getElementById(i);},R=function(n){return C.money(n,'₹');};
+var NEW=[[400000,0],[800000,.05],[1200000,.1],[1600000,.15],[2000000,.2],[2400000,.25],[Infinity,.3]];
+function OLD(age){var f=[250000,300000,500000][age];return [[f,0],[500000,.05],[1000000,.2],[Infinity,.3]].filter(function(s,i){return i===0||s[0]>f;});}
+function slab(inc,S){var t=0,lo=0;S.forEach(function(s){if(inc>lo)t+=(Math.min(inc,s[0])-lo)*s[1];lo=s[0];});return t;}
+// Surcharge on tax above ₹50 lakh, ₹1 crore, ₹2 crore and ₹5 crore, with marginal relief so tax never jumps by more than the income above each line.
+function sur(inc,base,S,cap){var L=[[5e7,.37],[2e7,.25],[1e7,.15],[5e6,.1]].filter(function(l){return l[1]<=cap;});
+ for(var i=0;i<L.length;i++)if(inc>L[i][0]){var r=L[i][1],t=base(inc)*(1+r),prev=i+1<L.length?L[i+1][1]:0,at=base(L[i][0])*(1+prev);return Math.min(t,at+inc-L[i][0])-base(inc);}return 0;}
+function newTax(ti){var b=function(x){var t=slab(x,NEW);return x<=1200000?0:Math.min(t,x-1200000);};var t=b(ti);return {slab:slab(ti,NEW),reb:slab(ti,NEW)-t,sur:sur(ti,b,NEW,.25),t:t};}
+function oldTax(ti,age){var S=OLD(age),b=function(x){var t=slab(x,S);return x<=500000?Math.max(0,t-12500):t;};var t=b(ti);return {slab:slab(ti,S),reb:slab(ti,S)-t,sur:sur(ti,b,S,.37),t:t};}
+function fin(o){return Math.round((o.t+o.sur)*1.04/10)*10;}
+function run(){var n=function(i){return Math.max(0,C.num($(i)));},sal=n('it-sal'),oth=n('it-oth'),age=+$('it-age').value,sd=$('it-salaried').checked,basic=n('it-basic')||sal*.5,enps=n('it-enps');
+ var dN=(sd?Math.min(75000,sal):0)+Math.min(enps,basic*.14),tiN=Math.max(0,sal+oth-dN);
+ var ded={c:Math.min(n('it-80c'),150000),d:Math.min(n('it-80d'),100000),h:Math.min(n('it-hra'),sal),l:Math.min(n('it-hl'),200000),p:Math.min(n('it-nps'),50000),o:n('it-othd'),e:Math.min(enps,basic*.1)};
+ var dO=(sd?Math.min(50000,sal):0)+ded.c+ded.d+ded.h+ded.l+ded.p+ded.o+ded.e,tiO=Math.max(0,sal+oth-dO);
+ var tn=newTax(tiN),to=oldTax(tiO,age),N=fin(tn),O=fin(to),gross=sal+oth;
+ $('it-new').textContent=R(N);$('it-old').textContent=R(O);
+ $('it-newr').textContent=gross?'Effective rate '+(N/gross*100).toFixed(1)+'%':'';$('it-oldr').textContent=gross?'Effective rate '+(O/gross*100).toFixed(1)+'%':'';
+ var best=N<=O?'New regime':'Old regime';$('it-best').textContent=N===O?'Either (same tax)':best;$('it-save').textContent=N===O?'':'Saves '+R(Math.abs(N-O))+' a year';
+ $('it-month').textContent=R((gross-Math.min(N,O))/12);
+ // Extra old-regime deductions needed before the old regime beats the new one.
+ var be='';if(N<O){var lo=0,hi=gross;for(var k=0;k<40;k++){var m=(lo+hi)/2;if(fin(oldTax(Math.max(0,tiO-m),age))>N)lo=m;else hi=m;}
+  be=hi<gross?'The old regime would only win if you had about <b>'+R(Math.ceil(hi/1000)*1000)+'</b> more in deductions (total about '+R(Math.ceil((dO-(sd?50000:0)+hi)/1000)*1000)+').':'Even with much bigger deductions, the old regime would not beat the new one at this income.';}
+ else if(O<N)be='Your deductions make the old regime cheaper. Remember you must choose it when you file (salaried people can switch each year; business owners only once).';
+ $('it-be').innerHTML=be;
+ var row=function(l,a,b){return '<tr><td>'+l+'</td><td>'+a+'</td><td>'+b+'</td></tr>';};
+ $('it-tab').innerHTML=row('Gross income',R(gross),R(gross))+row('Deductions and exemptions',R(dN),R(dO))+row('Taxable income',R(tiN),R(tiO))+row('Tax on slabs',R(tn.slab),R(to.slab))+
+  row('Rebate / marginal relief','&minus;'+R(tn.reb),'&minus;'+R(to.reb))+row('Surcharge',R(tn.sur),R(to.sur))+row('Cess 4%',R((tn.t+tn.sur)*.04),R((to.t+to.sur)*.04))+row('<b>Total tax</b>','<b>'+R(N)+'</b>','<b>'+R(O)+'</b>');
+ root.dataset.share='My income tax for FY 2026-27: '+R(N)+' in the new regime vs '+R(O)+' in the old one. Check yours:';}
+C.bind(root,run);
+})();
+</script>
+</div>

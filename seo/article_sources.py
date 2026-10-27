@@ -637,6 +637,36 @@ A["password-passphrase-generator-breach-check"] = ["nist_pw", "eff_dice", "hibp"
 A["word-counter-character-limits"] = ["read_rate", "g_snippet"]
 A["free-tools-no-upload-no-signup"] = ["qr_wpforms", "cv_paywall", "pdf_cmp", "ds_cap", "exif_fast", "sub_cnet"]
 
+S.update({
+ "in_ssc": ("Staff Selection Commission: official website and exam notices", "https://ssc.gov.in/"),
+ "in_upsc": ("UPSC online application portal and instructions", "https://upsconline.nic.in/"),
+ "in_ibps": ("IBPS: recruitment notifications and document guidelines", "https://www.ibps.in/"),
+ "in_neet": ("National Testing Agency: NEET (UG) information bulletin", "https://neet.nta.nic.in/"),
+ "pw_ssc": ("Physics Wallah: SSC CGL photo and signature size 2026", "https://www.pw.live/ssc/exams/ssc-cgl-photo-and-signature-size-2026"),
+ "pw_neet": ("Physics Wallah: NEET 2026 photo and signature guidelines", "https://www.pw.live/neet/exams/neet-2026-photo-and-signature-guideline"),
+ "vis_upsc": ("Vision IAS: UPSC photo and signature rules 2026", "https://blog.visionias.in/blog/featured/upsc-new-photo-signature-rules-2026-dos-and-donts"),
+ "it_calc": ("Income Tax Department: income tax calculator (e-filing portal)", "https://www.incometax.gov.in/iec/foportal/income-tax-calculator"),
+ "in_budget": ("Union Budget 2026-27: budget documents", "https://www.indiabudget.gov.in/"),
+ "cac_new": ("CAclubindia: new tax regime FY 2026-27 slab, rebate and marginal relief reference", "https://www.caclubindia.com/articles/new-tax-regime-fy-202627-complete-slab-rebate-marginal-relief-reference-56353.asp"),
+ "bt_slabs": ("Business Today: what Budget 2026 changed for individual taxpayers", "https://www.businesstoday.in/personal-finance/tax/story/tax-slabs-fy-2026-27-what-budget-2026-changed-for-individual-taxpayers-and-which-regime-works-best-514044-2026-02-01"),
+ "cbic_rates": ("CBIC: GST rates for goods and services", "https://cbic-gst.gov.in/gst-goods-services-rates.html"),
+ "gst_council": ("GST Council: decisions and notifications", "https://gstcouncil.gov.in/"),
+ "vyapar_gst": ("Vyapar: GST rates 2026-27 and GST 2.0 changes", "https://vyaparapp.in/blog/new-gst-rates/"),
+ "nsi": ("National Savings Institute: small savings schemes", "https://www.nsiindia.gov.in/"),
+ "ss_rates": ("Outlook Money: small savings rates unchanged, PPF at 7.1%", "https://www.outlookmoney.com/retirement/pension/small-savings-rates-unchanged-ppf-at-710-per-cent-nsc-at-770-per-cent"),
+ "epfo": ("EPFO: Employees' Provident Fund Organisation", "https://www.epfindia.gov.in/"),
+ "epf_rate": ("Outlook Money: EPF rate unchanged at 8.25% for 2025-26", "https://www.outlookmoney.com/retirement/pension/epf-rates-unchanged-at-825-per-cent-for-2025-26-announces-epfo"),
+ "uidai": ("UIDAI: Unique Identification Authority of India", "https://uidai.gov.in/"),
+ "myaadhaar": ("myAadhaar portal: download masked Aadhaar, lock biometrics", "https://myaadhaar.uidai.gov.in/"),
+ "npci_upi": ("NPCI: Unified Payments Interface (UPI) product overview", "https://www.npci.org.in/what-we-do/upi/product-overview"),
+})
+A["exam-photo-signature-resizer"] = ["in_ssc", "in_upsc", "in_ibps", "in_neet", "pw_ssc", "pw_neet", "vis_upsc"]
+A["income-tax-calculator-new-vs-old-regime"] = ["it_calc", "in_budget", "cac_new", "bt_slabs"]
+A["gst-calculator-2026-rates"] = ["cbic_rates", "gst_council", "vyapar_gst"]
+A["ppf-epf-ssy-fd-rd-calculator"] = ["nsi", "ss_rates", "epfo", "epf_rate", "dicgc"]
+A["mask-aadhaar-pan-before-sharing"] = ["uidai", "myaadhaar"]
+A["upi-qr-code-generator-free"] = ["npci_upi", "rbi"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

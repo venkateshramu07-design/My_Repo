@@ -1,0 +1,133 @@
+<div class="bd-calc" id="bd-ep">
+<div class="bc-title">Exam photo and signature resizer</div>
+<div class="bc-sub">Crop and resize your photo, signature, thumb impression or declaration to the exact pixels and KB an online form asks for: SSC, UPSC, IBPS, SBI, RRB, NEET, JEE, CUET or any other. Everything happens on your phone or computer; nothing is uploaded.</div>
+<div class="bc-grid">
+<div><label for="ep-exam">Form</label><select id="ep-exam">
+<option value="ibps">IBPS, SBI, RRB, LIC (bank and insurance exams)</option>
+<option value="ssc">SSC (CGL, CHSL, MTS, GD, CPO)</option>
+<option value="upsc">UPSC (Civil Services, NDA, CDS, ESE)</option>
+<option value="nta">NTA (NEET, JEE Main, CUET)</option>
+<option value="custom">Other form: enter its size</option>
+</select></div>
+<div><label for="ep-kind">Document</label><select id="ep-kind"></select></div>
+</div>
+<div class="bc-grid ep-custom" hidden style="margin-top:14px">
+<div><label for="ep-w">Width (pixels)</label><input id="ep-w" type="number" min="50" max="3000" value="200"></div>
+<div><label for="ep-h">Height (pixels)</label><input id="ep-h" type="number" min="50" max="3000" value="230"></div>
+<div><label for="ep-min">Minimum size (KB)</label><input id="ep-min" type="number" min="0" max="5000" value="20"></div>
+<div><label for="ep-max">Maximum size (KB)</label><input id="ep-max" type="number" min="1" max="5000" value="50"></div>
+</div>
+<p class="bc-note" id="ep-spec"></p>
+<label class="bt-drop" id="ep-drop"><input type="file" accept="image/*" id="ep-file"><b>Choose a photo or scan</b><small>or take one with your camera · JPG, PNG, WebP or HEIC</small></label>
+<div id="ep-work" hidden>
+<div class="bt-two" style="margin-top:16px">
+<div>
+<div class="ep-stage"><canvas id="ep-cv" width="600" height="600"></canvas></div>
+<div class="bc-row"><label for="ep-zoom" style="margin:0;flex:none">Zoom</label><input id="ep-zoom" type="range" min="1" max="4" step="0.01" value="1" style="flex:1;padding:0"></div>
+<div class="bc-row"><button type="button" id="ep-rot">Rotate</button><button type="button" id="ep-fit">Fit whole image</button><button type="button" id="ep-new">Another photo</button></div>
+<p class="bc-note">Drag the picture to position it inside the frame. For a photo, keep your face in the centre with a little space above your head.</p>
+</div>
+<div>
+<label class="bc-check" id="ep-inkrow"><input type="checkbox" id="ep-ink"> Clean up: dark ink on a pure white background</label>
+<label class="bc-check" style="margin-top:8px"><input type="checkbox" id="ep-bright"> Brighten a dull or dark photo</label>
+<div class="bc-out" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+<div class="bc-stat"><span>Size in pixels</span><b id="ep-px">—</b></div>
+<div class="bc-stat bc-main"><span>File size</span><b id="ep-kb">—</b></div>
+</div>
+<div class="ep-result"><img id="ep-out" alt="Resized result"></div>
+<p class="bt-msg" id="ep-msg"></p>
+<div class="bc-row"><button type="button" class="bc-primary" id="ep-dl" disabled>Download JPG</button></div>
+</div>
+</div>
+</div>
+<p class="bt-safe">Your photo never leaves this device. No upload, no sign-up, no watermark.</p>
+<style>
+#bd-ep [hidden]{display:none!important}
+#bd-ep .ep-stage{position:relative;border-radius:14px;overflow:hidden;background:#d9dce3!important;touch-action:none;cursor:grab}
+#bd-ep .ep-stage canvas{display:block;width:100%;height:auto}
+#bd-ep .ep-result{margin-top:14px;display:grid;place-items:center;min-height:120px;border:1px solid var(--c-line);border-radius:14px;padding:14px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/16px 16px!important}
+#bd-ep .ep-result img{max-width:100%;max-height:260px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+#bd-ep .ep-ok{color:#0f8a5f!important;font-weight:700}#bd-ep .ep-bad{color:#c2341d!important;font-weight:700}
+</style>
+<script>
+(function(){
+var SRI={"https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js":"sha384-cVm8gaWQ5+URpoh6ACKXpm8TuyoHkfIDDBkxvDoUdIZ18w8nV5en0lVQvWMwO/6S"};
+function sri(s,u){s.crossOrigin='anonymous';if(SRI[u])s.integrity=SRI[u];}
+var root=document.getElementById('bd-ep');if(!root)return;
+var $=function(id){return document.getElementById(id);};
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;sri(s,u);s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+// Typical sizes from recent notifications. [label, width px, height px, min KB, max KB, dpi, file name, ink clean-up]
+var P={
+ ibps:[['Photograph',200,230,20,50,200,'photo'],['Signature',140,60,10,20,200,'signature',1],['Left thumb impression',240,240,20,50,200,'thumb',1],['Handwritten declaration',800,400,50,100,200,'declaration',1]],
+ ssc:[['Photograph',275,354,20,50,200,'photo'],['Signature',236,79,10,20,200,'signature',1]],
+ upsc:[['Photograph',413,531,20,200,300,'photo'],['Signature (signed three times)',500,500,20,100,300,'signature',1]],
+ nta:[['Passport-size photograph',413,531,10,200,300,'photo'],['Postcard-size photograph (4 x 6 in)',800,1200,10,200,200,'postcard'],['Signature',400,150,4,30,200,'signature',1],['Thumb or finger impressions',600,400,10,200,200,'thumb',1]],
+ custom:[['Photograph',0,0,0,0,200,'photo'],['Signature',0,0,0,0,200,'signature',1],['Other document',0,0,0,0,200,'document']]
+};
+var NOTE={ibps:'Typical IBPS, SBI, RRB and LIC sizes. A live photo is also taken during the application.',ssc:'Typical SSC sizes (3.5 x 4.5 cm photo, 6 x 2 cm signature). Some SSC forms now capture the photo live.',
+ upsc:'UPSC asks for JPG files between 350 and 1,000 pixels on each side. Sign three times, one below the other, on white paper.',nta:'Typical NTA sizes. The photo must be recent, with a white background, about 80% of the face and both ears visible.',custom:'Enter the width, height and KB limits printed in your form\'s instructions.'};
+var img=null,rot=0,zoom=1,ox=0,oy=0,blob=null,timer=0,cv=$('ep-cv'),cx=cv.getContext('2d');
+function spec(){var d=P[$('ep-exam').value][+$('ep-kind').value||0].slice();
+ if($('ep-exam').value==='custom'){d[1]=Math.max(50,Math.min(3000,+$('ep-w').value||200));d[2]=Math.max(50,Math.min(3000,+$('ep-h').value||230));d[3]=Math.max(0,+$('ep-min').value||0);d[4]=Math.max(d[3]+1,+$('ep-max').value||50);}
+ return d;}
+function kinds(){var e=$('ep-exam').value;$('ep-kind').innerHTML=P[e].map(function(k,i){return '<option value="'+i+'">'+k[0]+'</option>';}).join('');root.querySelector('.ep-custom').hidden=e!=='custom';changed();}
+function changed(){var d=spec();$('ep-spec').innerHTML=NOTE[$('ep-exam').value]+' <b>'+d[0]+': '+d[1]+' x '+d[2]+' px, '+d[3]+'&ndash;'+d[4]+' KB, JPG.</b> Always check the size in your own notification: it can change between years.';
+ $('ep-inkrow').style.display=d[7]?'':'none';$('ep-ink').checked=!!d[7];fit();}
+// The frame has the target's shape; the image is drawn under it, scaled by zoom and moved by dragging.
+function frame(){var d=spec(),r=d[1]/d[2],W=cv.width,H=cv.height,fw=r>=1?W*.86:H*.86*r,fh=fw/r;if(fh>H*.86){fh=H*.86;fw=fh*r;}return{x:(W-fw)/2,y:(H-fh)/2,w:fw,h:fh};}
+function dims(){var w=img.naturalWidth,h=img.naturalHeight;return rot%2?{w:h,h:w}:{w:w,h:h};}
+function base(){var f=frame(),d=dims();return Math.max(f.w/d.w,f.h/d.h);}
+function fit(){if(!img)return;zoom=1;$('ep-zoom').value=1;ox=oy=0;draw();}
+function paint(x,scale,cxp,cyp){var d=dims();x.save();x.translate(cxp,cyp);x.rotate(rot*Math.PI/2);x.scale(scale,scale);x.drawImage(img,-img.naturalWidth/2,-img.naturalHeight/2);x.restore();}
+function draw(){if(!img)return;var f=frame(),s=base()*zoom;clamp(s,f);cx.fillStyle='#d9dce3';cx.fillRect(0,0,cv.width,cv.height);paint(cx,s,f.x+f.w/2+ox,f.y+f.h/2+oy);
+ cx.fillStyle='rgba(20,22,30,.55)';cx.fillRect(0,0,cv.width,f.y);cx.fillRect(0,f.y+f.h,cv.width,cv.height-f.y-f.h);cx.fillRect(0,f.y,f.x,f.h);cx.fillRect(f.x+f.w,f.y,cv.width-f.x-f.w,f.h);
+ cx.strokeStyle='#fff';cx.lineWidth=2;cx.strokeRect(f.x,f.y,f.w,f.h);clearTimeout(timer);timer=setTimeout(make,160);}
+function clamp(s,f){var d=dims(),mx=Math.max(0,(d.w*s-f.w)/2),my=Math.max(0,(d.h*s-f.h)/2);ox=Math.max(-mx,Math.min(mx,ox));oy=Math.max(-my,Math.min(my,oy));}
+function enc(c,q){return new Promise(function(ok){c.toBlob(ok,'image/jpeg',q);});}
+// Writes the print resolution (dpi) into the JPEG's JFIF header, which some portals check.
+async function dpi(b,n){var a=new Uint8Array(await b.arrayBuffer());if(a[2]===0xFF&&a[3]===0xE0&&a[6]===0x4A){a[13]=1;a[14]=a[16]=n>>8;a[15]=a[17]=n&255;}return a;}
+// Pads a JPEG that is already as sharp as it can be but still under the form's minimum, with an invisible comment block.
+// It goes after the JFIF header, which must stay first.
+function pad(a,bytes){var at=a[3]===0xE0?4+(a[4]<<8|a[5]):2,n=Math.min(65533,bytes),c=new Uint8Array(a.length+4+n);c.set(a.subarray(0,at));c[at]=0xFF;c[at+1]=0xFE;c[at+2]=(n+2)>>8;c[at+3]=(n+2)&255;for(var i=0;i<n;i++)c[at+4+i]=32;c.set(a.subarray(at),at+4+n);return c;}
+async function make(){if(!img)return;var d=spec(),f=frame(),s=base()*zoom,k=d[1]/f.w,o=document.createElement('canvas');o.width=d[1];o.height=d[2];var x=o.getContext('2d');
+ x.fillStyle='#fff';x.fillRect(0,0,d[1],d[2]);x.imageSmoothingQuality='high';paint(x,s*k,(f.w/2+ox)*k,(f.h/2+oy)*k);
+ if($('ep-ink').checked||$('ep-bright').checked){var im=x.getImageData(0,0,d[1],d[2]),p=im.data,ink=$('ep-ink').checked,lo=255,hi=0,i;
+  for(i=0;i<p.length;i+=4){var l=.299*p[i]+.587*p[i+1]+.114*p[i+2];if(l<lo)lo=l;if(l>hi)hi=l;}
+  for(i=0;i<p.length;i+=4){var L=.299*p[i]+.587*p[i+1]+.114*p[i+2];
+   if(ink){var t=(L-lo)/Math.max(1,hi-lo),v=t>.62?255:Math.round(Math.pow(t/.62,1.6)*200);p[i]=p[i+1]=p[i+2]=v;}
+   else{for(var c=0;c<3;c++){var u=(p[i+c]-lo)/Math.max(1,hi-lo)*255;p[i+c]=Math.min(255,u*1.04+6);}}}
+  x.putImageData(im,0,0);}
+ var lo=.05,hi=1,best=null,b,max=d[4]*1024,min=d[3]*1024;
+ for(var n=0;n<9;n++){var q=(lo+hi)/2;b=await enc(o,q);if(b.size<=max){best={b:b,q:q};lo=q;}else hi=q;}
+ if(!best)best={b:await enc(o,.05),q:.05};
+ var out=await dpi(best.b,d[5]),padded=false;if(out.length<min){out=pad(out,min-out.length+64);padded=true;}
+ blob=new Blob([out],{type:'image/jpeg'});var sz=blob.size/1024;
+ if($('ep-out').src)URL.revokeObjectURL($('ep-out').src);$('ep-out').src=URL.createObjectURL(blob);
+ $('ep-px').textContent=d[1]+' x '+d[2];$('ep-kb').textContent=sz.toFixed(1)+' KB';
+ var ok=sz<=d[4]&&sz>=d[3];$('ep-msg').innerHTML=(ok?'<span class="ep-ok">Ready: within '+d[3]+'&ndash;'+d[4]+' KB.</span>':'<span class="ep-bad">Could not get under '+d[4]+' KB at this size. Try a smaller zoom or a simpler background.</span>')+
+  (padded?' The image was already as sharp as possible, so a blank block was added inside the file to reach the minimum size.':'')+' Saved at '+d[5]+' dpi.';
+ $('ep-dl').disabled=!ok;}
+async function open(f){if(!f)return;var heic=/hei[cf]$/i.test(f.name)||/hei[cf]/.test(f.type);$('ep-msg').textContent='Opening…';
+ var get=function(b){return new Promise(function(ok,no){var i=new Image();i.onload=function(){ok(i);};i.onerror=no;i.src=URL.createObjectURL(b);});};
+ try{img=await get(f);}catch(e){if(!heic){$('ep-msg').textContent='This file could not be opened. Try a JPG or PNG.';return;}
+  try{if(!window.HeicTo)await load('https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js');img=await get(await HeicTo({blob:f,type:'image/jpeg',quality:.95}));}catch(e2){$('ep-msg').textContent='This HEIC photo could not be opened. Take a screenshot of it, or change your camera to "Most compatible".';return;}}
+ rot=0;$('ep-drop').hidden=true;$('ep-work').hidden=false;fit();}
+$('ep-file').addEventListener('change',function(){open(this.files[0]);this.value='';});
+['dragover','dragenter'].forEach(function(t){$('ep-drop').addEventListener(t,function(e){e.preventDefault();this.classList.add('bt-over');});});
+$('ep-drop').addEventListener('dragleave',function(){this.classList.remove('bt-over');});
+$('ep-drop').addEventListener('drop',function(e){e.preventDefault();this.classList.remove('bt-over');open(e.dataTransfer.files[0]);});
+$('ep-exam').addEventListener('change',kinds);$('ep-kind').addEventListener('change',changed);
+['ep-w','ep-h','ep-min','ep-max'].forEach(function(i){$(i).addEventListener('input',changed);});
+$('ep-ink').addEventListener('change',draw);$('ep-bright').addEventListener('change',draw);
+$('ep-zoom').addEventListener('input',function(){zoom=+this.value;draw();});
+$('ep-rot').addEventListener('click',function(){rot=(rot+1)%4;fit();});$('ep-fit').addEventListener('click',fit);
+$('ep-new').addEventListener('click',function(){img=null;blob=null;$('ep-work').hidden=true;$('ep-drop').hidden=false;$('ep-file').click();});
+var drag=null;cv.addEventListener('pointerdown',function(e){if(!img)return;drag={x:e.clientX,y:e.clientY,ox:ox,oy:oy,k:cv.width/cv.getBoundingClientRect().width};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointermove',function(e){if(!drag)return;ox=drag.ox+(e.clientX-drag.x)*drag.k;oy=drag.oy+(e.clientY-drag.y)*drag.k;draw();});
+cv.addEventListener('pointerup',function(){drag=null;});cv.addEventListener('pointercancel',function(){drag=null;});
+cv.addEventListener('wheel',function(e){if(!img)return;e.preventDefault();zoom=Math.max(1,Math.min(4,zoom*(e.deltaY<0?1.08:.93)));$('ep-zoom').value=zoom;draw();},{passive:false});
+$('ep-dl').addEventListener('click',function(){if(!blob)return;var d=spec(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=d[6]+'.jpg';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);});
+kinds();
+})();
+</script>
+</div>

@@ -1,0 +1,83 @@
+<div class="bd-calc" id="bd-sv">
+<p class="bc-title">PPF, EPF, Sukanya Samriddhi, FD and RD calculator</p>
+<p class="bc-sub">See what each savings scheme grows to, how much is your own money and how much is interest. Rates are filled in for October&ndash;December 2026 and can be changed.</p>
+<div class="bt-tabs" role="tablist"><button type="button" class="bt-on" data-t="ppf">PPF</button><button type="button" data-t="epf">EPF</button><button type="button" data-t="ssy">Sukanya (SSY)</button><button type="button" data-t="fd">FD</button><button type="button" data-t="rd">RD</button></div>
+<div class="sv-f bc-grid" data-f="ppf">
+<div><label for="sv-pd">Deposit every year (₹500 to ₹1.5 lakh)</label><input id="sv-pd" type="number" min="500" max="150000" step="5000" value="150000"></div>
+<div><label for="sv-py">Years (15, or extended in 5-year blocks)</label><select id="sv-py"><option>15</option><option>20</option><option>25</option><option>30</option></select></div>
+<div><label for="sv-pr">Interest rate (% a year)</label><input id="sv-pr" type="number" step="0.05" value="7.1"></div>
+</div>
+<div class="sv-f bc-grid" data-f="epf" hidden>
+<div><label for="sv-eb">Basic pay + DA per month</label><input id="sv-eb" type="number" min="0" step="1000" value="40000"></div>
+<div><label for="sv-ea">Your age now</label><input id="sv-ea" type="number" min="18" max="57" value="28"></div>
+<div><label for="sv-ex">Retire at age</label><input id="sv-ex" type="number" min="40" max="60" value="58"></div>
+<div><label for="sv-eg">Pay rise every year (%)</label><input id="sv-eg" type="number" min="0" max="30" step="0.5" value="6"></div>
+<div><label for="sv-ec">EPF balance today</label><input id="sv-ec" type="number" min="0" step="10000" value="200000"></div>
+<div><label for="sv-ev">Extra voluntary PF (VPF, % of basic)</label><input id="sv-ev" type="number" min="0" max="88" step="1" value="0"></div>
+<div><label for="sv-er">Interest rate (% a year)</label><input id="sv-er" type="number" step="0.05" value="8.25"></div>
+</div>
+<div class="sv-f bc-grid" data-f="ssy" hidden>
+<div><label for="sv-sd">Deposit every year (₹250 to ₹1.5 lakh)</label><input id="sv-sd" type="number" min="250" max="150000" step="5000" value="100000"></div>
+<div><label for="sv-sa">Daughter's age when you open it (under 10)</label><input id="sv-sa" type="number" min="0" max="9" value="2"></div>
+<div><label for="sv-sr">Interest rate (% a year)</label><input id="sv-sr" type="number" step="0.05" value="8.2"></div>
+</div>
+<div class="sv-f bc-grid" data-f="fd" hidden>
+<div><label for="sv-fa">Amount you deposit</label><input id="sv-fa" type="number" min="0" step="10000" value="500000"></div>
+<div><label for="sv-fr">Interest rate (% a year)</label><input id="sv-fr" type="number" step="0.05" value="6.75"></div>
+<div><label for="sv-fy">Years</label><input id="sv-fy" type="number" min="0" max="10" value="3"></div>
+<div><label for="sv-fm">Months</label><input id="sv-fm" type="number" min="0" max="11" value="0"></div>
+<div><label for="sv-fc">Interest added</label><select id="sv-fc"><option value="4">Every quarter (most banks)</option><option value="12">Every month</option><option value="2">Every half-year</option><option value="1">Every year</option></select></div>
+</div>
+<div class="sv-f bc-grid" data-f="rd" hidden>
+<div><label for="sv-ra">Deposit every month</label><input id="sv-ra" type="number" min="0" step="500" value="10000"></div>
+<div><label for="sv-rr">Interest rate (% a year)</label><input id="sv-rr" type="number" step="0.05" value="6.7"></div>
+<div><label for="sv-rm">Months</label><input id="sv-rm" type="number" min="6" max="120" step="1" value="60"></div>
+</div>
+<div class="bc-out">
+<div class="bc-stat bc-main"><span id="sv-matl">Maturity value</span><b id="sv-mat">—</b><span id="sv-matw"></span></div>
+<div class="bc-stat"><span>Your deposits</span><b id="sv-dep">—</b></div>
+<div class="bc-stat"><span>Interest earned</span><b id="sv-int">—</b></div>
+</div>
+<div class="bc-bar"><i id="sv-b1" style="background:#2f7de1"></i><i id="sv-b2" style="background:#0f9d76"></i></div>
+<div class="bc-legend"><span><i style="background:#2f7de1"></i>Your money</span><span><i style="background:#0f9d76"></i>Interest</span></div>
+<p class="bc-note" id="sv-note"></p>
+<details><summary>Year by year</summary><div class="bc-table"><table><thead><tr><th>Year</th><th>Deposited</th><th>Interest</th><th>Balance</th></tr></thead><tbody id="sv-tab"></tbody></table></div></details>
+<style>#bd-sv [hidden]{display:none!important}</style>
+<script>
+(function(){
+var root=document.getElementById('bd-sv');if(!root)return;var C=window.bdCalc,$=function(i){return document.getElementById(i);},R=function(n){return C.money(n,'₹');},tab='ppf';
+var n=function(i){return Math.max(0,C.num($(i)));};
+root.querySelector('.bt-tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;tab=b.dataset.t;
+ this.querySelectorAll('button').forEach(function(x){x.classList.toggle('bt-on',x===b);});root.querySelectorAll('.sv-f').forEach(function(f){f.hidden=f.dataset.f!==tab;});run();});
+// Each scheme returns rows of [year, deposited that year, interest that year, closing balance].
+var S={
+ ppf:function(){var d=Math.min(150000,Math.max(500,n('sv-pd'))),y=+$('sv-py').value,r=n('sv-pr')/100,b=0,rows=[];  // deposited by 5 April, interest credited each 31 March
+  for(var i=1;i<=y;i++){var it=(b+d)*r;b+=d+it;rows.push([i,d,it,b]);}
+  return {rows:rows,note:'PPF interest is compounded once a year. Deposit by 5 April to earn interest for the whole year. The interest and the maturity amount are tax-free, and deposits count for 80C in the old regime. After 15 years you can extend in 5-year blocks, with or without new deposits.'};},
+ ssy:function(){var d=Math.min(150000,Math.max(250,n('sv-sd'))),a=Math.min(9,n('sv-sa')),r=n('sv-sr')/100,b=0,rows=[];
+  for(var i=1;i<=21;i++){var dep=i<=15?d:0,it=(b+dep)*r;b+=dep+it;rows.push([i,dep,it,b]);}
+  return {rows:rows,note:'You deposit for the first 15 years; the account keeps earning until it matures 21 years after opening, when your daughter will be about '+(a+21)+'. Up to half can be withdrawn after she turns 18 for education. Interest and maturity are tax-free; deposits count for 80C in the old regime.'};},
+ epf:function(){var basic=n('sv-eb'),age=Math.min(57,n('sv-ea')),ret=Math.max(age+1,n('sv-ex')),g=n('sv-eg')/100,b=n('sv-ec'),v=n('sv-ev')/100,r=n('sv-er')/100,rows=[];
+  for(var i=1;i<=ret-age;i++){var dep=0,it=0;for(var m=0;m<12;m++){var emp=basic*(.12+v),er=basic*.12-Math.min(1250,basic*.0833);dep+=emp+er;it+=(b+dep)*r/12;}  // employer's 8.33% (up to ₹1,250) goes to the pension scheme
+   b+=dep+it;rows.push([age+i,dep,it,b]);basic*=1+g;}
+  return {rows:rows,first:'Age',note:'You pay 12% of basic + DA; your employer also pays 12%, of which 8.33% (up to ₹1,250 a month) goes to the Employees\' Pension Scheme and the rest to your EPF. Interest is worked out monthly and credited once a year. It is tax-free unless your own yearly contribution is above ₹2.5 lakh.'};},
+ fd:function(){var p=n('sv-fa'),r=n('sv-fr')/100,t=n('sv-fy')+Math.min(11,n('sv-fm'))/12,k=+$('sv-fc').value,rows=[],b=p;
+  for(var i=1;i<=Math.ceil(t);i++){var nb=p*Math.pow(1+r/k,k*Math.min(t,i));rows.push([i,i===1?p:0,nb-b,nb]);b=nb;}
+  return {rows:rows,dep:p,note:'FD interest is taxed at your income tax slab rate, and banks deduct 10% TDS once interest from one bank passes ₹50,000 a year (₹1 lakh for senior citizens) unless you submit Form 15G or 15H. Deposits up to ₹5 lakh per bank are insured by DICGC.'};},
+ rd:function(){var d=n('sv-ra'),r=n('sv-rr')/100,mo=Math.max(1,Math.round(n('sv-rm'))),rows=[],prev=0;
+  var val=function(upto){var v=0;for(var j=1;j<=upto;j++)v+=d*Math.pow(1+r/4,4*(upto-j+1)/12);return v;};  // each instalment compounds quarterly
+  for(var i=12;i<mo+12;i+=12){var m=Math.min(i,mo),v=val(m),dep=d*(m-(i-12));rows.push([i/12,dep,v-prev-dep,v]);prev=v;}
+  return {rows:rows,note:'Banks compound recurring deposits every quarter. The interest is taxed at your slab rate, like an FD. Missing an instalment usually costs a small penalty.'};}
+};
+function run(){var o=S[tab](),rows=o.rows,mat=rows[rows.length-1][3],dep=rows.reduce(function(s,x){return s+x[1];},0);
+ if(tab==='epf')dep+=n('sv-ec');var it=Math.max(0,mat-dep);
+ $('sv-mat').textContent=R(mat);$('sv-matw').textContent=C.words(mat,'₹');$('sv-dep').textContent=R(dep);$('sv-int').textContent=R(it);
+ $('sv-matl').textContent=tab==='epf'?'EPF at retirement':'Maturity value';
+ $('sv-b1').style.width=(mat?dep/mat*100:0)+'%';$('sv-b2').style.width=(mat?it/mat*100:0)+'%';$('sv-note').textContent=o.note;
+ root.querySelector('thead th').textContent=o.first||'Year';
+ $('sv-tab').innerHTML=rows.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+R(x[1])+'</td><td>'+R(x[2])+'</td><td>'+R(x[3])+'</td></tr>';}).join('');
+ root.dataset.share={ppf:'PPF',epf:'EPF',ssy:'Sukanya Samriddhi',fd:'FD',rd:'RD'}[tab]+': '+R(dep)+' grows to '+R(mat)+'. Try your numbers:';}
+C.bind(root,run);
+})();
+</script>
+</div>

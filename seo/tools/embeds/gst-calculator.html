@@ -1,0 +1,40 @@
+<div class="bd-calc" id="bd-gst">
+<p class="bc-title">GST calculator (2026 rates)</p>
+<p class="bc-sub">Add GST to a price or take it out of a price that already includes it, at the GST 2.0 rates in force since 22 September 2025, with the CGST, SGST or IGST split for your invoice.</p>
+<div class="bt-tabs" role="tablist"><button type="button" class="bt-on" data-m="add">Add GST to a price</button><button type="button" data-m="rem">Remove GST from a price</button></div>
+<div class="bc-grid">
+<div><label for="gst-amt" id="gst-amtl">Price before GST (₹)</label><input id="gst-amt" type="number" min="0" step="1" value="10000" inputmode="decimal"></div>
+<div><label for="gst-sup">Where is it supplied?</label><select id="gst-sup"><option value="in">Same state (CGST + SGST)</option><option value="out">Another state or import (IGST)</option></select></div>
+</div>
+<label style="margin-top:14px">GST rate</label>
+<div class="bc-chips" id="gst-rates"></div>
+<div class="bc-grid gst-cust" hidden style="margin-top:10px"><div><label for="gst-cr">Custom rate (%)</label><input id="gst-cr" type="number" min="0" max="100" step="0.01" value="12"></div></div>
+<div class="bc-out">
+<div class="bc-stat"><span>Price before GST</span><b id="gst-base">—</b></div>
+<div class="bc-stat"><span id="gst-taxl">GST</span><b id="gst-tax">—</b></div>
+<div class="bc-stat bc-main"><span>Total price with GST</span><b id="gst-tot">—</b><span id="gst-totw"></span></div>
+</div>
+<div class="bc-out" id="gst-split"></div>
+<p class="bc-note"><b>Which rate?</b> 0%: fresh milk, eggs, unpacked grains, individual life and health insurance. 5%: most packed food staples such as butter, ghee and namkeen. 18%: the standard rate for most goods and services, including phones, appliances, small cars and professional services. 40%: aerated drinks, large cars, motorcycles above 350 cc and betting. 3%: gold and silver. The exact rate depends on the item's HSN or SAC code; check the CBIC rate finder for anything you invoice.</p>
+<style>#bd-gst [hidden]{display:none!important}#bd-gst .bc-chip{cursor:pointer;background:transparent}#bd-gst .bc-chip.bc-best{background:var(--c-accent)!important;color:#fff!important;border-color:var(--c-accent)}</style>
+<script>
+(function(){
+var root=document.getElementById('bd-gst');if(!root)return;var C=window.bdCalc,$=function(i){return document.getElementById(i);};
+var RATES=[0,3,5,18,40],rate=18,mode='add';
+function m2(n){return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+$('gst-rates').innerHTML=RATES.map(function(r){return '<button type="button" class="bc-chip'+(r===rate?' bc-best':'')+'" data-r="'+r+'">'+r+'%</button>';}).join('')+'<button type="button" class="bc-chip" data-r="c">Other</button>';
+$('gst-rates').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;this.querySelectorAll('button').forEach(function(x){x.classList.toggle('bc-best',x===b);});
+ root.querySelector('.gst-cust').hidden=b.dataset.r!=='c';rate=b.dataset.r==='c'?null:+b.dataset.r;run();});
+root.querySelector('.bt-tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;mode=b.dataset.m;this.querySelectorAll('button').forEach(function(x){x.classList.toggle('bt-on',x===b);});
+ $('gst-amtl').textContent=mode==='add'?'Price before GST (₹)':'Price including GST (₹)';run();});
+function run(){var r=rate===null?Math.max(0,C.num($('gst-cr'))):rate,a=Math.max(0,C.num($('gst-amt'))),base,tax;
+ if(mode==='add'){base=a;tax=a*r/100;}else{base=a/(1+r/100);tax=a-base;}
+ base=Math.round(base*100)/100;tax=Math.round(tax*100)/100;var tot=Math.round((base+tax)*100)/100;
+ $('gst-base').textContent=m2(base);$('gst-tax').textContent=m2(tax);$('gst-tot').textContent=m2(tot);$('gst-taxl').textContent='GST at '+r+'%';$('gst-totw').textContent=C.words(tot,'₹');
+ var h=Math.round(tax*50)/100;$('gst-split').innerHTML=$('gst-sup').value==='in'?'<div class="bc-stat"><span>CGST '+(r/2)+'% (to the Centre)</span><b>'+m2(h)+'</b></div><div class="bc-stat"><span>SGST '+(r/2)+'% (to the state)</span><b>'+m2(Math.round((tax-h)*100)/100)+'</b></div>':
+  '<div class="bc-stat"><span>IGST '+r+'%</span><b>'+m2(tax)+'</b></div>';
+ root.dataset.share='GST at '+r+'% on '+m2(base)+' is '+m2(tax)+', total '+m2(tot)+'. Work out yours:';}
+C.bind(root,run);
+})();
+</script>
+</div>

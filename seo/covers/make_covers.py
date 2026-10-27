@@ -60,6 +60,12 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "meeting-time-zone-planner": ("FREE TOOL \u00b7 WORK", "Meeting Planner Across Time Zones", "#2f7de1"),
     "password-passphrase-generator-breach-check": ("FREE TOOL \u00b7 SECURITY", "Strong Passwords and a Safe Breach Check", "#0f9d76"),
     "word-counter-character-limits": ("FREE TOOL \u00b7 WRITING", "Word Counter With Every Character Limit", "#c2410c"),
+    "exam-photo-signature-resizer": ("FREE TOOL \u00b7 EXAM FORMS", "Exam Photo and Signature Resizer: Exact KB and Pixels", "#7a5cd6"),
+    "income-tax-calculator-new-vs-old-regime": ("INDIA \u00b7 TAX CALCULATOR", "Income Tax FY 2026-27: New vs Old Regime", "#c2410c"),
+    "gst-calculator-2026-rates": ("INDIA \u00b7 CALCULATOR", "GST Calculator: Add or Remove GST at 2026 Rates", "#0e9bb5"),
+    "ppf-epf-ssy-fd-rd-calculator": ("INDIA \u00b7 SAVINGS CALCULATOR", "PPF, EPF, Sukanya, FD and RD: What Your Savings Grow To", "#0f9d76"),
+    "mask-aadhaar-pan-before-sharing": ("FREE TOOL \u00b7 PRIVATE", "Mask Your Aadhaar or PAN Before You Share It", "#1a3faa"),
+    "upi-qr-code-generator-free": ("FREE TOOL \u00b7 PAYMENTS", "UPI QR Code Generator That Never Expires", "#0f9d76"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 # Country money-facts pages (seo/countries/countries.json): one cover each.
