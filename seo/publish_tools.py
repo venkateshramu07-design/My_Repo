@@ -120,7 +120,7 @@ TOOL_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@1a
 INDIA_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@9ed264b06cd2ad00213db1f27871b6573b5d68ff/seo/covers/"
 
 
-PHOTO_COVER_BASE = TOOL_COVER_BASE  # set to the commit that adds the photo covers
+PHOTO_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@587b72342f7d6729640ab35f3c2312b90990c493/seo/covers/"
 
 
 def cover_base(name):
