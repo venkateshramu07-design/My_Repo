@@ -66,6 +66,15 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "ppf-epf-ssy-fd-rd-calculator": ("INDIA \u00b7 SAVINGS CALCULATOR", "PPF, EPF, Sukanya, FD and RD: What Your Savings Grow To", "#0f9d76"),
     "mask-aadhaar-pan-before-sharing": ("FREE TOOL \u00b7 PRIVATE", "Mask Your Aadhaar or PAN Before You Share It", "#1a3faa"),
     "upi-qr-code-generator-free": ("FREE TOOL \u00b7 PAYMENTS", "UPI QR Code Generator That Never Expires", "#0f9d76"),
+    "passport-photo-maker": ("FREE TOOL \u00b7 PASSPORT PHOTOS", "Passport and Visa Photo Maker: Exact Sizes, Print or Upload", "#1a3faa"),
+    "us-passport-photo-size": ("PASSPORT PHOTO \u00b7 UNITED STATES", "US Passport Photo: 2 x 2 Inches, Made Free at Home", "#1a3faa"),
+    "us-visa-photo-600x600": ("VISA PHOTO \u00b7 UNITED STATES", "US Visa and DV Lottery Photo: 600 x 600 px", "#c2410c"),
+    "uk-passport-photo-size": ("PASSPORT PHOTO \u00b7 UNITED KINGDOM", "UK Passport Photo: 35 x 45 mm, Print or Digital", "#2f7de1"),
+    "schengen-visa-photo-size": ("VISA PHOTO \u00b7 SCHENGEN AND EU", "Schengen Visa Photo: 35 x 45 mm, Face 32-36 mm", "#1a3faa"),
+    "canada-passport-photo-size": ("PASSPORT PHOTO \u00b7 CANADA", "Canadian Passport Photo: 50 x 70 mm and Online Renewal", "#c2341d"),
+    "australia-passport-photo-size": ("PASSPORT PHOTO \u00b7 AUSTRALIA", "Australian Passport Photo: Size and Rules", "#0f9d76"),
+    "china-visa-photo-size": ("VISA PHOTO \u00b7 CHINA", "China Visa Photo: 33 x 48 mm and 354 x 472 px", "#c2341d"),
+    "oci-photo-size": ("OCI PHOTO \u00b7 INDIA", "OCI Photo: Square JPEG Under 200 KB", "#e48b12"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 # Country money-facts pages (seo/countries/countries.json): one cover each.

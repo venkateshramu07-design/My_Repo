@@ -667,6 +667,31 @@ A["ppf-epf-ssy-fd-rd-calculator"] = ["nsi", "ss_rates", "epfo", "epf_rate", "dic
 A["mask-aadhaar-pan-before-sharing"] = ["uidai", "myaadhaar"]
 A["upi-qr-code-generator-free"] = ["npci_upi", "rbi"]
 
+S.update({
+ "us_pp": ("US Department of State: passport photo requirements", "https://travel.state.gov/content/travel/en/passports/how-apply/photos.html"),
+ "us_vp": ("US Department of State: visa photo requirements", "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html"),
+ "us_vd": ("US Department of State: digital image requirements for visa photos", "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html"),
+ "uk_pp": ("GOV.UK: photos for passports", "https://www.gov.uk/photos-for-passports"),
+ "uk_pr": ("GOV.UK: printed passport photo requirements", "https://www.gov.uk/photos-for-passports/photo-requirements"),
+ "eu_vc": ("EUR-Lex: Regulation (EC) No 810/2009, the EU Visa Code", "https://eur-lex.europa.eu/eli/reg/2009/810/oj"),
+ "cz_photo": ("Ministry of Foreign Affairs of the Czech Republic: photograph requirements", "https://mzv.gov.cz/jnp/en/information_for_aliens/supporting_documents_overview/photo.html"),
+ "ca_pp": ("Government of Canada: Canadian passport photos", "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/photos.html"),
+ "au_pp": ("Australian Passport Office: passport photos", "https://www.passports.gov.au/passport-photos"),
+ "cn_vp": ("China Discovery: China visa application photo requirements", "https://www.chinadiscovery.com/chinese-visa/photo.html"),
+ "oci_portal": ("Government of India: OCI services portal", "https://ociservices.gov.in/"),
+ "oci_akl": ("Consulate General of India, Auckland: OCI reissue photo and signature specifications", "https://www.cgiauckland.gov.in/page/reissue-of-oci1/"),
+ "oci_py": ("Embassy of India, Paraguay: how to apply for OCI", "https://www.eoiasuncion.gov.in/how-to-apply-oci.php"),
+})
+A["passport-photo-maker"] = ["us_pp", "us_vd", "uk_pp", "eu_vc", "ca_pp", "au_pp", "cn_vp", "oci_portal"]
+A["us-passport-photo-size"] = ["us_pp"]
+A["us-visa-photo-600x600"] = ["us_vp", "us_vd"]
+A["uk-passport-photo-size"] = ["uk_pp", "uk_pr"]
+A["schengen-visa-photo-size"] = ["eu_vc", "cz_photo"]
+A["canada-passport-photo-size"] = ["ca_pp"]
+A["australia-passport-photo-size"] = ["au_pp"]
+A["china-visa-photo-size"] = ["cn_vp"]
+A["oci-photo-size"] = ["oci_portal", "oci_akl", "oci_py"]
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

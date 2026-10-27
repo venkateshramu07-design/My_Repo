@@ -1,0 +1,158 @@
+<div class="bd-calc" id="bd-pp">
+<div class="bc-title">Passport and visa photo maker</div>
+<div class="bc-sub">Make a passport, visa or ID photo at the exact official size, with the head the right height, then download a file for an online application or a 4 &times; 6 inch sheet to print at any photo kiosk. Your photo is processed on your device and never uploaded.</div>
+<div class="bc-grid">
+<div><label for="pp-doc">Document</label><select id="pp-doc">
+<option value="us-passport">United States: passport (2 x 2 in)</option>
+<option value="us-visa">United States: visa, Green Card, DV lottery</option>
+<option value="uk-passport">United Kingdom: passport (35 x 45 mm)</option>
+<option value="schengen">Schengen visa and EU passports (35 x 45 mm)</option>
+<option value="canada-passport">Canada: passport (50 x 70 mm)</option>
+<option value="australia-passport">Australia: passport (35 x 45 mm)</option>
+<option value="china-visa">China: visa (33 x 48 mm)</option>
+<option value="india-oci">India: OCI card (square)</option>
+<option value="custom">Other: enter the size</option>
+</select></div>
+<div><label for="pp-mode">I need</label><select id="pp-mode"><option value="print">Printed photos (4 x 6 in sheet)</option><option value="digital">A digital photo to upload</option></select></div>
+</div>
+<div class="bc-grid pp-custom" hidden style="margin-top:14px">
+<div><label for="pp-cw">Photo width (mm)</label><input id="pp-cw" type="number" min="20" max="100" value="35"></div>
+<div><label for="pp-ch">Photo height (mm)</label><input id="pp-ch" type="number" min="20" max="100" value="45"></div>
+<div><label for="pp-chead">Head height, chin to crown (mm)</label><input id="pp-chead" type="number" min="10" max="80" value="34"></div>
+<div><label for="pp-cpx">Digital width x height (px)</label><input id="pp-cpx" value="600 x 771"></div>
+<div><label for="pp-ckb">Digital file size limit (KB, 0 = none)</label><input id="pp-ckb" type="number" min="0" value="0"></div>
+</div>
+<div class="pp-spec" id="pp-spec"></div>
+<label class="bt-drop" id="pp-drop"><input type="file" accept="image/*" id="pp-file"><b>Choose or take a photo</b><small>Face the camera in front of a plain light wall · JPG, PNG, WebP or HEIC</small></label>
+<div id="pp-work" hidden>
+<div class="bt-two" style="margin-top:16px">
+<div>
+<div class="pp-stage"><canvas id="pp-cv" width="600" height="600"></canvas></div>
+<div class="bc-row"><label for="pp-zoom" style="margin:0;flex:none">Zoom</label><input id="pp-zoom" type="range" min="1" max="5" step="0.01" value="1" style="flex:1;padding:0"></div>
+<div class="bc-row"><button type="button" id="pp-rot">Rotate</button><button type="button" id="pp-fit">Reset</button><button type="button" id="pp-new">Another photo</button></div>
+<p class="bc-note">Drag and zoom until your face fits the oval: <b>chin on the bottom of the oval, top of your head (hair included) on the top</b>, eyes level.</p>
+</div>
+<div>
+<div class="pp-result"><img id="pp-out" alt="Result"></div>
+<div class="bc-out" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+<div class="bc-stat"><span id="pp-l1">Output</span><b id="pp-v1">—</b></div>
+<div class="bc-stat bc-main"><span id="pp-l2">File size</span><b id="pp-v2">—</b></div>
+</div>
+<p class="bt-msg" id="pp-msg"></p>
+<div class="bc-row"><button type="button" class="bc-primary" id="pp-dl" disabled>Download</button></div>
+<details class="pp-check"><summary>Before you submit: quick checklist</summary><ul>
+<li>Taken in the last 6 months, in colour, sharp and evenly lit.</li>
+<li>Looking straight at the camera, neutral expression, mouth closed, eyes open.</li>
+<li>No glasses for US photos (other countries allow them only without glare or tint).</li>
+<li>No hat or head covering, except for religious or medical reasons.</li>
+<li>Plain light background with no shadows, objects or other people.</li>
+<li>Not edited: no filters, beauty mode or retouching.</li>
+</ul></details>
+</div>
+</div>
+</div>
+<p class="bt-safe">Your photo never leaves this device. No upload, no sign-up, no watermark.</p>
+<style>
+#bd-pp [hidden]{display:none!important}
+#bd-pp .pp-spec{margin:14px 0 6px;padding:12px 14px;border-radius:12px;border:1px solid var(--c-line);font-size:14px;line-height:1.55}
+#bd-pp .pp-spec b{color:var(--c-ink)}
+#bd-pp .pp-stage{position:relative;border-radius:14px;overflow:hidden;background:#d9dce3!important;touch-action:none;cursor:grab}
+#bd-pp .pp-stage canvas{display:block;width:100%;height:auto}
+#bd-pp .pp-result{display:grid;place-items:center;min-height:140px;border:1px solid var(--c-line);border-radius:14px;padding:12px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/16px 16px!important}
+#bd-pp .pp-result img{max-width:100%;max-height:300px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+#bd-pp .pp-ok{color:#0f8a5f!important;font-weight:700}#bd-pp .pp-warn{color:#b45309!important;font-weight:700}#bd-pp .pp-bad{color:#c2341d!important;font-weight:700}
+#bd-pp .pp-check{margin-top:14px}#bd-pp .pp-check ul{margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.6}
+</style>
+<script>
+(function(){
+var SRI={"https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js":"sha384-cVm8gaWQ5+URpoh6ACKXpm8TuyoHkfIDDBkxvDoUdIZ18w8nV5en0lVQvWMwO/6S"};
+function sri(s,u){s.crossOrigin='anonymous';if(SRI[u])s.integrity=SRI[u];}
+var root=document.getElementById('bd-pp');if(!root)return;
+var $=function(id){return document.getElementById(id);};
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;sri(s,u);s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+// Official sizes. print: [width mm, height mm, head min mm, head max mm]; digital: [width px, height px, head min %, head max %, min KB, max KB]; bg: 'white' or 'light'.
+var P={
+ 'us-passport':{print:[50.8,50.8,25,35],digital:[600,600,50,69,0,0],bg:'white',src:'US Department of State',note:'Glasses are not allowed. Taken in the last 6 months.'},
+ 'us-visa':{print:[50.8,50.8,25,35],digital:[600,600,50,69,0,240],bg:'white',src:'US Department of State',note:'Digital: square JPEG, 600 x 600 px, up to 240 KB, head 50&ndash;69% of the height. Same photo for visas, Green Card and the DV lottery.'},
+ 'uk-passport':{print:[35,45,29,34],digital:[900,1125,65,76,50,10240],bg:'light',src:'GOV.UK',note:'Plain cream or light grey background. Digital photos at least 600 x 750 px, 50 KB to 10 MB.'},
+ 'schengen':{print:[35,45,32,36],digital:[827,1063,71,80,0,0],bg:'light',src:'EU Visa Code (Art. 13) and member-state consulates',note:'Face 70&ndash;80% of the photo. Some consulates ask for a photo less than 3 months old.'},
+ 'canada-passport':{print:[50,70,31,36],digital:[1200,1800,45,50,200,5120],bg:'light',src:'Government of Canada',note:'Digital (online renewal): JPEG, 1,200 x 1,800 px or larger, 200 KB to 5 MB, face 45&ndash;50% of the height.'},
+ 'australia-passport':{print:[35,45,32,36],digital:[827,1063,71,80,0,0],bg:'light',src:'Australian Passport Office',note:'Photos 35&ndash;40 mm wide and 45&ndash;50 mm high; printed photos must be professional prints, not inkjet.'},
+ 'china-visa':{print:[33,48,28,33],digital:[354,472,58,69,40,120],bg:'white',src:'Chinese visa application centres',note:'Digital: JPEG 354 x 472 to 420 x 560 px, 40&ndash;120 KB, white background, no glasses.'},
+ 'india-oci':{print:[50.8,50.8,25,35],digital:[600,600,50,70,0,200],bg:'light',src:'Indian missions (OCI services)',note:'Digital: square JPEG, 200&ndash;900 px, up to 200 KB, plain light background. Check your mission\'s current rules.'}
+};
+var img=null,rot=0,zoom=1,ox=0,oy=0,blob=null,timer=0,cv=$('pp-cv'),cx=cv.getContext('2d'),MM=300/25.4;
+function spec(){var k=$('pp-doc').value;if(k!=='custom')return P[k];
+ var w=+$('pp-cw').value||35,h=+$('pp-ch').value||45,hd=+$('pp-chead').value||h*.75,px=($('pp-cpx').value.match(/\d+/g)||[]).map(Number),kb=+$('pp-ckb').value||0,f=hd/h*100;
+ return {print:[w,h,hd*.97,hd*1.03],digital:[px[0]||600,px[1]||Math.round((px[0]||600)*h/w),f*.95,f*1.05,0,kb],bg:'light',src:'your form',note:'Enter the sizes from your form\'s instructions.'};}
+function mode(){return $('pp-mode').value;}
+// The frame's shape, and where the head should sit in it (as a share of the frame height).
+function shape(){var s=spec(),d=s.digital;if(mode()==='print')return {r:s.print[0]/s.print[1],h0:s.print[2]/s.print[1],h1:s.print[3]/s.print[1]};return {r:d[0]/d[1],h0:d[2]/100,h1:d[3]/100};}
+function info(){var s=spec(),p=s.print,d=s.digital,k=$('pp-doc').value;root.querySelector('.pp-custom').hidden=k!=='custom';
+ $('pp-spec').innerHTML='<b>Print:</b> '+p[0]+' x '+p[1]+' mm'+(p[0]===50.8?' (2 x 2 in)':'')+', head '+Math.round(p[2])+'&ndash;'+Math.round(p[3])+' mm chin to crown. <b>Digital:</b> '+d[0]+' x '+d[1]+' px'+(d[5]?', '+(d[4]?d[4]+'&ndash;':'up to ')+(d[5]>=1024?d[5]/1024+' MB':d[5]+' KB'):'')+'. <b>Background:</b> '+(s.bg==='white'?'plain white or off-white':'plain and light')+'. '+s.note+' <small>Source: '+s.src+'. Rules change, so check the official page before you submit.</small>';
+ fit();}
+function frame(){var sh=shape(),W=cv.width,H=cv.height,fw=sh.r>=1?W*.82:H*.82*sh.r,fh=fw/sh.r;if(fh>H*.82){fh=H*.82;fw=fh*sh.r;}return{x:(W-fw)/2,y:(H-fh)/2,w:fw,h:fh};}
+function dims(){var w=img.naturalWidth,h=img.naturalHeight;return rot%2?{w:h,h:w}:{w:w,h:h};}
+function base(){var f=frame(),d=dims();return Math.max(f.w/d.w,f.h/d.h);}
+function fit(){if(!img)return;zoom=1;$('pp-zoom').value=1;ox=oy=0;draw();}
+function paint(x,scale,cxp,cyp){x.save();x.translate(cxp,cyp);x.rotate(rot*Math.PI/2);x.scale(scale,scale);x.drawImage(img,-img.naturalWidth/2,-img.naturalHeight/2);x.restore();}
+function clamp(s,f){var d=dims(),mx=Math.max(0,(d.w*s-f.w)/2),my=Math.max(0,(d.h*s-f.h)/2);ox=Math.max(-mx,Math.min(mx,ox));oy=Math.max(-my,Math.min(my,oy));}
+function guide(f){var sh=shape(),hm=(sh.h0+sh.h1)/2,top=f.y+f.h*(1-hm)*.42,hh=f.h*hm,cxp=f.x+f.w/2;
+ cx.save();cx.setLineDash([]);cx.lineWidth=3;cx.strokeStyle='rgba(52,211,153,.95)';cx.beginPath();cx.ellipse(cxp,top+hh/2,hh*.37,hh/2,0,0,Math.PI*2);cx.stroke();
+ cx.setLineDash([6,6]);cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.85)';[top+hh/2-f.h*sh.h0/2,top+hh/2-f.h*sh.h1/2].forEach(function(y){cx.beginPath();cx.moveTo(cxp-hh*.5,y);cx.lineTo(cxp+hh*.5,y);cx.stroke();});
+ cx.beginPath();cx.moveTo(f.x+f.w*.1,top+hh*.45);cx.lineTo(f.x+f.w*.9,top+hh*.45);cx.stroke();cx.restore();}
+function draw(){if(!img)return;var f=frame(),s=base()*zoom;clamp(s,f);cx.fillStyle='#d9dce3';cx.fillRect(0,0,cv.width,cv.height);paint(cx,s,f.x+f.w/2+ox,f.y+f.h/2+oy);
+ cx.fillStyle='rgba(20,22,30,.55)';cx.fillRect(0,0,cv.width,f.y);cx.fillRect(0,f.y+f.h,cv.width,cv.height-f.y-f.h);cx.fillRect(0,f.y,f.x,f.h);cx.fillRect(f.x+f.w,f.y,cv.width-f.x-f.w,f.h);
+ cx.strokeStyle='#fff';cx.lineWidth=2;cx.strokeRect(f.x,f.y,f.w,f.h);guide(f);clearTimeout(timer);timer=setTimeout(make,180);}
+function crop(W,H){var f=frame(),s=base()*zoom,k=W/f.w,o=document.createElement('canvas');o.width=W;o.height=H;var x=o.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);x.imageSmoothingQuality='high';paint(x,s*k,(f.w/2+ox)*k,(f.h/2+oy)*k);return o;}
+// Looks at the strips beside and above the head: they should be light and even.
+function bgCheck(o,want){var x=o.getContext('2d'),W=o.width,H=o.height,pts=[],add=function(x0,y0,w,h){var d=x.getImageData(x0,y0,w,h).data;for(var i=0;i<d.length;i+=16)pts.push(.299*d[i]+.587*d[i+1]+.114*d[i+2]);};
+ add(0,0,W,Math.max(2,Math.round(H*.06)));add(0,0,Math.max(2,Math.round(W*.08)),Math.round(H*.55));add(W-Math.max(2,Math.round(W*.08)),0,Math.max(2,Math.round(W*.08)),Math.round(H*.55));
+ var m=pts.reduce(function(a,b){return a+b;},0)/pts.length,sd=Math.sqrt(pts.reduce(function(a,b){return a+(b-m)*(b-m);},0)/pts.length);
+ if(m<(want==='white'?205:175))return '<span class="pp-warn">The background looks too dark'+(want==='white'?' (it should be white or off-white)':'')+'.</span> Stand in front of a plain light wall facing a window.';
+ if(sd>28)return '<span class="pp-warn">The background doesn\'t look plain.</span> Move away from patterns, objects and shadows.';
+ return '<span class="pp-ok">Background looks plain and light.</span>';}
+function enc(c,q){return new Promise(function(ok){c.toBlob(ok,'image/jpeg',q);});}
+async function dpi(b,n){var a=new Uint8Array(await b.arrayBuffer());if(a[2]===0xFF&&a[3]===0xE0&&a[6]===0x4A){a[13]=1;a[14]=a[16]=n>>8;a[15]=a[17]=n&255;}return a;}
+function pad(a,bytes){var at=a[3]===0xE0?4+(a[4]<<8|a[5]):2,n=Math.min(65533,bytes),c=new Uint8Array(a.length+4+n);c.set(a.subarray(0,at));c[at]=0xFF;c[at+1]=0xFE;c[at+2]=(n+2)>>8;c[at+3]=(n+2)&255;for(var i=0;i<n;i++)c[at+4+i]=32;c.set(a.subarray(at),at+4+n);return c;}
+async function make(){if(!img)return;var s=spec(),msg='',out,o;
+ if(mode()==='digital'){var d=s.digital;o=crop(d[0],d[1]);var max=(d[5]||1e5)*1024,min=d[4]*1024,lo=.3,hi=.96,best=null,b;
+  for(var n=0;n<8;n++){var q=(lo+hi)/2;b=await enc(o,q);if(b.size<=max){best=b;lo=q;}else hi=q;}if(!best)best=await enc(o,.3);
+  out=await dpi(best,300);if(out.length<min)out=pad(out,min-out.length+64);blob=new Blob([out],{type:'image/jpeg'});
+  $('pp-l1').textContent='Digital photo';$('pp-v1').textContent=d[0]+' x '+d[1]+' px';$('pp-l2').textContent='File size';$('pp-v2').textContent=(blob.size/1024).toFixed(0)+' KB';
+  var ok=blob.size<=max;msg=(ok?'<span class="pp-ok">Ready to upload'+(d[5]?' (within the size limit)':'')+'.</span> ':'<span class="pp-bad">Still over the size limit.</span> ')+bgCheck(o,s.bg);$('pp-dl').disabled=!ok;}
+ else{var p=s.print,pw=Math.round(p[0]*MM),ph=Math.round(p[1]*MM);o=crop(pw,ph);
+  var fitN=function(g,SW,SH){return [g,Math.floor((SW+g)/(pw+g)),Math.floor((SH+g)/(ph+g)),SW,SH];},lay=[[1800,1200],[1200,1800]].reduce(function(acc,s){return acc.concat([fitN(Math.round(3*MM),s[0],s[1]),fitN(Math.round(MM),s[0],s[1]),fitN(0,s[0],s[1])]);},[]).reduce(function(a,b){return b[1]*b[2]>a[1]*a[2]?b:a;});  // most copies, widest gap, either way round
+  var SW=lay[3],SH=lay[4],sheet=document.createElement('canvas');sheet.width=SW;sheet.height=SH;var x=sheet.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,SW,SH);
+  var g=lay[0],cols=lay[1],rows=lay[2],mx=(SW-cols*pw-(cols-1)*g)/2,my=(SH-rows*ph-(rows-1)*g)/2;
+  x.strokeStyle='#b8bcc6';x.lineWidth=1;for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){var X=Math.round(mx+c*(pw+g)),Y=Math.round(my+r*(ph+g));x.drawImage(o,X,Y);x.strokeRect(X-.5,Y-.5,pw+1,ph+1);}
+  if(my>=30){x.fillStyle='#8a8f9c';x.font='20px sans-serif';x.fillText('Print at 100% on 4 x 6 in (10 x 15 cm) paper. Cut on the grey lines. '+p[0]+' x '+p[1]+' mm.',mx,SH-Math.max(8,my/2-6));}
+  out=await dpi(await enc(sheet,.95),300);blob=new Blob([out],{type:'image/jpeg'});
+  $('pp-l1').textContent='On a 4 x 6 in sheet';$('pp-v1').textContent=cols*rows+' photos';$('pp-l2').textContent='Each photo';$('pp-v2').textContent=p[0]===50.8?'2 x 2 in':p[0]+' x '+p[1]+' mm';
+  msg='<span class="pp-ok">Sheet ready.</span> Print it at actual size (100%, no "fit to page") at a photo kiosk or lab. '+bgCheck(o,s.bg);$('pp-dl').disabled=false;}
+ if($('pp-out').src)URL.revokeObjectURL($('pp-out').src);$('pp-out').src=URL.createObjectURL(blob);$('pp-msg').innerHTML=msg;}
+async function open(f){if(!f)return;var heic=/hei[cf]$/i.test(f.name)||/hei[cf]/.test(f.type);$('pp-msg').textContent='Opening…';
+ var get=function(b){return new Promise(function(ok,no){var i=new Image();i.onload=function(){ok(i);};i.onerror=no;i.src=URL.createObjectURL(b);});};
+ try{img=await get(f);}catch(e){if(!heic){$('pp-msg').textContent='This file could not be opened. Try a JPG or PNG.';return;}
+  try{if(!window.HeicTo)await load('https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js');img=await get(await HeicTo({blob:f,type:'image/jpeg',quality:.95}));}catch(e2){$('pp-msg').textContent='This HEIC photo could not be opened. Take a screenshot of it, or set your camera to "Most compatible".';return;}}
+ rot=0;$('pp-drop').hidden=true;$('pp-work').hidden=false;fit();}
+$('pp-file').addEventListener('change',function(){open(this.files[0]);this.value='';});
+['dragover','dragenter'].forEach(function(t){$('pp-drop').addEventListener(t,function(e){e.preventDefault();this.classList.add('bt-over');});});
+$('pp-drop').addEventListener('dragleave',function(){this.classList.remove('bt-over');});
+$('pp-drop').addEventListener('drop',function(e){e.preventDefault();this.classList.remove('bt-over');open(e.dataTransfer.files[0]);});
+$('pp-doc').addEventListener('change',info);$('pp-mode').addEventListener('change',fit);
+['pp-cw','pp-ch','pp-chead','pp-cpx','pp-ckb'].forEach(function(i){$(i).addEventListener('input',info);});
+$('pp-zoom').addEventListener('input',function(){zoom=+this.value;draw();});
+$('pp-rot').addEventListener('click',function(){rot=(rot+1)%4;fit();});$('pp-fit').addEventListener('click',fit);
+$('pp-new').addEventListener('click',function(){img=null;blob=null;$('pp-work').hidden=true;$('pp-drop').hidden=false;$('pp-file').click();});
+var drag=null;cv.addEventListener('pointerdown',function(e){if(!img)return;drag={x:e.clientX,y:e.clientY,ox:ox,oy:oy,k:cv.width/cv.getBoundingClientRect().width};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointermove',function(e){if(!drag)return;ox=drag.ox+(e.clientX-drag.x)*drag.k;oy=drag.oy+(e.clientY-drag.y)*drag.k;draw();});
+cv.addEventListener('pointerup',function(){drag=null;});cv.addEventListener('pointercancel',function(){drag=null;});
+cv.addEventListener('wheel',function(e){if(!img)return;e.preventDefault();zoom=Math.max(1,Math.min(5,zoom*(e.deltaY<0?1.08:.93)));$('pp-zoom').value=zoom;draw();},{passive:false});
+$('pp-dl').addEventListener('click',function(){if(!blob)return;var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=$('pp-doc').value+'-photo-'+(mode()==='print'?'4x6-sheet':'digital')+'.jpg';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);});
+// A guide page can choose the document: <div class="bd-pp-preset" data-p="uk-passport"></div>
+var pre=document.querySelector('.bd-pp-preset');if(pre&&P[pre.dataset.p])$('pp-doc').value=pre.dataset.p;
+info();
+})();
+</script>
+</div>
