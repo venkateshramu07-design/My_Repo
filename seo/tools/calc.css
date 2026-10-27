@@ -55,3 +55,4 @@
 .bd-calc .bt-msg{margin-top:10px;font-size:14px;color:var(--c-muted)}
 .bd-calc .bt-paper{background:#fff!important;color:#15171d!important;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);overflow:hidden}
 .bd-calc .bt-paper *{color:#15171d!important}
+.bd-calc input[type=checkbox],.bd-calc input[type=radio]{appearance:auto!important;-webkit-appearance:auto!important;accent-color:var(--c-accent);width:18px!important;height:18px!important;padding:0!important;flex:none}

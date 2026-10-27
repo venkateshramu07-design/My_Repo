@@ -1070,6 +1070,24 @@ html.bd-dark .bd-foot-search input{color:#fff}
 html.bd-dark #footer-wrapper #random-posts li>div>a{color:#d9dbe2!important}
 html.bd-dark #sub-footer-wrapper{background:#0a0b0f!important}
 html.bd-dark #sub-footer-wrapper,html.bd-dark #sub-footer-wrapper a{color:#8d92a0!important}
+.bd-tbadges{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:.6em 0 .3em!important}
+.bd-tbadges span{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:#e7f6ef!important;color:#0b6b4f!important;font:700 12.5px var(--bd-sans)!important}
+.bd-tbadges svg{width:13px;height:13px}.bd-tbadges a{font:600 12.5px var(--bd-sans)!important;color:var(--bd-muted)!important}
+html.bd-dark .bd-tbadges span{background:#12352b!important;color:#8fe0bf!important}
+.bd-tacts{display:flex;flex-wrap:wrap;gap:8px;margin:-1.2em 0 1.4em!important}
+.bd-tacts button,.bd-tacts a{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 15px!important;border-radius:999px!important;border:1px solid var(--bd-line)!important;background:var(--bd-surface)!important;color:var(--bd-ink)!important;font:700 14px var(--bd-sans)!important;cursor:pointer;text-decoration:none!important;margin:0!important}
+.bd-tacts svg{width:16px;height:16px}.bd-tacts .bd-ta-share{background:#0f9d76!important;border-color:#0f9d76!important;color:#fff!important}
+.bd-tacts .bd-ta-fav.bd-on{border-color:#e48b12!important;color:#b45309!important}
+.bd-tacts .bd-ta-alt{display:inline-flex;gap:8px}.bd-tacts .bd-ta-alt[hidden]{display:none}.bd-tacts .bd-ta-alt a{background:#25d366!important;border-color:#25d366!important;color:#fff!important}
+.bd-tnext{margin:0 0 1.8em!important;padding:14px!important;border-radius:16px;border:1px solid var(--bd-line);background:var(--bd-surface-2)!important}
+.bd-tnext>b{display:block;margin:0 0 10px;font:800 13px var(--bd-sans)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--bd-muted)!important}
+.bd-tnext>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.bd-tnext a{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--bd-surface)!important;border:1px solid var(--bd-line);text-decoration:none!important;color:var(--bd-ink)!important}
+.bd-tnext a:hover{border-color:var(--tc)}.bd-tnext i{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;color:var(--tc)!important;background:color-mix(in srgb,var(--tc) 13%,transparent)!important}
+.bd-tnext i svg{width:18px;height:18px}.bd-tnext a b{display:block;font:700 14px/1.25 var(--bd-sans)!important}.bd-tnext a small{display:block;font:500 12px/1.3 var(--bd-sans)!important;color:var(--bd-muted)!important}
+.bd-th-mine{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0 -6px}
+.bd-th-mine b{font:800 12px var(--bd-sans);letter-spacing:.1em;text-transform:uppercase;color:#ffd38a;margin-right:4px}
+.bd-th-mine a{padding:7px 13px;border-radius:999px;background:#fff;color:#155e75!important;font:700 13px var(--bd-sans);text-decoration:none!important}
 /* Search page */
 html.bd-searchpage-ready #content-wrapper{display:none!important}
 .bd-sr{max-width:860px;margin:30px auto 0;padding:0 15px;display:grid;gap:22px}
@@ -1815,9 +1833,16 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   var BD_ALLTOOLS = [];
   var TOOL_PICKS = ['PDF toolkit', 'Photo converter', 'QR code generator', 'Sign a PDF', 'Resume builder', 'Invoice and receipt maker', 'Subscription tracker', 'Meeting time zone planner', 'Password generator', 'Word counter'];
   var CALC_PICKS = ['Emergency fund calculator', 'Loan EMI and prepayment calculator', 'SIP and investment growth calculator', 'FIRE calculator', 'Credit card payoff calculator', 'Rent vs buy calculator', 'Debt consolidation calculator', 'EV vs petrol cost calculator', 'Real raise calculator', 'Inflation calculator'];
+  var IN_TZ = false; try { IN_TZ = /Kolkata|Calcutta/.test(Intl.DateTimeFormat().resolvedOptions().timeZone); } catch (e) {}
+  if (IN_TZ) {  // visitors in India see the India tools first
+    TOOL_PICKS = ['Exam photo and signature resizer', 'PDF toolkit', 'Mask Aadhaar or PAN', 'Photo converter', 'UPI QR code generator', 'Sign a PDF', 'Resume builder', 'Invoice and receipt maker', 'QR code generator', 'Word counter'];
+    CALC_PICKS = ['Income tax calculator', 'GST calculator', 'PPF, EPF, Sukanya', 'Loan EMI and prepayment calculator', 'SIP and investment growth calculator', 'Emergency fund calculator', 'FIRE calculator', 'Credit card payoff calculator', 'Rent vs buy calculator', 'Inflation calculator'];
+  }
   var TASKS = [['Merge PDF', 'PDF toolkit'], ['HEIC to JPG', 'Photo converter'], ['QR code', 'QR code generator'], ['Sign a PDF', 'Sign a PDF'], ['Resume', 'Resume builder'], ['Home loan EMI', 'EMI'], ['Emergency fund', 'Emergency fund'], ['Invoice', 'Invoice and receipt maker'], ['Photo under 100 KB', 'Photo converter'], ['Time zones', 'Meeting time zone planner']];
+  if (IN_TZ) TASKS = [['Exam photo size', 'Exam photo and signature resizer'], ['Income tax 2026-27', 'Income tax calculator'], ['GST', 'GST calculator'], ['Merge PDF', 'PDF toolkit'], ['Mask Aadhaar', 'Mask Aadhaar or PAN'],
+    ['UPI QR', 'UPI QR code generator'], ['PPF / EPF', 'PPF, EPF, Sukanya'], ['Home loan EMI', 'EMI'], ['HEIC to JPG', 'Photo converter'], ['Resume', 'Resume builder']];
   function findTool(name) { var n = name.toLowerCase(); return BD_ALLTOOLS.filter(function (t) { return t[0].toLowerCase() === n; })[0] || BD_ALLTOOLS.filter(function (t) { return t[0].toLowerCase().indexOf(n) > -1; })[0]; }
-  function toolKindIcon(t) { var k = { 'PDF toolkit': 'pdf', 'Sign a PDF': 'sign', 'Photo converter': 'photo', 'QR code generator': 'qr', 'Resume builder': 'resume', 'Invoice and receipt maker': 'invoice', 'Subscription tracker': 'subs', 'Meeting time zone planner': 'tz', 'Password generator': 'pw', 'Word counter': 'words' }[t[0]]; return k; }
+  function toolKindIcon(t) { var k = { 'PDF toolkit': 'pdf', 'Sign a PDF': 'sign', 'Photo converter': 'photo', 'QR code generator': 'qr', 'Resume builder': 'resume', 'Invoice and receipt maker': 'invoice', 'Subscription tracker': 'subs', 'Meeting time zone planner': 'tz', 'Password generator': 'pw', 'Word counter': 'words', 'Exam photo and signature resizer': 'exam', 'Mask Aadhaar or PAN': 'mask', 'UPI QR code generator': 'upi' }[t[0]]; return k; }
   function shortDesc(d) { d = d.split(/[.;:]| and how| with your/)[0]; return d.length > 46 ? d.slice(0, 44).replace(/\s+\S*$/, '') + '\u2026' : d; }
   function toolSearch(q) {
     var toks = norm(q).split(' ').filter(Boolean); if (!toks.length) return [];
@@ -1834,9 +1859,11 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
     pdf: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>', sign: '<path d="M3 21c3-1 4-4 6-4s1 3 3 3 3-2 5-2"/><path d="M15 4l5 5-9 9H6v-5z"/>',
     photo: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 9"/>', resume: '<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="9" r="2.5"/><path d="M8 17c.8-2 2.2-3 4-3s3.2 1 4 3"/>',
     invoice: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>', subs: '<path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h-4M6 22v-4h4"/>',
-    tz: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pw: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>', words: '<path d="M4 7V5h16v2M12 5v14M9 19h6"/>' };
+    tz: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', pw: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>', words: '<path d="M4 7V5h16v2M12 5v14M9 19h6"/>',
+    exam: '<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 18c.9-2.2 2.5-3.3 4.5-3.3s3.6 1.1 4.5 3.3"/>', mask: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 10h7" stroke-width="3.5"/><path d="M6 15h4M16 15h2"/>',
+    upi: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 4h6M14 7.5h6M17 4c2.5 0 2.5 3.5 0 3.5h-3l5 4M14 15h7M14 19h7"/>' };
   function toolIcon(k, fallback) { return TOOL_ICON[k] ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + TOOL_ICON[k] + '</svg>' : svg(fallback); }
-  var TOOL_COLOR = { qr: '#6b5cff', pdf: '#e2462c', sign: '#1a3faa', photo: '#0e9bb5', resume: '#7a5cd6', invoice: '#0f9d76', subs: '#e48b12', tz: '#2f7de1', pw: '#15803d', words: '#c2410c' };
+  var TOOL_COLOR = { qr: '#6b5cff', pdf: '#e2462c', sign: '#1a3faa', photo: '#0e9bb5', resume: '#7a5cd6', invoice: '#0f9d76', subs: '#e48b12', tz: '#2f7de1', pw: '#15803d', words: '#c2410c', exam: '#7a5cd6', mask: '#15171d', upi: '#0f9d76' };
   var EVERYDAY = [['qr', 'QR code maker', 'Codes that never expire', 'spark'], ['pdf', 'PDF toolkit', 'Merge, split, reorder', 'book'], ['sign', 'Sign a PDF', 'No account, no limit', 'flag'],
     ['photo', 'HEIC to JPG', 'Shrink, convert, remove location', 'globe'], ['resume', 'Resume builder', 'Free PDF download', 'case'], ['invoice', 'Invoice maker', 'No watermark', 'money'],
     ['subs', 'Subscription tracker', 'Renewal reminders', 'coin'], ['tz', 'Time zone planner', 'Meet across cities', 'globe'], ['pw', 'Password generator', 'With breach check', 'chip'], ['words', 'Word counter', 'Every character limit', 'book']];
@@ -2236,6 +2263,8 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
             : '<p>No tool matches \u201c' + esc(v) + '\u201d yet. <a href="/search?q=' + encodeURIComponent(v) + '">Search the articles</a> or <a href="' + BLOG + '2021/06/contact-us.html">suggest a tool</a>.</p>'; };
         q.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(paint, 60); });
         q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { var a = res.querySelector('a'); if (a) location.href = a.href; } });
+        var myT = (store('bd-mytools') || []).filter(function (m) { return BD_ALLTOOLS.some(function (t) { return t[2] === m[1]; }); });
+        if (myT.length) th.querySelector('.bd-th-tabs').insertAdjacentHTML('beforebegin', '<div class="bd-th-mine"><b>\u2605 My tools</b>' + myT.map(function (m) { return '<a href="' + esc(m[1]) + '">' + esc(m[0]) + '</a>'; }).join('') + '</div>');
         th.querySelector('.bd-th-tabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return;
           [].forEach.call(this.children, function (x) { x.classList.toggle('bd-on', x === b); });
           th.querySelectorAll('.bd-th-grid').forEach(function (g) { g.hidden = g.dataset.g !== b.dataset.g; }); });
@@ -2447,6 +2476,51 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           at.parentNode.insertBefore(card, at.nextSibling);
         }
       }
+    }
+
+    // On a tool page: what the tool promises above it; below it, sharing the result, saving the tool to "My tools", and the
+    // tools people usually need next (a merged PDF often needs signing, an invoice needs GST and a UPI code).
+    var meTool = isPost && body && BD_ALLTOOLS.filter(function (t) { return t[2] === location.pathname && t[3] !== 'd'; })[0], calcT = meTool && body.querySelector('.bd-calc');
+    if (calcT && !body.querySelector('.bd-tacts')) {
+      var isFile = meTool[3] === 't', tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
+      calcT.parentNode.insertBefore(el('div', 'bd-tbadges', (isFile ? ['Files stay on your device', 'No sign-up', 'No watermark', 'No daily limit'] : ['Free', 'No sign-up', 'Nothing you enter is sent anywhere'])
+        .map(function (b) { return '<span>' + tick + b + '</span>'; }).join('') + (isFile && BD_TOOLS.hub && BD_TOOLS.hub !== location.pathname ? '<a href="' + BD_TOOLS.hub + '">How we keep it private</a>' : '')), calcT);
+      var mine = function () { return store('bd-mytools') || []; }, saved = function () { return mine().some(function (m) { return m[1] === meTool[2]; }); };
+      var acts = el('div', 'bd-tacts', '<button type="button" class="bd-ta-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span></span></button>' +
+        '<button type="button" class="bd-ta-fav"></button><span class="bd-ta-alt" hidden><a target="_blank" rel="noopener">WhatsApp</a><button type="button" class="bd-ta-copy">Copy link</button></span>');
+      var favLabel = function () { var on = saved(); acts.querySelector('.bd-ta-fav').innerHTML = (on ? '★ In My tools' : '☆ Save to My tools'); acts.querySelector('.bd-ta-fav').classList.toggle('bd-on', on); };
+      var shareText = function () {
+        if (calcT.dataset.share) return calcT.dataset.share;
+        var m = calcT.querySelector('.bc-stat.bc-main'), lab = m && m.querySelector('span'), val = m && m.querySelector('b');
+        if (val && /\d/.test(val.textContent)) return (lab ? lab.textContent.trim() + ': ' : '') + val.textContent.trim() + ' – ' + meTool[0] + ' on Blog Digest:';
+        return meTool[0] + ' (free' + (isFile ? ', nothing uploaded' : '') + ', no sign-up):';
+      };
+      var syncShare = function () { acts.querySelector('.bd-ta-share span').textContent = calcT.dataset.share || (calcT.querySelector('.bc-stat.bc-main b') && /\d/.test(calcT.querySelector('.bc-stat.bc-main b').textContent)) ? 'Share result' : 'Share this tool'; };
+      var url = location.href.split('#')[0].split('?')[0];
+      acts.querySelector('.bd-ta-share').addEventListener('click', function () {
+        var t = shareText();
+        if (navigator.share) { navigator.share({ title: meTool[0], text: t, url: url }).catch(function () {}); return; }
+        var alt = acts.querySelector('.bd-ta-alt'); alt.hidden = !alt.hidden; alt.querySelector('a').href = 'https://wa.me/?text=' + encodeURIComponent(t + ' ' + url);
+      });
+      acts.querySelector('.bd-ta-copy').addEventListener('click', function () { var b = this; try { navigator.clipboard.writeText(shareText() + ' ' + url); b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy link'; }, 1800); } catch (e) {} });
+      acts.querySelector('.bd-ta-fav').addEventListener('click', function () {
+        var list = mine().filter(function (m) { return m[1] !== meTool[2]; }); if (!saved()) list.unshift([meTool[0], meTool[2]]); store('bd-mytools', list.slice(0, 8)); favLabel();
+      });
+      favLabel(); syncShare(); calcT.addEventListener('input', function () { setTimeout(syncShare, 50); }); calcT.addEventListener('click', function () { setTimeout(syncShare, 50); });
+      calcT.parentNode.insertBefore(acts, calcT.nextSibling);
+      var CHAIN = { 'PDF toolkit': ['Sign a PDF', 'Mask Aadhaar or PAN', 'Photo converter'], 'Sign a PDF': ['PDF toolkit', 'Mask Aadhaar or PAN', 'Invoice and receipt maker'],
+        'Photo converter': ['Exam photo and signature resizer', 'PDF toolkit', 'Mask Aadhaar or PAN'], 'Exam photo and signature resizer': ['Photo converter', 'PDF toolkit', 'Mask Aadhaar or PAN'],
+        'Mask Aadhaar or PAN': ['PDF toolkit', 'Sign a PDF', 'Photo converter'], 'UPI QR code generator': ['Invoice and receipt maker', 'GST calculator', 'QR code generator'],
+        'QR code generator': ['UPI QR code generator', 'Invoice and receipt maker', 'Photo converter'], 'Invoice and receipt maker': ['GST calculator', 'UPI QR code generator', 'Sign a PDF'],
+        'Resume builder': ['Exam photo and signature resizer', 'Word counter', 'PDF toolkit'], 'Word counter': ['Resume builder', 'PDF toolkit', 'Password generator'],
+        'Subscription tracker': ['Emergency fund calculator', 'Password generator', 'Credit card payoff calculator'], 'Password generator': ['Mask Aadhaar or PAN', 'Subscription tracker', 'PDF toolkit'],
+        'Meeting time zone planner': ['Word counter', 'Invoice and receipt maker', 'QR code generator'], 'Income tax calculator': ['PPF, EPF, Sukanya', 'SIP and investment growth calculator', 'Loan EMI and prepayment calculator'],
+        'GST calculator': ['Invoice and receipt maker', 'UPI QR code generator', 'Income tax calculator'], 'PPF, EPF, Sukanya': ['Income tax calculator', 'SIP and investment growth calculator', 'FIRE calculator'],
+        'Loan EMI and prepayment calculator': ['Prepay or invest comparison', 'Income tax calculator', 'Rent vs buy calculator'], 'SIP and investment growth calculator': ['PPF, EPF, Sukanya', 'FIRE calculator', 'Income tax calculator'] };
+      var key = Object.keys(CHAIN).filter(function (k) { return meTool[0].indexOf(k) === 0; })[0];
+      var nexts = (key ? CHAIN[key].map(findTool) : BD_ALLTOOLS.filter(function (t) { return t[4] === meTool[4] && t[2] !== meTool[2]; }).slice(0, 3)).filter(function (t) { return t && t[2] !== meTool[2]; });
+      if (nexts.length) calcT.parentNode.insertBefore(el('div', 'bd-tnext', '<b>Next, people often need</b><div>' + nexts.map(function (t) { var k = toolKindIcon(t);
+        return '<a href="' + t[2] + '" style="--tc:' + (TOOL_COLOR[k] || '#e2462c') + '"><i>' + toolIcon(k, 'spark') + '</i><span><b>' + esc(t[0]) + '</b><small>' + esc(shortDesc(t[1])) + '</small></span></a>'; }).join('') + '</div>'), acts.nextSibling);
     }
     // Related reading as picture cards: the "Related articles" box in older posts and the "Related Guides" list in new
     // ones become a grid with the cover, topic and title of each article (from the search index).

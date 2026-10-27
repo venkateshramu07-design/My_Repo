@@ -104,7 +104,7 @@ COVERS |= set(TOOL_POSTS)
 TOOL_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@1ac2d86551d465d2cc58492b22f9e91a22ce6c8d/seo/covers/"
 
 
-INDIA_COVER_BASE = TOOL_COVER_BASE  # set to the commit that adds the India covers
+INDIA_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@9ed264b06cd2ad00213db1f27871b6573b5d68ff/seo/covers/"
 
 
 def cover_base(name):
