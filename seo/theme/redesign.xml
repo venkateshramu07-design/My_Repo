@@ -1835,18 +1835,18 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   var BD_COUNTRIES = {};
   var BD_TOOLS = {};
   var BD_ALLTOOLS = [];
-  var TOOL_PICKS = ['PDF toolkit', 'Photo converter', 'QR code generator', 'Sign a PDF', 'Resume builder', 'Invoice and receipt maker', 'Subscription tracker', 'Meeting time zone planner', 'Password generator', 'Word counter'];
+  var TOOL_PICKS = ['Passport and visa photo maker', 'PDF toolkit', 'Photo converter', 'QR code generator', 'Sign a PDF', 'Resume builder', 'Invoice and receipt maker', 'Subscription tracker', 'Meeting time zone planner', 'Password generator', 'Word counter'];
   var CALC_PICKS = ['Emergency fund calculator', 'Loan EMI and prepayment calculator', 'SIP and investment growth calculator', 'FIRE calculator', 'Credit card payoff calculator', 'Rent vs buy calculator', 'Debt consolidation calculator', 'EV vs petrol cost calculator', 'Real raise calculator', 'Inflation calculator'];
   var IN_TZ = false; try { IN_TZ = /Kolkata|Calcutta/.test(Intl.DateTimeFormat().resolvedOptions().timeZone); } catch (e) {}
   if (IN_TZ) {  // visitors in India see the India tools first
-    TOOL_PICKS = ['Exam photo and signature resizer', 'PDF toolkit', 'Mask Aadhaar or PAN', 'Photo converter', 'UPI QR code generator', 'Sign a PDF', 'Resume builder', 'Invoice and receipt maker', 'QR code generator', 'Word counter'];
+    TOOL_PICKS = ['Exam photo and signature resizer', 'PDF toolkit', 'Passport and visa photo maker', 'Mask Aadhaar or PAN', 'Photo converter', 'UPI QR code generator', 'Sign a PDF', 'Resume builder', 'Invoice and receipt maker', 'QR code generator', 'Word counter'];
     CALC_PICKS = ['Income tax calculator', 'GST calculator', 'PPF, EPF, Sukanya', 'Loan EMI and prepayment calculator', 'SIP and investment growth calculator', 'Emergency fund calculator', 'FIRE calculator', 'Credit card payoff calculator', 'Rent vs buy calculator', 'Inflation calculator'];
   }
-  var TASKS = [['Merge PDF', 'PDF toolkit'], ['HEIC to JPG', 'Photo converter'], ['QR code', 'QR code generator'], ['Sign a PDF', 'Sign a PDF'], ['Resume', 'Resume builder'], ['Home loan EMI', 'EMI'], ['Emergency fund', 'Emergency fund'], ['Invoice', 'Invoice and receipt maker'], ['Photo under 100 KB', 'Photo converter'], ['Time zones', 'Meeting time zone planner']];
+  var TASKS = [['Passport photo', 'Passport and visa photo maker'], ['Merge PDF', 'PDF toolkit'], ['HEIC to JPG', 'Photo converter'], ['QR code', 'QR code generator'], ['Sign a PDF', 'Sign a PDF'], ['Resume', 'Resume builder'], ['Home loan EMI', 'EMI'], ['Emergency fund', 'Emergency fund'], ['Invoice', 'Invoice and receipt maker'], ['Photo under 100 KB', 'Photo converter'], ['Time zones', 'Meeting time zone planner']];
   if (IN_TZ) TASKS = [['Exam photo size', 'Exam photo and signature resizer'], ['Income tax 2026-27', 'Income tax calculator'], ['GST', 'GST calculator'], ['Merge PDF', 'PDF toolkit'], ['Mask Aadhaar', 'Mask Aadhaar or PAN'],
     ['UPI QR', 'UPI QR code generator'], ['PPF / EPF', 'PPF, EPF, Sukanya'], ['Home loan EMI', 'EMI'], ['HEIC to JPG', 'Photo converter'], ['Resume', 'Resume builder']];
   function findTool(name) { var n = name.toLowerCase(); return BD_ALLTOOLS.filter(function (t) { return t[0].toLowerCase() === n; })[0] || BD_ALLTOOLS.filter(function (t) { return t[0].toLowerCase().indexOf(n) > -1; })[0]; }
-  function toolKindIcon(t) { var k = { 'PDF toolkit': 'pdf', 'Sign a PDF': 'sign', 'Photo converter': 'photo', 'QR code generator': 'qr', 'Resume builder': 'resume', 'Invoice and receipt maker': 'invoice', 'Subscription tracker': 'subs', 'Meeting time zone planner': 'tz', 'Password generator': 'pw', 'Word counter': 'words', 'Exam photo and signature resizer': 'exam', 'Mask Aadhaar or PAN': 'mask', 'UPI QR code generator': 'upi' }[t[0]]; return k; }
+  function toolKindIcon(t) { var k = { 'PDF toolkit': 'pdf', 'Sign a PDF': 'sign', 'Photo converter': 'photo', 'QR code generator': 'qr', 'Resume builder': 'resume', 'Invoice and receipt maker': 'invoice', 'Subscription tracker': 'subs', 'Meeting time zone planner': 'tz', 'Password generator': 'pw', 'Word counter': 'words', 'Exam photo and signature resizer': 'exam', 'Mask Aadhaar or PAN': 'mask', 'UPI QR code generator': 'upi', 'Passport and visa photo maker': 'exam' }[t[0]]; return k; }
   function shortDesc(d) { d = d.split(/[.;:]| and how| with your/)[0]; return d.length > 46 ? d.slice(0, 44).replace(/\s+\S*$/, '') + '\u2026' : d; }
   function toolSearch(q) {
     var toks = norm(q).split(' ').filter(Boolean); if (!toks.length) return [];
@@ -2513,7 +2513,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       });
       favLabel(); syncShare(); calcT.addEventListener('input', function () { setTimeout(syncShare, 50); }); calcT.addEventListener('click', function () { setTimeout(syncShare, 50); });
       calcT.parentNode.insertBefore(acts, calcT.nextSibling);
-      var CHAIN = { 'PDF toolkit': ['Sign a PDF', 'Mask Aadhaar or PAN', 'Photo converter'], 'Sign a PDF': ['PDF toolkit', 'Mask Aadhaar or PAN', 'Invoice and receipt maker'],
+      var CHAIN = { 'Passport and visa photo maker': ['Photo converter', 'PDF toolkit', 'Sign a PDF'], 'PDF toolkit': ['Sign a PDF', 'Mask Aadhaar or PAN', 'Photo converter'], 'Sign a PDF': ['PDF toolkit', 'Mask Aadhaar or PAN', 'Invoice and receipt maker'],
         'Photo converter': ['Exam photo and signature resizer', 'PDF toolkit', 'Mask Aadhaar or PAN'], 'Exam photo and signature resizer': ['Photo converter', 'PDF toolkit', 'Mask Aadhaar or PAN'],
         'Mask Aadhaar or PAN': ['PDF toolkit', 'Sign a PDF', 'Photo converter'], 'UPI QR code generator': ['Invoice and receipt maker', 'GST calculator', 'QR code generator'],
         'QR code generator': ['UPI QR code generator', 'Invoice and receipt maker', 'Photo converter'], 'Invoice and receipt maker': ['GST calculator', 'UPI QR code generator', 'Sign a PDF'],

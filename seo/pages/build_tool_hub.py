@@ -78,21 +78,31 @@ T = {
  "BMI calculator": ("heart", "Body mass index and healthy ranges", "bmi weight height obesity"),
  "Real raise calculator": ("grow", "Your pay rise after inflation", "salary hike raise appraisal increment"),
 }
+T["Passport and visa photo maker"] = ["exam", "Exact official sizes for 8 countries, print or upload", "passport visa photo maker 2x2 35x45 biometric id picture print sheet dv lottery green card schengen"]
+T["US passport photo (2 x 2 in)"] = ["exam", "2 x 2 inch photo, head 1 to 1 3/8 in, white background, no glasses.", "passport visa photo id picture 2x2 35x45 us passport photo size"]
+T["US visa and DV lottery photo"] = ["exam", "Square 600 x 600 px JPEG under 240 KB for the DS-160, Green Card and DV lottery.", "passport visa photo id picture 2x2 35x45 us visa photo 600x600"]
+T["UK passport photo (35 x 45 mm)"] = ["exam", "35 x 45 mm print or a 600 x 750 px+ digital photo, light grey or cream background.", "passport visa photo id picture 2x2 35x45 uk passport photo size"]
+T["Schengen visa photo (35 x 45 mm)"] = ["exam", "35 x 45 mm with the face 32-36 mm, for Schengen visas and most EU passports.", "passport visa photo id picture 2x2 35x45 schengen visa photo size"]
+T["Canada passport photo (50 x 70 mm)"] = ["exam", "50 x 70 mm print rules and the 1200 x 1800 px online renewal photo.", "passport visa photo id picture 2x2 35x45 canada passport photo size"]
+T["Australia passport photo"] = ["exam", "35-40 x 45-50 mm, face 32-36 mm, professional print.", "passport visa photo id picture 2x2 35x45 australia passport photo size"]
+T["China visa photo (33 x 48 mm)"] = ["exam", "33 x 48 mm print or 354 x 472 px, 40-120 KB online photo.", "passport visa photo id picture 2x2 35x45 china visa photo size"]
+T["OCI photo (square JPEG)"] = ["exam", "Square JPEG 200-900 px under 200 KB, plus the signature.", "passport visa photo id picture 2x2 35x45 oci photo size"]
 CATS = [  # id, heading, sub-heading, colour, icon, titles
  ("docs", "Documents and PDFs", "Merge, sign, mask and make documents", "#e2462c", "pdf", ["PDF toolkit", "Sign a PDF", "Mask Aadhaar or PAN", "Resume builder", "Invoice and receipt maker"]),
+ ("photos-id", "Passport and visa photos", "Exact official sizes, printed or digital", "#1a3faa", "exam", ["Passport and visa photo maker", "US passport photo (2 x 2 in)", "US visa and DV lottery photo", "UK passport photo (35 x 45 mm)", "Schengen visa photo (35 x 45 mm)", "Canada passport photo (50 x 70 mm)", "Australia passport photo", "China visa photo (33 x 48 mm)", "OCI photo (square JPEG)"]),
  ("forms", "Photos, forms and QR codes", "Get photos and codes exactly right", "#0e9bb5", "photo", ["Exam photo and signature resizer", "Photo converter", "QR code generator", "UPI QR code generator"]),
  ("money", "Tax, saving and investing", "Plan tax, savings and growth", "#0f9d76", "piggy", ["Income tax calculator: new vs old regime", "GST calculator", "PPF, EPF, Sukanya, FD and RD calculator", "SIP and investment growth calculator", "Emergency fund calculator", "FIRE calculator", "Inflation calculator", "Lump sum or monthly pension calculator"]),
  ("loans", "Loans and debt", "Borrow smarter and get debt-free sooner", "#2f7de1", "home", ["Loan EMI and prepayment calculator", "Credit card payoff calculator", "Debt payoff planner", "Debt consolidation calculator", "Rent vs buy calculator", "Car affordability calculator", "Prepay or invest comparison"]),
  ("daily", "Everyday, work and health", "Small jobs done in seconds", "#7a5cd6", "clock", ["Password generator", "Meeting time zone planner", "Word counter", "Subscription tracker", "Currency converter", "EV vs petrol cost calculator", "BMI calculator", "Real raise calculator"]),
 ]
 TOP = {"in": ["Exam photo and signature resizer", "PDF toolkit", "Income tax calculator: new vs old regime", "Photo converter", "Loan EMI and prepayment calculator", "GST calculator", "Mask Aadhaar or PAN", "SIP and investment growth calculator"],
-       "all": ["PDF toolkit", "Photo converter", "Loan EMI and prepayment calculator", "QR code generator", "Sign a PDF", "Emergency fund calculator", "Resume builder", "Password generator"]}
+       "all": ["Passport and visa photo maker", "PDF toolkit", "Photo converter", "Loan EMI and prepayment calculator", "QR code generator", "Sign a PDF", "Emergency fund calculator", "Resume builder"]}
 TOP_CALC = {"in": ["Income tax calculator: new vs old regime", "Loan EMI and prepayment calculator", "SIP and investment growth calculator", "GST calculator", "PPF, EPF, Sukanya, FD and RD calculator", "Emergency fund calculator", "FIRE calculator", "Credit card payoff calculator"],
             "all": ["Loan EMI and prepayment calculator", "Emergency fund calculator", "SIP and investment growth calculator", "FIRE calculator", "Credit card payoff calculator", "Rent vs buy calculator", "Inflation calculator", "Debt payoff planner"]}
 NAME = {"Income tax calculator: new vs old regime": "Income tax calculator", "PPF, EPF, Sukanya, FD and RD calculator": "PPF, EPF, Sukanya, FD and RD",
         "SIP and investment growth calculator": "SIP calculator", "Loan EMI and prepayment calculator": "Loan EMI calculator",
         "Lump sum or monthly pension calculator": "Lump sum or monthly pension", "EV vs petrol cost calculator": "EV vs petrol running cost"}
-TILE = dict(NAME, **{"Exam photo and signature resizer": "Exam photo resizer", "Invoice and receipt maker": "Invoice maker", "Emergency fund calculator": "Emergency fund",
+TILE = dict(NAME, **{"Passport and visa photo maker": "Passport photo maker", "Exam photo and signature resizer": "Exam photo resizer", "Invoice and receipt maker": "Invoice maker", "Emergency fund calculator": "Emergency fund",
         "Credit card payoff calculator": "Credit card payoff", "Rent vs buy calculator": "Rent vs buy", "Inflation calculator": "Inflation", "PPF, EPF, Sukanya, FD and RD calculator": "PPF, EPF and FD"})
 e = lambda s: html.escape(html.unescape(s), quote=True)
 def svg(k): return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + I[k] + '</svg>'
@@ -190,7 +200,7 @@ def page(kind):
     cats = [c for c in CATS if c[0] in ("money", "loans")] if calc else CATS
     shown = {t for c in cats for t in c[5]}
     pool = [t for t in ITEMS if not ITEMS[t]["group"].startswith("Data")]
-    files = {t for c in CATS if c[0] in ("docs", "forms") for t in c[5]}  # the calculators page leaves out file tools
+    files = {t for c in CATS if c[0] in ("docs", "photos-id", "forms") for t in c[5]}  # the calculators page leaves out file tools
     more = [t for t in pool if t not in shown and not (calc and t in files)]
     top = TOP_CALC if calc else TOP
     n_all = len(pool) + len(DATA)
