@@ -118,7 +118,7 @@ def row(t, cls="th-row"):
     return f'<a class="{cls}" href="{e(it["href"])}" data-k="{e(k)}" style="--c:{colour(t)}"><i>{svg(icon(t))}</i><span><b>{e(NAME.get(t, t))}</b><small>{e(short(t))}</small></span><em aria-hidden="true">&rsaquo;</em></a>'
 def tile(t):
     it = ITEMS[t]
-    return f'<a class="th-tile" href="{e(it["href"])}" style="--c:{colour(t)}"><i>{svg(icon(t))}</i><b>{e(TILE.get(t, t))}</b><small>{e(short(t))}</small></a>'
+    return f'<a class="th-tile" href="{e(it["href"])}" data-t="{e(t)}" style="--c:{colour(t)}"><i>{svg(icon(t))}</i><b>{e(TILE.get(t, t))}</b><small>{e(short(t))}</small></a>'
 
 CSS = """<style>
 #bd-hub{--h-ink:#15171d;--h-mute:#5d6271;--h-line:#e8e2d6;--h-card:#fff;--h-soft:#fbf8f3;font-family:var(--bd-sans,system-ui,sans-serif);color:var(--h-ink)}
@@ -135,7 +135,7 @@ html.bd-dark #bd-hub{--h-ink:#eef0f5;--h-mute:#a9aebb;--h-line:#2b2f3a;--h-card:
 #bd-hub .th-prom{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0!important;padding:0!important;list-style:none}
 #bd-hub .th-prom li{display:flex;align-items:center;gap:6px;margin:0!important;padding:0!important;font:700 13px var(--bd-sans)!important;color:#ecfeff!important}
 #bd-hub .th-prom li::before{content:"\\2713";display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#34d399!important;color:#064e3b!important;font-size:11px;font-weight:900}
-#bd-hub .th-jump{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -2px 6px;padding:10px 2px;background:var(--bd-bg,#f7f4ee)!important}
+#bd-hub .th-jump-old{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -2px 6px;padding:10px 2px;background:var(--bd-bg,#f7f4ee)!important}
 #bd-hub .th-jump::-webkit-scrollbar{display:none}
 #bd-hub .th-jump a{flex:none;padding:8px 14px;border-radius:999px;border:1px solid var(--h-line);background:var(--h-card)!important;color:var(--h-ink)!important;font:700 13.5px var(--bd-sans)!important;text-decoration:none!important}
 #bd-hub .th-jump a:hover{border-color:#0f766e;color:#0f766e!important}
@@ -173,6 +173,29 @@ html.bd-dark #bd-hub{--h-ink:#eef0f5;--h-mute:#a9aebb;--h-line:#2b2f3a;--h-card:
 html.bd-dark #bd-hub .th-data{background:linear-gradient(135deg,#2a2213,#2a1d15)!important;border-color:#4a3a22;color:#f5e9d9!important}
 #bd-hub .th-data i{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:#b45309!important;color:#fff!important}#bd-hub .th-data i svg{width:23px;height:23px}
 #bd-hub .th-data b{display:block;font:800 16px var(--bd-sans)!important;color:inherit!important}#bd-hub .th-data small{display:block;font:500 13.5px/1.4 var(--bd-sans)!important;color:inherit!important;opacity:.8}
+#bd-hub .th-search kbd{flex:none;padding:2px 8px;border-radius:6px;border:1px solid #d6dae3;font:700 12px var(--bd-sans);color:#64748b!important;background:#f4f6fa!important}
+#bd-hub .th-strip{margin:0 0 16px!important}
+#bd-hub .th-sl{display:block;margin:0 0 8px;font:800 12px var(--bd-sans)!important;letter-spacing:.1em;text-transform:uppercase;color:var(--h-mute)!important}
+#bd-hub .th-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}#bd-hub .th-chips::-webkit-scrollbar{display:none}
+#bd-hub .th-chips a{flex:none;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;border-radius:999px;border:1px solid var(--h-line);background:var(--h-card)!important;color:var(--h-ink)!important;font:700 14px var(--bd-sans)!important;text-decoration:none!important;transition:border-color .15s,transform .15s}
+#bd-hub .th-chips a:hover{border-color:var(--c);transform:translateY(-1px)}
+#bd-hub .th-chips i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;color:var(--c)!important;background:color-mix(in srgb,var(--c) 14%,transparent)!important}#bd-hub .th-chips i svg{width:16px;height:16px}
+#bd-hub #th-me .th-chips a{border-color:color-mix(in srgb,var(--c) 45%,var(--h-line))}
+#bd-hub .th-tabs{position:sticky;top:0;z-index:6;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:6px -4px 16px;padding:8px 4px;background:var(--bd-bg,#f7f4ee)!important;border-bottom:1px solid var(--h-line)}
+html.bd-dark #bd-hub .th-tabs{background:var(--bd-bg,#0f1115)!important}
+#bd-hub .th-tabs::-webkit-scrollbar{display:none}
+#bd-hub .th-tabs button{flex:none;display:inline-flex;align-items:center;gap:6px;margin:0!important;padding:9px 14px!important;border:0!important;border-radius:999px!important;background:transparent!important;color:var(--h-mute)!important;font:700 14px var(--bd-sans)!important;cursor:pointer;transition:background .15s,color .15s}
+#bd-hub .th-tabs button span{padding:1px 7px;border-radius:999px;background:var(--h-line)!important;font-size:12px;color:var(--h-mute)!important}
+#bd-hub .th-tabs button:hover{color:var(--h-ink)!important}
+#bd-hub .th-tabs button.th-on{background:#0f766e!important;color:#fff!important}#bd-hub .th-tabs button.th-on span{background:rgba(255,255,255,.22)!important;color:#fff!important}
+#bd-hub:not(.th-js) .th-tabs{display:none}
+#bd-hub.th-js .th-panel{display:none}#bd-hub.th-js .th-panel.th-show{display:block;animation:th-in .28s ease both}
+@keyframes th-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#bd-hub.th-js .th-panel.th-show{animation:none}}
+#bd-hub .th-n{font:800 13px var(--bd-sans)!important;color:var(--c)!important}
+#bd-hub .th-browse{margin:14px 0 0!important;font:600 14px var(--bd-sans)!important;color:var(--h-mute)!important}#bd-hub .th-browse a{color:#0f766e!important;font-weight:700}
+#bd-hub .th-row.th-for{border-color:var(--c);box-shadow:inset 3px 0 0 var(--c)}#bd-hub .th-row.th-for b::after{content:"For you";margin-left:8px;padding:1px 8px;border-radius:999px;background:var(--c)!important;color:#fff!important;font:800 11px var(--bd-sans);vertical-align:2px}
+#bd-hub .th-panel{margin:0 0 26px!important}
 #bd-hub .th-res-h{margin:0 0 10px!important;font:700 14px var(--bd-sans)!important;color:var(--h-mute)!important}
 #bd-hub .th-none{padding:18px;border-radius:14px;border:1px dashed var(--h-line);font:500 15px var(--bd-sans)!important;color:var(--h-mute)!important}
 #bd-hub .th-faq h3{margin:16px 0 4px!important;font:700 16px var(--bd-sans)!important;color:var(--h-ink)!important}
@@ -182,18 +205,50 @@ html.bd-dark #bd-hub .th-data{background:linear-gradient(135deg,#2a2213,#2a1d15)
 @media (max-width:640px){#bd-hub .th-rows{grid-template-columns:minmax(0,1fr)}#bd-hub .th-hero{padding:22px 16px 18px;border-radius:18px}#bd-hub .th-tile{min-height:0;padding:12px}#bd-hub .th-tile i{width:36px;height:36px;margin-bottom:4px}#bd-hub .th-tile small{font-size:12.5px!important}}
 </style>"""
 
+TASKS = {"all": [("Make a passport photo", "Passport and visa photo maker"), ("Merge PDFs", "PDF toolkit"), ("Shrink a photo to 100 KB", "Photo converter"), ("Sign a PDF", "Sign a PDF"),
+                 ("Make a QR code", "QR code generator"), ("Work out a loan EMI", "Loan EMI and prepayment calculator"), ("Build a CV", "Resume builder"), ("Create a strong password", "Password generator")],
+         "in": [("Resize an exam photo", "Exam photo and signature resizer"), ("Income tax: old vs new", "Income tax calculator: new vs old regime"), ("Merge PDFs", "PDF toolkit"), ("Mask Aadhaar", "Mask Aadhaar or PAN"),
+                ("Add or remove GST", "GST calculator"), ("UPI QR code", "UPI QR code generator"), ("Loan EMI", "Loan EMI and prepayment calculator"), ("PPF and EPF", "PPF, EPF, Sukanya, FD and RD calculator")]}
+TASKS_CALC = {"all": [("Work out a loan EMI", "Loan EMI and prepayment calculator"), ("Size an emergency fund", "Emergency fund calculator"), ("Grow a monthly SIP", "SIP and investment growth calculator"),
+                      ("Retire early?", "FIRE calculator"), ("Clear a credit card", "Credit card payoff calculator"), ("Rent or buy?", "Rent vs buy calculator")],
+              "in": [("Income tax: old vs new", "Income tax calculator: new vs old regime"), ("Add or remove GST", "GST calculator"), ("PPF and EPF", "PPF, EPF, Sukanya, FD and RD calculator"),
+                     ("Loan EMI", "Loan EMI and prepayment calculator"), ("SIP returns", "SIP and investment growth calculator"), ("Emergency fund", "Emergency fund calculator")]}
+TAB = {"docs": "Documents", "photos-id": "Passport photos", "forms": "Photos and QR", "money": "Tax and saving", "loans": "Loans", "daily": "Everyday"}
+
 SCRIPT = """<script>
-(function(){var r=document.getElementById('bd-hub');if(!r)return;
-var tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}
-if(/Kolkata|Calcutta/.test(tz)){r.querySelectorAll('.th-top').forEach(function(g){g.hidden=g.dataset.g!=='in';});}
-var seen={},A=[].filter.call(r.querySelectorAll('.th-main .th-row'),function(a){return seen[a.href]?0:(seen[a.href]=1);}).map(function(a){return [a.querySelector('b').textContent,a.outerHTML,a.dataset.k||'',a.closest('#th-more,#th-data')?10:0];}),q=r.querySelector('.th-search input'),res=r.querySelector('#th-res'),main=r.querySelectorAll('.th-main');
+(function(){var r=document.getElementById('bd-hub');if(!r)return;r.classList.add('th-js');
+var tz='',get=function(k){try{return JSON.parse(localStorage.getItem(k)||'null')||[];}catch(e){return [];}};try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}
+var IN=/Kolkata|Calcutta/.test(tz);r.querySelectorAll('[data-g]').forEach(function(g){g.hidden=g.dataset.g!==(IN?'in':'all');});
+// Passport photos for the visitor's country first, and the Popular tile goes straight to it.
+var C=[[/^America\\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|Regina|St_Johns|Montreal)/,'canada-passport'],[/^America\\//,'us-passport'],[/^Europe\\/London/,'uk-passport'],[/^Europe\\//,'schengen'],[/^Australia\\//,'australia-passport'],[/^Asia\\/(Shanghai|Chongqing|Harbin|Urumqi)/,'china-visa'],[/Kolkata|Calcutta/,'us-visa']].filter(function(c){return c[0].test(tz);})[0];
+if(C){var mine=r.querySelector('#th-photos-id .th-row[href*="'+({'us-passport':'us-passport-photo','us-visa':'us-visa-and-dv','uk-passport':'uk-passport-photo','schengen':'schengen-visa','canada-passport':'canadian-passport','australia-passport':'australian-passport','china-visa':'china-visa-photo'})[C[1]]+'"]');
+ if(mine){var box=mine.parentNode;box.insertBefore(mine,box.firstChild);mine.classList.add('th-for');var t=r.querySelector('.th-tile[data-t="Passport and visa photo maker"]');if(t&&!IN){t.href=mine.href;t.querySelector('b').textContent=mine.querySelector('b').textContent.replace(/ \\(.*$/,'');}}}
+// Recently used and saved tools (kept in this browser only).
+var seen={},rows={};[].forEach.call(r.querySelectorAll('.th-panel .th-row'),function(a){rows[a.getAttribute('href')]=rows[a.getAttribute('href')]||a;});
+var me=get('bd-recent').concat(get('bd-mytools')).filter(function(m){var ok=rows[m[1]]&&!seen[m[1]];seen[m[1]]=1;return ok;}).slice(0,6);
+if(me.length){var p=r.querySelector('#th-me');p.hidden=false;p.querySelector('.th-chips').innerHTML=me.map(function(m){var a=rows[m[1]];return '<a href="'+m[1]+'" style="'+a.getAttribute('style')+'">'+a.querySelector('i').outerHTML+a.querySelector('b').textContent+'</a>';}).join('');}
+// Category tabs: one panel at a time; "All" shows every category.
+var tabs=r.querySelectorAll('.th-tabs button'),panels=r.querySelectorAll('.th-panel');
+function show(id,push){if(!r.querySelector('.th-tabs [data-p="'+id+'"]'))id='th-top';tabs.forEach(function(b){var on=b.dataset.p===id;b.classList.toggle('th-on',on);b.setAttribute('aria-selected',on);});
+ panels.forEach(function(s){var on=id==='all'?s.id!=='th-top':s.id===id;s.classList.toggle('th-show',on);});if(push&&history.replaceState)history.replaceState(null,'','#'+id);}
+var strip=r.querySelector('.th-tabs');
+function centre(b){strip.scrollTo({left:b.offsetLeft-(strip.clientWidth-b.offsetWidth)/2,behavior:'smooth'});for(var el=r;el&&el!==document.body;el=el.parentElement)if(el.scrollLeft)el.scrollLeft=0;}
+tabs.forEach(function(b){b.addEventListener('mousedown',function(e){e.preventDefault();});b.addEventListener('click',function(){show(b.dataset.p,1);centre(b);if(strip.getBoundingClientRect().top<0)window.scrollTo({top:window.scrollY+r.querySelector('.th-panel.th-show').getBoundingClientRect().top-70});});});
+show((location.hash||'').slice(1)||'th-top');var on0=r.querySelector('.th-tabs .th-on');if(on0)strip.scrollLeft=on0.offsetLeft-(strip.clientWidth-on0.offsetWidth)/2;
+r.querySelectorAll('.th-goto').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();show(a.dataset.p,1);});});
+// Search over every tool.
+var A=[].filter.call(r.querySelectorAll('.th-panel .th-row'),function(a){return seen[a.href]?0:(seen[a.href]=1);}).map(function(a){return [a.querySelector('b').textContent,a.outerHTML,a.dataset.k||'',a.closest('#th-more,#th-data')?10:0];}),q=r.querySelector('.th-search input'),res=r.querySelector('#th-res'),main=r.querySelectorAll('.th-main');
 var n=function(s){return s.toLowerCase().replace(/[^a-z0-9\\u20b9% ]+/g,' ');};
 q.addEventListener('input',function(){var t=n(q.value).split(' ').filter(Boolean);
  main.forEach(function(m){m.hidden=!!t.length;});res.hidden=!t.length;if(!t.length)return;
  var hits=A.map(function(a,i){var h=n(a[0]+' '+a[2]),ti=n(a[0]),s=0,ok=t.every(function(w){var inT=ti.split(' ').some(function(x){return x.indexOf(w)===0;}),inH=h.split(' ').some(function(x){return x.indexOf(w)===0;});if(inT)s+=10;else if(inH)s+=3;return inT||inH;});return ok?[s-a[3]-i/1000,a]:null;}).filter(Boolean).sort(function(x,y){return y[0]-x[0];});
  res.innerHTML='<p class="th-res-h">'+(hits.length?hits.length+' matching tool'+(hits.length>1?'s':''):'')+'</p>'+(hits.length?'<div class="th-rows">'+hits.slice(0,12).map(function(h){return h[1][1];}).join('')+'</div>':'<p class="th-none">No tool matches yet. Try a simpler word, like "pdf", "photo", "loan" or "tax".</p>');});
+document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test((document.activeElement||{}).tagName||'')){e.preventDefault();q.focus();}});
 })();
 </script>"""
+
+def panel(pid, title, sub, col, ic, body, count):
+    return (f'<section id="{pid}" class="th-panel"><div class="th-h" style="--c:{col}"><i>{svg(ic)}</i><div><h2>{e(title)}</h2><small>{e(sub)} &middot; <b class="th-n">{count} {"tools" if count != 1 else "tool"}</b></small></div></div>{body}</section>')
 
 def page(kind):
     calc = kind == "calc"
@@ -202,32 +257,37 @@ def page(kind):
     pool = [t for t in ITEMS if not ITEMS[t]["group"].startswith("Data")]
     files = {t for c in CATS if c[0] in ("docs", "photos-id", "forms") for t in c[5]}  # the calculators page leaves out file tools
     more = [t for t in pool if t not in shown and not (calc and t in files)]
-    top = TOP_CALC if calc else TOP
+    top, tasks = (TOP_CALC, TASKS_CALC) if calc else (TOP, TASKS)
     n_all = len(pool) + len(DATA)
     h = [CSS, '<div id="bd-hub">']
     if calc:
         h.append('<div class="th-hero"><p class="th-k">Free money calculators</p><h2>Plan any money decision in a minute</h2><p class="th-lead">Loans, tax, savings, retirement and investing, with clear answers and no sign-up. Nothing you type is sent anywhere.</p>')
     else:
-        h.append(f'<div class="th-hero"><p class="th-k">{n_all} free tools and calculators</p><h2>Free tools that just work</h2><p class="th-lead">PDFs, photos, exam forms, QR codes, tax and loan calculators. Everything runs in your browser, so your files never leave your device.</p>')
-    h.append('<label class="th-search">' + svg("search") + '<input type="search" aria-label="Search tools" placeholder="' + ('What do you want to work out? e.g. EMI, tax, SIP' if calc else 'What do you need? e.g. merge PDF, photo 50 KB, EMI') + '"></label>')
+        h.append(f'<div class="th-hero"><p class="th-k">{n_all} free tools and calculators</p><h2>Free tools that just work</h2><p class="th-lead">PDFs, passport photos, exam forms, QR codes, tax and loan calculators. Everything runs in your browser, so your files never leave your device.</p>')
+    h.append('<label class="th-search">' + svg("search") + '<input type="search" aria-label="Search tools" placeholder="' + ('What do you want to work out? e.g. EMI, tax, SIP' if calc else 'What do you need? e.g. passport photo, merge PDF, EMI') + '"><kbd>/</kbd></label>')
     h.append('<ul class="th-prom">' + ''.join(f'<li>{x}</li>' for x in (["Free", "No sign-up", "Private"] if calc else ["No upload", "No sign-up", "No watermark or limits"])) + '</ul></div>')
-    jumps = [("th-top", "Popular")] + [("th-" + c[0], c[1].split(",")[0].split(" and ")[0]) for c in cats] + [("th-more", "More"), ("th-data", "Data")]
-    h.append('<div id="th-res" hidden></div><nav class="th-jump th-main" aria-label="Jump to a section">' + ''.join(f'<a href="#{i}">{e(l)}</a>' for i, l in jumps) + '</nav>')
-    h.append('<div class="th-main"><section id="th-top"><div class="th-h" style="--c:#e2462c"><i>' + svg("flag") + '</i><div><h2>Most popular</h2><small>Start here: the tools people use most</small></div></div>')
-    for g in ("in", "all"):
+    h.append('<div id="th-res" hidden></div>')
+    h.append('<div class="th-main"><section id="th-me" class="th-strip" hidden><b class="th-sl">Pick up where you left off</b><div class="th-chips"></div></section>')
+    for g in ("all", "in"):
+        h.append(f'<section class="th-strip th-tasks" data-g="{g}"' + (' hidden' if g == "in" else '') + '><b class="th-sl">I want to&hellip;</b><div class="th-chips">' +
+                 ''.join(f'<a href="{e(ITEMS[t]["href"])}" style="--c:{colour(t)}"><i>{svg(icon(t))}</i>{e(l)}</a>' for l, t in tasks[g]) + '</div></section>')
+    tablist = [("th-top", "Popular", len(top["all"])), ("all", "All", sum(len(c[5]) for c in cats))] + [("th-" + c[0], TAB[c[0]], len(c[5])) for c in cats] + [("th-more", "More", len(more)), ("th-data", "Data", len(DATA))]
+    h.append('<nav class="th-tabs" role="tablist" aria-label="Tool categories">' + ''.join(f'<button type="button" role="tab" data-p="{i}">{e(l)}<span>{n}</span></button>' for i, l, n in tablist) + '</nav>')
+    h.append(f'<section id="th-top" class="th-panel"><div class="th-h" style="--c:#e2462c"><i>{svg("flag")}</i><div><h2>Most popular</h2><small>Start here: the tools people use most</small></div></div>')
+    for g in ("all", "in"):
         h.append(f'<div class="th-top" data-g="{g}"' + (' hidden' if g == "in" else '') + '>' + ''.join(tile(t) for t in top[g]) + '</div>')
-    h.append('</section>')
+    h.append('<p class="th-browse">Browse by category: ' + ' &middot; '.join(f'<a class="th-goto" href="#th-{c[0]}" data-p="th-{c[0]}">{e(TAB[c[0]])}</a>' for c in cats) + '</p></section>')
     for cid, name, sub, col, ic, titles in cats:
-        h.append(f'<section id="th-{cid}"><div class="th-h" style="--c:{col}"><i>{svg(ic)}</i><div><h2>{e(name)}</h2><small>{e(sub)}</small></div></div><div class="th-rows">' + ''.join(row(t) for t in titles) + '</div></section>')
-    h.append(f'<section id="th-more"><details><summary>More calculators inside our guides ({len(more)})</summary><div class="th-rows th-mini">' + ''.join(row(t) for t in more) + '</div></details></section>')
-    h.append(f'<section id="th-data"><a class="th-data" href="{COMPARE}"><i>{svg("globe")}</i><span><b>Money data by country</b><small>Wages, tax, mortgage rates, pensions and energy prices for 35 countries in one place</small></span></a>'
-             f'<details><summary>All {len(DATA)} data tables</summary><div class="th-rows th-mini">' + ''.join(row(t) for t in [d["title"] for d in DATA]) + '</div></details></section>')
+        h.append(panel("th-" + cid, name, sub, col, ic, '<div class="th-rows">' + ''.join(row(t) for t in titles) + '</div>', len(titles)))
+    h.append(panel("th-more", "More calculators inside our guides", "Tools built into our in-depth articles", "#64748b", "grow", '<div class="th-rows th-mini">' + ''.join(row(t) for t in more) + '</div>', len(more)))
+    h.append(panel("th-data", "Money data by country", "Comparable figures for dozens of countries", "#b45309", "globe",
+                   f'<a class="th-data" href="{COMPARE}"><i>{svg("globe")}</i><span><b>Compare 35 countries in one place</b><small>Wages, tax, mortgage rates, pensions and energy prices side by side</small></span></a><div class="th-rows th-mini">' + ''.join(row(t) for t in [d["title"] for d in DATA]) + '</div>', len(DATA)))
     if calc:
-        h.append(f'<section><a class="th-also" href="/p/free-tools.html">Looking for PDF, photo, QR or exam-form tools? <span>All free tools &rsaquo;</span></a></section>')
+        h.append(f'<section class="th-strip"><a class="th-also" href="/p/free-tools.html">Looking for PDF, passport photo, QR or exam-form tools? <span>All free tools &rsaquo;</span></a></section>')
     faq = [("Are these tools really free?", "Yes. Every tool and calculator is free to use as often as you like, with no account, trial or watermark."),
            ("Are my files uploaded anywhere?", "No. PDFs, photos and documents are opened and processed inside your browser on your own device, and nothing is sent to Blog Digest or anyone else."),
            ("Do the calculators use current rates?", "Each calculator page shows the date and source of its figures, such as FY 2026-27 tax slabs and October-December 2026 savings rates, and you can change the rates yourself.")]
-    h.append('<section class="th-faq"><div class="th-h" style="--c:#64748b"><i>' + svg("shield") + '</i><div><h2>Good to know</h2></div></div>' + ''.join(f'<h3>{e(a)}</h3><p>{e(b)}</p>' for a, b in faq) + '</section></div>')
+    h.append('<section class="th-faq th-strip"><div class="th-h" style="--c:#64748b"><i>' + svg("shield") + '</i><div><h2>Good to know</h2></div></div>' + ''.join(f'<h3>{e(a)}</h3><p>{e(b)}</p>' for a, b in faq) + '</section></div>')
     h.append(SCRIPT)
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "ItemList", "name": "Free money calculators" if calc else "Free online tools and calculators",
@@ -236,7 +296,7 @@ def page(kind):
     h.append('<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script></div>')
     return "\n".join(h)
 
-for t in [t for c in CATS for t in c[5]] + TOP["in"] + TOP["all"] + TOP_CALC["in"] + TOP_CALC["all"]:
+for t in [t for c in CATS for t in c[5]] + TOP["in"] + TOP["all"] + TOP_CALC["in"] + TOP_CALC["all"] + [t for d in (TASKS, TASKS_CALC) for g in d.values() for _, t in g]:
     assert t in ITEMS, t
 open(os.path.join(HERE, "free-tools.html"), "w", encoding="utf-8").write(page("tools"))
 open(os.path.join(HERE, "free-calculators.html"), "w", encoding="utf-8").write(page("calc"))
