@@ -77,6 +77,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "oci-photo-size": ("OCI PHOTO \u00b7 INDIA", "OCI Photo: Square JPEG Under 200 KB", "#e48b12"),
     "cash-limit-international-flight-by-country": ("TRAVEL MONEY \u00b7 53 COUNTRIES", "How Much Cash Can You Carry on a Flight?", "#0f7a5c"),
     "medicines-banned-abroad-codeine-adhd-sleeping-pills": ("TRAVEL HEALTH \u00b7 14 DESTINATIONS", "Codeine, Sleeping Pills, ADHD Meds: What's Banned Where", "#7a3fb0"),
+    "tax-on-money-sent-from-abroad-by-country": ("MONEY FROM ABROAD \u00b7 31 COUNTRIES", "Do You Pay Tax on Money Sent From Abroad?", "#1a3faa"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 # Country money-facts pages (seo/countries/countries.json): one cover each.

@@ -1,0 +1,51 @@
+<div class="bd-calc" id="bd-mfa">
+<div class="bc-title">Will I pay tax on money sent to me?</div>
+<div class="bc-sub">Pick the country you live in and who sent the money. You get whether you owe tax as the person receiving it, and what you need to report.</div>
+<div class="bc-grid">
+<div><label for="mfa-c">I live in</label><select id="mfa-c">__OPTS__</select></div>
+<div><label for="mfa-w">The money is from</label><select id="mfa-w"><option value="f">Close family (parent, child, spouse, sibling)</option><option value="o">Someone else (friend, other relative)</option></select></div>
+</div>
+<div class="mfa-out" aria-live="polite"></div>
+<details class="mfa-all"><summary>Compare all __N__ countries</summary>
+<div class="bc-table"><table class="mfa-t"><thead><tr><th>Country</th><th>From close family</th><th>From others</th></tr></thead><tbody>__ROWS__</tbody></table></div>
+</details>
+<div class="bc-note">For gifts and family support. Money paid for work, rent or a loan that must be repaid is not a gift and follows different rules. Checked against tax authorities, laws and PwC Worldwide Tax Summaries in October 2026. General information, not tax advice.</div>
+</div>
+<style>
+#bd-mfa .mfa-out{margin-top:18px}
+#bd-mfa .mfa-card{border:1px solid var(--c-line);border-left:5px solid #9aa0ab;border-radius:14px;padding:14px 16px;background:var(--bd-surface,#fff)!important}
+#bd-mfa .mfa-card.mfa-tax{border-left-color:#d4442c}#bd-mfa .mfa-card.mfa-allow{border-left-color:#e48b12}#bd-mfa .mfa-card.mfa-report{border-left-color:#2f6fd6}#bd-mfa .mfa-card.mfa-none{border-left-color:#0f9d76}
+#bd-mfa .mfa-k{font:700 12px/1.2 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--c-muted)!important}
+#bd-mfa .mfa-v{font:800 20px/1.3 var(--bd-serif,Georgia,serif);margin:5px 0 6px;color:var(--c-ink)!important}
+#bd-mfa .mfa-tax .mfa-v{color:#d4442c!important}#bd-mfa .mfa-allow .mfa-v{color:#c4730a!important}#bd-mfa .mfa-report .mfa-v{color:#2f6fd6!important}#bd-mfa .mfa-none .mfa-v{color:#0c8a67!important}
+#bd-mfa .mfa-card p{font-size:14.5px;line-height:1.5;margin:6px 0 0!important;color:var(--c-ink)!important}
+#bd-mfa .mfa-card p.mfa-x{color:var(--c-muted)!important;font-size:13px}
+#bd-mfa .mfa-card a{font-size:13px}
+#bd-mfa details.mfa-all{margin-top:18px}
+#bd-mfa .bc-table{max-height:560px;overflow:auto;border:1px solid var(--c-line);border-radius:12px}
+#bd-mfa table.mfa-t{font-size:12.5px;margin:0;min-width:0}
+#bd-mfa .mfa-key{font-size:13px;color:var(--c-muted)!important;margin:10px 0!important}
+#bd-mfa .mfa-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5)!important;text-align:left!important;white-space:normal!important}
+#bd-mfa .mfa-t td{text-align:left!important;white-space:normal!important;vertical-align:top}
+#bd-mfa .mfa-s{display:inline-block;padding:3px 7px;border-radius:999px;font-weight:700;font-size:11.5px;line-height:1.25;color:#fff!important}
+#bd-mfa .mfa-s.mfa-tax{background:#d4442c!important}#bd-mfa .mfa-s.mfa-allow{background:#d17d0c!important}#bd-mfa .mfa-s.mfa-report{background:#2f6fd6!important}#bd-mfa .mfa-s.mfa-none{background:#0f9d76!important}#bd-mfa .mfa-s.mfa-check{background:#6b7280!important}
+html.bd-dark #bd-mfa .mfa-card{background:rgba(255,255,255,.04)!important}
+html.bd-dark #bd-mfa .mfa-tax .mfa-v{color:#ff8a73!important}html.bd-dark #bd-mfa .mfa-allow .mfa-v{color:#ffb74d!important}html.bd-dark #bd-mfa .mfa-report .mfa-v{color:#8ab4ff!important}html.bd-dark #bd-mfa .mfa-none .mfa-v{color:#4fd1a5!important}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-mfa');if(!root)return;
+var D=__DATA__,W=__WORD__,R={};D.forEach(function(r){R[r.id]=r});
+var c=root.querySelector('#mfa-c'),w=root.querySelector('#mfa-w'),out=root.querySelector('.mfa-out');
+function esc(s){return String(s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]})}
+function draw(){
+  var r=R[c.value],m=w.value==='f'?r.f:r.o,who=w.value==='f'?'From close family':'From someone else';
+  out.innerHTML='<div class="mfa-card mfa-'+m[0]+'"><div class="mfa-k">'+esc(who)+' · living in '+esc(r.n)+'</div><div class="mfa-v">'+W[m[0]]+'</div><p>'+esc(m[1])+'</p><p class="mfa-x"><b>Reporting:</b> '+esc(r.r)+'</p><p><a href="'+r.s+'" target="_blank" rel="noopener">Source: '+esc(r.sn)+'</a></p></div>';
+  root.dataset.share='Money from abroad, '+who.toLowerCase()+', living in '+r.n+': '+W[m[0]].toLowerCase()+'. Check your country:';
+}
+var TZ={'Asia/Kolkata':'in','Asia/Calcutta':'in','Europe/London':'gb','Europe/Dublin':'ie','Europe/Berlin':'de','Europe/Paris':'fr','Europe/Madrid':'es','Europe/Rome':'it','Europe/Amsterdam':'nl','Europe/Warsaw':'pl','Asia/Karachi':'pk','Asia/Dhaka':'bd','Asia/Manila':'ph','Asia/Ho_Chi_Minh':'vn','Asia/Jakarta':'id','Asia/Bangkok':'th','Asia/Kuala_Lumpur':'my','Asia/Singapore':'sg','Asia/Shanghai':'cn','Asia/Hong_Kong':'hk','Asia/Tokyo':'jp','Asia/Seoul':'kr','Asia/Dubai':'ae','Asia/Riyadh':'sa','Africa/Cairo':'eg','Africa/Lagos':'ng','Africa/Johannesburg':'za','Pacific/Auckland':'nz','America/Mexico_City':'mx','America/Toronto':'ca','America/Vancouver':'ca'};
+var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+c.value=TZ[z]||(z.indexOf('Australia/')===0?'au':'us');
+c.addEventListener('change',draw);w.addEventListener('change',draw);draw();
+})();
+</script>

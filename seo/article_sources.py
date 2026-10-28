@@ -744,6 +744,44 @@ S.update({
 })
 A["medicines-banned-abroad-codeine-adhd-sleeping-pills"] = ['jp_mhlw', 'ae_mohap', 'sa_sfda', 'qa_moph', 'sg_hsa', 'th_fda', 'kr_mfds', 'cn_customs', 'hk_gov', 'id_smart', 'ph_pdea', 'uk_med', 'eu_schengen', 'us_fda', 'jp_emb', 'incb', 'cdc_med']
 
+S.update({
+ "us_irs": ('IRS: gifts from foreign persons (Form 3520)', 'https://www.irs.gov/businesses/gifts-from-foreign-person'),
+ "uk_gift": ('GOV.UK: inheritance tax on gifts', 'https://www.gov.uk/inheritance-tax/gifts'),
+ "ie_cat": ('Revenue: Capital Acquisitions Tax thresholds', 'https://www.revenue.ie/en/gains-gifts-and-inheritance/cat-thresholds-rates-and-aggregation-rules/cat-thresholds.aspx'),
+ "ie_b27": ('Grant Thornton: Budget 2027 analysis (CAT thresholds)', 'https://www.grantthornton.ie/insights/budget/budget-2027-analysis/'),
+ "de_erbstg": ('German Inheritance and Gift Tax Act, section 16 (allowances)', 'https://www.gesetze-im-internet.de/erbstg_1974/__16.html'),
+ "fr_don": ('Service-Public.fr: tax on a manual gift (don manuel)', 'https://www.service-public.fr/particuliers/vosdroits/F14203'),
+ "es_gift": ('Pellicer & Heredia: gift tax in Spain 2026', 'https://www.pellicerheredia.com/en/gifts-tax-spain/'),
+ "it_gift": ('Italy Handbook: gift tax rules in Italy', 'https://italyhandbook.com/gift-tax-rules-in-italy-when-you-need-to-pay/'),
+ "nl_gift": ('ABN AMRO: gift tax allowances and rates 2026', 'https://www.abnamro.nl/nl/prive/themas/schenken/tarieven-vrijstellingen-schenkbelasting.html'),
+ "pl_gift": ('Polish Ministry of Finance: inheritance and gift tax', 'https://podatki-arch.mf.gov.pl/en/inheritance/'),
+ "in_gift": ('Business Standard: gifts from non-relatives above ₹50,000 are taxable', 'https://www.business-standard.com/article/pf/gifts-received-from-non-relatives-of-above-rs-50-000-a-year-are-taxable-122101801086_1.html'),
+ "pk_fbr": ('Federal Board of Revenue: circular on foreign remittances', 'https://download1.fbr.gov.pk/Docs/20218311282133965CircularNO.05ofForeignRemittances.pdf'),
+ "th_gift": ('HLB Thailand: foreign income tax changes in force', 'https://www.hlbthai.com/?p=158982'),
+ "th_gift2": ('Taxes for Expats: Thailand (gift exemptions)', 'https://www.taxesforexpats.com/country_guides/thailand.html'),
+ "sg_iras": ('IRAS: income received from overseas', 'https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/what-is-taxable-what-is-not/income-received-from-overseas'),
+ "jp_gift": ('Ministry of Finance Japan: gift tax', 'https://www.mof.go.jp/english/tax_policy/tax_system/asset/03_3.pdf'),
+ "kr_gift": ('Financial News: gift tax deductions for children (2026)', 'https://en.fnnews.com/news/202605121659105425'),
+ "za_sars": ('SARS: donations tax', 'https://www.sars.gov.za/types-of-tax/donations-tax/'),
+ "pwc_chart": ('PwC Worldwide Tax Summaries: inheritance and gift tax rates', 'https://taxsummaries.pwc.com/quick-charts/inheritance-and-gift-tax-rates'),
+ "pwc_ca": ('PwC Worldwide Tax Summaries: Canada, other taxes', 'https://taxsummaries.pwc.com/canada/individual/other-taxes'),
+ "pwc_mx": ('PwC Worldwide Tax Summaries: Mexico, other taxes', 'https://taxsummaries.pwc.com/mexico/individual/other-taxes'),
+ "pwc_bd": ('PwC Worldwide Tax Summaries: Bangladesh, other taxes', 'https://taxsummaries.pwc.com/bangladesh/individual/other-taxes'),
+ "pwc_ph": ('PwC Worldwide Tax Summaries: Philippines, other taxes', 'https://taxsummaries.pwc.com/philippines/individual/other-taxes'),
+ "pwc_vn": ('PwC Worldwide Tax Summaries: Vietnam, other taxes', 'https://taxsummaries.pwc.com/vietnam/individual/other-taxes'),
+ "pwc_id": ('PwC Worldwide Tax Summaries: Indonesia, other taxes', 'https://taxsummaries.pwc.com/indonesia/individual/other-taxes'),
+ "pwc_my": ('PwC Worldwide Tax Summaries: Malaysia, other taxes', 'https://taxsummaries.pwc.com/malaysia/individual/other-taxes'),
+ "pwc_cn": ('PwC Worldwide Tax Summaries: China, other taxes', 'https://taxsummaries.pwc.com/peoples-republic-of-china/individual/other-taxes'),
+ "pwc_hk": ('PwC Worldwide Tax Summaries: Hong Kong, other taxes', 'https://taxsummaries.pwc.com/hong-kong-sar/individual/other-taxes'),
+ "pwc_ae": ('PwC Worldwide Tax Summaries: United Arab Emirates, other taxes', 'https://taxsummaries.pwc.com/united-arab-emirates/individual/other-taxes'),
+ "pwc_sa": ('PwC Worldwide Tax Summaries: Saudi Arabia, other taxes', 'https://taxsummaries.pwc.com/saudi-arabia/individual/other-taxes'),
+ "pwc_eg": ('PwC Worldwide Tax Summaries: Egypt, other taxes', 'https://taxsummaries.pwc.com/egypt/individual/other-taxes'),
+ "pwc_ng": ('PwC Worldwide Tax Summaries: Nigeria, other taxes', 'https://taxsummaries.pwc.com/nigeria/individual/other-taxes'),
+ "pwc_au": ('PwC Worldwide Tax Summaries: Australia, other taxes', 'https://taxsummaries.pwc.com/australia/individual/other-taxes'),
+ "pwc_nz": ('PwC Worldwide Tax Summaries: New Zealand, other taxes', 'https://taxsummaries.pwc.com/new-zealand/individual/other-taxes'),
+})
+A["tax-on-money-sent-from-abroad-by-country"] = ['us_irs', 'pwc_ca', 'pwc_mx', 'ie_b27', 'uk_gift', 'ie_cat', 'de_erbstg', 'fr_don', 'es_gift', 'it_gift', 'nl_gift', 'pl_gift', 'in_gift', 'pk_fbr', 'pwc_bd', 'pwc_ph', 'pwc_vn', 'pwc_id', 'th_gift', 'pwc_my', 'sg_iras', 'pwc_cn', 'pwc_hk', 'jp_gift', 'kr_gift', 'pwc_ae', 'pwc_sa', 'pwc_eg', 'pwc_ng', 'za_sars', 'pwc_au', 'pwc_nz', 'th_gift2', 'pwc_chart']
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)
