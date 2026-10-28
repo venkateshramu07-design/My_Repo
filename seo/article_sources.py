@@ -692,6 +692,37 @@ A["australia-passport-photo-size"] = ["au_pp"]
 A["china-visa-photo-size"] = ["cn_vp"]
 A["oci-photo-size"] = ["oci_portal", "oci_akl", "oci_py"]
 
+S.update({
+ "us_cbp": ('CBP: money and other monetary instruments', 'https://cbp.gov/travel/international-visitors/kbyg/money'),
+ "ca_cbsa": ('CBSA: cross-border currency and monetary instruments reporting', 'https://www.cbsa-asfc.gc.ca/publications/dm-md/d19/d19-14-1-eng.html'),
+ "mx_cash": ('UnoTV: how much cash you can carry into or out of Mexico (SAT rules)', 'https://www.unotv.com/turismo/con-cuanto-dinero-puedo-entrar-o-salir-de-mexico/'),
+ "br_rfb": ('Receita Federal: Instrução Normativa RFB 2.117/2022', 'http://normas.receita.fazenda.gov.br/sijut2consulta/link.action?idAto=127627'),
+ "uk_cash": ('GOV.UK: bringing cash into or out of the UK', 'https://www.gov.uk/bringing-cash-into-uk'),
+ "eu_cash": ('European Commission: EU cash controls', 'https://taxation-customs.ec.europa.eu/customs/prohibitions-restrictions/eu-cash-controls_en'),
+ "ch_bazg": ('Swiss Federal Office for Customs and Border Security: cash, foreign currency, securities', 'https://www.bazg.admin.ch/en/cash-foreign-currency-securities'),
+ "ae_customs": ('UAE Government portal: customs clearance for travellers', 'https://u.ae/en/information-and-services/visiting-and-exploring-the-uae/Tourist-services-and-information/Customs-clearance'),
+ "sa_zatca": ("ZATCA: travellers' declaration", 'https://zatca.gov.sa/en/RulesRegulations/Taxes/Pages/customs-individual/Travel-pages/declare.aspx'),
+ "qa_customs": ('Gulf Times: travellers with cash above QR50,000 must declare (Qatar Customs)', 'https://www.gulf-times.com/article/727843/qatar/travelers-to-qatar-with-cash-or-kind-above-qr-50000-advised-to-declare-at-airport'),
+ "in_rbi": ('Reserve Bank of India: FAQ on foreign exchange facilities for individuals', 'https://www.rbi.org.in/scripts/FAQView.aspx?Id=66'),
+ "pk_fbr": ('Federal Board of Revenue: SRO 1864 on currency declaration', 'https://download1.fbr.gov.pk/SROs/2022101116105519224sro1864.pdf'),
+ "bd_customs": ('Bangladesh Customs: currency regulations', 'https://bangladeshcustoms.gov.bd/trade_info/currency_regulations'),
+ "lk_customs": ('Sri Lanka Customs: passenger services', 'https://www.customs.gov.lk/about-us/directorates-and-divisions/passenger-services-directorate/'),
+ "cn_customs": ('Hunan Provincial Government: customs rules for currency', 'https://enghunan.gov.cn/hneng/Services/EntryExit/IAQ/202412/t20241226_33537676.html'),
+ "hk_customs": ('Hong Kong Customs: declaration requirements for currency and bearer instruments', 'https://www.customs.gov.hk/en/cargo_clearance/instruments/index.html'),
+ "jp_customs": ('Japan Customs: passenger procedures', 'https://www.customs.go.jp/english/summary/passenger.htm'),
+ "kr_customs": ('Korean Ministry of Foreign Affairs: customs information for travellers', 'https://overseas.mofa.go.kr/ca-montreal-en/wpge/m_20346/contents.do'),
+ "sg_ica": ('ICA Singapore: cash (CBNI) declaration', 'https://go.gov.sg/cbnideclaration'),
+ "my_bnm": ('Bank Negara Malaysia: declaration requirement for currency', 'https://www.bnm.gov.my/-/declaration-requirement-for-currency'),
+ "th_gov": ('Royal Thai Government: bringing Thai or foreign currency into or out of Thailand', 'https://www.thailand.go.th/event-detail/009-010'),
+ "id_setkab": ('Cabinet Secretariat of Indonesia: rules on carrying cash into and out of Indonesia', 'https://setkab.go.id/en/govt-introduces-new-regulations-on-carrying-cash-into-and-outside-indonesia/'),
+ "ph_bsp": ('Philippine Embassy Berne: bringing Philippine pesos and foreign currency (BSP rules)', 'https://bernepe.dfa.gov.ph/other-information/frequently-asked-questions/bringing-of-phl-peso-and-foreign-currencies'),
+ "au_austrac": ('AUSTRAC: cross-border movement reports', 'https://www.austrac.gov.au/industry-and-business/obligations-and-guidance/your-amlctf-program/reporting-us/cross-border-movement-reports'),
+ "nz_customs": ('New Zealand Customs: Border Cash Report', 'https://customs.govt.nz/personal/travel-to-and-from-nz/border-cash-report'),
+ "za_sars": ('SARS: excess currency policy (from 1 July 2026)', 'https://www.sars.gov.za/sc-pa-01-06-excess-currency-external-policy/'),
+ "ng_customs": ('BusinessDay: Nigeria Customs on declaring cash over $10,000', 'https://businessday.ng/?p=1013612'),
+})
+A["cash-limit-international-flight-by-country"] = ['us_cbp', 'ca_cbsa', 'mx_cash', 'br_rfb', 'uk_cash', 'eu_cash', 'ch_bazg', 'ae_customs', 'sa_zatca', 'qa_customs', 'in_rbi', 'pk_fbr', 'bd_customs', 'lk_customs', 'cn_customs', 'hk_customs', 'jp_customs', 'kr_customs', 'sg_ica', 'my_bnm', 'th_gov', 'id_setkab', 'ph_bsp', 'au_austrac', 'nz_customs', 'za_sars', 'ng_customs', 'ecb_fx']
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

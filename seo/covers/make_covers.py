@@ -75,6 +75,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "australia-passport-photo-size": ("PASSPORT PHOTO \u00b7 AUSTRALIA", "Australian Passport Photo: Size and Rules", "#0f9d76"),
     "china-visa-photo-size": ("VISA PHOTO \u00b7 CHINA", "China Visa Photo: 33 x 48 mm and 354 x 472 px", "#c2341d"),
     "oci-photo-size": ("OCI PHOTO \u00b7 INDIA", "OCI Photo: Square JPEG Under 200 KB", "#e48b12"),
+    "cash-limit-international-flight-by-country": ("TRAVEL MONEY \u00b7 53 COUNTRIES", "How Much Cash Can You Carry on a Flight?", "#0f7a5c"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 # Country money-facts pages (seo/countries/countries.json): one cover each.

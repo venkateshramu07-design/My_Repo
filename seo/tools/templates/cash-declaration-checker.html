@@ -1,0 +1,92 @@
+<div class="bd-calc" id="bd-cash">
+<div class="bc-title">Do I need to declare my cash?</div>
+<div class="bc-sub">Pick where you fly from and to, and how much you carry. You get the rule on both ends of the trip: whether to declare, how, and any limit on local currency.</div>
+<div class="bc-grid">
+<div><label for="cash-from">Flying from</label><select id="cash-from">__FROM__</select></div>
+<div><label for="cash-to">Flying to</label><select id="cash-to">__FROM__</select></div>
+<div><label for="cash-amt">Cash you carry</label><div class="cash-amt"><input id="cash-amt" type="text" inputmode="decimal" value="10,000" autocomplete="off"><select id="cash-cur" aria-label="Currency">__CUR__</select></div></div>
+</div>
+<p class="cash-hint">Add up everything for the whole family or group travelling together: banknotes in every currency, travellers' cheques and money orders. Most countries count them together.</p>
+<div class="cash-out" aria-live="polite"></div>
+<details class="cash-all"><summary>All __N__ countries at a glance</summary>
+<input class="cash-q" type="search" placeholder="Search a country" aria-label="Search a country">
+<div class="bc-table"><table class="cash-t"><thead><tr><th>Country</th><th>Declare cash of</th><th>How</th></tr></thead><tbody>__ROWS__</tbody></table></div>
+</details>
+<div class="bc-note">Thresholds are what triggers a declaration, not a cap: you can usually carry more if you declare it. Checked against official customs, central bank and government pages in October 2026. Conversions use European Central Bank rates of 23 October 2026 and fixed pegs for the Gulf currencies; on the day, customs use their own rate, so declare if you are close. Nothing you enter leaves your device.</div>
+</div>
+<style>
+#bd-cash .cash-amt{display:flex;gap:6px}#bd-cash .cash-amt input{flex:1 1 auto;min-width:0}#bd-cash .cash-amt select{flex:0 0 92px}
+#bd-cash .cash-hint{font-size:13.5px;color:var(--c-muted)!important;margin:10px 0 0}
+#bd-cash .cash-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:18px}
+#bd-cash .cash-card{border:1px solid var(--c-line);border-left:5px solid #9aa0ab;border-radius:14px;padding:14px 16px;background:var(--bd-surface,#fff)!important}
+#bd-cash .cash-card.cash-yes{border-left-color:#d4442c}#bd-cash .cash-card.cash-near{border-left-color:#e48b12}#bd-cash .cash-card.cash-no{border-left-color:#0f9d76}
+#bd-cash .cash-k{font:700 12px/1.2 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--c-muted)!important}
+#bd-cash .cash-v{font:800 19px/1.3 var(--bd-serif,Georgia,serif);margin:5px 0 6px;color:var(--c-ink)!important}
+#bd-cash .cash-yes .cash-v{color:#d4442c!important}#bd-cash .cash-near .cash-v{color:#c4730a!important}#bd-cash .cash-no .cash-v{color:#0c8a67!important}
+#bd-cash .cash-card p{font-size:14px;line-height:1.45;margin:6px 0 0!important;color:var(--c-ink)!important}
+#bd-cash .cash-card p.cash-x{color:var(--c-muted)!important;font-size:13px}
+#bd-cash .cash-card a{font-size:13px}
+#bd-cash details.cash-all{margin-top:18px}
+#bd-cash .cash-q{margin:10px 0 4px;font-size:15px!important;font-weight:500!important}
+#bd-cash .bc-table{max-height:520px;overflow:auto;border:1px solid var(--c-line);border-radius:12px}
+#bd-cash table.cash-t{table-layout:fixed;font-size:13.5px;margin:0}
+#bd-cash .cash-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5)!important;text-align:left}
+#bd-cash .cash-t th:first-child{width:24%}#bd-cash .cash-t th:nth-child(2){width:28%}
+#bd-cash .cash-t td{white-space:normal!important;text-align:left!important;vertical-align:top;overflow-wrap:anywhere;line-height:1.4}
+html.bd-dark #bd-cash .cash-card{background:rgba(255,255,255,.04)!important}
+html.bd-dark #bd-cash .cash-yes .cash-v{color:#ff8a73!important}html.bd-dark #bd-cash .cash-near .cash-v{color:#ffb74d!important}html.bd-dark #bd-cash .cash-no .cash-v{color:#4fd1a5!important}
+@media (max-width:520px){#bd-cash .cash-t th,#bd-cash .cash-t td{padding:7px 5px!important}#bd-cash table.cash-t{font-size:12.5px}}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-cash');if(!root)return;
+var D=__DATA__,FX=__FX__,R={};D.forEach(function(r){R[r.id]=r});
+var SYM={USD:'US$',CAD:'C$',GBP:'£',EUR:'€',AUD:'A$',NZD:'NZ$',SGD:'S$',HKD:'HK$',JPY:'¥',INR:'₹',IDR:'Rp',ZAR:'R'};
+var DN={'in':'India sets no declaration amount for leaving. You can take out foreign currency you bought from a bank or money changer or declared when you arrived; keep the receipts or your Currency Declaration Form. Indian rupees: no more than ₹25,000.',
+ 'bd':'Bangladesh publishes no departure amount for visitors. Keep the FMJ form you filled in on arrival, or the bank endorsement in your passport, for any foreign currency you take out.'};
+var LC={'in':['INR',25000,'Indian rupee notes are limited to ₹25,000 per person, in or out. Carry the rest as foreign currency or a travel card.'],
+ 'cn':['CNY',20000,'Chinese yuan notes are limited to ¥20,000 per person, in or out; more is not allowed.'],
+ 'ph':['PHP',50000,'Philippine peso notes are limited to ₱50,000 per person, in or out, unless the central bank (BSP) has given written permission.'],
+ 'th':['THB',450000,'Thai baht notes over ฿450,000 must be declared to customs.']};
+var $=function(s){return root.querySelector(s)},fr=$('#cash-from'),to=$('#cash-to'),amt=$('#cash-amt'),cur=$('#cash-cur'),out=$('.cash-out');
+function rule(v){return v.indexOf('eu:')===0?R.eu:R[v]}
+function name(v){return v.indexOf('eu:')===0?v.slice(3):(R[v]||{}).n}
+function conv(a,f,t){return a/FX[f]*FX[t]}
+function money(a,c){var d=a>=100?0:2;return (SYM[c]||c+' ')+a.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:0})}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function side(v,dir,a){
+  var r=rule(v),n=name(v),thr=dir==='a'?r.a:r.d,k=(dir==='a'?'Arriving in ':'Leaving ')+n,src='<p><a href="'+r.s+'" target="_blank" rel="noopener">Official rule: '+esc(r.sn)+'</a></p>';
+  if(thr==null)return {c:'',h:'<div class="cash-k">'+esc(k)+'</div><div class="cash-v">No set amount to declare</div><p>'+esc(DN[r.id]||'Check the rules before you travel.')+'</p>'+src};
+  var L=LC[r.id];if(L&&cur.value===L[0]&&a>L[1])return {c:'cash-yes',over:true,h:'<div class="cash-k">'+esc(k)+'</div><div class="cash-v">Over the limit for '+esc(n)+'\'s own currency</div><p>'+esc(L[2])+'</p><p class="cash-x">'+esc(r.x)+'</p>'+src};
+  var v=conv(a,cur.value,r.c),over=r.op==='gt'?v>thr:v>=thr,lim=(r.op==='gt'?'more than ':'')+money(thr,r.c)+(r.op==='ge'?' or more':''),c,t,p;
+  var mine=r.c===cur.value?'':' Your '+money(a,cur.value)+' is about '+money(v,r.c)+'.';
+  if(r.m==='ask'){c=over?'cash-near':'cash-no';t=over?'No form, but answer if asked':'Nothing to declare';p=over?r.h:'You carry less than '+money(thr,r.c)+', so there is nothing to report.'}
+  else if(over){c='cash-yes';t='Yes, declare it';p='The limit is '+lim+'.'+mine+' '+r.h}
+  else if(v>=thr*0.9){c='cash-near';t='Close to the limit: declare to be safe';p='The limit is '+lim+'.'+mine+' Customs use their own exchange rate on the day, so a small rate move can put you over.'}
+  else{c='cash-no';t='No need to declare';p='The limit is '+lim+'.'+mine}
+  return {c:c,over:over&&r.m!=='ask',near:c==='cash-near',h:'<div class="cash-k">'+esc(k)+'</div><div class="cash-v">'+t+'</div><p>'+esc(p)+'</p><p class="cash-x">'+esc(r.x)+'</p>'+src};
+}
+function draw(){
+  var a=parseFloat(String(amt.value).replace(/[^0-9.]/g,''))||0,f=fr.value,t=to.value,h='',share;
+  if(f===t){out.innerHTML='<div class="cash-card"><div class="cash-v">Pick two different countries</div></div>';delete root.dataset.share;return}
+  if(f.indexOf('eu:')===0&&t.indexOf('eu:')===0){
+    out.innerHTML='<div class="cash-card cash-no"><div class="cash-k">'+esc(name(f))+' to '+esc(name(t))+'</div><div class="cash-v">No EU cash declaration</div><p>Flights between EU countries do not need the EU cash form. Several countries, including Germany, can still ask you to disclose cash of €10,000 or more and where it came from, so carry proof of where large sums came from.</p></div>';
+    root.dataset.share='No cash declaration is needed flying '+name(f)+' to '+name(t)+' (both in the EU). Check your own route:';return}
+  var A=side(f,'d',a),B=side(t,'a',a);
+  out.innerHTML='<div class="cash-card '+A.c+'">'+A.h+'</div><div class="cash-card '+B.c+'">'+B.h+'</div>';
+  share='Flying '+name(f)+' to '+name(t)+' with '+money(a,cur.value)+': '+(A.over||B.over?'declare it'+(A.over&&B.over?' at both ends':A.over?' when leaving':' on arrival'):A.near||B.near?'close to the declaration limit, so declare to be safe':'no declaration needed')+'. Check your own route:';
+  root.dataset.share=share;
+}
+var TZ={'Asia/Kolkata':'in','Asia/Calcutta':'in','Europe/London':'gb','Asia/Dubai':'ae','Asia/Riyadh':'sa','Asia/Qatar':'qa','Asia/Singapore':'sg','Asia/Karachi':'pk','Asia/Dhaka':'bd','Asia/Colombo':'lk','Asia/Shanghai':'cn','Asia/Hong_Kong':'hk','Asia/Tokyo':'jp','Asia/Seoul':'kr','Asia/Kuala_Lumpur':'my','Asia/Bangkok':'th','Asia/Jakarta':'id','Asia/Manila':'ph','Pacific/Auckland':'nz','Africa/Johannesburg':'za','Africa/Lagos':'ng','America/Mexico_City':'mx','America/Sao_Paulo':'br','America/Toronto':'ca','America/Vancouver':'ca','Europe/Zurich':'ch','Europe/Berlin':'eu:Germany','Europe/Paris':'eu:France','Europe/Madrid':'eu:Spain','Europe/Rome':'eu:Italy','Europe/Amsterdam':'eu:Netherlands','Europe/Dublin':'eu:Ireland'};
+var CUR={'gb':'GBP','ae':'AED','sa':'SAR','qa':'QAR','sg':'SGD','hk':'HKD','jp':'JPY','kr':'KRW','my':'MYR','nz':'NZD','za':'ZAR','mx':'MXN','br':'BRL','ca':'CAD','ch':'CHF','au':'AUD'};
+var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+var home=TZ[z]||(z.indexOf('Australia/')===0?'au':z.indexOf('America/')===0?'us':z.indexOf('Europe/')===0?'eu:Germany':'us');
+fr.value=home;to.value=home==='us'?'gb':home==='ae'||home==='sa'||home==='qa'?'in':home==='in'?'ae':'us';
+if(home.indexOf('eu:')===0)CUR[home]='EUR';
+if(CUR[home]&&FX[CUR[home]]){cur.value=CUR[home];amt.value=Math.round(conv(10000,'USD',CUR[home])/1000)*1000;amt.value=Number(amt.value).toLocaleString('en-US')}
+[fr,to,cur].forEach(function(e){e.addEventListener('change',draw)});amt.addEventListener('input',draw);
+amt.addEventListener('blur',function(){var n=parseFloat(String(amt.value).replace(/[^0-9.]/g,''));if(n)amt.value=n.toLocaleString('en-US')});
+var q=$('.cash-q');q.addEventListener('input',function(){var s=q.value.trim().toLowerCase();root.querySelectorAll('.cash-t tbody tr').forEach(function(tr){tr.style.display=!s||tr.getAttribute('data-q').indexOf(s)>-1?'':'none'})});
+draw();
+})();
+</script>
