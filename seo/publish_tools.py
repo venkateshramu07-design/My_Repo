@@ -126,7 +126,7 @@ PHOTO_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@5
 
 # Travel and cross-border guides (cash limits, medicines, money from abroad), published 2026-10.
 GUIDE_POSTS = {"articles/cash-limit-international-flight-by-country"}
-GUIDE_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@GUIDECOMMIT/seo/covers/"
+GUIDE_COVER_BASE = "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@1fd790d2937a8e327b596ecaa332af1ab277eb5b/seo/covers/"
 def cover_base(name):
     return GUIDE_COVER_BASE if name in GUIDE_POSTS else COUNTRY_COVER_BASE if name.startswith("countries/") else PHOTO_COVER_BASE if name in PHOTO_POSTS else INDIA_COVER_BASE if name in INDIA_POSTS else TOOL_COVER_BASE if name in TOOL_POSTS else COVER_BASE
 
