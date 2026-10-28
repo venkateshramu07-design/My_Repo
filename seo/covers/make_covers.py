@@ -76,6 +76,7 @@ POSTS = {  # name: (eyebrow, title, accent colour)
     "china-visa-photo-size": ("VISA PHOTO \u00b7 CHINA", "China Visa Photo: 33 x 48 mm and 354 x 472 px", "#c2341d"),
     "oci-photo-size": ("OCI PHOTO \u00b7 INDIA", "OCI Photo: Square JPEG Under 200 KB", "#e48b12"),
     "cash-limit-international-flight-by-country": ("TRAVEL MONEY \u00b7 53 COUNTRIES", "How Much Cash Can You Carry on a Flight?", "#0f7a5c"),
+    "medicines-banned-abroad-codeine-adhd-sleeping-pills": ("TRAVEL HEALTH \u00b7 14 DESTINATIONS", "Codeine, Sleeping Pills, ADHD Meds: What's Banned Where", "#7a3fb0"),
     "home": ("BLOG DIGEST", "Practical guides to money, mind and work", "#e2462c"),  # homepage share image
 }
 # Country money-facts pages (seo/countries/countries.json): one cover each.

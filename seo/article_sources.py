@@ -723,6 +723,27 @@ S.update({
 })
 A["cash-limit-international-flight-by-country"] = ['us_cbp', 'ca_cbsa', 'mx_cash', 'br_rfb', 'uk_cash', 'eu_cash', 'ch_bazg', 'ae_customs', 'sa_zatca', 'qa_customs', 'in_rbi', 'pk_fbr', 'bd_customs', 'lk_customs', 'cn_customs', 'hk_customs', 'jp_customs', 'kr_customs', 'sg_ica', 'my_bnm', 'th_gov', 'id_setkab', 'ph_bsp', 'au_austrac', 'nz_customs', 'za_sars', 'ng_customs', 'ecb_fx']
 
+S.update({
+ "jp_mhlw": ('Ministry of Health, Labour and Welfare of Japan: bringing medicines for personal use', 'https://www.mhlw.go.jp/english/policy/health-medical/pharmaceuticals/01.html'),
+ "jp_emb": ('Embassy of Japan in the USA: bringing medications into Japan', 'https://www.us.emb-japan.go.jp/itpr_en/bringing-medications-to-japan.html'),
+ "ae_mohap": ('UAE Ministry of Health and Prevention: permit to import medicines for personal use', 'https://mohap.gov.ae/en/services/issue-of-permit-to-import-medicines-for-personal-use'),
+ "sa_sfda": ('Saudi Food and Drug Authority: rules for carrying medicines', 'https://www.sfda.gov.sa/en/news/5521869'),
+ "qa_moph": ('Gulf Times: travellers can now apply online to carry controlled medicines to Qatar', 'https://www.gulf-times.com/article/730569/qatar/travellers-can-now-apply-online-to-carry-controlled-medicines'),
+ "sg_hsa": ('Health Sciences Authority Singapore: travelling with medication', 'https://www.hsa.gov.sg/travelling-with-medication-and-medical-devices/personal-medications/'),
+ "th_fda": ('Thai FDA: guidance for travellers carrying medication containing narcotic drugs', 'https://en.fda.moph.go.th/entrepreneurs-narcotic-drugs-and-psychotropic-substances/guidance-for-travelers-under-treatment-carrying-01'),
+ "kr_mfds": ('Embassy of Denmark in Korea: bringing prescription drugs into Korea (MFDS approval)', 'https://sydkorea.um.dk/en/travel-and-residence/other-inquiries/Bringing-prescription-drugs-into-the-Republic-of-Korea'),
+ "cn_customs": ('Shanghai Municipal Government: bringing medication for personal use', 'https://english.shanghai.gov.cn/en-ImmigrationCustoms/20240516/632357dc3fbe483c923a5c296795b618.html'),
+ "hk_gov": ('Hong Kong Government: CBD to be a dangerous drug, and rules for controlled medicines', 'https://www.info.gov.hk/gia/general/202301/06/P2023010600476.htm'),
+ "id_smart": ('Smartraveller (Australian Government): Indonesia travel advice', 'https://www.smartraveller.gov.au/destinations/asia/indonesia'),
+ "ph_pdea": ('Respicio & Co.: bringing prescription stimulants to the Philippines (PDEA permit)', 'https://www.respicio.ph/commentaries/bringing-prescription-stimulants-to-the-philippines-pdea-permit-and-airport-rules'),
+ "uk_med": ('GOV.UK: take medicine in or out of the UK', 'https://www.gov.uk/take-medicine-in-or-out-uk'),
+ "eu_schengen": ('EUR-Lex: Schengen certificate for carrying narcotic and psychotropic medicines (Article 75)', 'https://eur-lex.europa.eu/eli/dec/1994/28(3)/oj'),
+ "us_fda": ('US FDA: traveling with prescription medications', 'https://www.fda.gov/drugs/fda-drug-info-rounds-video/traveling-prescription-medications'),
+ "incb": ('International Narcotics Control Board: country rules for travellers', 'https://www.incb.org/incb/en/travellers/index.html'),
+ "cdc_med": ('CDC Yellow Book: traveling with prohibited or restricted medications', 'https://www.cdc.gov/yellow-book/hcp/travelers-with-additional-considerations/traveling-with-prohibited-or-restricted-medications.html'),
+})
+A["medicines-banned-abroad-codeine-adhd-sleeping-pills"] = ['jp_mhlw', 'ae_mohap', 'sa_sfda', 'qa_moph', 'sg_hsa', 'th_fda', 'kr_mfds', 'cn_customs', 'hk_gov', 'id_smart', 'ph_pdea', 'uk_med', 'eu_schengen', 'us_fda', 'jp_emb', 'incb', 'cdc_med']
+
 if __name__ == "__main__":
     for n in A: add_sources(n)
     for n in OLD: add_old(n)

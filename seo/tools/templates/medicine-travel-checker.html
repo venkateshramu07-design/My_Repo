@@ -1,0 +1,52 @@
+<div class="bd-calc" id="bd-med">
+<div class="bc-title">Can I take my medicine there?</div>
+<div class="bc-sub">Pick where you are going and the type of medicine. You get whether it is allowed, the paperwork, and how much you can bring.</div>
+<div class="bc-grid">
+<div><label for="med-dest">Travelling to</label><select id="med-dest">__DEST__</select></div>
+<div><label for="med-type">Medicine</label><select id="med-type">__MEDS__</select></div>
+</div>
+<div class="med-out" aria-live="polite"></div>
+<details class="med-all"><summary>Compare all destinations</summary>
+<p class="med-key">Banned: not allowed even with a prescription. Permit: approval before you fly. Paperwork: prescription or doctor's letter, and declare it. Check: ask the authority first.</p><div class="bc-table"><table class="med-t"><thead><tr><th>Destination</th>__HEAD__</tr></thead><tbody>__ROWS__</tbody></table></div>
+</details>
+<div class="bc-note">Checked against health ministries, drug agencies and customs pages in October 2026. Rules depend on the active ingredient, not the brand, so check the ingredient on your packet. Changing planes counts in some countries. This is general information, not medical or legal advice; the destination's authority has the final say.</div>
+</div>
+<style>
+#bd-med .med-out{margin-top:18px}
+#bd-med .med-card{border:1px solid var(--c-line);border-left:5px solid #9aa0ab;border-radius:14px;padding:14px 16px;background:var(--bd-surface,#fff)!important}
+#bd-med .med-card.med-ban{border-left-color:#d4442c}#bd-med .med-card.med-permit{border-left-color:#e48b12}#bd-med .med-card.med-docs{border-left-color:#2f6fd6}#bd-med .med-card.med-ok{border-left-color:#0f9d76}
+#bd-med .med-k{font:700 12px/1.2 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--c-muted)!important}
+#bd-med .med-v{font:800 20px/1.3 var(--bd-serif,Georgia,serif);margin:5px 0 6px;color:var(--c-ink)!important}
+#bd-med .med-ban .med-v{color:#d4442c!important}#bd-med .med-permit .med-v{color:#c4730a!important}#bd-med .med-docs .med-v{color:#2f6fd6!important}#bd-med .med-ok .med-v{color:#0c8a67!important}
+#bd-med .med-card p{font-size:14.5px;line-height:1.5;margin:6px 0 0!important;color:var(--c-ink)!important}
+#bd-med .med-card p.med-x{color:var(--c-muted)!important;font-size:13px}
+#bd-med .med-card a{font-size:13px}
+#bd-med details.med-all{margin-top:18px}
+#bd-med .bc-table{max-height:560px;overflow:auto;border:1px solid var(--c-line);border-radius:12px}
+#bd-med table.med-t{font-size:12.5px;margin:0;min-width:520px}
+#bd-med .med-key{font-size:13px;color:var(--c-muted)!important;margin:10px 0!important}
+#bd-med .med-t th{position:sticky;top:0;background:var(--c-surface,#fbf9f5)!important;text-align:left!important;white-space:normal!important}
+#bd-med .med-t td{text-align:left!important;white-space:normal!important;vertical-align:top}
+#bd-med .med-s{display:inline-block;padding:3px 7px;border-radius:999px;font-weight:700;font-size:11.5px;line-height:1.25;color:#fff!important}
+#bd-med .med-s.med-ban{background:#d4442c!important}#bd-med .med-s.med-permit{background:#d17d0c!important}#bd-med .med-s.med-docs{background:#2f6fd6!important}#bd-med .med-s.med-ok{background:#0f9d76!important}#bd-med .med-s.med-check{background:#6b7280!important}
+html.bd-dark #bd-med .med-card{background:rgba(255,255,255,.04)!important}
+html.bd-dark #bd-med .med-ban .med-v{color:#ff8a73!important}html.bd-dark #bd-med .med-permit .med-v{color:#ffb74d!important}html.bd-dark #bd-med .med-docs .med-v{color:#8ab4ff!important}html.bd-dark #bd-med .med-ok .med-v{color:#4fd1a5!important}
+</style>
+<script>
+(function(){
+var root=document.getElementById('bd-med');if(!root)return;
+var D=__DATA__,W=__WORD__,R={};D.forEach(function(r){R[r.id]=r});
+var dest=root.querySelector('#med-dest'),type=root.querySelector('#med-type'),out=root.querySelector('.med-out');
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function draw(){
+  var r=R[dest.value],m=r.m[type.value],lab=type.options[type.selectedIndex].text.replace(/ \(.*$/,'');
+  var gen=type.value==='rx'?'':'<p class="med-x">Other prescription medicine: '+esc(r.m.rx[1])+'</p>';
+  out.innerHTML='<div class="med-card med-'+m[0]+'"><div class="med-k">'+esc(lab)+' · '+esc(r.n)+'</div><div class="med-v">'+W[m[0]]+'</div><p>'+esc(m[1])+'</p>'+gen+'<p><a href="'+r.s+'" target="_blank" rel="noopener">Source: '+esc(r.sn)+'</a></p></div>';
+  root.dataset.share=lab+' to '+r.n+': '+W[m[0]].toLowerCase()+'. Check your medicine and destination:';
+}
+var TZ={'Asia/Kolkata':'ae','Asia/Calcutta':'ae','Europe/London':'eu','America/New_York':'jp','America/Chicago':'jp','America/Los_Angeles':'jp','Australia/Sydney':'id','Australia/Melbourne':'id'};
+var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+dest.value=TZ[z]||'jp';type.value=dest.value==='jp'?'adhd':'pain';
+dest.addEventListener('change',draw);type.addEventListener('change',draw);draw();
+})();
+</script>

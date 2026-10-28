@@ -55,7 +55,7 @@ function conv(a,f,t){return a/FX[f]*FX[t]}
 function money(a,c){var d=a>=100?0:2;return (SYM[c]||c+' ')+a.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:0})}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function side(v,dir,a){
-  var r=rule(v),n=name(v),thr=dir==='a'?r.a:r.d,k=(dir==='a'?'Arriving in ':'Leaving ')+n,src='<p><a href="'+r.s+'" target="_blank" rel="noopener">Official rule: '+esc(r.sn)+'</a></p>';
+  var r=rule(v),n=name(v),thr=dir==='a'?r.a:r.d,k=(dir==='a'?'Arriving in ':'Leaving ')+n,src='<p><a href="'+r.s+'" target="_blank" rel="noopener">Source: '+esc(r.sn)+'</a></p>';
   if(thr==null)return {c:'',h:'<div class="cash-k">'+esc(k)+'</div><div class="cash-v">No set amount to declare</div><p>'+esc(DN[r.id]||'Check the rules before you travel.')+'</p>'+src};
   var L=LC[r.id];if(L&&cur.value===L[0]&&a>L[1])return {c:'cash-yes',over:true,h:'<div class="cash-k">'+esc(k)+'</div><div class="cash-v">Over the limit for '+esc(n)+'\'s own currency</div><p>'+esc(L[2])+'</p><p class="cash-x">'+esc(r.x)+'</p>'+src};
   var v=conv(a,cur.value,r.c),over=r.op==='gt'?v>thr:v>=thr,lim=(r.op==='gt'?'more than ':'')+money(thr,r.c)+(r.op==='ge'?' or more':''),c,t,p;
