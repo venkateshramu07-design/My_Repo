@@ -8,7 +8,7 @@ def machine_readable_old(p, c):
     from publish_tools import _text
     c = re.sub(r'<script type="application/ld\+json" id="bd-faq-ld">.*?</script>\n?', "", c, flags=re.S)
     c = re.sub(r'<div class="bd-cite".*?</div>\n?', "", c, flags=re.S)
-    m = re.search(r"<h2[^>]*>Frequently Asked Questions</h2>(.*?)(?=<h2|$)", c, re.S)
+    m = re.search(r"<h2[^>]*>Frequently Asked Questions[^<]*</h2>(.*?)(?=<h2|$)", c, re.S)
     ld = ""
     if m:
         qa = re.findall(r"<h3[^>]*>(.*?)</h3>\s*<p>(.*?)</p>", m.group(1), re.S)

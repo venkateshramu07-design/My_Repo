@@ -234,15 +234,17 @@ def country_page(c):
     # Lead with the phrase people search ("<country> minimum wage"), or income tax where there is no minimum wage.
     tname = {"The United States": "US", "The United Kingdom": "UK"}.get(Tc, Tc[4:] if Tc.startswith("The ") else Tc)
     lead, rest = ("Minimum Wage" if title_bits[0] == "Minimum Wage" else "Income Tax"), title_bits[1:]
-    title = (f"{tname} {lead} 2026" if not rest else f"{tname} {lead} 2026 and {rest[0]} Compared" if len(rest) == 1
-             else f"{tname} {lead} 2026: " + ", ".join(rest[:-1]) + " and " + rest[-1] + " Compared")
+    sh = {"Tax": "Tax", "Mortgage Rates": "Mortgages", "Pension Age": "Pensions", "Energy Prices": "Energy"}
+    rest = [sh[x] for x in rest]
+    title = (f"{tname} {lead} 2026" if not rest else f"{tname} {lead} 2026 and {rest[0]}" if len(rest) == 1
+             else f"{tname} {lead} 2026: " + ", ".join(rest[:-1]) + " and " + rest[-1])
     table = ('<table class="bd-cf"><thead><tr><th>Measure</th><th>' + html.escape(c) + "</th><th>Rank</th></tr></thead><tbody>\n" +
              "\n".join(f"<tr><td>{m}</td><td>{html.escape(v)}</td><td>{k}</td></tr>" for m, v, k in rows) + "\n</tbody></table>")
     qa = "\n".join(f"<h3>{html.escape(q)}</h3>\n<p>{html.escape(a)}</p>" for q, a in faq)
     q = "; ".join(quick[:5])
     out = f"""<p><em>Updated {UPDATED}</em></p>
 
-<p><strong>Quick answer:</strong> In {T} in 2026, {q}. The table below puts {len(rows)} everyday money measures for {T} side by side and ranks each one against the other countries in our data, using official figures from national statistics offices, central banks, the OECD and Eurostat.</p>
+<p><strong>{"Quick answer on " + tname + " " + lead.lower() + ":" if tname != T else "Quick answer:"}</strong> In {T} in 2026, {q}. The table below puts {len(rows)} everyday money measures for {T} side by side and ranks each one against the other countries in our data, using official figures from national statistics offices, central banks, the OECD and Eurostat.</p>
 
 <p>Most comparisons of {T} look at one number at a time. This page gathers the figures that matter for working, buying a home, paying bills and retiring in {T}, so you can see them together and see how {T} compares. Each section links to our full guide for that topic, which covers every country and lists the original sources, and each dataset can be downloaded free.</p>
 
@@ -252,7 +254,7 @@ def country_page(c):
 
 {chr(10).join(secs)}
 
-<h2>Frequently Asked Questions</h2>
+<h2>Frequently Asked Questions: {tname} {lead} 2026</h2>
 {qa}
 
 <h2>Compare {T} With Other Countries</h2>
@@ -286,7 +288,7 @@ def main():
         open(os.path.join(HERE, names[c].split("/")[1] + ".html"), "w", encoding="utf-8").write(body.replace("{{SIBLINGS}}", sib))
         meta[names[c]] = [title, ["Countries & Living Abroad"]]
     hub(countries, names)
-    meta["countries/compare-countries-money-facts-2026"] = ["Minimum Wage by Country 2026: Tax, Mortgage Rates, Energy and Pension Age in 35 Countries",
+    meta["countries/compare-countries-money-facts-2026"] = ["Minimum Wage by Country 2026: Tax, Mortgages and Pensions Compared",
                                                            ["Countries & Living Abroad"]]
     json.dump(meta, open(os.path.join(HERE, "countries.json"), "w"), indent=1, ensure_ascii=False)
     print(len(countries), "country pages:", ", ".join(countries))
@@ -317,7 +319,7 @@ def hub(countries, names):
         return ", ".join(names[:-1]) + " and " + names[-1]
     out = f"""<p><em>Updated {UPDATED}</em></p>
 
-<p><strong>Quick answer:</strong> Among the {len(countries)} countries compared here, the highest minimum wages (in US dollars a month) are in {top("minimum-wage-2026", "Monthly full-time (US$)")}; the average worker pays the most tax in {top("take-home-pay-average-wage-2025", "Income tax + employee social security (% of gross)")}; mortgages are dearest in {top("mortgage-rates-2026", "Interest rate (%)")}; household electricity is most expensive in {top("household-electricity-prices-2026", "Price per kWh (US$)")}; and state pension ages are highest in {top("retirement-age-2026", "Pension age (sort value)")}. The table puts seven measures side by side, and each country links to a page with the full figures.</p>
+<p><strong>Quick answer on minimum wage by country:</strong> Among the {len(countries)} countries compared here, the highest minimum wages (in US dollars a month) are in {top("minimum-wage-2026", "Monthly full-time (US$)")}; the average worker pays the most tax in {top("take-home-pay-average-wage-2025", "Income tax + employee social security (% of gross)")}; mortgages are dearest in {top("mortgage-rates-2026", "Interest rate (%)")}; household electricity is most expensive in {top("household-electricity-prices-2026", "Price per kWh (US$)")}; and state pension ages are highest in {top("retirement-age-2026", "Pension age (sort value)")}. The table puts seven measures side by side, and each country links to a page with the full figures.</p>
 
 <p>Deciding where to work, buy a home or retire means comparing several numbers at once. This hub brings together the figures from our country-by-country data guides, all from official sources (national statistics offices, central banks, the OECD and Eurostat), and every dataset is free to download.</p>
 
@@ -341,7 +343,7 @@ def hub(countries, names):
 <li><strong>Retirement:</strong> look at the pension age and the share of pay the pension replaces together; a later age with a generous pension can beat an early age with a small one.</li>
 </ul>
 
-<h2>Frequently Asked Questions</h2>
+<h2>Frequently Asked Questions: Minimum Wage by Country 2026</h2>
 <h3>Which country has the highest minimum wage in 2026?</h3>
 <p>Converted to US dollars for a month of full-time work, the highest minimum wages are in {top("minimum-wage-2026", "Monthly full-time (US$)")}.</p>
 <h3>Which country takes the most tax from an average worker?</h3>

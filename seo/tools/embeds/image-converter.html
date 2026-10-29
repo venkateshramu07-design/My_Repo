@@ -37,7 +37,7 @@ function exif(buf){try{var v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return
   return res;}o+=2+len;}}catch(e){}return null;}
 function isHeic(f){return /hei[cf]$/i.test(f.name)||/hei[cf]/.test(f.type);}
 function add(files){files.forEach(function(f){if(!/^image\//.test(f.type)&&!isHeic(f))return;var it={f:f,out:null};items.push(it);
- var row=document.createElement('div');row.className='bt-item';row.innerHTML='<img alt=""><div class="bt-meta"><b>'+esc(f.name)+'</b><small>'+kb(f.size)+(isHeic(f)?' · HEIC':'')+'</small><small class="im-ex" style="display:block"></small></div><button type="button" hidden>Download</button>';
+ var row=document.createElement('div');row.className='bt-item';row.innerHTML='<img alt="Photo preview"><div class="bt-meta"><b>'+esc(f.name)+'</b><small>'+kb(f.size)+(isHeic(f)?' · HEIC':'')+'</small><small class="im-ex" style="display:block"></small></div><button type="button" hidden>Download</button>';
  it.row=row;$('im-list').appendChild(row);if(!isHeic(f))row.querySelector('img').src=URL.createObjectURL(f);
  f.arrayBuffer().then(function(b){var e=exif(b),x=row.querySelector('.im-ex');if(!e)return;var p=[];
   if(e.gps)p.push('<b style="color:#c2341d;display:inline">Contains GPS location</b> ('+e.gps[0].toFixed(4)+', '+e.gps[1].toFixed(4)+') <a href="https://www.openstreetmap.org/?mlat='+e.gps[0]+'&mlon='+e.gps[1]+'#map=16/'+e.gps[0]+'/'+e.gps[1]+'" target="_blank" rel="noopener">see where</a>');
