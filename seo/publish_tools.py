@@ -193,7 +193,7 @@ def machine_readable(name, raw, body):
     """Static structured data and a citation line, readable by crawlers that don't run JavaScript (most AI crawlers):
     FAQPage from the FAQ section, Dataset for data-table articles, and a 'Cite this page' box before Related Guides."""
     import html as _h
-    ids = load_ids(); url = (ids.get(name) or {}).get("url")
+    ids = load_ids(); e = ids.get(name); url = e.get("url") if isinstance(e, dict) else None
     title = POSTS[name][0] if name in POSTS else ""
     org = {"@type": "Organization", "name": "Blog Digest", "url": "https://randomthoughtsever.blogspot.com/"}
     blocks = []

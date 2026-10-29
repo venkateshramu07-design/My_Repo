@@ -34,7 +34,10 @@ def main(dry):
         for old, new in ((c["old"], c["new"]), (html.escape(c["old"]), html.escape(c["new"])),
                          (json.dumps(c["old"])[1:-1], json.dumps(c["new"])[1:-1])):
             content = content.replace(old, new)
-        if content != p.get("content", ""):
+        # Only send the body back when it is the full post: Blogger's post list can return large, script-heavy
+        # bodies cut short, and sending those back wiped two posts in October 2026.
+        full = a.call("GET", f"/blogs/{bid}/posts/{p['id']}", {"view": "ADMIN"}).get("content", "")
+        if content != p.get("content", "") and full == p.get("content", "") and len(content) >= len(full) * 0.98:
             body["content"] = content
         print(("[dry] " if dry else "") + path, "|", c["new"], "| body" if "content" in body else "", flush=True)
         if not dry:
