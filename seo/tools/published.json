@@ -1,11 +1,20 @@
 {
- "sip-calculator": "7053786163416343709",
+ "sip-calculator": {
+  "id": "7053786163416343709",
+  "url": "https://randomthoughtsever.blogspot.com/2026/10/sip-calculator-estimate-your-mutual.html"
+ },
  "emi-calculator": {
   "id": "1094552426319434992",
   "url": "https://randomthoughtsever.blogspot.com/2026/10/home-loan-emi-calculator-with.html"
  },
- "fire-calculator": "6725175293699831567",
- "credit-card-payoff-calculator": "6323300257163781728",
+ "fire-calculator": {
+  "id": "6725175293699831567",
+  "url": "https://randomthoughtsever.blogspot.com/2026/10/fire-calculator-how-much-you-need-to.html"
+ },
+ "credit-card-payoff-calculator": {
+  "id": "6323300257163781728",
+  "url": "https://randomthoughtsever.blogspot.com/2026/10/credit-card-payoff-calculator-how-long.html"
+ },
  "articles/prepay-home-loan-or-invest": {
   "id": "4939374131409200676",
   "url": "https://randomthoughtsever.blogspot.com/2026/10/prepay-home-loan-or-invest-how-to.html"
