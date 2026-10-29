@@ -1,0 +1,33 @@
+<div class="bd-calc" id="bd-km">
+<div class="bc-title">KB to MB converter (and MB to KB, GB, bytes)</div>
+<div class="bc-sub">Type a size in any box and the others update. Windows and most upload forms count 1 MB as 1,024 KB; phones, Macs and storage makers count 1 MB as 1,000 KB. Both answers are shown.</div>
+<div class="bc-row" role="radiogroup" aria-label="Convention" style="margin-bottom:6px">
+<label class="bc-check"><input type="radio" name="km-b" value="1024" checked> Binary: 1 MB = 1,024 KB (Windows, most forms)</label>
+<label class="bc-check"><input type="radio" name="km-b" value="1000"> Decimal: 1 MB = 1,000 KB (Mac, iPhone, Android)</label>
+</div>
+<div class="bc-grid">
+<div><label for="km-B">Bytes</label><input id="km-B" type="number" min="0" step="any" inputmode="decimal"></div>
+<div><label for="km-KB">KB</label><input id="km-KB" type="number" min="0" step="any" inputmode="decimal" value="500"></div>
+<div><label for="km-MB">MB</label><input id="km-MB" type="number" min="0" step="any" inputmode="decimal"></div>
+<div><label for="km-GB">GB</label><input id="km-GB" type="number" min="0" step="any" inputmode="decimal"></div>
+</div>
+<p class="bc-note" id="km-alt"></p>
+<div class="km-q"><b>Quick picks:</b> <button type="button" data-kb="20">20 KB</button><button type="button" data-kb="50">50 KB</button><button type="button" data-kb="100">100 KB</button><button type="button" data-kb="200">200 KB</button><button type="button" data-kb="500">500 KB</button><button type="button" data-mb="1">1 MB</button><button type="button" data-mb="2">2 MB</button><button type="button" data-mb="5">5 MB</button></div>
+<style>#bd-km .km-q{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}#bd-km .km-q button{padding:6px 11px;font-size:13px;border-radius:999px}</style>
+<script>
+(function(){
+var root=document.getElementById('bd-km');if(!root)return;
+var $=function(id){return document.getElementById(id);},U=['B','KB','MB','GB'],bytes=500*1024;
+function base(){return +root.querySelector('input[name=km-b]:checked').value;}
+function fmt(n){if(!isFinite(n))return '';if(n===0)return '0';var a=Math.abs(n);return a>=1e6?String(Math.round(n)):a>=100?String(+n.toFixed(2)):a>=1?String(+n.toFixed(4)):String(+n.toPrecision(4));}
+function show(skip){var k=base();U.forEach(function(u,i){if(u!==skip)$('km-'+u).value=fmt(bytes/Math.pow(k,i));});
+ var o=k===1024?1000:1024,kb=bytes/Math.pow(k,1);
+ $('km-alt').innerHTML='In the '+(o===1000?'decimal (1,000)':'binary (1,024)')+' system the same file is <b>'+fmt(bytes/o)+' KB</b> or <b>'+fmt(bytes/o/o)+' MB</b>. '+
+  (kb<=5000&&kb>=1?'For a form that says "under '+fmt(kb)+' KB", aim for under '+Math.floor(kb*1000/1024).toLocaleString('en-IN')+' KB as Windows shows it: that passes whichever system the form uses.':'');}
+U.forEach(function(u,i){$('km-'+u).addEventListener('input',function(){var v=parseFloat(this.value);if(isNaN(v)||v<0)return;bytes=v*Math.pow(base(),i);show(u);});});
+root.querySelectorAll('input[name=km-b]').forEach(function(r){r.addEventListener('change',function(){var v=parseFloat($('km-KB').value)||0;bytes=v*base();show('KB');});});
+root.querySelector('.km-q').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;bytes=b.dataset.kb?+b.dataset.kb*base():+b.dataset.mb*base()*base();show();});
+show('KB');
+})();
+</script>
+</div>

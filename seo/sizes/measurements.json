@@ -1,0 +1,559 @@
+[
+ {
+  "tag": "camera",
+  "kb": 10,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "9.6 KB \u00b7 271 x 221 px \u00b7 quality 70% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 10,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "9.7 KB \u00b7 405 x 304 px \u00b7 quality 69% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 15,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "14.4 KB \u00b7 339 x 276 px \u00b7 quality 73% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 15,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "14.6 KB \u00b7 604 x 453 px \u00b7 quality 68% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 20,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "19.5 KB \u00b7 409 x 334 px \u00b7 quality 69% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 20,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "19.3 KB \u00b7 813 x 609 px \u00b7 quality 65% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 30,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "29.3 KB \u00b7 584 x 476 px \u00b7 quality 62% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 30,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "29.3 KB \u00b7 995 x 746 px \u00b7 quality 76% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 50,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "47.9 KB \u00b7 753 x 615 px \u00b7 quality 62% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 50,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "46.6 KB \u00b7 1285 x 964 px \u00b7 quality 76% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "97.2 KB \u00b7 1065 x 870 px \u00b7 quality 70% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "94.1 KB \u00b7 1817 x 1363 px \u00b7 quality 77% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "193.2 KB \u00b7 1507 x 1230 px \u00b7 quality 73% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "190.2 KB \u00b7 2570 x 1927 px \u00b7 quality 68% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "478.4 KB \u00b7 2382 x 1945 px \u00b7 quality 80% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 1.1,
+  "r": [
+   "478.8 KB \u00b7 4000 x 3000 px \u00b7 quality 65% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "camera",
+  "kb": 1000,
+  "min": 0,
+  "files": [
+   "camera.jpg"
+  ],
+  "secs": 1.1,
+  "r": [
+   "934.2 KB \u00b7 2725 x 2225 px \u00b7 quality 94% \u00b7 was 810 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "phone",
+  "kb": 1000,
+  "min": 0,
+  "files": [
+   "photo.jpg"
+  ],
+  "secs": 1.6,
+  "r": [
+   "931.0 KB \u00b7 4000 x 3000 px \u00b7 quality 80% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "signature-bw",
+  "kb": 10,
+  "min": 0,
+  "files": [
+   "signature.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "9.7 KB \u00b7 838 x 377 px \u00b7 quality 65% \u00b7 was 380 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "signature-bw",
+  "kb": 20,
+  "min": 0,
+  "files": [
+   "signature.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "19.5 KB \u00b7 1186 x 534 px \u00b7 quality 61% \u00b7 was 380 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "signature-bw",
+  "kb": 50,
+  "min": 0,
+  "files": [
+   "signature.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "46.8 KB \u00b7 1875 x 844 px \u00b7 quality 62% \u00b7 was 380 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "sig-140x60",
+  "kb": 20,
+  "min": 10,
+  "files": [
+   "signature.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "10.1 KB \u00b7 140 x 60 px \u00b7 quality 95% \u00b7 was 380 KB \u00b7 padded to the minimum"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "cm-3.5x4.5-200dpi",
+  "kb": 50,
+  "min": 20,
+  "files": [
+   "camera.jpg",
+   "photo.jpg"
+  ],
+  "secs": 0.6,
+  "r": [
+   "40.9 KB \u00b7 276 x 354 px \u00b7 quality 95% \u00b7 was 810 KB",
+   "20.5 KB \u00b7 276 x 354 px \u00b7 quality 95% \u00b7 was 3163 KB"
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 50,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 5.8,
+  "r": [
+   "9.82 MB",
+   "48 KB",
+   "3",
+   "Pages saved as images at 50 dpi, quality 11%. Text can no longer be selected. This is a big squeeze: zoom in on the preview and check every line is readable. For text documents, \u201cBlack and white\u201d is usually much sharper at this size."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 50,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 3.8,
+  "r": [
+   "9.82 MB",
+   "48 KB",
+   "3",
+   "Pages saved in pure black and white at 150 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 5.8,
+  "r": [
+   "9.82 MB",
+   "96 KB",
+   "3",
+   "Pages saved as images at 50 dpi, quality 27%. Text can no longer be selected. This is a big squeeze: zoom in on the preview and check every line is readable. For text documents, \u201cBlack and white\u201d is usually much sharper at this size."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 3.4,
+  "r": [
+   "9.82 MB",
+   "87 KB",
+   "3",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 150,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 5.8,
+  "r": [
+   "9.82 MB",
+   "146 KB",
+   "3",
+   "Pages saved as images at 60 dpi, quality 32%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 150,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 3.3,
+  "r": [
+   "9.82 MB",
+   "87 KB",
+   "3",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 5.2,
+  "r": [
+   "9.82 MB",
+   "193 KB",
+   "3",
+   "Pages saved as images at 72 dpi, quality 31%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 3.7,
+  "r": [
+   "9.82 MB",
+   "87 KB",
+   "3",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 300,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 5,
+  "r": [
+   "9.82 MB",
+   "290 KB",
+   "3",
+   "Pages saved as images at 72 dpi, quality 61%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 300,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 3.3,
+  "r": [
+   "9.82 MB",
+   "87 KB",
+   "3",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 4.8,
+  "r": [
+   "9.82 MB",
+   "484 KB",
+   "3",
+   "Pages saved as images at 100 dpi, quality 45%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 3.5,
+  "r": [
+   "9.82 MB",
+   "87 KB",
+   "3",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 1000,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 4.2,
+  "r": [
+   "9.82 MB",
+   "969 KB",
+   "3",
+   "Pages saved as images at 150 dpi, quality 53%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 1000,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 3.4,
+  "r": [
+   "9.82 MB",
+   "87 KB",
+   "3",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-colour",
+  "kb": 2000,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 30.8,
+  "r": [
+   "9.82 MB",
+   "1.89 MB",
+   "3",
+   "Pages saved as images at 150 dpi, quality 88%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "scan3-bw",
+  "kb": 2000,
+  "min": 0,
+  "files": [
+   "scanned.pdf"
+  ],
+  "secs": 76,
+  "r": [
+   "9.82 MB",
+   "87 KB",
+   "3",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ }
+]
