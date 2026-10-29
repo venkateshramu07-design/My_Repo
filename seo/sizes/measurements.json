@@ -555,5 +555,312 @@
    "Pages saved in pure black and white at 200 dpi, which keeps text sharp. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
   ],
   "errs": []
+ },
+ {
+  "tag": "digital5-bw",
+  "kb": 50,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 300,
+  "r": "TIMEOUT",
+  "errs": []
+ },
+ {
+  "tag": "digital5-bw",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 86,
+  "r": [
+   "3.87 MB",
+   "55 KB",
+   "5",
+   "Pages saved in pure black and white at 200 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5-bw",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 6.5,
+  "r": [
+   "3.87 MB",
+   "109 KB",
+   "5",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5-bw",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 24.4,
+  "r": [
+   "3.87 MB",
+   "109 KB",
+   "5",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5-bw",
+  "kb": 1000,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 20.7,
+  "r": [
+   "3.87 MB",
+   "109 KB",
+   "5",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5-bw",
+  "kb": 2000,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 18.3,
+  "r": [
+   "3.87 MB",
+   "109 KB",
+   "5",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 5.6,
+  "r": [
+   "3.87 MB",
+   "95 KB",
+   "5",
+   "Pages saved as images at 50 dpi, quality 14%. Text can no longer be selected. This is a big squeeze: zoom in on the preview and check every line is readable. For text documents, \u201cBlack and white\u201d is usually much sharper at this size."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 6.2,
+  "r": [
+   "3.87 MB",
+   "193 KB",
+   "5",
+   "Pages saved as images at 50 dpi, quality 43%. Text can no longer be selected. This is a big squeeze: zoom in on the preview and check every line is readable. For text documents, \u201cBlack and white\u201d is usually much sharper at this size."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 8.4,
+  "r": [
+   "3.87 MB",
+   "480 KB",
+   "5",
+   "Pages saved as images at 85 dpi, quality 31%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5",
+  "kb": 1000,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 3.7,
+  "r": [
+   "3.87 MB",
+   "971 KB",
+   "5",
+   "Pages saved as images at 120 dpi, quality 42%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "digital5",
+  "kb": 2000,
+  "min": 0,
+  "files": [
+   "digital.pdf"
+  ],
+  "secs": 3.3,
+  "r": [
+   "3.87 MB",
+   "1.90 MB",
+   "5",
+   "Pages saved as images at 150 dpi, quality 74%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2-bw",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 1.3,
+  "r": [
+   "5.23 MB",
+   "83 KB",
+   "2",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2-bw",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 1.4,
+  "r": [
+   "5.23 MB",
+   "83 KB",
+   "2",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2-bw",
+  "kb": 300,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 1.2,
+  "r": [
+   "5.23 MB",
+   "83 KB",
+   "2",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2-bw",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 1.2,
+  "r": [
+   "5.23 MB",
+   "83 KB",
+   "2",
+   "Pages saved in pure black and white at 300 dpi, which keeps text sharp and prints cleanly. Text can no longer be selected, and photos on the page turn into black and white shapes: use \"Keep colour\" for those."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2photos",
+  "kb": 100,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 2.1,
+  "r": [
+   "5.23 MB",
+   "96 KB",
+   "2",
+   "Pages saved as images at 60 dpi, quality 31%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2photos",
+  "kb": 200,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 2.1,
+  "r": [
+   "5.23 MB",
+   "193 KB",
+   "2",
+   "Pages saved as images at 72 dpi, quality 61%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2photos",
+  "kb": 300,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 2.1,
+  "r": [
+   "5.23 MB",
+   "290 KB",
+   "2",
+   "Pages saved as images at 100 dpi, quality 37%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
+ },
+ {
+  "tag": "jpg2pdf-2photos",
+  "kb": 500,
+  "min": 0,
+  "files": [
+   "scan0.jpg",
+   "scan1.jpg"
+  ],
+  "secs": 1.6,
+  "r": [
+   "5.23 MB",
+   "487 KB",
+   "2",
+   "Pages saved as images at 120 dpi, quality 63%. Text can no longer be selected. Zoom in on the preview to check it is easy to read."
+  ],
+  "errs": []
  }
 ]
