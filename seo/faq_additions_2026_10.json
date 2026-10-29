@@ -1,47 +1,213 @@
 {
-"_note": "Answers to Google's 'People also ask' questions that these posts did not cover (DataForSEO SERP audit, October 2026). Inserted at the top of each post's FAQ section by add_faq_answers.py.",
-"rewrites/2021_06_how-to-sleep-fastly-and-peacefully.html": [
- ["What is the military method for falling asleep?", "It is a relaxation routine popularised by the 1981 book Relax and Win. Lying in bed, relax every muscle in your face, drop your shoulders and let your arms go loose, breathe out and relax your chest, then relax your legs from thighs to feet. Finally, clear your mind for about 10 seconds by picturing a calm scene, such as lying in a canoe on a still lake, or by repeating \"don't think\". Like most relaxation methods, it works better with a few weeks of practice."],
- ["What is the 10-3-2-1-0 rule for sleep?", "It is a simple countdown for the hours before bed: no caffeine in the last 10 hours, no big meals or alcohol in the last 3, no work in the last 2, no screens in the last 1, and zero presses of the snooze button in the morning. It is a memorable way to apply standard sleep-hygiene advice rather than a medical rule."]
-],
-"rewrites/2023_08_the-genesis-of-petrodollars-unveiling.html": [
- ["What happens if the US loses the petrodollar?", "Fewer countries would need dollars to buy oil, which could gradually weaken demand for the dollar and US Treasury bonds and nudge up US borrowing costs. The change would likely be slow: the dollar's role rests mainly on the size and openness of US financial markets, not only on oil pricing, so a shift away from dollar-priced oil would not end dollar dominance overnight."],
- ["Which president started the petrodollar?", "The arrangement took shape under President Richard Nixon. After he ended the dollar's convertibility into gold in 1971, his administration agreed in 1974 to economic and military cooperation with Saudi Arabia, which priced its oil in dollars and invested its surplus in US Treasury bonds."],
- ["Which countries use the US dollar as their currency?", "Several countries use the US dollar as their official currency, including Ecuador, El Salvador, Panama (alongside its balboa coins), Timor-Leste, Palau, the Marshall Islands and the Federated States of Micronesia, as well as US territories such as Puerto Rico and Guam."]
-],
-"rewrites/2021_06_what-is-karma.html": [
- ["What are the 12 rules of karma?", "The \"12 laws of karma\" are a modern list popular in self-help writing, not a teaching from the ancient texts. They are usually given as the laws of cause and effect, creation, humility, growth, responsibility, connection, focus, giving and hospitality, here and now, change, patience and reward, and significance and inspiration. Each is a reminder that your actions and attitudes shape what comes back to you."],
- ["Does the Bible say anything about karma?", "The Bible does not use the word karma, and Christianity does not teach rebirth. It does contain a similar idea of consequences, most famously \"a man reaps what he sows\" (Galatians 6:7), but it places that within God's judgement and grace rather than an impersonal law of cause and effect."]
-],
-"rewrites/2023_07_unconditional-love-what-it-means-and.html": [
- ["What is the true meaning of unconditional love?", "Unconditional love means caring about someone's well-being without requiring them to earn it, change for you or pay you back. It is about the person, not their behaviour: you can love someone unconditionally and still disagree with them or refuse to accept how they treat you."],
- ["Is unconditional love unhealthy?", "Not in itself. It becomes unhealthy when it is confused with unconditional acceptance, so that someone tolerates abuse, dishonesty or neglect in the name of love. Healthy unconditional love goes together with boundaries."],
- ["What are the four types of love?", "Ancient Greek writers, and later C.S. Lewis in The Four Loves, described storge (affection, as between family), philia (friendship), eros (romantic love) and agape (selfless love). Agape is the one most often described as unconditional."]
-],
-"rewrites/2021_06_how-to-be-happy.html": [
- ["What is the difference between joy and happiness?", "Joy is usually described as an intense, often short-lived feeling in a moment, such as hearing good news. Happiness is a broader, steadier sense that your life is going well. You can feel moments of joy during a hard period, and be generally happy without feeling joyful all the time."],
- ["What is the happiest age in life?", "Many large surveys of life satisfaction find a U-shape: it tends to be lowest around the late 40s and early 50s and rises again in older age. Some recent studies suggest young adults are now less happy than earlier generations were, so the pattern is not fixed."]
-],
-"rewrites/2023_08_zen-journey-into-essence-of-mindfulness.html": [
- ["Is Zen a type of Buddhism?", "Yes. Zen is a school of Mahayana Buddhism that began in China as Chan around the 6th century and spread to Korea, Vietnam and Japan, where it became known as Zen. It emphasises seated meditation (zazen) and direct insight over study of texts."],
- ["Can Christians practise Zen meditation?", "Many do. Some Christians, including well-known Catholic monks and priests, have practised Zen-style meditation as a way of stillness and attention while keeping their own faith. Whether it fits your beliefs is a personal question, and some churches are more open to it than others."]
-],
-"rewrites/2021_10_how-to-cure-compassion-fatigue-guide-to.html": [
- ["What are the five stages of compassion fatigue?", "One widely shared model describes five phases: the zealot phase (high energy and commitment), the irritability phase (cutting corners, frustration), the withdrawal phase (exhaustion, pulling away from others), the zombie phase (numbness, going through the motions), and finally either a decline into lasting distress or a renewal phase, where rest, support and boundaries help you recover."]
-],
-"rewrites/2023_09_the-rise-of-gig-economy-exploring.html": [
- ["What are the defining characteristics of the gig economy?", "Short-term or one-off jobs instead of permanent roles, workers treated as independent contractors rather than employees, work usually found through apps or online platforms, pay per task or project, flexible hours, and few of the benefits employees get, such as paid leave, pensions or sick pay."],
- ["What are examples of gig work?", "Ride-hailing and food delivery, freelance writing, design and programming through online marketplaces, short-term tasks such as furniture assembly, online tutoring, and renting out a room or car through a platform."]
-],
-"rewrites/2021_12_the-mental-toughness-guide-how-to.html": [
- ["What is the 3-3-3 rule for anxiety?", "It is a quick grounding exercise: name three things you can see, three sounds you can hear, and move three parts of your body. It pulls your attention back to the present when worry spirals. It helps in the moment but is not a treatment for an anxiety disorder."]
-],
-"rewrites/2023_10_recognizing-toxic-boss-behavior-signs.html": [
- ["How do you deal with a controlling boss?", "Agree clear priorities and deadlines in writing, give regular short updates so they have less reason to hover, and ask what success looks like for each task. Raise the issue calmly in a one-to-one if it affects your work, and keep a record of instructions. If nothing changes, involve HR or start planning a move."],
- ["How do you handle a narcissistic boss?", "Stay factual and calm, avoid public disagreements, and keep important requests and decisions in writing. Give credit where it is due but document your own contributions. Protect your well-being with boundaries and support outside work, and if the behaviour is abusive, report it to HR."]
-],
-"articles/explain-layoff-career-gap-interview.html": [
- ["Is a gap in a resume a red flag?", "Not on its own. Most employers care far more about whether you can do the job now than about a gap, especially after the layoffs of recent years. A gap becomes a concern mainly when it is unexplained, so a one-line, honest explanation removes most of the doubt."],
- ["How long of a gap in employment is OK?", "A few months needs no explanation at all, and gaps of up to a year are common and easy to explain. Longer gaps are fine too if you show what you did, such as caring, study or projects, and that your skills are current."]
-]
+ "_note": "Answers to Google's 'People also ask' questions that these posts did not cover (DataForSEO SERP audit, October 2026). Inserted at the top of each post's FAQ section by add_faq_answers.py.",
+ "rewrites/2021_06_how-to-sleep-fastly-and-peacefully.html": [
+  [
+   "What is the military method for falling asleep?",
+   "It is a relaxation routine popularised by the 1981 book Relax and Win. Lying in bed, relax every muscle in your face, drop your shoulders and let your arms go loose, breathe out and relax your chest, then relax your legs from thighs to feet. Finally, clear your mind for about 10 seconds by picturing a calm scene, such as lying in a canoe on a still lake, or by repeating \"don't think\". Like most relaxation methods, it works better with a few weeks of practice."
+  ],
+  [
+   "What is the 10-3-2-1-0 rule for sleep?",
+   "It is a simple countdown for the hours before bed: no caffeine in the last 10 hours, no big meals or alcohol in the last 3, no work in the last 2, no screens in the last 1, and zero presses of the snooze button in the morning. It is a memorable way to apply standard sleep-hygiene advice rather than a medical rule."
+  ]
+ ],
+ "rewrites/2023_08_the-genesis-of-petrodollars-unveiling.html": [
+  [
+   "What happens if the US loses the petrodollar?",
+   "Fewer countries would need dollars to buy oil, which could gradually weaken demand for the dollar and US Treasury bonds and nudge up US borrowing costs. The change would likely be slow: the dollar's role rests mainly on the size and openness of US financial markets, not only on oil pricing, so a shift away from dollar-priced oil would not end dollar dominance overnight."
+  ],
+  [
+   "Which president started the petrodollar?",
+   "The arrangement took shape under President Richard Nixon. After he ended the dollar's convertibility into gold in 1971, his administration agreed in 1974 to economic and military cooperation with Saudi Arabia, which priced its oil in dollars and invested its surplus in US Treasury bonds."
+  ],
+  [
+   "Which countries use the US dollar as their currency?",
+   "Several countries use the US dollar as their official currency, including Ecuador, El Salvador, Panama (alongside its balboa coins), Timor-Leste, Palau, the Marshall Islands and the Federated States of Micronesia, as well as US territories such as Puerto Rico and Guam."
+  ]
+ ],
+ "rewrites/2021_06_what-is-karma.html": [
+  [
+   "What are the 12 rules of karma?",
+   "The \"12 laws of karma\" are a modern list popular in self-help writing, not a teaching from the ancient texts. They are usually given as the laws of cause and effect, creation, humility, growth, responsibility, connection, focus, giving and hospitality, here and now, change, patience and reward, and significance and inspiration. Each is a reminder that your actions and attitudes shape what comes back to you."
+  ],
+  [
+   "Does the Bible say anything about karma?",
+   "The Bible does not use the word karma, and Christianity does not teach rebirth. It does contain a similar idea of consequences, most famously \"a man reaps what he sows\" (Galatians 6:7), but it places that within God's judgement and grace rather than an impersonal law of cause and effect."
+  ]
+ ],
+ "rewrites/2023_07_unconditional-love-what-it-means-and.html": [
+  [
+   "What is the true meaning of unconditional love?",
+   "Unconditional love means caring about someone's well-being without requiring them to earn it, change for you or pay you back. It is about the person, not their behaviour: you can love someone unconditionally and still disagree with them or refuse to accept how they treat you."
+  ],
+  [
+   "Is unconditional love unhealthy?",
+   "Not in itself. It becomes unhealthy when it is confused with unconditional acceptance, so that someone tolerates abuse, dishonesty or neglect in the name of love. Healthy unconditional love goes together with boundaries."
+  ],
+  [
+   "What are the four types of love?",
+   "Ancient Greek writers, and later C.S. Lewis in The Four Loves, described storge (affection, as between family), philia (friendship), eros (romantic love) and agape (selfless love). Agape is the one most often described as unconditional."
+  ]
+ ],
+ "rewrites/2021_06_how-to-be-happy.html": [
+  [
+   "What is the difference between joy and happiness?",
+   "Joy is usually described as an intense, often short-lived feeling in a moment, such as hearing good news. Happiness is a broader, steadier sense that your life is going well. You can feel moments of joy during a hard period, and be generally happy without feeling joyful all the time."
+  ],
+  [
+   "What is the happiest age in life?",
+   "Many large surveys of life satisfaction find a U-shape: it tends to be lowest around the late 40s and early 50s and rises again in older age. Some recent studies suggest young adults are now less happy than earlier generations were, so the pattern is not fixed."
+  ]
+ ],
+ "rewrites/2023_08_zen-journey-into-essence-of-mindfulness.html": [
+  [
+   "Is Zen a type of Buddhism?",
+   "Yes. Zen is a school of Mahayana Buddhism that began in China as Chan around the 6th century and spread to Korea, Vietnam and Japan, where it became known as Zen. It emphasises seated meditation (zazen) and direct insight over study of texts."
+  ],
+  [
+   "Can Christians practise Zen meditation?",
+   "Many do. Some Christians, including well-known Catholic monks and priests, have practised Zen-style meditation as a way of stillness and attention while keeping their own faith. Whether it fits your beliefs is a personal question, and some churches are more open to it than others."
+  ]
+ ],
+ "rewrites/2021_10_how-to-cure-compassion-fatigue-guide-to.html": [
+  [
+   "What are the five stages of compassion fatigue?",
+   "One widely shared model describes five phases: the zealot phase (high energy and commitment), the irritability phase (cutting corners, frustration), the withdrawal phase (exhaustion, pulling away from others), the zombie phase (numbness, going through the motions), and finally either a decline into lasting distress or a renewal phase, where rest, support and boundaries help you recover."
+  ]
+ ],
+ "rewrites/2023_09_the-rise-of-gig-economy-exploring.html": [
+  [
+   "What are the defining characteristics of the gig economy?",
+   "Short-term or one-off jobs instead of permanent roles, workers treated as independent contractors rather than employees, work usually found through apps or online platforms, pay per task or project, flexible hours, and few of the benefits employees get, such as paid leave, pensions or sick pay."
+  ],
+  [
+   "What are examples of gig work?",
+   "Ride-hailing and food delivery, freelance writing, design and programming through online marketplaces, short-term tasks such as furniture assembly, online tutoring, and renting out a room or car through a platform."
+  ]
+ ],
+ "rewrites/2021_12_the-mental-toughness-guide-how-to.html": [
+  [
+   "What is the 3-3-3 rule for anxiety?",
+   "It is a quick grounding exercise: name three things you can see, three sounds you can hear, and move three parts of your body. It pulls your attention back to the present when worry spirals. It helps in the moment but is not a treatment for an anxiety disorder."
+  ]
+ ],
+ "rewrites/2023_10_recognizing-toxic-boss-behavior-signs.html": [
+  [
+   "How do you deal with a controlling boss?",
+   "Agree clear priorities and deadlines in writing, give regular short updates so they have less reason to hover, and ask what success looks like for each task. Raise the issue calmly in a one-to-one if it affects your work, and keep a record of instructions. If nothing changes, involve HR or start planning a move."
+  ],
+  [
+   "How do you handle a narcissistic boss?",
+   "Stay factual and calm, avoid public disagreements, and keep important requests and decisions in writing. Give credit where it is due but document your own contributions. Protect your well-being with boundaries and support outside work, and if the behaviour is abusive, report it to HR."
+  ]
+ ],
+ "articles/explain-layoff-career-gap-interview.html": [
+  [
+   "Is a gap in a resume a red flag?",
+   "Not on its own. Most employers care far more about whether you can do the job now than about a gap, especially after the layoffs of recent years. A gap becomes a concern mainly when it is unexplained, so a one-line, honest explanation removes most of the doubt."
+  ],
+  [
+   "How long of a gap in employment is OK?",
+   "A few months needs no explanation at all, and gaps of up to a year are common and easy to explain. Longer gaps are fine too if you show what you did, such as caring, study or projects, and that your skills are current."
+  ]
+ ],
+ "rewrites/2021_06_ceo-vs-coo.html": [
+  [
+   "What is the difference between a CEO, COO and CFO?",
+   "The CEO sets the company's direction and is ultimately accountable to the board. The COO runs day-to-day operations so that strategy actually gets delivered. The CFO manages the money: budgets, reporting, funding and financial risk. The COO and CFO usually both report to the CEO."
+  ],
+  [
+   "Does a COO outrank a vice president?",
+   "Yes. The COO is a C-suite role, usually second only to the CEO, and vice presidents typically report to the COO or to another C-suite executive."
+  ]
+ ],
+ "rewrites/2021_06_how-to-overcome-introvert-shyness.html": [
+  [
+   "What is the definition of shyness?",
+   "Shyness is a feeling of awkwardness, nervousness or discomfort around other people, especially strangers or in new situations, that makes you hold back from speaking or joining in. It is a common personality trait, not a disorder, and it often eases with practice."
+  ]
+ ],
+ "rewrites/2021_06_what-are-altcoins.html": [
+  [
+   "What is an example of an altcoin?",
+   "Any cryptocurrency other than Bitcoin is an altcoin. Well-known examples include Ether (Ethereum), Solana, XRP, Cardano and Dogecoin."
+  ],
+  [
+   "What is the difference between altcoins and stablecoins?",
+   "Stablecoins are a type of altcoin designed to hold a steady value, usually one US dollar, by being backed by cash and short-term government bonds, as with USDT and USDC. Most other altcoins have no such backing and can rise or fall sharply in price."
+  ]
+ ],
+ "rewrites/2021_07_financial-independence-retire-earlyfire.html": [
+  [
+   "Who invented the FIRE movement?",
+   "The ideas behind FIRE are usually traced to the 1992 book Your Money or Your Life by Vicki Robin and Joe Dominguez. The movement grew in the 2010s through blogs such as Mr. Money Mustache and online communities."
+  ]
+ ],
+ "rewrites/2021_10_how-googles-algorithm-works-science.html": [
+  [
+   "Do Google searches get saved?",
+   "If you are signed in and Web & App Activity is on, Google saves your searches to your account. You can view, delete or auto-delete them at myactivity.google.com, or turn the setting off. Searches in incognito mode are not saved to your account, though your internet provider or employer may still see them."
+  ],
+  [
+   "Can I see who searched for me on Google?",
+   "No. Google does not tell anyone who searched for their name. You can only see your own search history, and tools claiming to show who googled you cannot do so."
+  ]
+ ],
+ "rewrites/2023_03_how-currency-value-of-country-been.html": [
+  [
+   "What makes the US dollar stronger?",
+   "Higher US interest rates than elsewhere, strong US economic growth, global demand for safe assets in times of stress, and the dollar's role in trade and in central bank reserves all tend to push the dollar up. Lower US rates or weaker growth tend to weaken it."
+  ]
+ ],
+ "rewrites/2023_04_a-study-on-mba.html": [
+  [
+   "Will AI make an MBA less useful?",
+   "AI is automating some analysis an MBA used to teach, such as basic financial modelling and research. The parts that matter more now are leadership, judgement, negotiation and the network, which AI does not replace. An MBA that teaches how to use AI in business is more useful than one that ignores it."
+  ]
+ ],
+ "rewrites/2023_04_a-study-on-tax-free-nations.html": [
+  [
+   "Which country has the lowest income tax?",
+   "Several countries charge no personal income tax at all, including the UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman, Monaco, the Bahamas, the Cayman Islands, Bermuda and Brunei. Some of them have other taxes instead, such as VAT or social security contributions."
+  ],
+  [
+   "Is Nigeria a tax-free country?",
+   "No. Nigeria taxes personal income on a progressive scale and also has VAT and company income tax."
+  ]
+ ],
+ "rewrites/2023_06_embracing-present-art-of-living-in.html": [
+  [
+   "Why do I struggle to live in the present?",
+   "The mind naturally drifts to past mistakes and future worries, and stress, anxiety, tiredness and constant phone notifications make it worse. Short daily practices, such as noticing your breath or giving one task your full attention, train the habit of coming back to now."
+  ],
+  [
+   "What does the Buddha say about living in the moment?",
+   "In the Bhaddekaratta Sutta, the Buddha teaches not to chase the past or build hopes on the future, because the past is gone and the future has not come, and to see clearly whatever is present, here and now. Many popular quotes attributed to him on this theme are paraphrases."
+  ]
+ ],
+ "rewrites/2023_06_the-enchantment-of-work-from-home.html": [
+  [
+   "Are people who work from home happier?",
+   "Surveys generally find that people who can work from home at least part of the week report higher job satisfaction, mainly because of no commute and more flexibility. Fully remote workers are more likely to feel lonely, which is one reason hybrid work is popular."
+  ],
+  [
+   "Why don't some employers like working from home?",
+   "Common reasons are worries about collaboration and training junior staff, harder supervision, weaker company culture, and money already spent on offices. Many employers have settled on hybrid arrangements as a compromise."
+  ]
+ ],
+ "rewrites/2023_10_how-google-provides-free-services.html": [
+  [
+   "Does Google pay Apple to be the default search engine?",
+   "Yes. Evidence in the US government's antitrust case against Google showed it paid Apple about $20 billion in 2022 to be the default search engine in Safari, in exchange for a share of the ad revenue from those searches."
+  ]
+ ],
+ "rewrites/2024_01_how-to-be-consistent.html": [
+  [
+   "What does being consistent mean?",
+   "Being consistent means doing the important things regularly, even when you don't feel like it, so that small efforts add up over time. It is about showing up most days, not about being perfect every day."
+  ],
+  [
+   "Is a lack of consistency a sign of ADHD?",
+   "Not by itself. Everyone struggles with consistency at times. Ongoing difficulty with focus, organisation and follow-through across many areas of life, since childhood, can be a sign of ADHD, and only a qualified professional can diagnose it."
+  ]
+ ]
 }
