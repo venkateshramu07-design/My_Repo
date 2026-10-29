@@ -39,9 +39,9 @@ for key, title in (("editorial-policy", "Editorial Policy"), ("free-calculators"
 
 # Image-only "thought" posts get a companion article under their original image (same address, labels and date).
 import re, html as H
-THOUGHTS = {"today-thought": "Where Is Calmness? It's in Yourself: How to Find Inner Calm",
-            "spread-positivity": "When You Strive for Brilliance, Don't Lose the Happiness of Innocence",
-            "spread-positivity_26": "Truth Gives You Freedom; Lies Push You Into Restlessness"}
+THOUGHTS = {"today-thought": "How to Find Inner Calm and Inner Peace: It Starts in Yourself",
+            "spread-positivity": "Innocence Quotes: Strive for Brilliance Without Losing Your Innocence",
+            "spread-positivity_26": "Truth Quotes: Why Truth Gives You Freedom and Lies Bring Restlessness"}
 for slug, title in THOUGHTS.items():
     b = json.load(open(os.path.join(a.BACKUP, "2025_10_%s.json" % slug), encoding="utf-8"))
     src = re.findall(r'src="([^"]+)"', b["content"])[0]

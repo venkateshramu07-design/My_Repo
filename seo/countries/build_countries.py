@@ -231,7 +231,11 @@ def country_page(c):
     title_bits = [m for m in ["Minimum Wage", "Tax", "Mortgage Rates", "Pension Age", "Energy Prices"]
                   if {"Minimum Wage": "minimum-wage-2026", "Tax": "take-home-pay-average-wage-2025", "Mortgage Rates": "mortgage-rates-2026",
                       "Pension Age": "retirement-age-2026", "Energy Prices": "household-electricity-prices-2026"}[m] in used]
-    title = f"{Tc} in Numbers 2026: " + (", ".join(title_bits[:-1]) + " and " + title_bits[-1] if len(title_bits) > 1 else title_bits[0]) + " Compared"
+    # Lead with the phrase people search ("<country> minimum wage"), or income tax where there is no minimum wage.
+    tname = {"The United States": "US", "The United Kingdom": "UK"}.get(Tc, Tc[4:] if Tc.startswith("The ") else Tc)
+    lead, rest = ("Minimum Wage" if title_bits[0] == "Minimum Wage" else "Income Tax"), title_bits[1:]
+    title = (f"{tname} {lead} 2026" if not rest else f"{tname} {lead} 2026 and {rest[0]} Compared" if len(rest) == 1
+             else f"{tname} {lead} 2026: " + ", ".join(rest[:-1]) + " and " + rest[-1] + " Compared")
     table = ('<table class="bd-cf"><thead><tr><th>Measure</th><th>' + html.escape(c) + "</th><th>Rank</th></tr></thead><tbody>\n" +
              "\n".join(f"<tr><td>{m}</td><td>{html.escape(v)}</td><td>{k}</td></tr>" for m, v, k in rows) + "\n</tbody></table>")
     qa = "\n".join(f"<h3>{html.escape(q)}</h3>\n<p>{html.escape(a)}</p>" for q, a in faq)
@@ -282,7 +286,7 @@ def main():
         open(os.path.join(HERE, names[c].split("/")[1] + ".html"), "w", encoding="utf-8").write(body.replace("{{SIBLINGS}}", sib))
         meta[names[c]] = [title, ["Countries & Living Abroad"]]
     hub(countries, names)
-    meta["countries/compare-countries-money-facts-2026"] = ["Compare Countries 2026: Minimum Wage, Tax, Mortgage Rates, Energy and Pension Age in 35 Countries",
+    meta["countries/compare-countries-money-facts-2026"] = ["Minimum Wage by Country 2026: Tax, Mortgage Rates, Energy and Pension Age in 35 Countries",
                                                            ["Countries & Living Abroad"]]
     json.dump(meta, open(os.path.join(HERE, "countries.json"), "w"), indent=1, ensure_ascii=False)
     print(len(countries), "country pages:", ", ".join(countries))
