@@ -24,3 +24,8 @@
 - **Theme fix the API cannot make** (only if the user agrees to do it):
   - Blogger, Theme, Edit HTML: replace `/feeds/posts/default?orderby=published&alt=json-in-script&callback=showlatestpostswiththumbs` with `/feeds/posts/summary?orderby=published&max-results=10&alt=json-in-script&callback=showlatestpostswiththumbs`.
   - This cuts about 260 KB per page view (about 1 MB uncompressed).
+- **Animation fix (30 October):** decorative animations no longer loop forever.
+  - Lighthouse, mobile: homepage 35 → 59; PDF page 55 → 57, SEO 92 → 100; IQ post style and layout 14.2 s → 3.4 s.
+  - The IQ post's score stayed about 25: its remaining layout shift (0.30) and late main content come from the layer restyling the page about 4 s after first paint.
+  - The full fix needs the layer CSS in the theme `<head>` (a theme edit; Blogger has no API for it).
+- **Full republish done (30 October):** 296 posts, with 853 of 856 Blogger images now WebP and 755 lazy-loaded. Live audit: 290 of 290 pass.
