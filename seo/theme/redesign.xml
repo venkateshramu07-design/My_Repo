@@ -1378,7 +1378,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
           }
           var url = ((e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0] || {}).href, t = e.title.$t, d = e.published.$t;
           var thumb = e.media$thumbnail ? e.media$thumbnail.url : 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbLOy6UDG3zz-MDPFqP76pZpzIwOSIbtahfHcaDBurG4ngL3GAVsdDwe6wofQnSSjuLNR6x2p3X5Rop6O8lhTn988Y6sMPzU2UBNpc1Gnufxf1t5UGj1Qw2UWnCY8nHxS9Y83Dqv1zjJY/s1600/no_thumb.png';
-          li.innerHTML = '<a href="' + esc(url) + '" rel="nofollow"><img alt="' + esc(t) + '" loading="lazy" decoding="async" src="' + esc(thumb) + '"/></a><div><a href="' + esc(url) + '" rel="nofollow">' + esc(t) + '</a></div>' +
+          li.innerHTML = '<a href="' + esc(url) + '"><img alt="' + esc(t) + '" loading="lazy" decoding="async" src="' + esc(thumb) + '"/></a><div><a href="' + esc(url) + '">' + esc(t) + '</a></div>' +
             '<span><div class="random-info">' + d.substring(8, 10) + '.' + d.substring(5, 7) + '.' + d.substring(0, 4) + '</div></span>';
         } catch (err) { li.remove(); }
       };
