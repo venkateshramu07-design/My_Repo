@@ -16,3 +16,11 @@
    - `seo/sizes/STATUS.md`: exact-size pages.
    - `seo/publish_u3.py`, `seo/publish_pending.py`: republish batches.
    - `seo/fetch_live.py` + `seo/seo_audit.py`: live audit. On 30 October, 290 of 290 posts passed.
+
+## Speed and crawl health (30 October 2026)
+- **Lighthouse, mobile:** homepage 35, PDF 200 KB page 55, IQ post 28; pages weigh 1-3 MB.
+- **Images:** `apply.optimize_images` now runs in both publish pipelines (WebP for Blogger images, lazy loading after the first image, missing sizes).
+  - Old posts get it only when republished. Run `BLOGGER_TOKEN=... python3 seo/publish_all_updates.py` with a token that has the blogger scope.
+- **Theme fix the API cannot make** (only if the user agrees to do it):
+  - Blogger, Theme, Edit HTML: replace `/feeds/posts/default?orderby=published&alt=json-in-script&callback=showlatestpostswiththumbs` with `/feeds/posts/summary?orderby=published&max-results=10&alt=json-in-script&callback=showlatestpostswiththumbs`.
+  - This cuts about 260 KB per page view (about 1 MB uncompressed).
