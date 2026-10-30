@@ -186,6 +186,8 @@ def build(name):
         body = body.replace("</p>", "</p>\n" + img, 1)
     raw = open(os.path.join(TOOLS, "..", name + ".html") if "/" in name else os.path.join(TOOLS, name + ".html"), encoding="utf-8").read()
     body = machine_readable(name, raw, body)
+    from apply import optimize_images
+    body = optimize_images(body)
     return escape_scripts(f"{tool_assets()}\n<div class=\"seo-post\">\n{body}</div>")
 
 

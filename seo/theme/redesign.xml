@@ -2493,7 +2493,7 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       store('bd-recent', [[meTool[0], meTool[2]]].concat((store('bd-recent') || []).filter(function (m) { return m[1] !== meTool[2]; })).slice(0, 8));  // for "Pick up where you left off" on the tools page
       var mine = function () { return store('bd-mytools') || []; }, saved = function () { return mine().some(function (m) { return m[1] === meTool[2]; }); };
       var acts = el('div', 'bd-tacts', '<button type="button" class="bd-ta-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span></span></button>' +
-        '<button type="button" class="bd-ta-fav"></button><span class="bd-ta-alt" hidden><a target="_blank" rel="noopener">WhatsApp</a><button type="button" class="bd-ta-copy">Copy link</button></span>');
+        '<button type="button" class="bd-ta-fav"></button><span class="bd-ta-alt" hidden><a href="https://wa.me/" target="_blank" rel="noopener nofollow">WhatsApp</a><button type="button" class="bd-ta-copy">Copy link</button></span>');
       var favLabel = function () { var on = saved(); acts.querySelector('.bd-ta-fav').innerHTML = (on ? '★ In My tools' : '☆ Save to My tools'); acts.querySelector('.bd-ta-fav').classList.toggle('bd-on', on); };
       var shareText = function () {
         if (calcT.dataset.share) return calcT.dataset.share;

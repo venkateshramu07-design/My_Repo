@@ -212,6 +212,29 @@ def related_block(s, posts_by_slug):
             f'<p><a href="{BLOG_URL}2021/06/sitemap.html">Browse all articles by topic</a></p></div>{RELATED_END}')
 
 
+def optimize_images(content):
+    """Lighter, steadier pages: Blogger-hosted images are requested as WebP (about half the bytes, same picture), every
+    image after the first loads lazily, and images without a size get one from Blogger's data-original-* attributes."""
+    import re as _re
+    def webp(src):
+        if not _re.search(r"(googleusercontent\.com|bp\.blogspot\.com)/", src) or "-rw" in src: return src
+        if _re.search(r"=[sw]\d+(-h\d+)?[^/]*$", src): return _re.sub(r"=([sw]\d+(?:-h\d+)?)[^/]*$", r"=\1-rw", src)
+        return _re.sub(r"/([sw]\d+(?:-h\d+)?)(?:-[a-z0-9-]*)?/", r"/\1-rw/", src, count=1)
+    n = [0]
+    def fix(m):
+        tag = m.group(0); n[0] += 1
+        tag = _re.sub(r'(\ssrc=")([^"]+)"', lambda s: s.group(1) + webp(s.group(2)) + '"', tag, count=1)
+        if n[0] > 1 and "loading=" not in tag and "fetchpriority" not in tag:
+            tag = tag.replace("<img", '<img loading="lazy" decoding="async"', 1)
+        if not _re.search(r"\swidth=", tag) or not _re.search(r"\sheight=", tag):
+            w = _re.search(r'data-original-width="(\d+)"', tag); h = _re.search(r'data-original-height="(\d+)"', tag)
+            if w and h and not _re.search(r"\s(width|height)=", tag):
+                tag = tag.replace("<img", '<img width="%s" height="%s"' % (w.group(1), h.group(1)), 1)
+        return tag
+    parts = _re.split(r"(<script\b.*?</script>)", content, flags=_re.S)  # never touch image tags written by scripts
+    return "".join(x if x.startswith("<script") else _re.sub(r"<img\b[^>]*>", fix, x) for x in parts)
+
+
 def escape_scripts(content):
     """Write non-ASCII characters inside <script> as \\u escapes; Blogger rewrites them otherwise."""
     def esc(m):

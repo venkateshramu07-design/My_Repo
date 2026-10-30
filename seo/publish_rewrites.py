@@ -30,6 +30,7 @@ for s in sys.argv[1:]:
         if wc<3000: print("TOO SHORT, skipped",s,wc); continue
     u=a.changes_for(p,by); u.pop("_description",None)
     u["content"]=machine_readable_old(p,u["content"])
+    u["content"]=a.optimize_images(u["content"])
     before=p.get("content","").count("<img"); after=u.get("content","").count("<img")
     if after<before: print("IMAGE LOSS, skipped",s,before,after); continue
     body={"title":u.get("title",p["title"]),"labels":u.get("labels",p.get("labels",[])),"content":u["content"],"published":p["published"]}
