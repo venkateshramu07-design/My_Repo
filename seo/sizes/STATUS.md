@@ -1,4 +1,4 @@
-# Exact-size pages: where the work stopped (30 October 2026)
+# Exact-size pages: published 30 October 2026
 
 ## Why
 DataForSEO shows 0 Google rankings on record for the site. Small tool sites (pdf.pi7.org, photoresizer.net) win India with one page
@@ -25,18 +25,12 @@ Bank FD pages were dropped because banks and big fintech sites own those SERPs.
 - sizes/measurements.json: browser test results used in the "Our test" tables.
   - The PDF part is partial; re-run test/m2.js after the final code.
 
-## Next
-1. Add EXTRA pages in pages_data.py:
-   - jpg-to-pdf-under-200kb
-   - kb-to-mb-converter
-   - signature-resize (preset: gray, 10-20 KB)
-   - pan-card-photo-resize (Protean: photo up to 20 KB and signature up to 10 KB at 200 dpi; 2.5x3.5 cm = 197x276 px)
-   - resize-image-in-cm (data-dim=cm)
-   - image-and-pdf-size-tools (hub linking all)
-2. Re-run the PDF measurements with the final pdf-to-kb code (bw list now starts at 300 dpi), then check each PDF page's test_note against the numbers.
-3. Run build_sizes.py, register SIZE_POSTS in publish_tools.py (in TOOL_POSTS so unpublished links fall back to text), add covers,
-   descriptions and focus keywords, and run seo_audit.py.
-4. Browser-check the pages, then publish twice (to resolve the links) with a fresh Blogger token, and release the layer.
-5. U3: link the existing tool posts (exam resizer, PDF toolkit, passport photo) into this cluster; retarget long-tail keywords.
+## Published (30 October 2026)
+- All 22 pages are live and the Free Tools and Free Calculators hubs list the new tools.
+- Five existing tool posts link into the group, and the design layer was released (commit 130804b) with the descriptions.
+- Live browser check: descriptions, covers and tools all work.
+- Republish: BLOGGER_TOKEN=... python3 seo/sizes/publish_sizes.py. Pre-publish audit: python3 seo/sizes/audit_sizes.py.
 
-DataForSEO spend so far: about $1.2 of $51.
+## Next
+- About 2 weeks after publishing, check rankings for the 22 target keywords with DataForSEO (about $0.05).
+- U3: retarget existing articles to winnable long-tail keywords and add answer sections.
