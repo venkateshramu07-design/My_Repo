@@ -1,0 +1,120 @@
+<div class="bd-calc" id="bd-pk" data-kb="2000">
+<div class="bc-title">Compress PDF to 2 MB</div>
+<div class="bc-sub">Choose a PDF, or photos of a document (they become one PDF). Set the size the form allows and download a PDF under it. The file is processed on your phone or computer and is never uploaded. No sign-up, no watermark, no daily limit.</div>
+<div class="bc-grid">
+<div><label for="pk-max">Maximum size (KB)</label><input id="pk-max" type="number" min="10" max="50000" step="1"></div>
+<div><label for="pk-col">Colour and quality</label><select id="pk-col"><option value="a">Auto (recommended)</option><option value="c">Keep colour</option><option value="g">Black and white (sharpest text, smallest)</option></select></div>
+</div>
+<div class="pk-chips" aria-label="Common sizes"></div>
+<label class="bt-drop" id="pk-drop"><input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" multiple id="pk-file"><b>Choose a PDF or photos</b><small>or drag and drop · PDF, JPG, PNG or WebP</small></label>
+<p class="bt-msg" id="pk-msg"></p>
+<div class="pk-res" id="pk-res" hidden>
+<div class="bc-out" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+<div class="bc-stat"><span>Before</span><b id="pk-a">—</b></div>
+<div class="bc-stat bc-main"><span>After</span><b id="pk-b">—</b></div>
+<div class="bc-stat"><span>Pages</span><b id="pk-n">—</b></div>
+</div>
+<p class="bc-note" id="pk-how"></p>
+<div class="bc-row"><button type="button" class="bc-primary" id="pk-dl" disabled>Download PDF</button><button type="button" id="pk-new">Another file</button></div>
+<div id="pk-prev" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px"></div>
+</div>
+<p class="bt-safe">Your file never leaves this device. Close the page and it is gone.</p>
+<style>
+#bd-pk [hidden]{display:none!important}
+#bd-pk .pk-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+#bd-pk .pk-chips button{padding:6px 11px;font-size:13px;border-radius:999px}
+#bd-pk .pk-chips button.on{background:var(--c-accent)!important;color:#fff!important;border-color:var(--c-accent)!important}
+#bd-pk #pk-prev img{height:150px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.25);background:#fff!important}
+#bd-pk .pk-ok{color:#0f8a5f!important;font-weight:700}#bd-pk .pk-bad{color:#c2341d!important;font-weight:700}
+</style>
+<script>
+(function(){
+var SRI={"https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js":"sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI","https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js":"sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e"};
+var WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+var root=document.getElementById('bd-pk');if(!root)return;
+var $=function(id){return document.getElementById(id);},src=null,out=null,run=0;
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;s.crossOrigin='anonymous';if(SRI[u])s.integrity=SRI[u];s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+async function libs(){if(!window.PDFLib)await load('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js');
+ if(!window.pdfjsLib){await load('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  // The worker is fetched as a blob so it runs from this page's origin.
+  var w=await (await fetch(WORKER,{integrity:"sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2"})).blob();pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(w);}}
+var CH=[50,100,150,200,300,500,1024,2048];
+root.querySelector('.pk-chips').innerHTML=CH.map(function(k){return '<button type="button" data-k="'+k+'">'+(k>=1024?k/1024+' MB':k+' KB')+'</button>';}).join('');
+$('pk-max').value=root.dataset.kb;
+function chips(){var v=+$('pk-max').value;root.querySelectorAll('.pk-chips button').forEach(function(b){b.classList.toggle('on',+b.dataset.k===v);});}
+function kb(n){return n>=1048576?(n/1048576).toFixed(2)+' MB':(n/1024).toFixed(0)+' KB';}
+function enc(c,q){return new Promise(function(ok){c.toBlob(function(b){b.arrayBuffer().then(ok);},'image/jpeg',q);});}
+// Pages as canvases: PDF pages rendered by pdf.js at the given dpi, or photos scaled to the same pixel budget.
+// The pixel budget keeps memory in check for long documents.
+async function pages(dpi,gray){var list=[];
+ if(src.pdf){for(var i=1;i<=src.pdf.numPages;i++){var p=await src.pdf.getPage(i),v=p.getViewport({scale:dpi/72}),c=document.createElement('canvas');c.width=Math.max(1,Math.round(v.width));c.height=Math.max(1,Math.round(v.height));
+   var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);await p.render({canvasContext:x,viewport:v}).promise;
+   var pv=p.getViewport({scale:1});list.push({c:tone(c,gray),w:pv.width,h:pv.height});}}
+ else{src.imgs.forEach(function(img){var s=Math.min(1,dpi/150*1754/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*s));c.height=Math.max(1,Math.round(img.naturalHeight*s));
+   var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+   var A4=[595.28,841.89],land=c.width>c.height,pw=land?A4[1]:A4[0],ph=land?A4[0]:A4[1];list.push({c:tone(c,gray),w:pw,h:ph,fit:1});});}
+ return list;}
+// Black and white also turns grey paper white and darkens the ink, which makes scans both smaller and easier to read.
+function tone(c,gray){if(!gray)return c;var x=c.getContext('2d'),d=x.getImageData(0,0,c.width,c.height),p=d.data;for(var i=0;i<p.length;i+=4){var l=.299*p[i]+.587*p[i+1]+.114*p[i+2];l=Math.max(0,Math.min(255,(l-40)*255/170));p[i]=p[i+1]=p[i+2]=l;}x.putImageData(d,0,0);return c;}
+// Black and white pages are stored as 1-bit images (1 = white), written straight into the PDF: crisp text at a fraction of a JPEG's size.
+function bits(c){var w=c.width,h=c.height,d=c.getContext('2d').getImageData(0,0,w,h).data,rb=Math.ceil(w/8),raw=new Uint8Array(rb*h);
+ for(var y=0;y<h;y++){var o=y*rb;for(var x=0;x<w;x++){if(d[(y*w+x)*4]>=150)raw[o+(x>>3)]|=128>>(x&7);}}return raw;}
+function drawBits(doc,pg,c,x,y,w,h){var L=PDFLib,ref=doc.context.register(doc.context.flateStream(bits(c),{Type:'XObject',Subtype:'Image',Width:c.width,Height:c.height,ColorSpace:'DeviceGray',BitsPerComponent:1})),
+ n=pg.node.newXObject('Bw',ref);pg.pushOperators(L.pushGraphicsState(),L.concatTransformationMatrix(w,0,0,h,x,y),L.drawObject(n),L.popGraphicsState());}
+async function build(list,q){var doc=await PDFLib.PDFDocument.create();
+ for(var i=0;i<list.length;i++){var it=list[i],pg=doc.addPage([it.w,it.h]);if(q==='bits'){if(it.fit){var k=Math.min((it.w-36)/it.c.width,(it.h-36)/it.c.height),bw=it.c.width*k,bh=it.c.height*k;drawBits(doc,pg,it.c,(it.w-bw)/2,(it.h-bh)/2,bw,bh);}else drawBits(doc,pg,it.c,0,0,it.w,it.h);continue;}var img=await doc.embedJpg(await enc(it.c,q));
+  if(it.fit){var s=Math.min((it.w-36)/img.width,(it.h-36)/img.height),w=img.width*s,h=img.height*s;pg.drawImage(img,{x:(it.w-w)/2,y:(it.h-h)/2,width:w,height:h});}
+  else pg.drawImage(img,{x:0,y:0,width:it.w,height:it.h});}
+ return doc.save({useObjectStreams:true});}
+// Black and white: 1-bit pages at the highest resolution that fits. Starts at 150 dpi and steps up or down from there,
+// so a typical file needs only two or three attempts.
+async function bwFit(max,me){var L=[300,200,150,120,100,85,72],i=2,fit=null,s;
+ while(i>=0&&i<L.length){$('pk-how').textContent='Trying black and white at '+L[i]+' dpi…';var b=await build(await pages(L[i],true),'bits');if(me!==run)return null;
+  if(b.length<=max){fit={b:b,dpi:L[i]};if(i===0||(s!==undefined&&s>max))break;s=b.length;i--;}
+  else{if(fit)break;var need=L[i]*Math.pow(max/b.length,.75);s=b.length;i++;while(i<L.length-1&&L[i]>need)i++;}}
+ return fit;}
+// JPEG pages: at each resolution, check quality 0.3 first; if even that is too big, jump straight to the resolution that should fit.
+async function jpgFit(max,gray,me){var L=[150,120,100,85,72,60,50],i=0,best=null;
+ while(i<L.length){$('pk-how').textContent='Trying '+L[i]+' dpi…';var list=await pages(L[i],gray);if(me!==run)return null;
+  var b30=await build(list,.3),last=i===L.length-1;if(me!==run)return null;
+  if(b30.length<=max||last){var lo=b30.length<=max?.3:.1,hi=b30.length<=max?.92:.3,hit=b30.length<=max?{b:b30,q:.3}:null;
+   for(var n=0;n<6;n++){var q=(lo+hi)/2,b2=await build(list,q);if(me!==run)return null;if(b2.length<=max){hit={b:b2,q:q};lo=q;}else hi=q;}
+   if(!hit){var b3=await build(list,.1);if(b3.length<=max)hit={b:b3,q:.1};}
+   return hit?{b:hit.b,q:hit.q,dpi:L[i]}:null;}
+  var need=L[i]*Math.sqrt(max/b30.length);i++;while(i<L.length-1&&L[i]>need)i++;}
+ return best;}
+async function go(){var me=++run,max=Math.max(10,+$('pk-max').value||200)*1000,mode=$('pk-col').value;chips();if(!src)return;
+ $('pk-res').hidden=false;$('pk-dl').disabled=true;$('pk-b').textContent='…';$('pk-how').textContent='Compressing…';out=null;
+ var BW=function(f,auto){return (auto?'Saved in black and white, because colour pages would be blurry at this size. ':'')+'Pages saved in pure black and white at '+f.dpi+' dpi, which keeps text sharp'+(f.dpi>=200?' and prints cleanly':'')+'. Text can no longer be selected, and photos on the page turn into black and white shapes'+(auto?': choose &ldquo;Keep colour&rdquo; if you need them.':'.');};
+ try{await libs();
+ // 1. Lossless: rewrite the PDF with compressed object streams. Keeps text selectable.
+ if(src.pdf&&mode!=='g'){var d=await PDFLib.PDFDocument.load(src.buf.slice(0),{ignoreEncryption:true}),b=await d.save({useObjectStreams:true});
+  if(me!==run)return;if(b.length<=max){return done(b,'Compressed without changing the pages, so text is still selectable and searchable.',true);}}
+ if(mode==='g'){var f=await bwFit(max,me);if(me!==run)return;if(f)return done(f.b,BW(f,false),false);}
+ // 2. Colour (or greyscale, when even black and white does not fit) JPEG pages.
+ var best=await jpgFit(max,mode==='g',me);if(me!==run)return;
+ // 3. Auto: when colour would be blurry, black and white is usually far sharper for documents.
+ if(mode==='a'&&(!best||best.q<.3||best.dpi<85)){var f2=await bwFit(max,me);if(me!==run)return;if(f2)return done(f2.b,BW(f2,true),false);}
+ if(!best){$('pk-b').textContent='—';$('pk-how').innerHTML='<span class="pk-bad">This file cannot get under '+kb(max)+' and stay readable ('+$('pk-n').textContent+' pages). Try a higher limit, or split it into parts.</span>';return;}
+ done(best.b,'Pages saved as images at '+best.dpi+' dpi, quality '+Math.round(best.q*100)+'%'+(mode==='g'?', greyscale':'')+'. Text can no longer be selected. '+(best.q<.2||best.dpi<60?'<b>This is a big squeeze: zoom in on the preview and check every line is readable.</b>':'Zoom in on the preview to check it is easy to read.'),false);
+ }catch(e){$('pk-how').innerHTML='<span class="pk-bad">This file could not be processed'+(/password|encrypt/i.test(e&&e.message)?' because it is password protected. Remove the password first.':'. It may be damaged.')+'</span>';}}
+async function done(b,how,lossless){out=new Blob([b],{type:'application/pdf'});$('pk-b').innerHTML='<span class="pk-ok">'+kb(out.size)+'</span>';$('pk-how').innerHTML=how;$('pk-dl').disabled=false;
+ var pv=$('pk-prev');pv.innerHTML='';try{var d=await pdfjsLib.getDocument({data:new Uint8Array(b)}).promise;for(var i=1;i<=Math.min(4,d.numPages);i++){var p=await d.getPage(i),v=p.getViewport({scale:150/p.getViewport({scale:1}).height}),c=document.createElement('canvas');c.width=v.width;c.height=v.height;await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;var im=new Image();im.alt='Page '+i+' preview';im.src=c.toDataURL('image/jpeg',.7);pv.appendChild(im);}}catch(e){}}
+async function add(files){files=Array.prototype.slice.call(files);if(!files.length)return;$('pk-msg').textContent='';await libs();var f=files[0];
+ if(/pdf/.test(f.type)||/\.pdf$/i.test(f.name)){var buf=await f.arrayBuffer();try{var pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf.slice(0))}).promise;}catch(e){$('pk-msg').textContent='This PDF could not be opened'+(/password/i.test(e&&e.name)?' because it is password protected.':'.');return;}
+  src={pdf:pdf,buf:buf,name:f.name,size:f.size};$('pk-n').textContent=pdf.numPages;}
+ else{var imgs=[],tot=0;for(var i=0;i<files.length&&i<60;i++){try{imgs.push(await new Promise(function(ok,no){var im=new Image();im.onload=function(){ok(im);};im.onerror=no;im.src=URL.createObjectURL(files[i]);}));tot+=files[i].size;}catch(e){}}
+  if(!imgs.length){$('pk-msg').textContent='These files could not be opened. Use a PDF, JPG or PNG.';return;}src={imgs:imgs,name:'document.pdf',size:tot};$('pk-n').textContent=imgs.length;}
+ $('pk-a').textContent=kb(src.size);$('pk-drop').hidden=true;go();}
+$('pk-dl').addEventListener('click',function(){if(!out)return;var a=document.createElement('a');a.href=URL.createObjectURL(out);a.download=src.name.replace(/\.[^.]+$/,'')+'-'+(+$('pk-max').value)+'kb.pdf';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);});
+$('pk-new').addEventListener('click',function(){src=null;out=null;run++;$('pk-res').hidden=true;$('pk-drop').hidden=false;$('pk-prev').innerHTML='';$('pk-file').click();});
+$('pk-file').addEventListener('change',function(){add(this.files);this.value='';});
+['dragover','dragenter'].forEach(function(t){$('pk-drop').addEventListener(t,function(e){e.preventDefault();this.classList.add('bt-over');});});
+$('pk-drop').addEventListener('dragleave',function(){this.classList.remove('bt-over');});
+$('pk-drop').addEventListener('drop',function(e){e.preventDefault();this.classList.remove('bt-over');add(e.dataTransfer.files);});
+root.querySelector('.pk-chips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('pk-max').value=b.dataset.k;go();});
+var tm=0;$('pk-max').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(go,500);});$('pk-col').addEventListener('change',go);
+chips();
+})();
+</script>
+</div>

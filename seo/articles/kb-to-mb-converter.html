@@ -1,0 +1,66 @@
+<p><em>Updated 30 October 2026</em></p>
+
+<p><strong>Quick answer on kb to mb:</strong> Divide by 1,024 to turn KB into MB the way Windows and most upload forms count (500 KB = 0.488 MB), or by 1,000 the way phones and Macs count (500 KB = 0.5 MB). The converter below shows both at once. To stay safe on a form that says &ldquo;under 200 KB&rdquo;, keep your file under 195 KB as Windows shows it.</p>
+
+<p>Two systems are in everyday use. The international standard (SI) and storage makers use 1 KB = 1,000 bytes; Windows and many programmers use 1 KB = 1,024 bytes, which the standards body calls a kibibyte (KiB). The difference is small for kilobytes and grows with each step: 2.4% for KB, 4.9% for MB, 7.4% for GB.</p>
+
+[[embed:kb-mb-converter]]
+
+<h2>KB to MB Conversion Table</h2>
+<table>
+<thead><tr><th>KB</th><th>MB (1 MB = 1,000 KB)</th><th>MB (1 MB = 1,024 KB)</th><th>Bytes (1 KB = 1,024)</th></tr></thead>
+<tbody>
+<tr><td>10 KB</td><td>0.01</td><td>0.0098</td><td>10,240</td></tr>
+<tr><td>20 KB</td><td>0.02</td><td>0.0195</td><td>20,480</td></tr>
+<tr><td>50 KB</td><td>0.05</td><td>0.0488</td><td>51,200</td></tr>
+<tr><td>100 KB</td><td>0.1</td><td>0.0977</td><td>102,400</td></tr>
+<tr><td>200 KB</td><td>0.2</td><td>0.1953</td><td>204,800</td></tr>
+<tr><td>300 KB</td><td>0.3</td><td>0.293</td><td>307,200</td></tr>
+<tr><td>500 KB</td><td>0.5</td><td>0.4883</td><td>512,000</td></tr>
+<tr><td>1,000 KB (1 MB on a phone)</td><td>1</td><td>0.9766</td><td>1,024,000</td></tr>
+<tr><td>1,024 KB (1 MB on Windows)</td><td>1.024</td><td>1</td><td>1,048,576</td></tr>
+<tr><td>2,048 KB (2 MB on Windows)</td><td>2.048</td><td>2</td><td>2,097,152</td></tr>
+<tr><td>5,120 KB (5 MB on Windows)</td><td>5.12</td><td>5</td><td>5,242,880</td></tr>
+</tbody>
+</table>
+
+<h2>Which One Does My Upload Form Use?</h2>
+<p>Forms rarely say. Many websites check the file in bytes and compare it with 200 &times; 1,024 = 204,800 bytes for &ldquo;200 KB&rdquo;; others use 200,000. A file Windows shows as 199 KB is 203,776 bytes, which passes the first and fails the second. The safe rule is to stay under the limit &times; 1,000 bytes, which is what our [[post:articles/image-and-pdf-size-tools|resize and compress tools]] do automatically.</p>
+
+<h2>Why My Phone and Laptop Show Different Sizes</h2>
+<p>The same file can show as 1.05 MB on an iPhone or Mac and 1,000 KB (0.98 MB) on Windows. Nothing changed: Apple's systems count 1 MB as 1,000,000 bytes and Windows counts 1,048,576. The same thing explains why a new 128 GB phone or memory card shows only about 119 GB in Windows: the maker counts in thousands, Windows in multiples of 1,024. When an upload form rejects a file that &ldquo;looks&rdquo; small enough, check the exact size in bytes, shown in brackets in Windows Properties.</p>
+
+<h2>How to Check a File's Size</h2>
+<ul>
+<li><strong>Windows:</strong> right-click the file, choose Properties and read &ldquo;Size&rdquo; (in 1,024-based KB) and the exact bytes in brackets.</li>
+<li><strong>Mac:</strong> select the file and press Command-I. Finder uses 1,000-based KB.</li>
+<li><strong>Android:</strong> open the Files app, tap and hold the file, then the &#9432; details icon.</li>
+<li><strong>iPhone:</strong> in the Files app, touch and hold the file and choose Get Info. For photos, open the photo and swipe up.</li>
+</ul>
+
+<h2>Frequently Asked Questions: KB to MB</h2>
+<h3>How many KB are in 1 MB?</h3>
+<p>1,024 KB in the binary system (Windows, most forms) or 1,000 KB in the decimal system (phones, Macs, storage makers).</p>
+<h3>How do I convert KB to MB?</h3>
+<p>Divide by 1,024 (binary) or 1,000 (decimal). 300 KB is 0.293 MB or 0.3 MB.</p>
+<h3>How do I convert MB to KB?</h3>
+<p>Multiply by 1,024 or 1,000. 2 MB is 2,048 KB or 2,000 KB.</p>
+<h3>Is 500 KB bigger than 1 MB?</h3>
+<p>No. 500 KB is about half of 1 MB in either system.</p>
+<h3>What is a KiB?</h3>
+<p>A kibibyte, exactly 1,024 bytes. The standards say KB should mean 1,000 bytes and KiB 1,024, but Windows still labels KiB as KB.</p>
+
+<h2 id="sources">Sources</h2>
+<ul class="bd-sources">
+<li><a href="https://physics.nist.gov/cuu/Units/binary.html" rel="noopener" target="_blank">NIST: prefixes for binary multiples (KB, KiB, MB, MiB)</a></li>
+<li><a href="https://learn.microsoft.com/en-us/troubleshoot/windows-client/backup-and-storage/hard-disk-drive-capacity" rel="noopener" target="_blank">Microsoft Learn: how Windows reports file and disk sizes</a></li>
+</ul>
+
+<h2>Related Guides</h2>
+<ul>
+<li>[[post:articles/image-and-pdf-size-tools]]</li>
+<li>[[post:articles/resize-image-to-200kb]]</li>
+<li>[[post:articles/compress-pdf-to-1mb]]</li>
+<li>[[post:articles/compress-pdf-to-200kb]]</li>
+</ul>
+<p><em>Checked in October 2026. The converter runs in your browser.</em></p>

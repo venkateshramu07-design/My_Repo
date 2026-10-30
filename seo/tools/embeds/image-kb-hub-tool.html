@@ -1,0 +1,115 @@
+<div class="bd-calc" id="bd-ik" data-kb="100" data-min="0">
+<div class="bc-title">Reduce image size in KB</div>
+<div class="bc-sub">Choose one photo or many. Each one is compressed to the size you set, as a JPG, keeping as much sharpness as the limit allows. Everything happens on your phone or computer: nothing is uploaded, no sign-up, no watermark, no daily limit.</div>
+<div class="bc-grid">
+<div><label for="ik-max">Maximum size (KB)</label><input id="ik-max" type="number" min="2" max="20000" step="1"></div>
+<div><label for="ik-min">Minimum size (KB, optional)</label><input id="ik-min" type="number" min="0" max="20000" step="1" placeholder="none"></div>
+<div><label for="ik-dim">Dimensions</label><select id="ik-dim">
+<option value="auto">Keep shape, shrink only if needed</option>
+<option value="px">Set width and height in pixels</option>
+<option value="cm">Set width and height in cm</option>
+</select></div>
+</div>
+<div class="ik-chips" aria-label="Common sizes"></div>
+<div class="bc-grid ik-px" hidden style="margin-top:12px">
+<div><label for="ik-w">Width (px)</label><input id="ik-w" type="number" min="20" max="8000" value="350"></div>
+<div><label for="ik-h">Height (px)</label><input id="ik-h" type="number" min="20" max="8000" value="450"></div>
+</div>
+<div class="bc-grid ik-cm" hidden style="margin-top:12px">
+<div><label for="ik-wc">Width (cm)</label><input id="ik-wc" type="number" min="0.5" max="100" step="0.1" value="3.5"></div>
+<div><label for="ik-hc">Height (cm)</label><input id="ik-hc" type="number" min="0.5" max="100" step="0.1" value="4.5"></div>
+<div><label for="ik-dpi">Resolution (dpi)</label><select id="ik-dpi"><option>100</option><option selected>200</option><option>300</option></select></div>
+</div>
+<label class="bc-check" style="margin-top:10px"><input type="checkbox" id="ik-gray"> Black and white (smaller files, good for signatures and text scans)</label>
+<label class="bt-drop" id="ik-drop"><input type="file" accept="image/*,.heic,.heif" multiple id="ik-file"><b>Choose photos</b><small>or drag and drop them here · JPG, PNG, WebP or iPhone HEIC</small></label>
+<p class="bt-msg" id="ik-msg"></p>
+<div class="bc-row" id="ik-bar" hidden><button type="button" class="bc-primary" id="ik-zip">Download all (.zip)</button><button type="button" id="ik-clear">Start again</button></div>
+<div id="ik-list"></div>
+<p class="bt-safe">Your photos never leave this device. Close the page and they are gone.</p>
+<style>
+#bd-ik [hidden]{display:none!important}
+#bd-ik .ik-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+#bd-ik .ik-chips button{padding:6px 11px;font-size:13px;border-radius:999px}
+#bd-ik .ik-chips button.on{background:var(--c-accent)!important;color:#fff!important;border-color:var(--c-accent)!important}
+#bd-ik .ik-item{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;border:1px solid var(--c-line);border-radius:14px;padding:12px;margin-top:12px}
+#bd-ik .ik-item img{width:120px;height:120px;object-fit:contain;border-radius:8px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/14px 14px!important}
+#bd-ik .ik-item b{font-size:15px}#bd-ik .ik-item small{display:block;color:var(--c-muted);font-size:13px;margin:4px 0 8px;word-break:break-all}
+#bd-ik .ik-ok{color:#0f8a5f!important;font-weight:700}#bd-ik .ik-bad{color:#c2341d!important;font-weight:700}
+@media(max-width:520px){#bd-ik .ik-item{grid-template-columns:80px 1fr}#bd-ik .ik-item img{width:80px;height:80px}}
+</style>
+<script>
+(function(){
+var SRI={"https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js":"sha384-cVm8gaWQ5+URpoh6ACKXpm8TuyoHkfIDDBkxvDoUdIZ18w8nV5en0lVQvWMwO/6S","https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js":"sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG"};
+var root=document.getElementById('bd-ik');if(!root)return;
+var $=function(id){return document.getElementById(id);},items=[],busy=Promise.resolve(),timer=0;
+function load(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;s.crossOrigin='anonymous';if(SRI[u])s.integrity=SRI[u];s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+var CH=[10,15,20,30,50,100,200,500,1024];
+root.querySelector('.ik-chips').innerHTML=CH.map(function(k){return '<button type="button" data-k="'+k+'">'+(k>=1024?k/1024+' MB':k+' KB')+'</button>';}).join('');
+$('ik-max').value=root.dataset.kb;if(+root.dataset.min)$('ik-min').value=root.dataset.min;
+function chips(){var v=+$('ik-max').value;root.querySelectorAll('.ik-chips button').forEach(function(b){b.classList.toggle('on',+b.dataset.k===v);});}
+function opts(){var max=Math.max(2,+$('ik-max').value||20),min=Math.min(max-1,Math.max(0,+$('ik-min').value||0)),m=$('ik-dim').value,w=0,h=0;
+ if(m==='px'){w=+$('ik-w').value;h=+$('ik-h').value;}
+ if(m==='cm'){var d=+$('ik-dpi').value;w=Math.round(+$('ik-wc').value/2.54*d);h=Math.round(+$('ik-hc').value/2.54*d);}
+ return{max:max,min:min,w:Math.max(0,Math.min(8000,w|0)),h:Math.max(0,Math.min(8000,h|0)),dpi:m==='cm'?+$('ik-dpi').value:(m==='px'?200:96),gray:$('ik-gray').checked};}
+function enc(c,q){return new Promise(function(ok){c.toBlob(ok,'image/jpeg',q);});}
+async function dpi(b,n){var a=new Uint8Array(await b.arrayBuffer());if(a[2]===0xFF&&a[3]===0xE0&&a[6]===0x4A){a[13]=1;a[14]=a[16]=n>>8;a[15]=a[17]=n&255;}return a;}
+// Pads a JPEG that is already as sharp as it can be but still under the minimum, with an invisible comment block after the JFIF header.
+function pad(a,bytes){var at=a[3]===0xE0?4+(a[4]<<8|a[5]):2,n=Math.min(65533,bytes),c=new Uint8Array(a.length+4+n);c.set(a.subarray(0,at));c[at]=0xFF;c[at+1]=0xFE;c[at+2]=(n+2)>>8;c[at+3]=(n+2)&255;for(var i=0;i<n;i++)c[at+4+i]=32;c.set(a.subarray(at),at+4+n);return c;}
+function draw(img,W,H,gray,fixed){var c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);x.imageSmoothingQuality='high';
+ var iw=img.naturalWidth,ih=img.naturalHeight;
+ if(fixed){var s=Math.max(W/iw,H/ih),dw=iw*s,dh=ih*s;x.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);}else x.drawImage(img,0,0,W,H);
+ if(gray){var d=x.getImageData(0,0,W,H),p=d.data;for(var i=0;i<p.length;i+=4){var l=.299*p[i]+.587*p[i+1]+.114*p[i+2];p[i]=p[i+1]=p[i+2]=l;}x.putImageData(d,0,0);}
+ return c;}
+// Highest JPEG quality that fits under max bytes (binary search), or null.
+async function fitQ(c,max){var lo=.08,hi=.95,best=null;for(var n=0;n<8;n++){var q=(lo+hi)/2,b=await enc(c,q);if(b.size<=max){best={b:b,q:q};lo=q;}else hi=q;}
+ if(!best){var b0=await enc(c,.08);if(b0.size<=max)best={b:b0,q:.08};}return best;}
+// Limits count 1 KB as 1,000 bytes, the stricter of the two conventions, so the file passes a portal that uses either.
+// Fixed dimensions: only quality can change. Otherwise start at the original size (capped at 4000 px) and shrink step by step
+// until the photo fits with a JPEG quality of at least 0.6, so the result stays sharp instead of blocky.
+async function shrink(img,o){var max=o.max*1000,fixed=o.w&&o.h,res;
+ if(fixed){var c=draw(img,o.w,o.h,o.gray,1);res=await fitQ(c,max);return res&&{b:res.b,q:res.q,w:o.w,h:o.h};}
+ var iw=img.naturalWidth,ih=img.naturalHeight,s=Math.min(1,4000/Math.max(iw,ih)),last=null;
+ // Estimate bytes per pixel at quality 0.75 from a small copy, and start near the size that should fit.
+ var k=Math.min(1,700/Math.max(iw,ih)),sm=draw(img,Math.max(16,Math.round(iw*k)),Math.max(16,Math.round(ih*k)),o.gray,0),bpp=(await enc(sm,.75)).size/(sm.width*sm.height);
+ s=Math.min(s,Math.sqrt(max/(bpp*iw*ih))*1.15);
+ for(var step=0;step<30;step++){var W=Math.max(16,Math.round(iw*s)),H=Math.max(16,Math.round(ih*s)),c2=draw(img,W,H,o.gray,0),r=await fitQ(c2,max);
+  if(r){last={b:r.b,q:r.q,w:W,h:H};if(r.q>=.6)return last;}
+  if(W<=40||H<=40)break;s*=r?Math.max(.7,Math.sqrt(r.q/.75)):.75;}
+ return last;}
+async function process(it){var o=opts();it.el.querySelector('.ik-st').innerHTML='Working…';
+ var r=await shrink(it.img,o);if(!r){it.out=null;it.el.querySelector('.ik-st').innerHTML='<span class="ik-bad">Could not get this photo under '+o.max+' KB at the size you set. Try smaller dimensions or black and white.</span>';it.el.querySelector('button').disabled=true;return;}
+ var a=await dpi(r.b,o.dpi),padded=false;if(a.length<o.min*1024){a=pad(a,o.min*1024-a.length+64);padded=true;}
+ it.out=new Blob([a],{type:'image/jpeg'});var kb=it.out.size/1024;if(it.url)URL.revokeObjectURL(it.url);it.url=URL.createObjectURL(it.out);it.el.querySelector('img').src=it.url;
+ it.el.querySelector('.ik-st').innerHTML='<span class="ik-ok">'+kb.toFixed(1)+' KB</span> &middot; '+r.w+' x '+r.h+' px &middot; quality '+Math.round(r.q*100)+'% &middot; was '+(it.f.size/1024).toFixed(0)+' KB'+(padded?' &middot; padded to the minimum':'');
+ it.el.querySelector('button').disabled=false;}
+function rerun(){chips();clearTimeout(timer);timer=setTimeout(function(){items.forEach(function(it){busy=busy.then(function(){return process(it);});});},250);}
+function get(b){return new Promise(function(ok,no){var i=new Image();i.onload=function(){ok(i);};i.onerror=no;i.src=URL.createObjectURL(b);});}
+async function open(f){var heic=/\.hei[cf]$/i.test(f.name)||/hei[cf]/.test(f.type),img;
+ try{img=await get(f);}catch(e){if(!heic)throw e;if(!window.HeicTo)await load('https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js');img=await get(await HeicTo({blob:f,type:'image/jpeg',quality:.95}));}
+ return img;}
+async function add(files){files=Array.prototype.slice.call(files);$('ik-msg').textContent='';for(var i=0;i<files.length&&items.length<50;i++){var f=files[i];
+  try{var img=await open(f);}catch(e){$('ik-msg').textContent=f.name+' could not be opened. Try a JPG or PNG.';continue;}
+  var el=document.createElement('div');el.className='ik-item';el.innerHTML='<img alt="Compressed preview"><div><b></b><small class="ik-st"></small><button type="button" class="bc-primary" disabled>Download JPG</button></div>';
+  el.querySelector('b').textContent=f.name;$('ik-list').appendChild(el);var it={f:f,img:img,el:el};items.push(it);
+  (function(it){el.querySelector('button').addEventListener('click',function(){save(it.out,name(it));});})(it);
+  busy=busy.then(function(){return process(it);});}
+ $('ik-bar').hidden=!items.length;$('ik-drop').querySelector('b').textContent=items.length?'Add more photos':'Choose photos';}
+function name(it){return it.f.name.replace(/\.[^.]+$/,'')+'-'+Math.max(2,+$('ik-max').value||20)+'kb.jpg';}
+function save(b,n){if(!b)return;var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
+$('ik-zip').addEventListener('click',async function(){await busy;var ok=items.filter(function(i){return i.out;});if(ok.length===1)return save(ok[0].out,name(ok[0]));
+ if(!window.JSZip)await load('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');var z=new JSZip(),seen={};
+ ok.forEach(function(i){var n=name(i);while(seen[n])n=n.replace(/(\.jpg)$/,'-1$1');seen[n]=1;z.file(n,i.out);});save(await z.generateAsync({type:'blob'}),'photos-'+$('ik-max').value+'kb.zip');});
+$('ik-clear').addEventListener('click',function(){items.forEach(function(i){if(i.url)URL.revokeObjectURL(i.url);});items=[];$('ik-list').innerHTML='';$('ik-bar').hidden=true;$('ik-drop').querySelector('b').textContent='Choose photos';});
+$('ik-file').addEventListener('change',function(){add(this.files);this.value='';});
+['dragover','dragenter'].forEach(function(t){$('ik-drop').addEventListener(t,function(e){e.preventDefault();this.classList.add('bt-over');});});
+$('ik-drop').addEventListener('dragleave',function(){this.classList.remove('bt-over');});
+$('ik-drop').addEventListener('drop',function(e){e.preventDefault();this.classList.remove('bt-over');add(e.dataTransfer.files);});
+root.querySelector('.ik-chips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('ik-max').value=b.dataset.k;rerun();});
+$('ik-dim').addEventListener('change',function(){root.querySelector('.ik-px').hidden=this.value!=='px';root.querySelector('.ik-cm').hidden=this.value!=='cm';rerun();});
+['ik-max','ik-min','ik-w','ik-h','ik-wc','ik-hc','ik-dpi','ik-gray'].forEach(function(i){$(i).addEventListener(i==='ik-gray'||i==='ik-dpi'?'change':'input',rerun);});
+['w','h','wc','hc','dpi'].forEach(function(k){if(root.dataset[k])$('ik-'+k).value=root.dataset[k];});if(root.dataset.gray)$('ik-gray').checked=true;
+if(root.dataset.dim){$('ik-dim').value=root.dataset.dim;$('ik-dim').dispatchEvent(new Event('change'));}
+chips();
+})();
+</script>
+</div>

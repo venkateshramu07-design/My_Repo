@@ -3,7 +3,7 @@
 <div class="bc-sub">Choose a PDF, or photos of a document (they become one PDF). Set the size the form allows and download a PDF under it. The file is processed on your phone or computer and is never uploaded. No sign-up, no watermark, no daily limit.</div>
 <div class="bc-grid">
 <div><label for="pk-max">Maximum size (KB)</label><input id="pk-max" type="number" min="10" max="50000" step="1"></div>
-<div><label for="pk-col">Colour</label><select id="pk-col"><option value="c">Keep colour</option><option value="g">Black and white (smallest)</option></select></div>
+<div><label for="pk-col">Colour and quality</label><select id="pk-col"><option value="a">Auto (recommended)</option><option value="c">Keep colour</option><option value="g">Black and white (sharpest text, smallest)</option></select></div>
 </div>
 <div class="pk-chips" aria-label="Common sizes"></div>
 <label class="bt-drop" id="pk-drop"><input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" multiple id="pk-file"><b>Choose a PDF or photos</b><small>or drag and drop · PDF, JPG, PNG or WebP</small></label>
@@ -66,23 +66,37 @@ async function build(list,q){var doc=await PDFLib.PDFDocument.create();
   if(it.fit){var s=Math.min((it.w-36)/img.width,(it.h-36)/img.height),w=img.width*s,h=img.height*s;pg.drawImage(img,{x:(it.w-w)/2,y:(it.h-h)/2,width:w,height:h});}
   else pg.drawImage(img,{x:0,y:0,width:it.w,height:it.h});}
  return doc.save({useObjectStreams:true});}
-async function go(){var me=++run,max=Math.max(10,+$('pk-max').value||200)*1000,gray=$('pk-col').value==='g';chips();if(!src)return;
+// Black and white: 1-bit pages at the highest resolution that fits. Starts at 150 dpi and steps up or down from there,
+// so a typical file needs only two or three attempts.
+async function bwFit(max,me){var L=[300,200,150,120,100,85,72],i=2,fit=null,s;
+ while(i>=0&&i<L.length){$('pk-how').textContent='Trying black and white at '+L[i]+' dpi…';var b=await build(await pages(L[i],true),'bits');if(me!==run)return null;
+  if(b.length<=max){fit={b:b,dpi:L[i]};if(i===0||(s!==undefined&&s>max))break;s=b.length;i--;}
+  else{if(fit)break;var need=L[i]*Math.pow(max/b.length,.75);s=b.length;i++;while(i<L.length-1&&L[i]>need)i++;}}
+ return fit;}
+// JPEG pages: at each resolution, check quality 0.3 first; if even that is too big, jump straight to the resolution that should fit.
+async function jpgFit(max,gray,me){var L=[150,120,100,85,72,60,50],i=0,best=null;
+ while(i<L.length){$('pk-how').textContent='Trying '+L[i]+' dpi…';var list=await pages(L[i],gray);if(me!==run)return null;
+  var b30=await build(list,.3),last=i===L.length-1;if(me!==run)return null;
+  if(b30.length<=max||last){var lo=b30.length<=max?.3:.1,hi=b30.length<=max?.92:.3,hit=b30.length<=max?{b:b30,q:.3}:null;
+   for(var n=0;n<6;n++){var q=(lo+hi)/2,b2=await build(list,q);if(me!==run)return null;if(b2.length<=max){hit={b:b2,q:q};lo=q;}else hi=q;}
+   if(!hit){var b3=await build(list,.1);if(b3.length<=max)hit={b:b3,q:.1};}
+   return hit?{b:hit.b,q:hit.q,dpi:L[i]}:null;}
+  var need=L[i]*Math.sqrt(max/b30.length);i++;while(i<L.length-1&&L[i]>need)i++;}
+ return best;}
+async function go(){var me=++run,max=Math.max(10,+$('pk-max').value||200)*1000,mode=$('pk-col').value;chips();if(!src)return;
  $('pk-res').hidden=false;$('pk-dl').disabled=true;$('pk-b').textContent='…';$('pk-how').textContent='Compressing…';out=null;
+ var BW=function(f,auto){return (auto?'Saved in black and white, because colour pages would be blurry at this size. ':'')+'Pages saved in pure black and white at '+f.dpi+' dpi, which keeps text sharp'+(f.dpi>=200?' and prints cleanly':'')+'. Text can no longer be selected, and photos on the page turn into black and white shapes'+(auto?': choose &ldquo;Keep colour&rdquo; if you need them.':'.');};
  try{await libs();
  // 1. Lossless: rewrite the PDF with compressed object streams. Keeps text selectable.
- if(src.pdf&&!gray){var d=await PDFLib.PDFDocument.load(src.buf.slice(0),{ignoreEncryption:true}),b=await d.save({useObjectStreams:true});
+ if(src.pdf&&mode!=='g'){var d=await PDFLib.PDFDocument.load(src.buf.slice(0),{ignoreEncryption:true}),b=await d.save({useObjectStreams:true});
   if(me!==run)return;if(b.length<=max){return done(b,'Compressed without changing the pages, so text is still selectable and searchable.',true);}}
- // 2. Black and white: 1-bit pages at the highest resolution that fits.
- if(gray){var bw=[300,200,150,120,100,85,72];for(var u=0;u<bw.length;u++){$('pk-how').textContent='Trying '+bw[u]+' dpi…';var l2=await pages(bw[u],true),b4=await build(l2,'bits');if(me!==run)return;
-  if(b4.length<=max)return done(b4,'Pages saved in pure black and white at '+bw[u]+' dpi, which keeps text sharp'+(bw[u]>=200?' and prints cleanly':'')+'. Text can no longer be selected, and photos on the page turn into black and white shapes: use "Keep colour" for those.',false);}}
- // 3. Re-render every page as a JPEG image, trying lower resolutions until the best quality that fits is good enough to read.
- var tries=[150,120,100,85,72,60,50],best=null;
- for(var t=0;t<tries.length;t++){$('pk-how').textContent='Trying '+tries[t]+' dpi…';var list=await pages(tries[t],gray);if(me!==run)return;
-  var lo=.1,hi=.92,hit=null;for(var n=0;n<7;n++){var q=(lo+hi)/2,b2=await build(list,q);if(me!==run)return;if(b2.length<=max){hit={b:b2,q:q};lo=q;}else hi=q;}
-  if(!hit){var b3=await build(list,.1);if(b3.length<=max)hit={b:b3,q:.1};}
-  if(hit){best={b:hit.b,q:hit.q,dpi:tries[t]};if(hit.q>=.3)break;}}
- if(!best){$('pk-b').textContent='—';$('pk-how').innerHTML='<span class="pk-bad">This file cannot get under '+kb(max)+' and stay readable ('+$('pk-n').textContent+' pages). Try black and white, a higher limit, or split it into parts.</span>';return;}
- done(best.b,'Pages saved as images at '+best.dpi+' dpi, quality '+Math.round(best.q*100)+'%'+(gray?', greyscale':'')+'. Text can no longer be selected. '+(best.q<.2||best.dpi<60?'<b>This is a big squeeze: zoom in on the preview and check every line is readable.</b>'+(gray?'':' For text documents, &ldquo;Black and white&rdquo; is usually much sharper at this size.'):'Zoom in on the preview to check it is easy to read.'),false);
+ if(mode==='g'){var f=await bwFit(max,me);if(me!==run)return;if(f)return done(f.b,BW(f,false),false);}
+ // 2. Colour (or greyscale, when even black and white does not fit) JPEG pages.
+ var best=await jpgFit(max,mode==='g',me);if(me!==run)return;
+ // 3. Auto: when colour would be blurry, black and white is usually far sharper for documents.
+ if(mode==='a'&&(!best||best.q<.3||best.dpi<85)){var f2=await bwFit(max,me);if(me!==run)return;if(f2)return done(f2.b,BW(f2,true),false);}
+ if(!best){$('pk-b').textContent='—';$('pk-how').innerHTML='<span class="pk-bad">This file cannot get under '+kb(max)+' and stay readable ('+$('pk-n').textContent+' pages). Try a higher limit, or split it into parts.</span>';return;}
+ done(best.b,'Pages saved as images at '+best.dpi+' dpi, quality '+Math.round(best.q*100)+'%'+(mode==='g'?', greyscale':'')+'. Text can no longer be selected. '+(best.q<.2||best.dpi<60?'<b>This is a big squeeze: zoom in on the preview and check every line is readable.</b>':'Zoom in on the preview to check it is easy to read.'),false);
  }catch(e){$('pk-how').innerHTML='<span class="pk-bad">This file could not be processed'+(/password|encrypt/i.test(e&&e.message)?' because it is password protected. Remove the password first.':'. It may be damaged.')+'</span>';}}
 async function done(b,how,lossless){out=new Blob([b],{type:'application/pdf'});$('pk-b').innerHTML='<span class="pk-ok">'+kb(out.size)+'</span>';$('pk-how').innerHTML=how;$('pk-dl').disabled=false;
  var pv=$('pk-prev');pv.innerHTML='';try{var d=await pdfjsLib.getDocument({data:new Uint8Array(b)}).promise;for(var i=1;i<=Math.min(4,d.numPages);i++){var p=await d.getPage(i),v=p.getViewport({scale:150/p.getViewport({scale:1}).height}),c=document.createElement('canvas');c.width=v.width;c.height=v.height;await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;var im=new Image();im.alt='Page '+i+' preview';im.src=c.toDataURL('image/jpeg',.7);pv.appendChild(im);}}catch(e){}}

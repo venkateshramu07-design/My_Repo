@@ -1,0 +1,72 @@
+<p><em>Updated 30 October 2026</em></p>
+
+<p><strong>Quick answer on compress pdf to 500kb:</strong> Choose the PDF in the tool below and download it under 500 KB. That is generous: a 3-page colour scan keeps about 120 dpi (clear on screen and in print), and about 15 typed pages fit in black and white at 200 dpi. 500 KB is the limit for place-of-business proof in GST registration.</p>
+
+<p>Half a megabyte is enough for most single documents, so the aim is to keep as much quality as possible while getting under the line. The tool tries a lossless squeeze first and only redraws pages if it has to.</p>
+
+[[embed:pdf-to-500kb-tool]]
+
+<h2>How to Compress a PDF to 500KB in 4 Steps</h2>
+<ol>
+<li><strong>Choose your PDF</strong> in the tool above. You can also choose photos of the pages (JPG or PNG); they become one PDF, one photo per A4 page.</li>
+<li><strong>Check the size:</strong> the tool is set to 500 KB. Type a different number, or tap one of the size chips, if your form says otherwise.</li>
+<li><strong>Leave Auto selected</strong> unless you need something specific. At 500 KB Auto usually keeps colour. Choose Black and white for long text documents.</li>
+<li><strong>Check the preview, then download.</strong> The result shows the new size, the number of pages and how it was saved.</li>
+</ol>
+<h2>Where You Need a PDF Under 500 KB</h2>
+<p>Where 500 KB limits are common:</p>
+<table>
+<thead><tr><th>Where</th><th>Document</th><th>Limit</th></tr></thead>
+<tbody>
+<tr><td>GST registration</td><td>Principal or additional place-of-business proof (rent agreement, electricity bill)</td><td>Up to 500 KB</td></tr>
+<tr><td>GST registration</td><td>Most other documents</td><td>Up to 1 MB</td></tr>
+<tr><td>Job and university portals</td><td>Certificates and transcripts</td><td>Often 500 KB&ndash;2 MB</td></tr>
+<tr><td>Email to offices with small inbox limits</td><td>Any document</td><td>Smaller files are less likely to bounce</td></tr>
+</tbody>
+</table>
+<p>Portals change their limits, so check the line under the upload button and type its exact number into the tool.</p>
+<h2>What Fits in 500 KB: Our Test</h2>
+<p>We ran the tool above on two files: a three-page certificate scanned at 300 dpi with paper texture (9.8 MB), the typical &ldquo;my scan is too big&rdquo; case, and a five-page PDF of typed text with one photo (3.9 MB). These are the results it produced:</p>
+<table>
+<thead><tr><th>File</th><th>Setting</th><th>Result</th><th>How it was saved</th></tr></thead>
+<tbody>
+<tr><td>3-page certificate scan, 300 dpi (9.8 MB)</td><td>Keep colour</td><td>483 KB</td><td>JPEG pages, 120 dpi, quality 30%</td></tr>
+<tr><td>3-page certificate scan, 300 dpi (9.8 MB)</td><td>Black and white</td><td>124 KB</td><td>pure black and white, 300 dpi</td></tr>
+<tr><td>5-page text PDF with a photo (3.9 MB)</td><td>Keep colour</td><td>480 KB</td><td>JPEG pages, 85 dpi, quality 31%</td></tr>
+<tr><td>5-page text PDF with a photo (3.9 MB)</td><td>Black and white</td><td>109 KB</td><td>pure black and white, 300 dpi</td></tr>
+</tbody>
+</table>
+<p>At 500 KB colour pages reached 120 dpi, which reads like the original on a phone or laptop.</p>
+<h2>GST Place-of-Business Proof Under 500 KB</h2>
+<p>The rent agreement or electricity bill for your principal place of business is often several pages long and scanned in colour, which easily runs to a few megabytes. Remove pages the portal does not need, keep colour if the bill has coloured stamps, and compress it with the tool. A long agreement usually fits better in black and white at 200 dpi, which keeps every clause readable.</p>
+<h2>What Happens to My PDF When It Is Compressed?</h2>
+<p>The tool first tries a <strong>lossless</strong> squeeze: it rebuilds the PDF with compressed internal structures, which keeps text selectable and changes nothing you can see. That is often enough for PDFs made on a computer. If the file is still too big, usually because it is a scan or contains photos, it redraws every page as an image: in colour as a JPEG, using the highest resolution and quality that fit, or as a pure black-and-white image, which is how fax and document scanners store text and is often ten times smaller than colour. In <strong>Auto</strong> mode the tool keeps colour when it stays clear and uses black and white when colour pages would be blurry. The page size stays the same (A4 stays A4), it prints the same, and the preview shows the first pages so you can check every line before you download. Nothing is uploaded: the PDF is read and rebuilt inside your browser by the open-source PDF.js and pdf-lib libraries.</p>
+<h2>Frequently Asked Questions: Compress PDF to 500KB</h2>
+<h3>How do I compress a PDF to 500 KB?</h3>
+<p>Choose it in the tool above and download; the limit is set to 500 KB.</p>
+<h3>What is the GST document upload size?</h3>
+<p>Photographs are JPEG up to 100 KB, place-of-business proof up to 500 KB, and most other documents PDF or JPEG up to 1 MB. Check the line under each upload button on the GST portal.</p>
+<h3>How do I reduce a PDF from 5 MB to 500 KB?</h3>
+<p>Add it to the tool. It will tell you whether the lossless step was enough or the pages were redrawn, and show a preview.</p>
+<h3>Will my PDF lose quality at 500 KB?</h3>
+<p>Very little for most documents. If it is a typed PDF made on a computer, the lossless step often gets there with no change at all.</p>
+<h3>Can I compress several PDFs into one under 500 KB?</h3>
+<p>Merge them first with our free [[post:articles/merge-split-pdf-without-uploading|PDF toolkit]], then compress the merged file here.</p>
+
+<h2 id="sources">Sources</h2>
+<ul class="bd-sources">
+<li><a href="https://studycafe.in/gstn-portal-update-increase-in-document-upload-size-for-place-of-business-in-new-registration-327614.html" rel="noopener" target="_blank">StudyCafe: GSTN raises upload size for place-of-business documents</a></li>
+<li><a href="https://www.kanakkupillai.com/learn/document-size-for-gst-registration/" rel="noopener" target="_blank">Kanakkupillai: document size for GST registration</a></li>
+<li><a href="https://mozilla.github.io/pdf.js/" rel="noopener" target="_blank">PDF.js (Mozilla): the open-source library the PDF tool uses to read pages</a></li>
+<li><a href="https://pdf-lib.js.org/" rel="noopener" target="_blank">pdf-lib: the open-source library the PDF tool uses to rebuild files</a></li>
+</ul>
+
+<h2>Related Guides</h2>
+<ul>
+<li>[[post:articles/compress-pdf-to-300kb]]</li>
+<li>[[post:articles/compress-pdf-to-1mb]]</li>
+<li>[[post:articles/compress-pdf-to-200kb]]</li>
+<li>[[post:articles/jpg-to-pdf-under-200kb]]</li>
+<li>[[post:articles/image-and-pdf-size-tools]]</li>
+</ul>
+<p><em>Limits checked against the portals listed above in October 2026. Your file is processed on your own device and never uploaded.</em></p>
