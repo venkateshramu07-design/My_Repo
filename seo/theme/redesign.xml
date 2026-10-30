@@ -1280,6 +1280,13 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   *,*::before,*::after{animation:none!important;transition:none!important}
   .bd-js .bd-reveal{opacity:1;transform:none}
 }
+/* Speed: decorative loops play a few times and then rest, and illustrations only move while on screen, so the browser
+   is not redrawing the page on every frame (Lighthouse measured 14 s of style and layout work with them running). */
+.bd-ill [class*="a-"]{animation-iteration-count:4!important}
+.bd-ill:not(.bd-ill-on) [class*="a-"]{animation-play-state:paused!important}
+.bd-hero::before,.bd-hero::after,.bd-hero h1 em{animation-iteration-count:2!important}
+.bd-eyebrow i,.bd-tr-head small::before,.bd-latest h2::before{animation-iteration-count:3!important}
+.bd-tipbtn,.bd-tipbtn .bd-steam,.bd-tip-mini .bd-steam,.bd-tip-post::before,.bd-tip-post .bd-tip-mini,.bd-tip-post .bd-tip-go::after{animation-iteration-count:3!important}
 /*]]>*/</style>
 <script>//<![CDATA[
 (function () {
