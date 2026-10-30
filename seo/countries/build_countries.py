@@ -288,7 +288,7 @@ def main():
         open(os.path.join(HERE, names[c].split("/")[1] + ".html"), "w", encoding="utf-8").write(body.replace("{{SIBLINGS}}", sib))
         meta[names[c]] = [title, ["Countries & Living Abroad"]]
     hub(countries, names)
-    meta["countries/compare-countries-money-facts-2026"] = ["Minimum Wage by Country 2026: Tax, Mortgages and Pensions Compared",
+    meta["countries/compare-countries-money-facts-2026"] = ["Compare Countries 2026: Wages, Tax, Mortgages and Pensions",
                                                            ["Countries & Living Abroad"]]
     json.dump(meta, open(os.path.join(HERE, "countries.json"), "w"), indent=1, ensure_ascii=False)
     print(len(countries), "country pages:", ", ".join(countries))
@@ -319,11 +319,11 @@ def hub(countries, names):
         return ", ".join(names[:-1]) + " and " + names[-1]
     out = f"""<p><em>Updated {UPDATED}</em></p>
 
-<p><strong>Quick answer on minimum wage by country:</strong> Among the {len(countries)} countries compared here, the highest minimum wages (in US dollars a month) are in {top("minimum-wage-2026", "Monthly full-time (US$)")}; the average worker pays the most tax in {top("take-home-pay-average-wage-2025", "Income tax + employee social security (% of gross)")}; mortgages are dearest in {top("mortgage-rates-2026", "Interest rate (%)")}; household electricity is most expensive in {top("household-electricity-prices-2026", "Price per kWh (US$)")}; and state pension ages are highest in {top("retirement-age-2026", "Pension age (sort value)")}. The table puts seven measures side by side, and each country links to a page with the full figures.</p>
+<p><strong>Quick answer on how to compare countries:</strong> Among the {len(countries)} countries compared here, the highest minimum wages (in US dollars a month) are in {top("minimum-wage-2026", "Monthly full-time (US$)")}; the average worker pays the most tax in {top("take-home-pay-average-wage-2025", "Income tax + employee social security (% of gross)")}; mortgages are dearest in {top("mortgage-rates-2026", "Interest rate (%)")}; household electricity is most expensive in {top("household-electricity-prices-2026", "Price per kWh (US$)")}; and state pension ages are highest in {top("retirement-age-2026", "Pension age (sort value)")}. The table puts seven measures side by side, and each country links to a page with the full figures.</p>
 
 <p>Deciding where to work, buy a home or retire means comparing several numbers at once. This hub brings together the figures from our country-by-country data guides, all from official sources (national statistics offices, central banks, the OECD and Eurostat), and every dataset is free to download.</p>
 
-<h2>All Countries Side by Side</h2>
+<h2>Compare Countries Side by Side</h2>
 <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="bd-cf"><thead>{head}</thead><tbody>
 {body}
 </tbody></table></div>
@@ -343,7 +343,7 @@ def hub(countries, names):
 <li><strong>Retirement:</strong> look at the pension age and the share of pay the pension replaces together; a later age with a generous pension can beat an early age with a small one.</li>
 </ul>
 
-<h2>Frequently Asked Questions: Minimum Wage by Country 2026</h2>
+<h2>Frequently Asked Questions: Compare Countries</h2>
 <h3>Which country has the highest minimum wage in 2026?</h3>
 <p>Converted to US dollars for a month of full-time work, the highest minimum wages are in {top("minimum-wage-2026", "Monthly full-time (US$)")}.</p>
 <h3>Which country takes the most tax from an average worker?</h3>
