@@ -78,6 +78,15 @@ T = {
  "BMI calculator": ("heart", "Body mass index and healthy ranges", "bmi weight height obesity"),
  "Real raise calculator": ("grow", "Your pay rise after inflation", "salary hike raise appraisal increment"),
 }
+T.update({  # exact-size tools (seo/sizes), listed once published
+ "Compress PDF to any KB": ("pdf", "Under 50 KB to 2 MB, text stays sharp", "compress reduce pdf size kb mb 50kb 100kb 200kb 300kb 500kb 1mb 2mb scholarship nsp neet"),
+ "JPG to PDF under 200 KB": ("pdf", "Photos of pages to one small PDF", "jpg jpeg image photo to pdf convert 100kb 200kb 300kb"),
+ "Reduce image size in KB": ("photo", "Any photo to 10 KB, 20 KB, 50 KB or more", "resize compress reduce photo image kb 10kb 15kb 20kb 30kb 50kb 100kb 200kb 500kb"),
+ "Signature resizer": ("sign", "Crisp black ink at 10-20 KB", "signature resize 10 20 kb ssc ibps rrb pan neet"),
+ "PAN card photo resizer": ("exam", "2.5 x 3.5 cm, 200 dpi, under 20 KB", "pan card photo signature resize nsdl protean uti 20kb"),
+ "Resize image in cm": ("photo", "Exact cm or mm at 100, 200 or 300 dpi", "resize image cm mm inches pixels dpi 3.5x4.5"),
+ "KB to MB converter": ("repeat", "Both the 1,000 and 1,024 answers", "kb mb gb bytes convert converter size"),
+})
 T["Passport and visa photo maker"] = ["exam", "Exact official sizes for 8 countries, print or upload", "passport visa photo maker 2x2 35x45 biometric id picture print sheet dv lottery green card schengen"]
 T["US passport photo (2 x 2 in)"] = ["exam", "2 x 2 inch photo, head 1 to 1 3/8 in, white background, no glasses.", "passport visa photo id picture 2x2 35x45 us passport photo size"]
 T["US visa and DV lottery photo"] = ["exam", "Square 600 x 600 px JPEG under 240 KB for the DS-160, Green Card and DV lottery.", "passport visa photo id picture 2x2 35x45 us visa photo 600x600"]
@@ -88,17 +97,20 @@ T["Australia passport photo"] = ["exam", "35-40 x 45-50 mm, face 32-36 mm, profe
 T["China visa photo (33 x 48 mm)"] = ["exam", "33 x 48 mm print or 354 x 472 px, 40-120 KB online photo.", "passport visa photo id picture 2x2 35x45 china visa photo size"]
 T["OCI photo (square JPEG)"] = ["exam", "Square JPEG 200-900 px under 200 KB, plus the signature.", "passport visa photo id picture 2x2 35x45 oci photo size"]
 CATS = [  # id, heading, sub-heading, colour, icon, titles
- ("docs", "Documents and PDFs", "Merge, sign, mask and make documents", "#e2462c", "pdf", ["PDF toolkit", "Sign a PDF", "Mask Aadhaar or PAN", "Resume builder", "Invoice and receipt maker"]),
+ ("docs", "Documents and PDFs", "Merge, sign, mask and make documents", "#e2462c", "pdf", ["PDF toolkit", "Compress PDF to any KB", "JPG to PDF under 200 KB", "Sign a PDF", "Mask Aadhaar or PAN", "Resume builder", "Invoice and receipt maker"]),
  ("photos-id", "Passport and visa photos", "Exact official sizes, printed or digital", "#1a3faa", "exam", ["Passport and visa photo maker", "US passport photo (2 x 2 in)", "US visa and DV lottery photo", "UK passport photo (35 x 45 mm)", "Schengen visa photo (35 x 45 mm)", "Canada passport photo (50 x 70 mm)", "Australia passport photo", "China visa photo (33 x 48 mm)", "OCI photo (square JPEG)"]),
- ("forms", "Photos, forms and QR codes", "Get photos and codes exactly right", "#0e9bb5", "photo", ["Exam photo and signature resizer", "Photo converter", "QR code generator", "UPI QR code generator"]),
+ ("forms", "Photos, forms and QR codes", "Get photos and codes exactly right", "#0e9bb5", "photo", ["Exam photo and signature resizer", "Reduce image size in KB", "Signature resizer", "PAN card photo resizer", "Resize image in cm", "Photo converter", "QR code generator", "UPI QR code generator"]),
  ("money", "Tax, saving and investing", "Plan tax, savings and growth", "#0f9d76", "piggy", ["Income tax calculator: new vs old regime", "GST calculator", "PPF, EPF, Sukanya, FD and RD calculator", "SIP and investment growth calculator", "Emergency fund calculator", "FIRE calculator", "Inflation calculator", "Lump sum or monthly pension calculator"]),
  ("loans", "Loans and debt", "Borrow smarter and get debt-free sooner", "#2f7de1", "home", ["Loan EMI and prepayment calculator", "Credit card payoff calculator", "Debt payoff planner", "Debt consolidation calculator", "Rent vs buy calculator", "Car affordability calculator", "Prepay or invest comparison"]),
- ("daily", "Everyday, work and health", "Small jobs done in seconds", "#7a5cd6", "clock", ["Password generator", "Meeting time zone planner", "Word counter", "Subscription tracker", "Currency converter", "EV vs petrol cost calculator", "BMI calculator", "Real raise calculator"]),
+ ("daily", "Everyday, work and health", "Small jobs done in seconds", "#7a5cd6", "clock", ["Password generator", "KB to MB converter", "Meeting time zone planner", "Word counter", "Subscription tracker", "Currency converter", "EV vs petrol cost calculator", "BMI calculator", "Real raise calculator"]),
 ]
-TOP = {"in": ["Exam photo and signature resizer", "PDF toolkit", "Income tax calculator: new vs old regime", "Photo converter", "Loan EMI and prepayment calculator", "GST calculator", "Mask Aadhaar or PAN", "SIP and investment growth calculator"],
+TOP = {"in": ["Exam photo and signature resizer", "Compress PDF to any KB", "Reduce image size in KB", "PDF toolkit", "Income tax calculator: new vs old regime", "Photo converter", "Loan EMI and prepayment calculator", "Mask Aadhaar or PAN", "GST calculator", "SIP and investment growth calculator"],
        "all": ["Passport and visa photo maker", "PDF toolkit", "Photo converter", "Loan EMI and prepayment calculator", "QR code generator", "Sign a PDF", "Emergency fund calculator", "Resume builder"]}
 TOP_CALC = {"in": ["Income tax calculator: new vs old regime", "Loan EMI and prepayment calculator", "SIP and investment growth calculator", "GST calculator", "PPF, EPF, Sukanya, FD and RD calculator", "Emergency fund calculator", "FIRE calculator", "Credit card payoff calculator"],
             "all": ["Loan EMI and prepayment calculator", "Emergency fund calculator", "SIP and investment growth calculator", "FIRE calculator", "Credit card payoff calculator", "Rent vs buy calculator", "Inflation calculator", "Debt payoff planner"]}
+_live = lambda ts: [t for t in ts if t in ITEMS]
+CATS = [c[:5] + (_live(c[5]),) for c in CATS]
+TOP = {k: _live(v)[:8] for k, v in TOP.items()}
 NAME = {"Income tax calculator: new vs old regime": "Income tax calculator", "PPF, EPF, Sukanya, FD and RD calculator": "PPF, EPF, Sukanya, FD and RD",
         "SIP and investment growth calculator": "SIP calculator", "Loan EMI and prepayment calculator": "Loan EMI calculator",
         "Lump sum or monthly pension calculator": "Lump sum or monthly pension", "EV vs petrol cost calculator": "EV vs petrol running cost"}
@@ -197,7 +209,7 @@ html.bd-dark #bd-hub .th-data{background:linear-gradient(135deg,#2a2213,#2a1d15)
 
 TASKS = {"all": [("Make a passport photo", "Passport and visa photo maker"), ("Merge PDFs", "PDF toolkit"), ("Shrink a photo to 100 KB", "Photo converter"), ("Sign a PDF", "Sign a PDF"),
                  ("Make a QR code", "QR code generator"), ("Work out a loan EMI", "Loan EMI and prepayment calculator"), ("Build a CV", "Resume builder"), ("Create a strong password", "Password generator")],
-         "in": [("Resize an exam photo", "Exam photo and signature resizer"), ("Income tax: old vs new", "Income tax calculator: new vs old regime"), ("Merge PDFs", "PDF toolkit"), ("Mask Aadhaar", "Mask Aadhaar or PAN"),
+         "in": [("Resize an exam photo", "Exam photo and signature resizer"), ("PDF to 200 KB", "Compress PDF to any KB"), ("Photo to 20 KB", "Reduce image size in KB"), ("Income tax: old vs new", "Income tax calculator: new vs old regime"), ("Merge PDFs", "PDF toolkit"), ("Mask Aadhaar", "Mask Aadhaar or PAN"),
                 ("Add or remove GST", "GST calculator"), ("UPI QR code", "UPI QR code generator"), ("Loan EMI", "Loan EMI and prepayment calculator"), ("PPF and EPF", "PPF, EPF, Sukanya, FD and RD calculator")]}
 TASKS_CALC = {"all": [("Work out a loan EMI", "Loan EMI and prepayment calculator"), ("Size an emergency fund", "Emergency fund calculator"), ("Grow a monthly SIP", "SIP and investment growth calculator"),
                       ("Retire early?", "FIRE calculator"), ("Clear a credit card", "Credit card payoff calculator"), ("Rent or buy?", "Rent vs buy calculator")],
@@ -277,6 +289,7 @@ def page(kind):
     h.append('<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script></div>')
     return "\n".join(h)
 
+TASKS = {k: [x for x in v if x[1] in ITEMS][:8] for k, v in TASKS.items()}
 for t in [t for c in CATS for t in c[5]] + TOP["in"] + TOP["all"] + TOP_CALC["in"] + TOP_CALC["all"] + [t for d in (TASKS, TASKS_CALC) for g in d.values() for _, t in g]:
     assert t in ITEMS, t
 open(os.path.join(HERE, "free-tools.html"), "w", encoding="utf-8").write(page("tools"))
