@@ -1,0 +1,373 @@
+{
+ "_note": "Upgrade 3 (October 2026): answers to longer, low-difficulty Google searches (KD 15 or less, 100+ searches a month, DataForSEO keyword suggestions) that each post did not yet answer. Off-topic variants (brand names, other meanings of the words, pirated PDFs, live bank rates) were left out.",
+ "tools/sip-calculator.html": [
+  [
+   "Can I use this as an SBI SIP calculator?",
+   "Yes. A SIP calculator works the same way for every fund house, including SBI Mutual Fund: it compounds each monthly instalment at the return you enter. Use the past returns of the SBI fund you are considering only as a rough guide, because mutual fund returns are not guaranteed and change from year to year."
+  ],
+  [
+   "How do I calculate SIP returns for an SBI mutual fund?",
+   "Enter your monthly SIP amount, the number of years and an expected yearly return in the calculator above. For an equity fund, 10–12% is a common long-term assumption in India, and for a debt fund 6–7%. The result shows what you invest, the estimated gains and the final value."
+  ]
+ ],
+ "articles/ppf-epf-ssy-fd-rd-calculator.html": [
+  [
+   "How do I calculate SBI FD returns?",
+   "Choose FD in the calculator above, enter the amount, the tenure and SBI's current interest rate for that tenure (from SBI's website or branch), and keep quarterly compounding, which is how SBI and most Indian banks compound fixed deposits. The result is the maturity value before tax."
+  ],
+  [
+   "Is an FD calculator accurate for any bank?",
+   "Yes, as long as you use that bank's rate and its compounding (quarterly for most Indian banks) for your exact tenure. Senior citizens usually get an extra 0.25–0.50% a year, so add it if it applies to you."
+  ]
+ ],
+ "rewrites/2021_08_intelligence-quotient-blog.html": [
+  [
+   "What is a normal IQ?",
+   "IQ tests are scaled so the average is 100, with a standard deviation of 15. About two-thirds of people score between 85 and 115, which is considered the normal or average range."
+  ],
+  [
+   "What IQ level counts as genius?",
+   "There is no official genius score. On most modern tests, 130 and above is called very superior or gifted, which is about the top 2% of people, and scores of 140 or more are often described as genius level."
+  ],
+  [
+   "What is the average IQ in the United States?",
+   "Close to 100, because the major IQ tests are normed on representative samples of the US population, so the American average is set at 100 by design."
+  ]
+ ],
+ "rewrites/2023_08_the-desired-qualities-of-leadership.html": [
+  [
+   "What are some good quotes on leadership qualities?",
+   "“A leader is one who knows the way, goes the way, and shows the way” (John C. Maxwell). “Leadership is not about being in charge. It is about taking care of those in your charge” (Simon Sinek). “The function of leadership is to produce more leaders, not more followers” (Ralph Nader)."
+  ],
+  [
+   "What are the qualities of an autocratic leader?",
+   "An autocratic leader makes decisions alone, sets clear rules and expects them to be followed, and keeps tight control over how work is done. It can work in a crisis or with inexperienced teams that need fast direction, but over time it tends to lower creativity and motivation because people have little say."
+  ]
+ ],
+ "rewrites/2023_08_pursuit-of-happiness-strategies-for.html": [
+  [
+   "Where does “life, liberty and the pursuit of happiness” come from?",
+   "It comes from the United States Declaration of Independence of 4 July 1776, mainly drafted by Thomas Jefferson, which names “Life, Liberty and the pursuit of Happiness” as unalienable rights. The phrase echoes the philosopher John Locke, who wrote of life, liberty and property."
+  ],
+  [
+   "What does “the pursuit of happiness” mean?",
+   "In the Declaration of Independence it means the freedom to seek a good and fulfilling life in your own way. It promises the right to pursue happiness, not happiness itself."
+  ]
+ ],
+ "rewrites/2021_06_how-to-be-happy.html": [
+  [
+   "What are some good quotes on how to be happy?",
+   "“Very little is needed to make a happy life; it is all within yourself, in your way of thinking” (Marcus Aurelius, Meditations). “There is only one way to happiness and that is to cease worrying about things which are beyond the power of our will” (Epictetus). “Happiness depends upon ourselves” (Aristotle, paraphrasing the Nicomachean Ethics)."
+  ]
+ ],
+ "rewrites/2023_10_understanding-love-languages.html": [
+  [
+   "What is the list of the 5 love languages?",
+   "Gary Chapman's five love languages are words of affirmation, quality time, receiving gifts, acts of service and physical touch. Most people have one or two they value most."
+  ]
+ ],
+ "rewrites/2023_09_singapore-dollar-stable-currency-in.html": [
+  [
+   "How do I convert Singapore dollars to Indian rupees?",
+   "Multiply the amount in Singapore dollars by the current SGD to INR rate. Rates change every minute, so check a live rate or our free currency converter, and remember that banks and money changers add a margin to the mid-market rate."
+  ],
+  [
+   "How do I convert US dollars to Singapore dollars?",
+   "Multiply the amount in US dollars by the current USD to SGD rate. The Singapore dollar is managed against a basket of currencies by the Monetary Authority of Singapore, so it moves less sharply against the US dollar than many other currencies."
+  ]
+ ],
+ "rewrites/2022_01_how-to-increase-chances-of-success-zen.html": [
+  [
+   "What are some motivational success quotes?",
+   "“There are no secrets to success. It is the result of preparation, hard work, and learning from failure” (Colin Powell). “Genius is one percent inspiration, ninety-nine percent perspiration” (Thomas Edison). “The price of success is hard work, dedication to the job at hand, and the determination that whether we win or lose, we have applied the best of ourselves to the task at hand” (Vince Lombardi)."
+  ]
+ ],
+ "articles/fair-pay-raise-2026-real-raise.html": [
+  [
+   "Can I use this as a payroll raise calculator?",
+   "Yes. Enter the current salary or hourly pay and the raise as a percentage or an amount, and the calculator shows the new pay. For payroll, apply the raise to the pay for each period (weekly, fortnightly or monthly) from its effective date; the calculator also shows what the raise is worth after inflation."
+  ]
+ ],
+ "hubs/mind-start-here.html": [
+  [
+   "What are the best books on self-improvement?",
+   "Five that are widely recommended and grounded in research or long experience: Atomic Habits by James Clear (building habits), Mindset by Carol Dweck (growth mindset), Man's Search for Meaning by Viktor Frankl (purpose), Deep Work by Cal Newport (focus) and The 7 Habits of Highly Effective People by Stephen Covey."
+  ]
+ ],
+ "articles/word-counter-character-limits.html": [
+  [
+   "How do I count words in Google Docs?",
+   "Open Tools > Word count, or press Ctrl+Shift+C (Cmd+Shift+C on a Mac). Tick “Display word count while typing” to keep a live count on screen. Select text first to count only that part."
+  ]
+ ],
+ "articles/gst-calculator-2026-rates.html": [
+  [
+   "How do I calculate GST in reverse?",
+   "To take GST out of a price that already includes it, divide by 1 plus the rate. For 18% GST: price ÷ 1.18 gives the amount before GST, and the difference is the tax. Choose “Remove GST” in the calculator above to do it for any rate."
+  ],
+  [
+   "Is this GST calculator for India?",
+   "Yes. It uses India's GST slabs, splits the tax into CGST and SGST for sales within a state or IGST for sales between states, and works for any amount."
+  ]
+ ],
+ "articles/mask-aadhaar-pan-before-sharing.html": [
+  [
+   "What does masked Aadhaar mean?",
+   "A masked Aadhaar is a copy of your Aadhaar where the first eight digits of the 12-digit number are hidden as XXXX-XXXX, leaving only the last four visible. It is still valid for most identity checks, and it stops your full number from being misused. UIDAI lets you download one from the myAadhaar website."
+  ]
+ ],
+ "rewrites/2022_09_top-secrets-to-become-rich.html": [
+  [
+   "How can I become rich faster?",
+   "There is no safe shortcut. What speeds it up is raising your income (skills, a better-paid job or a business), saving a higher share of it, and investing early in diversified assets so compounding has more time. Schemes that promise fast, guaranteed returns are the most common way people lose money."
+  ]
+ ],
+ "tools/fire-calculator.html": [
+  [
+   "What are Coast FIRE and Fat FIRE?",
+   "Coast FIRE means you have already invested enough that, with no further contributions, it should grow to your retirement number by your target age, so you only need to earn your living costs. Fat FIRE means retiring early with a large budget, usually a corpus well above the standard 25 times expenses."
+  ]
+ ],
+ "rewrites/2023_07_unconditional-love-what-it-means-and.html": [
+  [
+   "What is the definition of unconditional love?",
+   "Unconditional love is love that is not earned and is not withdrawn: you care for someone's well-being regardless of what they do or give back. It does not mean accepting harmful behaviour; you can love someone unconditionally and still keep boundaries."
+  ],
+  [
+   "What is the opposite of unconditional love?",
+   "Conditional love: affection that depends on the other person meeting expectations, such as achievements, looks or obedience, and is withdrawn when they fall short."
+  ]
+ ],
+ "thoughts/spread-positivity_26.html": [
+  [
+   "What does the Bible say about truth?",
+   "“And ye shall know the truth, and the truth shall make you free” (John 8:32). “Lying lips are abomination to the LORD: but they that deal truly are his delight” (Proverbs 12:22). “Wherefore putting away lying, speak every man truth with his neighbour” (Ephesians 4:25). All from the King James Version."
+  ]
+ ],
+ "rewrites/2021_06_what-is-karma.html": [
+  [
+   "What is the Hindu belief in karma?",
+   "In Hinduism, karma is the law that every action has consequences that shape a person's future, in this life and the next, through the cycle of rebirth (samsara). The Bhagavad Gita teaches doing your duty without attachment to its results, so that action does not bind you."
+  ]
+ ],
+ "rewrites/2023_08_work-life-balance-navigating.html": [
+  [
+   "Which careers have the best work-life balance?",
+   "Jobs with predictable hours, little on-call work and flexibility tend to rate best, for example many roles in data analysis, actuarial work, software development at established companies, UX design, librarianship and some government jobs. The employer and the team matter more than the job title, so ask about hours and expectations before you accept an offer."
+  ]
+ ],
+ "articles/gold-safe-haven-2026-fall.html": [
+  [
+   "When will the gold price fall?",
+   "No one can time it reliably. Gold tends to weaken when real interest rates rise, the US dollar strengthens, central banks slow their buying, or fear in markets fades; it tends to rise in the opposite conditions. That is why most guides suggest holding a small, fixed share of gold rather than trading it."
+  ]
+ ],
+ "rewrites/2023_04_a-study-about-product-based-companies.html": [
+  [
+   "Which product-based companies are in Bangalore?",
+   "Bangalore has the largest concentration in India, including Google, Microsoft, Intuit, Adobe, Cisco, SAP Labs, Flipkart, Swiggy, Razorpay and Zerodha."
+  ],
+  [
+   "Which product-based companies are in Hyderabad and Pune?",
+   "Hyderabad hosts large campuses of Microsoft, Google, Amazon, Apple and Salesforce, and Indian product firms such as Darwinbox. Pune has product companies such as PubMatic, Druva, Icertis and BMC Software."
+  ]
+ ],
+ "rewrites/2023_03_a-study-about-service-and-product-based.html": [
+  [
+   "What are some service-based companies in India?",
+   "The largest are TCS, Infosys, Wipro, HCLTech and Tech Mahindra, along with Accenture, Cognizant and Capgemini, which have most of their staff in India. They have big campuses in Bangalore, Hyderabad, Pune and Chennai."
+  ]
+ ],
+ "rewrites/2021_10_a-comprehensive-guide-401k.html": [
+  [
+   "What is the difference between a 401(k) and a 403(b)?",
+   "Both are US workplace retirement plans with the same yearly contribution limits. A 401(k) is offered by private companies; a 403(b) is for employees of public schools, hospitals, churches and other non-profits, and often has fewer investment options."
+  ],
+  [
+   "What is a safe harbor 401(k)?",
+   "A safe harbor 401(k) is a plan in which the employer makes a required contribution (a set match or a fixed contribution for all eligible staff) that vests immediately. In return the plan skips the annual tests that check it does not favour highly paid employees."
+  ]
+ ],
+ "rewrites/2022_01_step-to-step-process-to-achieve-new.html": [
+  [
+   "What are some good New Year resolution ideas?",
+   "Pick one or two specific, measurable goals: walk 7,000 steps a day, save 10% of every pay cheque, read one book a month, cook at home four nights a week, learn a skill for 20 minutes a day, or go to bed at a fixed time. Smaller, specific resolutions are far more likely to last than big, vague ones."
+  ]
+ ],
+ "rewrites/2021_06_how-to-forgot-someone.html": [
+  [
+   "How do you get over someone you never dated?",
+   "Accept that the feelings were real even if the relationship was not, limit contact and social media checking for a while, talk it through with a friend, and put your energy into plans of your own. Feelings for someone you only imagined a future with usually fade faster than a real break-up once you stop feeding them."
+  ],
+  [
+   "How do you get over someone you still love?",
+   "Allow yourself to grieve, cut or reduce contact so you are not reopening the wound, lean on friends and routines, and avoid rushing into a rebound. Love does not switch off quickly; it fades as new experiences take up the space the person used to fill."
+  ]
+ ],
+ "articles/heic-to-jpg-remove-photo-location.html": [
+  [
+   "How do I change HEIC to JPG on a MacBook?",
+   "Open the photo in Preview, choose File > Export, pick JPEG as the format, set the quality and save. For many photos at once, select them in Finder, right-click and choose Quick Actions > Convert Image. Or use the converter above, which also removes the location data."
+  ]
+ ],
+ "hubs/career-start-here.html": [
+  [
+   "What is a good career guide for students after 12th?",
+   "Start from what you enjoy and are good at, then look at the courses that lead there: science (engineering, medicine, data science, pharmacy), commerce (CA, finance, business), arts (law, design, psychology, journalism) or skill-based diplomas. Talk to people already doing the job and check the entrance exams and fees before deciding."
+  ]
+ ],
+ "articles/afford-car-2026-calculator.html": [
+  [
+   "How much car can I afford based on my salary?",
+   "A common rule is 20/4/10: put at least 20% down, borrow for no more than four years, and keep the car payment, insurance and fuel under 10% of your gross monthly income. Enter your income in the calculator above to see the price that rule allows."
+  ]
+ ],
+ "rewrites/2024_01_the-power-of-now-brief-overview-of-book.html": [
+  [
+   "Is there an audiobook of The Power of Now?",
+   "Yes. The audiobook is read by Eckhart Tolle himself and is available on the major audiobook platforms. Many readers find his calm narration suits the book."
+  ]
+ ],
+ "articles/china-visa-photo-size.html": [
+  [
+   "What is the China visa photo size requirement?",
+   "A colour photo 33 mm wide and 48 mm high on a white background, taken in the last six months, with the head 28–33 mm tall; online forms ask for a digital photo of 354–420 × 472–560 pixels between 40 and 120 KB."
+  ]
+ ],
+ "rewrites/2023_10_letting-go-of-past-guide-to-moving.html": [
+  [
+   "What does the Bible say about letting go of the past?",
+   "“Remember ye not the former things, neither consider the things of old” (Isaiah 43:18), and Paul's “forgetting those things which are behind, and reaching forth unto those things which are before” (Philippians 3:13). Both are from the King James Version."
+  ]
+ ],
+ "rewrites/2023_08_zen-journey-into-essence-of-mindfulness.html": [
+  [
+   "What is the symbol of Zen Buddhism?",
+   "The ensō, a circle drawn in one brushstroke. It stands for enlightenment, wholeness and the beauty of imperfection, and drawing it is a meditative practice in itself."
+  ],
+  [
+   "What are good books about Zen Buddhism?",
+   "Zen Mind, Beginner's Mind by Shunryu Suzuki is the classic introduction. The Three Pillars of Zen by Philip Kapleau and The Way of Zen by Alan Watts are also widely read."
+  ]
+ ],
+ "articles/gdp-measuring-economy.html": [
+  [
+   "What is the meaning of the GDP deflator?",
+   "The GDP deflator measures the change in prices of everything an economy produces. It is nominal GDP divided by real GDP, times 100, so it shows how much of GDP growth came from higher prices rather than more output."
+  ]
+ ],
+ "rewrites/2021_07_inflation-tutorial.html": [
+  [
+   "What is hyperinflation?",
+   "Hyperinflation is extremely rapid inflation, usually defined as prices rising more than 50% a month. Famous cases are Germany in 1923, Zimbabwe in 2008 and Venezuela in the late 2010s, often caused by governments printing money to cover spending."
+  ]
+ ],
+ "rewrites/2023_10_behavioral-economics.html": [
+  [
+   "What are the best books on behavioral economics?",
+   "Thinking, Fast and Slow by Daniel Kahneman, Nudge by Richard Thaler and Cass Sunstein, Misbehaving by Richard Thaler and Predictably Irrational by Dan Ariely are the most popular starting points."
+  ]
+ ],
+ "rewrites/2023_09_the-rise-of-gig-economy-exploring.html": [
+  [
+   "Which definition best describes the gig economy?",
+   "A labour market in which people work short-term, task-based jobs (gigs) as independent contractors, often found through apps or online platforms, instead of permanent employment with one employer."
+  ]
+ ],
+ "rewrites/2021_10_data-structures-why-it-matters-and-how.html": [
+  [
+   "What are the different types of data structures?",
+   "Linear structures store items in a sequence: arrays, linked lists, stacks and queues. Non-linear structures store relationships: trees, heaps, graphs and hash tables. Choosing the right one decides how fast a program can find, add and remove data."
+  ]
+ ],
+ "tools/credit-card-payoff-calculator.html": [
+  [
+   "Can I calculate payoff for multiple credit cards?",
+   "This calculator works one card at a time. For several cards, use our free debt payoff planner, which orders them by the snowball (smallest balance first) or avalanche (highest interest first) method and shows the total time and interest."
+  ]
+ ],
+ "rewrites/2023_10_recognizing-toxic-boss-behavior-signs.html": [
+  [
+   "How do you deal with a toxic boss without quitting?",
+   "Keep a dated record of incidents, communicate in writing where you can, set clear limits on out-of-hours demands, find support from colleagues or a mentor, and raise serious problems with HR. Meanwhile, look for an internal transfer so you have an exit that does not mean leaving the company."
+  ]
+ ],
+ "rewrites/2021_10_why-data-science-is-emerging-field-next.html": [
+  [
+   "What are the main data science career paths?",
+   "Data analyst, data scientist, machine learning engineer, data engineer and analytics manager are the most common. Many people start as analysts and move into data science or engineering as their programming and statistics skills grow."
+  ]
+ ],
+ "rewrites/2023_08_the-genesis-of-petrodollars-unveiling.html": [
+  [
+   "What is the definition of a petrodollar?",
+   "A petrodollar is a US dollar paid to an oil-exporting country for its oil. The term also describes the system, dating from the 1970s, in which oil is mostly priced and traded in dollars and exporters invest their surplus dollars back into US assets."
+  ]
+ ],
+ "rewrites/2021_06_fashion-designing.html": [
+  [
+   "How do I become a fashion designer after 12th?",
+   "Take a design entrance exam such as NIFT, NID or UCEED, or apply to private design schools, for a bachelor's degree (B.Des) in fashion design. Build a portfolio of sketches and garments, learn pattern making and design software, and take internships with designers or brands."
+  ]
+ ],
+ "rewrites/2021_10_the-6-signs-you-need-to-quit-your-job.html": [
+  [
+   "What happens to my 401(k) when I quit my job?",
+   "Your own contributions and the vested part of employer contributions stay yours. You can leave the money in the old plan (if the balance is high enough), roll it into your new employer's plan or an IRA, or cash it out, which usually means income tax and a 10% penalty if you are under 59½."
+  ]
+ ],
+ "articles/canada-passport-photo-size.html": [
+  [
+   "What are the Canadian passport photo dimensions?",
+   "50 mm wide and 70 mm high, with the face from chin to crown 31–36 mm tall, printed by a commercial photographer with their name and the date on the back."
+  ]
+ ],
+ "articles/uk-passport-photo-size.html": [
+  [
+   "What are the UK passport photo dimensions?",
+   "A printed UK passport photo is 35 mm wide and 45 mm high, with the head 29–34 mm tall. For online applications the digital photo must be at least 600 pixels wide and 750 pixels high."
+  ]
+ ],
+ "articles/us-passport-photo-size.html": [
+  [
+   "What are the US passport photo requirements for infants?",
+   "The same 2 × 2 inch size and plain white background, with the baby facing the camera. Eyes should be open if possible (newborns are allowed some leeway), no hands or toys in the shot, and if someone supports the baby, they must not be visible: lay the baby on a white sheet instead."
+  ]
+ ],
+ "articles/us-visa-photo-600x600.html": [
+  [
+   "What is the US visa photo size for B1/B2?",
+   "The same as every US visa: a square colour photo, 600 × 600 to 1,200 × 1,200 pixels, under 240 KB as a JPEG, with the head 50–69% of the image height."
+  ]
+ ],
+ "rewrites/2023_06_embracing-resilience-strategies-to-face.html": [
+  [
+   "How do you deal with rejection sensitive dysphoria?",
+   "Rejection sensitive dysphoria is intense emotional pain at perceived rejection, often described in people with ADHD; it is not a formal diagnosis. Naming the feeling, pausing before reacting, checking the facts with someone you trust and therapy such as CBT help. If you have ADHD, talk to your doctor, since treatment can reduce it."
+  ]
+ ],
+ "rewrites/2021_06_how-to-sleep-fastly-and-peacefully.html": [
+  [
+   "How can people with ADHD fall asleep faster?",
+   "Keep a fixed bedtime and wake time, stop screens and stimulating tasks an hour before bed, use a short wind-down routine, try white noise or a weighted blanket, and ask your doctor about the timing of any stimulant medicine, since a late dose can keep you awake."
+  ]
+ ],
+ "articles/stablecoins-explained-interest.html": [
+  [
+   "What is the difference between tokenized deposits and stablecoins?",
+   "A tokenized deposit is an ordinary bank deposit recorded on a blockchain: it is a claim on a regulated bank and may be covered by deposit insurance. A stablecoin is issued by a company that holds reserves to back it; it is not a bank deposit and is not insured in the same way."
+  ]
+ ],
+ "rewrites/2024_01_how-to-be-consistent.html": [
+  [
+   "How do you become disciplined and consistent?",
+   "Make the habit small enough to do on your worst day, tie it to a fixed time or an existing routine, track it visibly, and plan in advance what you will do when you miss a day, so one miss does not become a week. Consistency comes from systems, not willpower."
+  ]
+ ],
+ "rewrites/2023_04_how-to-improve-my-self-satisfaction.html": [
+  [
+   "What is the Satisfaction with Life Scale (SWLS)?",
+   "A short questionnaire created by psychologist Ed Diener and colleagues in 1985. You rate five statements, such as “In most ways my life is close to my ideal”, from 1 to 7; totals range from 5 to 35, and higher scores mean greater life satisfaction."
+  ]
+ ]
+}

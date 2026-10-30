@@ -1,9 +1,10 @@
 # Add answers to Google's "People also ask" questions at the top of each post's FAQ section
 # (faq_additions_2026_10.json). Skips questions a post already has, so it is safe to run again.
-#   python3 seo/add_faq_answers.py
+#   python3 seo/add_faq_answers.py [additions file, default faq_additions_2026_10.json]
 import html, json, os, re
 HERE = os.path.dirname(os.path.abspath(__file__))
-A = json.load(open(os.path.join(HERE, "faq_additions_2026_10.json"), encoding="utf-8"))
+import sys
+A = json.load(open(os.path.join(HERE, sys.argv[1] if len(sys.argv) > 1 else "faq_additions_2026_10.json"), encoding="utf-8"))
 for rel, qas in A.items():
     if rel.startswith("_"): continue
     p = os.path.join(HERE, rel); s = open(p, encoding="utf-8").read()
