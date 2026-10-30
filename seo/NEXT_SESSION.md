@@ -1,0 +1,14 @@
+# Next session: start here
+
+1. **Bing submission.** The user added `BING_API_KEY` to the environment on 30 October 2026.
+   - Run `python3 seo/bing_submit.py`. It submits up to Bing's daily quota in priority order and records progress in `seo/bing_submitted.json`.
+   - Re-run it on later days until every address is sent.
+   - After each publish, run `python3 seo/bing_submit.py <changed URLs>`.
+2. **Never ask the user to do manual work.** The Blogger token (`BLOGGER_TOKEN`, passed only as an environment variable and never saved) is the only exception.
+3. **About 13 November 2026:** re-measure Google indexing and rankings with DataForSEO.
+   - Use per-URL `site:` checks (see `seo/URL_INSPECTION.xlsx` for the priority list) and ranked_keywords.
+   - On 30 October, about 7% of sampled posts were indexed.
+4. Status and scripts:
+   - `seo/sizes/STATUS.md`: exact-size pages.
+   - `seo/publish_u3.py`, `seo/publish_pending.py`: republish batches.
+   - `seo/fetch_live.py` + `seo/seo_audit.py`: live audit. On 30 October, 290 of 290 posts passed.
