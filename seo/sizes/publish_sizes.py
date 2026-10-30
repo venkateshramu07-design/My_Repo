@@ -61,4 +61,4 @@ for n in names + LINKED:
     h = urllib.request.urlopen(urllib.request.Request(u + "?r=%d" % time.time(), headers={"User-Agent": "Mozilla/5.0"})).read().decode()
     i = h.find("<div class='post-body post-content'"); j = h.find("<div class='post-footer'>", i)
     t = re.sub(r"(?is)<(script|style|svg)[^>]*>.*?</\1>", " ", h[i:j]); w = len(re.sub(r"<[^>]+>", " ", html.unescape(t)).split())
-    print("%-5s %5d words  %s" % ("OK" if w > 500 and "[[" not in h[i:j] else "CHECK", w, u))
+    print("%-5s %5d words  %s" % ("OK" if w > 500 and not re.search(r"\[\[(?:post|embed|tool|hub):", h[i:j]) else "CHECK", w, u))
