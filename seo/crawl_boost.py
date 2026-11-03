@@ -10,7 +10,7 @@ What it does (idempotent; every changed post/page is saved to seo/backup/ first)
      full "Every article by topic" directory, so every post is 2 clicks from any page.
   2. 2021/06/sitemap: rebuilt as a directory of all live posts (it listed 164 of 296).
   3. Posts Google has indexed (crawled often): a "More guides" box linking to related posts that
-     Google has not crawled yet (from seo/index-status/<latest>.json).
+     Google has not crawled yet (from seo/index-status/<latest>.json). Added once per post, never rotated.
   4. Resubmits sitemap.xml, sitemap-pages.xml and the posts feed in Search Console.
 
 Usage: python3 seo/crawl_boost.py [--dry-run]
@@ -172,8 +172,9 @@ def main(dry):
     # 3. Indexed posts link to not-yet-crawled posts
     used = set()
     for p in posts:
-        if status.get(p["url"], {}).get("verdict") == "PASS":
-            c = strip(p["content"], MORE_S, MORE_E) + more_box(p, posts, status, used)
+        # Write each box once: repeated edits to the few indexed posts would look like churn to Google.
+        if status.get(p["url"], {}).get("verdict") == "PASS" and MORE_S not in p["content"]:
+            c = p["content"] + more_box(p, posts, status, used)
             save(blog_id, "post", p, c, dry)
 
     # 4. Resubmit sitemaps
