@@ -41,3 +41,21 @@ Every post is saved to `seo/backup/` before anything is changed, and `python3 se
 2. Store the access token as the environment variable `BLOGGER_TOKEN` in this cloud environment's settings,
    then start a new session. The token is valid for one hour.
 3. `python3 seo/apply.py backup`, then `python3 seo/apply.py apply --dry-run`, then `python3 seo/apply.py apply`.
+
+## Crawling and indexing (November 2026)
+
+The 3 Nov 2026 check (`index-status/2026-11-03.md`) found only 6 of 300 URLs indexed and 151 never crawled.
+Main cause: the homepage shows only the 4 newest posts and its "Older posts" link points to `/search?...`,
+which robots.txt blocks, so Googlebot could reach only about 25 posts by following links.
+
+- `crawl_boost.py` turns the sitewide "Trending Posts" page and `2021/06/sitemap` into full topic directories,
+  so every post is 2 clicks from any page. It also adds a "More Guides" box to indexed posts that links to
+  posts not yet crawled, and resubmits the sitemaps. Every changed item is backed up to `seo/backup/crawl-boost/`.
+  To undo a change, run `python3 seo/crawl_boost.py restore <file>`.
+- `index_check.py` inspects every URL and writes `index-status/<date>.json` and `.md`, comparing each run with the previous one.
+- `bing_submit.py` submits the daily Bing quota (100 URLs), rotating through the sitemap.
+
+Still holding indexing back: 55 templated posts (35 "<country> in numbers 2026" pages and about 20
+"compress PDF / resize image to X KB" variants) share 50-57% of their text with each other. Also, 137 posts
+were published between 20 and 30 Oct (60 on 25 Oct alone). Google tends to hold back a young site that
+grows this fast until it has built some trust.
