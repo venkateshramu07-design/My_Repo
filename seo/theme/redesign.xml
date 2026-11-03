@@ -1683,6 +1683,14 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
   }
   function fixImage(img, title, label, big, href) {
     var src = img.getAttribute('data-src') || img.getAttribute('src') || '';
+    // A post's first image may be an older cover saved in its body: show the current cover instead.
+    var now = coverFor(href);
+    if (now && /\/seo\/covers\//.test(src) && src.indexOf(now + '-') === -1) {
+      img.removeAttribute('data-src');
+      img.src = now + '-800.webp'; img.srcset = now + '-800.webp 800w, ' + now + '-1200.webp 1200w';
+      img.style.objectFit = 'cover';
+      return true;
+    }
     if (!src || PLACEHOLDER.test(src)) {
       img.removeAttribute('data-src'); img.removeAttribute('srcset');
       var real = coverFor(href);
@@ -2433,6 +2441,15 @@ html.bd-topicpage-ready #content-wrapper,html.bd-topicpage .bd-topic-head{displa
       addEventListener('scroll', onRead, { passive: true }); onRead();
 
       var post = body.querySelector('.seo-post') || body, dropped = false;
+      // Show the post's current cover (BD_COVERS) in place of an older cover image saved in the post body.
+      (function () {
+        var cur = BD_COVERS[location.pathname], old = post.querySelector('img[src*="/seo/covers/"], img[data-src*="/seo/covers/"]');
+        if (!cur || !old) return;
+        var src = old.getAttribute('src') || old.getAttribute('data-src') || '';
+        if (src.indexOf(cur + '-') === 0 || !/-(800|1200)\.webp/.test(src)) return;
+        old.setAttribute('src', cur + '-800.webp');
+        old.setAttribute('srcset', cur + '-800.webp 800w, ' + cur + '-1200.webp 1200w');
+      })();
       Array.prototype.slice.call(post.children, 0, 6).forEach(function (p) {
         if (p.tagName !== 'P') return;
         var txt = p.textContent.trim();
