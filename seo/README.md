@@ -55,7 +55,15 @@ which robots.txt blocks, so Googlebot could reach only about 25 posts by followi
 - `index_check.py` inspects every URL and writes `index-status/<date>.json` and `.md`, comparing each run with the previous one.
 - `bing_submit.py` submits the daily Bing quota (100 URLs), rotating through the sitemap.
 
-Still holding indexing back: 55 templated posts (35 "<country> in numbers 2026" pages and about 20
+`detemplate.py` (run 3 Nov 2026) cut the shared text on the 35 country pages and 16 PDF/photo size pages:
+country pages lost the generic intro (now a "where it stands out" paragraph from the page's own rankings), the nine
+"Full table ... Download CSV" lines (now one short link per section), the FAQ that repeated every figure (and its
+FAQPage JSON-LD), the identical 34-country list (now nearby countries) and two empty-value bugs ("inflation at % ()",
+"after % in 2026"). Each country page also has a comparison table against its nearest neighbours. The tool pages'
+identical "how it works" and "test files" text now lives once on the Reduce Image Size hub. Text shared with 5+
+other posts fell from about 50-57% to about 30-46% per page.
+
+Before that fix: 55 templated posts (35 "<country> in numbers 2026" pages and about 20
 "compress PDF / resize image to X KB" variants) share 50-57% of their text with each other. Also, 137 posts
 were published between 20 and 30 Oct (60 on 25 Oct alone). Google tends to hold back a young site that
 grows this fast until it has built some trust.
