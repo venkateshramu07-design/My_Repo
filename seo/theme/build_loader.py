@@ -19,6 +19,10 @@ _ids = json.load(open(os.path.join(HERE, "..", "tools", "published.json"), encod
 _cb = lambda n: _pt.cover_base(n) + n.split("/")[1]
 covers = {_re.sub(r"^https?://[^/]+", "", _ids[n]["url"]): _cb(n) for n in _pt.COVERS if n in _ids}
 covers.update({"t:" + _pt.POSTS[n][0]: _cb(n) for n in _pt.COVERS if n in _ids and n in _pt.POSTS})
+# Covers for posts published outside publish_tools (seo/theme/extra_covers.json: path or "t:"+title -> cover base URL).
+_extra = os.path.join(HERE, "extra_covers.json")
+if os.path.exists(_extra):
+    covers.update(json.load(open(_extra, encoding="utf-8")))
 assert js.count("var BD_COVERS = {};") == 1
 js = js.replace("var BD_COVERS = {};", "var BD_COVERS = " + json.dumps(covers, separators=(",", ":")) + ";")
 _dat = json.load(open(os.path.join(HERE, "..", "data", "index.json"), encoding="utf-8"))
