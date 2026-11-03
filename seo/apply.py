@@ -110,7 +110,9 @@ QUOTE_DESC = "Today's positive thought: \"{q}.\" A short reflection to inspire c
 
 def token():
     # Without BLOGGER_TOKEN, the environment's network secret adds the Authorization header.
-    return os.environ.get("BLOGGER_TOKEN")
+    if os.environ.get("BLOGGER_TOKEN"): return os.environ["BLOGGER_TOKEN"]
+    from google_token import access_token  # long-lived keys in the environment, if set
+    return access_token()
 
 
 def call(method, path, params=None, body=None):

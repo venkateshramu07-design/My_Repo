@@ -3,7 +3,8 @@
 #   GSC_TOKEN=... python3 seo/gsc_inspect.py
 import collections, json, os, re, sys, time, urllib.request
 from concurrent.futures import ThreadPoolExecutor
-HERE = os.path.dirname(os.path.abspath(__file__)); TOKEN = os.environ.get("GSC_TOKEN") or sys.exit("GSC_TOKEN is not set")
+HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); from google_token import access_token
+TOKEN = os.environ.get("GSC_TOKEN") or access_token() or sys.exit("Set GSC_TOKEN, or the GOOGLE_* keys")
 SITE = "sc-domain:randomthoughtsever.blogspot.com"; B = "https://randomthoughtsever.blogspot.com"
 get = lambda u: urllib.request.urlopen(urllib.request.Request(u, headers={"User-Agent": "Mozilla/5.0"}), timeout=60).read().decode()
 urls = [B + "/"] + re.findall(r"<loc>([^<]+)</loc>", get(B + "/sitemap.xml")) + re.findall(r"<loc>([^<]+)</loc>", get(B + "/sitemap-pages.xml"))

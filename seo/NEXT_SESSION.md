@@ -1,5 +1,12 @@
 # Next session: start here
 
+0. **Google keys (added 3 November 2026).** The user saved GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REFRESH_TOKEN in the environment.
+   - Run `python3 seo/google_token.py` to confirm they work and cover both scopes.
+   - From then on, `apply.py` (every publish script) and `gsc_inspect.py` make their own access tokens. Don't ask the user for tokens.
+   - **First task:** run `python3 seo/gsc_inspect.py`, then compare `seo/gsc_inspection.json` with `seo/gsc_inspection_2026-10-30.json`.
+     - The 30 October baseline: 18 indexed, 132 crawled not indexed, 126 discovered, 24 unknown.
+     - The user asked on 3 November whether `site:` results are falling. `site:` showed 10 (US) against 8 on 30 October, but it is unreliable. Report the real per-page change.
+
 1. **Bing submission.** The user added `BING_API_KEY` to the environment on 30 October 2026.
    - Run `python3 seo/bing_submit.py`. It submits up to Bing's daily quota in priority order and records progress in `seo/bing_submitted.json`.
    - Re-run it on later days until every address is sent.
