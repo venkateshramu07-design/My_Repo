@@ -28,11 +28,14 @@ def inspect(p):
 
 
 def main():
+    day = time.strftime("%Y-%m-%d", time.gmtime())
+    if os.path.exists(os.path.join(OUT, day + ".json")):
+        print(f"Snapshot for {day} already exists; not overwriting it.")
+        return
     blog_id = call(f"{API}/blogs/byurl?url={BLOG}")["id"]
     posts, pages = fetch(blog_id)
     with ThreadPoolExecutor(4) as ex:
         urls = sorted(ex.map(inspect, posts + pages), key=lambda r: r["url"])
-    day = time.strftime("%Y-%m-%d")
     prev_files = [f for f in sorted(glob.glob(os.path.join(OUT, "20*.json"))) if not f.endswith(day + ".json")
                   and os.path.basename(f)[:4].isdigit()]
     os.makedirs(OUT, exist_ok=True)
