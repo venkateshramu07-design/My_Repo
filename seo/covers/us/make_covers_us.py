@@ -2,7 +2,7 @@
 
 Each cover: a muted two-tone background with soft texture, a topic illustration on the right, the title in Fraunces,
 and the Blog Digest badge. Rendered with Playwright/Chromium, saved as <slug>.jpg, <slug>-1200.webp and <slug>-800.webp.
-Usage: python3 seo/covers-us/make_covers_us.py <font-dir>   (font dir holds fraunces-600/700 and inter-600/800 .woff2)
+Usage: python3 seo/covers/us/make_covers_us.py <font-dir>   (font dir holds fraunces-600/700 and inter-600/800 .woff2)
 """
 import json, os, subprocess, sys
 from PIL import Image
@@ -173,15 +173,15 @@ PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>
 body{width:1200px;height:630px;overflow:hidden;position:relative;
  background:radial-gradient(1100px 700px at 85% 15%,BG2 0%,BG1 70%);font-family:Inter}
 .grain{position:absolute;inset:0;opacity:.16;mix-blend-mode:overlay}
-.glow{position:absolute;right:-120px;top:40px;width:620px;height:620px;border-radius:50%;
+.glow{position:absolute;left:520px;top:40px;width:620px;height:620px;border-radius:50%;
  background:radial-gradient(circle,ACC 0%,transparent 62%);opacity:.16}
 .rings{position:absolute;right:-180px;bottom:-260px;width:760px;height:760px;border-radius:50%;
  border:1.5px solid rgba(255,255,255,.08);box-shadow:0 0 0 70px rgba(255,255,255,.015),0 0 0 140px rgba(255,255,255,.012)}
-.art{position:absolute;right:56px;top:105px;width:420px;height:420px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.28))}
-.txt{position:absolute;left:72px;top:72px;width:620px;height:486px;display:flex;flex-direction:column}
+.art{position:absolute;left:600px;top:118px;width:390px;height:390px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.28))}
+.txt{position:absolute;left:72px;top:72px;width:520px;height:486px;display:flex;flex-direction:column}
 .k{font-weight:800;font-size:19px;letter-spacing:2.6px;text-transform:uppercase;color:ACC}
 .t{font-family:Fraunces;font-weight:700;font-size:TSpx;line-height:1.04;color:#f6f0e6;margin-top:22px;letter-spacing:-.5px}
-.s{font-weight:600;font-size:25px;line-height:1.35;color:rgba(246,240,230,.72);margin-top:22px;max-width:560px}
+.s{font-weight:600;font-size:24px;line-height:1.35;color:rgba(246,240,230,.72);margin-top:20px;max-width:500px}
 .b{margin-top:auto;display:flex;align-items:center;gap:14px}
 .bl{width:52px;height:52px;border-radius:12px;background:#e9844a;display:grid;place-items:center;
  font-family:Fraunces;font-weight:700;font-size:32px;color:#fff}
@@ -207,7 +207,7 @@ NODE = """const { chromium } = require('playwright');
 def main():
     jobs = []
     for slug, (kick, title, sub, bg1, bg2, acc, art) in COVERS.items():
-        ts = 64 if len(title) <= 30 else 56
+        ts = 60 if len(title) <= 30 else 50
         html = (PAGE.replace("FD/", "file://" + FONTS + "/").replace("BG1", bg1).replace("BG2", bg2)
                 .replace("ACC", acc).replace("TS", str(ts)).replace("KICK", kick).replace("TITLE", title)
                 .replace("SUB", sub).replace("ART", art.replace("BG2", bg2).replace("ACC", acc)))
