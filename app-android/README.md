@@ -1,4 +1,4 @@
-# Blog Digest Android app
+# Eternal: the Blog Digest Android app
 
 A native Android shell for https://randomthoughtsever.blogspot.com/ with bottom tabs (Home, Money, Mind, Career, Tools),
 file picking and saving for the blog's in-browser tools (blob/data downloads saved to Downloads via MediaStore),

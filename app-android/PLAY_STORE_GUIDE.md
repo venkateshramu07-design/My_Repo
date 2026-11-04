@@ -1,4 +1,4 @@
-# How to put Blog Digest on Google Play: step by step
+# How to put Eternal on Google Play: step by step
 
 You don't need to know app development. Everything technical is done. What's left are the steps only the account
 owner can do in Google Play Console. Allow about 3 weeks in total, mostly waiting: about 2 days for account checks,
@@ -13,7 +13,7 @@ the 14-day test that Google requires for new accounts, then about a week for rev
 | `blog-digest-upload.jks` + `SIGNING-KEY.txt` | Your private upload key and its password. **Keep both safe** (for example in Google Drive and on a USB stick). Every future update must be signed with this key. Never share them publicly. |
 | `store/` folder | Icon, feature graphic, 4 screenshots and all the listing text (`store/listing.md`). |
 
-App details: name **Blog Digest**, package `com.randomthoughtsever.blogdigest`, version 1.0.0 (code 1),
+App details: name **Eternal**, package `com.randomthoughtsever.blogdigest`, version 1.0.0 (code 1),
 targets Android 16 (API 36) as Google Play currently requires, and works on Android 10 and newer.
 
 ---
@@ -22,7 +22,7 @@ targets Android 16 (API 36) as Google Play currently requires, and works on Andr
 
 1. Send `app-release.apk` to your Android phone (email it to yourself, or put it in Google Drive) and tap it.
 2. Android will say it's blocked for security. Tap **Settings**, turn on **Allow from this source**, go back and tap **Install**.
-3. Open **Blog Digest** and check:
+3. Open **Eternal** and check:
    - The tabs at the bottom (Home, Money, Mind, Career, Tools) open the right sections.
    - In **Tools**, open "Compress PDF" or "Resize image", pick a file, then tap **Download**. A message
      "Saved to Downloads" appears; tap **Open** to see the file.
@@ -42,7 +42,7 @@ targets Android 16 (API 36) as Google Play currently requires, and works on Andr
 ## Step 3: Create the app (5 minutes)
 
 In Play Console, click **Create app** and enter:
-- App name: **Blog Digest**
+- App name: **Eternal**
 - Default language: **English (United States) – en-US**
 - App or game: **App**
 - Free or paid: **Free**
@@ -98,7 +98,7 @@ the app can go public.
 3. Click **Create release**.
    - When asked about app signing, keep **"Use Google-generated key" (Play App Signing)**, the recommended default.
    - **Upload `app-release.aab`.**
-   - Release name: `1.0.0`. Release notes: `First release of the Blog Digest app.`
+   - Release name: `1.0.0`. Release notes: `First release of Eternal.`
 4. Click **Next → Save → Send for review**. The first review usually takes a few hours to a few days.
 5. When it's approved, copy the **opt-in link** from the Testers tab and send it to your testers. Each tester must:
    open the link, tap **Become a tester**, then **install the app from Google Play** and keep it installed.
@@ -111,7 +111,7 @@ the app can go public.
 2. When Google approves (often within 7 days), go to **Test and release → Production → Create release**, choose the
    same build from your library (or upload `app-release.aab` again), add release notes, click
    **Next → Save → Send for review**, then **Start rollout to Production**.
-3. After the final review, Blog Digest appears on Google Play. Your listing link will be
+3. After the final review, Eternal appears on Google Play. Your listing link will be
    `https://play.google.com/store/apps/details?id=com.randomthoughtsever.blogdigest`
 
 ## If Google rejects the app

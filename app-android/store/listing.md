@@ -1,11 +1,11 @@
-# Google Play store listing: Blog Digest
+# Google Play store listing: Eternal
 
 Copy each field into Play Console → Grow users → Store presence → Main store listing.
 
 **App name** (max 30 characters)
 
 ```
-Blog Digest
+Eternal
 ```
 
 **Short description** (max 80 characters)
@@ -17,7 +17,7 @@ Money, mind and career guides, plus free PDF and photo tools that never upload.
 **Full description** (max 4,000 characters)
 
 ```
-Blog Digest brings clear, in-depth guides on money, the mind and work to your phone, plus free everyday tools that run on your device and never upload your files.
+Eternal brings the clear, in-depth guides from the Blog Digest website on money, the mind and work to your phone, plus free everyday tools that run on your device and never upload your files.
 
 READ GUIDES THAT ANSWER REAL QUESTIONS
 • Personal finance: budgeting, emergency funds, credit scores, debt, insurance, car and student loans
