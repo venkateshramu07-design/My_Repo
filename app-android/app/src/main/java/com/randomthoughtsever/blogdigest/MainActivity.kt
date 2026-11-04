@@ -16,8 +16,7 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
 import android.webkit.CookieManager
-import android.webkit.DownloadListener
-import android.webkit.JavascriptInterface
+import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -40,42 +39,56 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
+import org.json.JSONObject
 import java.io.ByteArrayInputStream
+import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
         const val HOST = "randomthoughtsever.blogspot.com"
-        const val HOME = "https://$HOST/"
+        const val ORIGIN = "https://$HOST"
+        const val HOME = "$ORIGIN/"
         private val TABS = mapOf(
             R.id.nav_home to HOME,
-            R.id.nav_money to "https://$HOST/search/label/Personal%20Finance",
-            R.id.nav_mind to "https://$HOST/search/label/Psychology",
-            R.id.nav_career to "https://$HOST/search/label/Career%20%26%20Workplace",
-            R.id.nav_tools to "https://$HOST/p/free-tools.html",
+            R.id.nav_money to "$ORIGIN/search/label/Personal%20Finance",
+            R.id.nav_mind to "$ORIGIN/search/label/Psychology",
+            R.id.nav_career to "$ORIGIN/search/label/Career%20%26%20Workplace",
+            R.id.nav_tools to "$ORIGIN/p/free-tools.html",
         )
         // Ads and ad trackers are not loaded inside the app (AdSense web ads aren't allowed in apps).
         private val BLOCKED = listOf(
             "googlesyndication.com", "doubleclick.net", "googleadservices.com", "adservice.google.",
             "adtrafficquality.google", "fundingchoicesmessages.google.com",
         )
+        // Link types that may open another app. Everything else (intent:, file:, content:, javascript: ...) is ignored.
+        private val OUTSIDE_SCHEMES = setOf("https", "http", "mailto", "tel", "sms", "smsto", "whatsapp", "tg", "upi", "geo", "market")
+        // File types the blog's tools produce. Anything else (for example an .apk) is never written to the phone.
+        private val SAVE_TYPES = setOf(
+            "application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
+            "application/zip", "application/x-zip-compressed", "text/csv", "text/plain", "application/json",
+        )
+        private const val MAX_SAVE_BYTES = 100L * 1024 * 1024
         private val EMPTY = ByteArray(0)
 
-        // Saves files the blog's tools create in the browser (blob: and data: links) through the app.
+        // Runs only on the blog's own pages. Hands files made by the blog's in-browser tools (blob: and data: links)
+        // to the app through a message channel that accepts messages from the blog's origin only.
         private const val DOWNLOAD_BRIDGE = """
 (function () {
-  if (window.__bdBridge) return; window.__bdBridge = true;
+  if (window.__plSave || !window.BDApp) return; window.__plSave = true;
   function save(href, name) {
     fetch(href).then(function (r) { return r.blob(); }).then(function (b) {
+      if (b.size > 104857600) { BDApp.postMessage(JSON.stringify({ t: 'fail' })); return; }
       var fr = new FileReader();
-      fr.onload = function () { BDApp.saveFile(String(fr.result), b.type || '', name || ''); };
+      fr.onload = function () { BDApp.postMessage(JSON.stringify({ t: 'save', data: String(fr.result), mime: b.type || '', name: name || '' })); };
       fr.readAsDataURL(b);
-    }).catch(function (e) { BDApp.failed(String(e)); });
+    }).catch(function () { BDApp.postMessage(JSON.stringify({ t: 'fail' })); });
   }
   var click = HTMLAnchorElement.prototype.click;
   HTMLAnchorElement.prototype.click = function () {
@@ -88,6 +101,45 @@ class MainActivity : AppCompatActivity() {
   }, true);
 })();
 """
+
+        // Inside the app the site is branded Plainly: header name, the "B" marks and any "Blog Digest" text.
+        private const val BRAND = """
+(function () {
+  if (window.__plBrand) return; window.__plBrand = true;
+  var RX = /Blog Digest/g, CSS = '.header-image-wrapper::before{content:"P"!important}.header-image-wrapper::after{content:"Plainly"!important}';
+  function css() {
+    var root = document.head || document.documentElement;
+    if (!root || document.getElementById('pl-brand')) return;
+    var s = document.createElement('style'); s.id = 'pl-brand'; s.textContent = CSS;
+    root.appendChild(s);
+  }
+  function fix(root) {
+    if (!root) return;
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      var p = n.parentNode, t = p && p.nodeName;
+      if (!p || t === 'SCRIPT' || t === 'STYLE' || t === 'TEXTAREA' || p.isContentEditable) return NodeFilter.FILTER_REJECT;
+      return n.nodeValue.indexOf('Blog Digest') >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    } });
+    var n; while ((n = w.nextNode())) n.nodeValue = n.nodeValue.replace(RX, 'Plainly');
+    document.querySelectorAll('.bd-mark, .bd-foot-logo > span').forEach(function (e) { if (e.textContent.trim() === 'B') e.textContent = 'P'; });
+    document.querySelectorAll('[aria-label*="Blog Digest"], [title*="Blog Digest"], [alt*="Blog Digest"], [placeholder*="Blog Digest"]').forEach(function (e) {
+      ['aria-label', 'title', 'alt', 'placeholder'].forEach(function (a) { var v = e.getAttribute(a); if (v && v.indexOf('Blog Digest') >= 0) e.setAttribute(a, v.replace(RX, 'Plainly')); });
+    });
+    if (document.title.indexOf('Blog Digest') >= 0) document.title = document.title.replace(RX, 'Plainly');
+  }
+  css();
+  function start() {
+    if (!document.body) return;
+    css(); fix(document.body);
+    var queued = false;
+    new MutationObserver(function () {
+      if (queued) return; queued = true;
+      requestAnimationFrame(function () { queued = false; fix(document.body); });
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+"""
     }
 
     private lateinit var web: WebView
@@ -97,7 +149,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var offline: View
     private var fileCallback: ValueCallback<Array<Uri>>? = null
     private var mainFrameFailed = false
-    private var bridgeAtStart = false
+    private var scriptsAtStart = false
+    private var bridgeAvailable = false
+    private val io = Executors.newSingleThreadExecutor()
 
     private val pickFiles = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
         var uris = WebChromeClient.FileChooserParams.parseResult(r.resultCode, r.data)
@@ -159,7 +213,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent.data?.let { if (it.host == HOST) web.loadUrl(it.toString()) }
+        startUrl(intent).takeIf { intent.data != null }?.let { web.loadUrl(it) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -167,11 +221,18 @@ class MainActivity : AppCompatActivity() {
         web.saveState(outState)
     }
 
-    private fun startUrl(i: Intent?): String = i?.data?.takeIf { it.host == HOST }?.toString() ?: HOME
+    override fun onDestroy() {
+        io.shutdown()
+        super.onDestroy()
+    }
+
+    /** Only https links to the blog itself are opened from outside; anything else starts at the home page. */
+    private fun startUrl(i: Intent?): String =
+        i?.data?.takeIf { it.scheme == "https" && it.host == HOST }?.toString() ?: HOME
 
     private fun sameTab(url: String?, id: Int): Boolean {
         val u = url?.substringBefore('?')?.substringBefore('#') ?: return false
-        return TABS[id]?.let { u == it || (id == R.id.nav_home && u == "https://$HOST") } ?: false
+        return TABS[id]?.let { u == it || (id == R.id.nav_home && u == ORIGIN) } ?: false
     }
 
     private fun online(): Boolean {
@@ -180,7 +241,9 @@ class MainActivity : AppCompatActivity() {
         return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    private fun isBlog(url: String?): Boolean = url != null && Uri.parse(url).let { it.scheme == "https" && it.host == HOST }
+
+    @SuppressLint("SetJavaScriptEnabled", "RequiresFeature")
     private fun setUpWebView() {
         with(web.settings) {
             javaScriptEnabled = true
@@ -188,17 +251,32 @@ class MainActivity : AppCompatActivity() {
             loadWithOverviewMode = true
             useWideViewPort = true
             mediaPlaybackRequiresUserGesture = true
-            allowFileAccess = false
-            allowContentAccess = true
+            javaScriptCanOpenWindowsAutomatically = false
             setSupportMultipleWindows(false)
-            userAgentString = "$userAgentString BlogDigestApp/${BuildConfig.VERSION_NAME}"
+            setGeolocationEnabled(false)
+            allowFileAccess = false
+            allowContentAccess = true // lets the tools read files the user picks
+            mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+            userAgentString = "$userAgentString PlainlyApp/${BuildConfig.VERSION_NAME}"
             cacheMode = if (online()) WebSettings.LOAD_DEFAULT else WebSettings.LOAD_CACHE_ELSE_NETWORK
         }
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.SAFE_BROWSING_ENABLE)) {
+            WebSettingsCompat.setSafeBrowsingEnabled(web.settings, true)
+        }
         CookieManager.getInstance().setAcceptCookie(true)
-        web.addJavascriptInterface(Bridge(), "BDApp")
+        CookieManager.getInstance().setAcceptThirdPartyCookies(web, false)
+
+        // File saving: a message channel limited to the blog's own origin and main frame.
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            WebViewCompat.addWebMessageListener(web, "BDApp", setOf(ORIGIN)) { _, message, origin, isMainFrame, _ ->
+                if (isMainFrame && origin.scheme == "https" && origin.host == HOST) onBridgeMessage(message.data)
+            }
+            bridgeAvailable = true
+        }
         if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
-            WebViewCompat.addDocumentStartJavaScript(web, DOWNLOAD_BRIDGE, setOf("https://$HOST"))
-            bridgeAtStart = true
+            WebViewCompat.addDocumentStartJavaScript(web, BRAND, setOf(ORIGIN))
+            if (bridgeAvailable) WebViewCompat.addDocumentStartJavaScript(web, DOWNLOAD_BRIDGE, setOf(ORIGIN))
+            scriptsAtStart = true
         }
 
         web.webViewClient = object : WebViewClient() {
@@ -224,7 +302,10 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView, url: String?) {
                 swipe.isRefreshing = false
                 progress.visibility = View.GONE
-                if (!bridgeAtStart) view.evaluateJavascript(DOWNLOAD_BRIDGE, null)
+                if (!scriptsAtStart && isBlog(url)) {
+                    view.evaluateJavascript(BRAND, null)
+                    if (bridgeAvailable) view.evaluateJavascript(DOWNLOAD_BRIDGE, null)
+                }
                 if (!mainFrameFailed) offline.visibility = View.GONE
                 selectTabFor(url)
             }
@@ -236,6 +317,7 @@ class MainActivity : AppCompatActivity() {
                     offline.visibility = View.VISIBLE
                 }
             }
+            // SSL errors are not overridden: the default behaviour cancels any connection with a bad certificate.
         }
 
         web.webChromeClient = object : WebChromeClient() {
@@ -258,13 +340,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        web.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
+        web.setDownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
+            val uri = Uri.parse(url)
             when {
+                // Files made in the page are saved through the message channel (see DOWNLOAD_BRIDGE).
                 url.startsWith("blob:") || url.startsWith("data:") ->
-                    web.evaluateJavascript("fetch('$url').then(r=>r.blob()).then(b=>{var f=new FileReader();f.onload=()=>BDApp.saveFile(String(f.result),b.type||'','');f.readAsDataURL(b);})", null)
-                else -> {
-                    val name = URLUtil.guessFileName(url, contentDisposition, mimeType)
-                    val req = DownloadManager.Request(Uri.parse(url))
+                    if (!bridgeAvailable) Toast.makeText(this, R.string.save_failed, Toast.LENGTH_SHORT).show()
+                uri.scheme == "https" && allowedType(mimeType) -> {
+                    val name = cleanName(URLUtil.guessFileName(url, contentDisposition, mimeType), mimeType)
+                    val req = DownloadManager.Request(uri)
                         .setMimeType(mimeType)
                         .addRequestHeader("User-Agent", userAgent)
                         .setTitle(name)
@@ -273,64 +357,89 @@ class MainActivity : AppCompatActivity() {
                     getSystemService(DownloadManager::class.java)?.enqueue(req)
                     Toast.makeText(this, getString(R.string.downloading, name), Toast.LENGTH_SHORT).show()
                 }
+                else -> Toast.makeText(this, R.string.save_blocked, Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 
     private fun selectTabFor(url: String?) {
         val id = TABS.keys.firstOrNull { sameTab(url, it) } ?: return
-        if (nav.selectedItemId != id) {
-            nav.menu.findItem(id)?.isChecked = true
-        }
+        if (nav.selectedItemId != id) nav.menu.findItem(id)?.isChecked = true
     }
 
     private fun openOutside(uri: Uri) {
+        val scheme = uri.scheme?.lowercase() ?: return
+        if (scheme !in OUTSIDE_SCHEMES) return
         try {
-            if (uri.scheme == "https" || uri.scheme == "http") {
+            if (scheme == "https" || scheme == "http") {
                 CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(this, uri)
             } else {
-                startActivity(Intent(Intent.ACTION_VIEW, uri))
+                startActivity(Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE))
             }
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(this, R.string.no_app, Toast.LENGTH_SHORT).show()
         }
     }
 
-    /** Called from the page's JavaScript to save a file made by one of the blog's tools. */
-    inner class Bridge {
-        @JavascriptInterface
-        fun saveFile(dataUrl: String, mime: String, name: String) {
-            val comma = dataUrl.indexOf(',')
-            if (comma < 0) return
-            val type = mime.ifBlank { dataUrl.substring(5, dataUrl.indexOf(';').coerceAtLeast(5)) }.ifBlank { "application/octet-stream" }
-            val bytes = try { Base64.decode(dataUrl.substring(comma + 1), Base64.DEFAULT) } catch (e: IllegalArgumentException) { return }
-            val ext = android.webkit.MimeTypeMap.getSingleton().getExtensionFromMimeType(type)
-            val fileName = name.ifBlank { "blog-digest-${System.currentTimeMillis()}" + (ext?.let { ".$it" } ?: "") }
+    private fun allowedType(mime: String?): Boolean = mime?.substringBefore(';')?.trim()?.lowercase() in SAVE_TYPES
+
+    /** A safe display name: no folders or control characters, sensible length, extension matching the type. */
+    private fun cleanName(raw: String, mime: String): String {
+        var name = raw.replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_").trim().trimStart('.').take(100)
+        if (name.isBlank()) name = "plainly-${System.currentTimeMillis()}"
+        val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime.substringBefore(';').trim())
+        if (ext != null && !name.lowercase().endsWith(".$ext") && !(ext == "jpg" && name.lowercase().endsWith(".jpeg"))) {
+            name = name.substringBeforeLast('.', name) + ".$ext"
+        }
+        return name
+    }
+
+    private fun onBridgeMessage(raw: String?) {
+        val msg = try { JSONObject(raw ?: return) } catch (e: Exception) { return }
+        if (msg.optString("t") != "save") {
+            Toast.makeText(this, R.string.save_failed, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val dataUrl = msg.optString("data")
+        val comma = dataUrl.indexOf(',')
+        if (!dataUrl.startsWith("data:") || comma < 0 || dataUrl.length > MAX_SAVE_BYTES * 4 / 3 + 1024) return
+        val declared = dataUrl.substring(5, comma).substringBefore(';')
+        val mime = msg.optString("mime").ifBlank { declared }.substringBefore(';').trim().lowercase()
+        if (mime !in SAVE_TYPES) {
+            Toast.makeText(this, R.string.save_blocked, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val name = cleanName(msg.optString("name"), mime)
+        io.execute {
+            val bytes = try { Base64.decode(dataUrl.substring(comma + 1), Base64.DEFAULT) } catch (e: IllegalArgumentException) { null }
+            if (bytes == null || bytes.size > MAX_SAVE_BYTES) {
+                runOnUiThread { Toast.makeText(this, R.string.save_failed, Toast.LENGTH_SHORT).show() }
+                return@execute
+            }
             val values = ContentValues().apply {
-                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                put(MediaStore.Downloads.MIME_TYPE, type)
+                put(MediaStore.Downloads.DISPLAY_NAME, name)
+                put(MediaStore.Downloads.MIME_TYPE, mime)
                 put(MediaStore.Downloads.IS_PENDING, 1)
             }
-            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: return
+            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            if (uri == null) {
+                runOnUiThread { Toast.makeText(this, R.string.save_failed, Toast.LENGTH_SHORT).show() }
+                return@execute
+            }
             contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
             values.clear(); values.put(MediaStore.Downloads.IS_PENDING, 0)
             contentResolver.update(uri, values, null, null)
             runOnUiThread {
-                Snackbar.make(swipe, getString(R.string.saved, fileName), Snackbar.LENGTH_LONG)
+                Snackbar.make(swipe, getString(R.string.saved, name), Snackbar.LENGTH_LONG)
                     .setAnchorView(nav)
                     .setAction(R.string.open) {
                         try {
-                            startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(uri, type).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
+                            startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(uri, mime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
                         } catch (e: ActivityNotFoundException) {
-                            Toast.makeText(this@MainActivity, R.string.no_app, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, R.string.no_app, Toast.LENGTH_SHORT).show()
                         }
                     }.show()
             }
-        }
-
-        @JavascriptInterface
-        fun failed(message: String) {
-            runOnUiThread { Toast.makeText(this@MainActivity, R.string.save_failed, Toast.LENGTH_SHORT).show() }
         }
     }
 }

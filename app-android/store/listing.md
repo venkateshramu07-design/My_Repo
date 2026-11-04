@@ -1,11 +1,11 @@
-# Google Play store listing: Eternal
+# Google Play store listing: Plainly
 
 Copy each field into Play Console → Grow users → Store presence → Main store listing.
 
 **App name** (max 30 characters)
 
 ```
-Eternal
+Plainly: Money, Mind & Work
 ```
 
 **Short description** (max 80 characters)
@@ -17,7 +17,7 @@ Money, mind and career guides, plus free PDF and photo tools that never upload.
 **Full description** (max 4,000 characters)
 
 ```
-Eternal brings the clear, in-depth guides from the Blog Digest website on money, the mind and work to your phone, plus free everyday tools that run on your device and never upload your files.
+Plainly explains money, the mind and work in plain language, with clear, in-depth guides and free everyday tools that run on your device and never upload your files.
 
 READ GUIDES THAT ANSWER REAL QUESTIONS
 • Personal finance: budgeting, emergency funds, credit scores, debt, insurance, car and student loans
@@ -40,7 +40,7 @@ MADE FOR READING
 • Simple tabs for Home, Money, Mind, Career and Tools
 • Pull down to refresh, and read pages you've opened before even when you're offline
 • Follows your phone's light or dark mode
-• No ads, no account, no sign-up
+• No ads, no account, no sign-up: open it and start reading
 
 The guides are for information and are not financial, legal or medical advice.
 ```
@@ -59,5 +59,5 @@ The guides are for information and are not financial, legal or medical advice.
 | Feature graphic (1024 × 500) | `feature-graphic-1024x500.png` |
 | Phone screenshots (at least 2; upload all 4) | `screenshot-01-home.png`, `screenshot-02-article.png`, `screenshot-03-money.png`, `screenshot-04-tools.png` |
 
-The screenshots are 1080 × 2160 renders of the live blog at phone size, with the app's tab bar and with ads hidden as in the app.
+The screenshots are 1080 × 2160 renders of the live blog at phone size as the app shows it: Plainly branding, the app's tab bar, and no ads.
 Once the app is on your phone, you can replace them with real screenshots if you like.

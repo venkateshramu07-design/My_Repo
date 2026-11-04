@@ -16,7 +16,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.randomthoughtsever.blogdigest"
+        applicationId = "com.randomthoughtsever.plainly"
         minSdk = 29
         targetSdk = 36
         versionCode = 1

@@ -1,4 +1,4 @@
-# How to put Eternal on Google Play: step by step
+# How to put Plainly on Google Play: step by step
 
 You don't need to know app development. Everything technical is done. What's left are the steps only the account
 owner can do in Google Play Console. Allow about 3 weeks in total, mostly waiting: about 2 days for account checks,
@@ -10,19 +10,26 @@ the 14-day test that Google requires for new accounts, then about a week for rev
 |---|---|
 | `app-release.aab` | **The file you upload to Google Play.** |
 | `app-release.apk` | To try the app on your own Android phone first. Don't upload this one. |
-| `blog-digest-upload.jks` + `SIGNING-KEY.txt` | Your private upload key and its password. **Keep both safe** (for example in Google Drive and on a USB stick). Every future update must be signed with this key. Never share them publicly. |
+| `plainly-upload.jks` + `SIGNING-KEY.txt` | Your private upload key and its password. **Keep both safe** (for example in Google Drive and on a USB stick). Every future update must be signed with this key. Never share them publicly. |
 | `store/` folder | Icon, feature graphic, 4 screenshots and all the listing text (`store/listing.md`). |
 
-App details: name **Eternal**, package `com.randomthoughtsever.blogdigest`, version 1.0.0 (code 1),
+App details: name **Plainly** (store title "Plainly: Money, Mind & Work"), package `com.randomthoughtsever.plainly`, version 1.0.0 (code 1),
 targets Android 16 (API 36) as Google Play currently requires, and works on Android 10 and newer.
 
 ---
+
+## Who can use the app
+
+Anyone. There is no account, password or sign-up: people install Plainly and it opens straight to your guides and
+tools. The upload key in this folder is only for you as the publisher (Google uses it to check that updates really
+come from you); users never see it. The one wait is Google's rule for new developer accounts (Step 6): a 14-day test
+with 12 people before the app is public. After that, anyone can install and use it immediately.
 
 ## Step 1: Try the app on your phone (10 minutes)
 
 1. Send `app-release.apk` to your Android phone (email it to yourself, or put it in Google Drive) and tap it.
 2. Android will say it's blocked for security. Tap **Settings**, turn on **Allow from this source**, go back and tap **Install**.
-3. Open **Eternal** and check:
+3. Open **Plainly** and check:
    - The tabs at the bottom (Home, Money, Mind, Career, Tools) open the right sections.
    - In **Tools**, open "Compress PDF" or "Resize image", pick a file, then tap **Download**. A message
      "Saved to Downloads" appears; tap **Open** to see the file.
@@ -42,7 +49,7 @@ targets Android 16 (API 36) as Google Play currently requires, and works on Andr
 ## Step 3: Create the app (5 minutes)
 
 In Play Console, click **Create app** and enter:
-- App name: **Eternal**
+- App name: **Plainly: Money, Mind & Work**
 - Default language: **English (United States) – en-US**
 - App or game: **App**
 - Free or paid: **Free**
@@ -98,7 +105,7 @@ the app can go public.
 3. Click **Create release**.
    - When asked about app signing, keep **"Use Google-generated key" (Play App Signing)**, the recommended default.
    - **Upload `app-release.aab`.**
-   - Release name: `1.0.0`. Release notes: `First release of Eternal.`
+   - Release name: `1.0.0`. Release notes: `First release of Plainly.`
 4. Click **Next → Save → Send for review**. The first review usually takes a few hours to a few days.
 5. When it's approved, copy the **opt-in link** from the Testers tab and send it to your testers. Each tester must:
    open the link, tap **Become a tester**, then **install the app from Google Play** and keep it installed.
@@ -111,8 +118,8 @@ the app can go public.
 2. When Google approves (often within 7 days), go to **Test and release → Production → Create release**, choose the
    same build from your library (or upload `app-release.aab` again), add release notes, click
    **Next → Save → Send for review**, then **Start rollout to Production**.
-3. After the final review, Eternal appears on Google Play. Your listing link will be
-   `https://play.google.com/store/apps/details?id=com.randomthoughtsever.blogdigest`
+3. After the final review, Plainly appears on Google Play. Your listing link will be
+   `https://play.google.com/store/apps/details?id=com.randomthoughtsever.plainly`
 
 ## If Google rejects the app
 
@@ -123,5 +130,5 @@ satisfies the policy. If you still get a rejection email, send me the text and I
 ## Updating the app later
 
 Ask me for an update. I'll change the app, increase the version number and build a new `.aab` signed with your key.
-You then upload it under **Production → Create release**. Keep `blog-digest-upload.jks` and its password safe: if
+You then upload it under **Production → Create release**. Keep `plainly-upload.jks` and its password safe: if
 they're lost, you can ask Google Play support to reset the upload key, but that takes several days.

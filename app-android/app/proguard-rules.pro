@@ -1,4 +1,1 @@
-# Methods called from JavaScript must keep their names.
--keepclassmembers class * {
-    @android.webkit.JavascriptInterface <methods>;
-}
+# No JavaScript interfaces are exposed; the page talks to the app through WebViewCompat.addWebMessageListener.
