@@ -106,7 +106,8 @@ class MainActivity : AppCompatActivity() {
         private const val BRAND = """
 (function () {
   if (window.__plBrand) return; window.__plBrand = true;
-  var RX = /Blog Digest/g, CSS = '.header-image-wrapper::before{content:"P"!important}.header-image-wrapper::after{content:"Plainly"!important}';
+  var RX = /Blog Digest/g, LOGO = 'background:linear-gradient(145deg,#2a5d90,#12304f 60%,#0a1b2f)!important;color:#fff!important;box-shadow:0 8px 20px rgba(10,27,47,.3)!important;',
+    CSS = '.header-image-wrapper::before{content:"P"!important;' + LOGO + '}.header-image-wrapper::after{content:"Plainly"!important}.bd-mark,.bd-foot-logo>span{' + LOGO + '}';
   function css() {
     var root = document.head || document.documentElement;
     if (!root || document.getElementById('pl-brand')) return;
