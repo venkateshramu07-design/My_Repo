@@ -1,151 +1,99 @@
-# Google Play store listing: Plainly (optimised for search)
+# Google Play store listing: Plainly (global, English)
 
-Copy each field into Play Console → Grow users → Store presence → Main store listing (English), then
-**Translations → Add language → Hindi (hi-IN)** for the Hindi version.
+Paste these into **Grow users → Store presence → Main store listing**. Default language: **English (United States) – en-US**.
+The listing is written for a worldwide audience: no country-specific exams or forms, and amounts in the app follow the
+reader's own currency (16 currencies, chosen automatically from the phone's region).
 
-## Why these words
-Keyword research (DataForSEO, November 2026; Google search volume per month, India / US) and a check of who ranks in the
-Play Store showed that the app's best chance is exam- and ID-form photo, signature and PDF resizing, where the apps
-ranking today are small and often unrated:
+How the text is optimised for Play Store search:
+- The **title** and **short description** carry the most weight. The title keeps the brand line "Money, Mind & Work";
+  the short description adds the highest-intent searches the app really serves (money guides, calculators, PDF and photo tools).
+- The **full description** names each feature the way people search for it worldwide: *loan calculator*,
+  *mortgage calculator*, *compound interest*, *investment calculator*, *FIRE calculator*, *credit card payoff*,
+  *emergency fund*, *compress PDF*, *resize photo in KB*, *QR code generator*, *Wi-Fi QR code*, *budgeting*, *personal finance*.
+  Each appears once or twice in natural sentences. Google Play penalises keyword lists and repetition.
+- Google Play doesn't allow "free", "best", "#1", "top" or prices in the title or icon, so none are used.
 
-| Search | India | US | Play Store competition |
-|---|---|---|---|
-| photo resizer | 1,220,000 | 12,100 | small apps, many unrated |
-| image size reducer in kb | 135,000 | 1,300 | small apps |
-| resize image to 20kb | 110,000 | 390 | small apps, many unrated |
-| signature resizer / photo and signature resizer | 22,200 / 1,300 | - | small apps, many unrated |
-| passport size photo maker | 301,000 | 1,900 | mid-sized apps |
-| pdf compressor / pdf size reducer | 2,240,000 / 1,220,000 | 90,500 / 33,100 | iLovePDF, Adobe, Smallpdf (hard; secondary) |
-| emi calculator / sip calculator | 2,740,000 each | 8,100 / 9,900 | many look-alike apps (secondary) |
-| upi qr code generator | 74,000 | - | weak apps (3.7-4.0 rating) |
+---
 
-So the title and short description lead with photo, signature and PDF resizing in KB; calculators and guides follow.
-Titles may not contain words like "free", "best" or "#1" (Google Play policy), so none are used.
+## App name (max 30 characters)
 
-## English (default, en-US)
-
-**App name** (28/30)
 ```
-Plainly: PDF & Photo Resizer
+Plainly: Money, Mind & Work
 ```
 
-**Short description** (80/80)
+## Short description (max 80 characters)
+
 ```
-Photo & signature resizer in KB, PDF compressor, passport photo, EMI & SIP tools
+Money guides, loan & investment calculators, PDF and photo tools. No sign-up.
 ```
 
-**Full description** (2029/4000)
+## Full description (max 4,000 characters)
+
 ```
-Plainly is a photo resizer, PDF compressor and passport photo maker that works on your phone, without uploading your files, plus EMI, SIP and tax calculators and clear guides on money, mind and work.
+Plainly gives you clear, practical guides on money, the mind and work, plus a set of calculators and file tools that run entirely on your phone. No account, no sign-up, no ads. Open it and start.
 
-RESIZE PHOTO AND SIGNATURE TO ANY KB
-• Image size reducer in KB: resize image to 10 KB, 20 KB, 30 KB, 50 KB, 100 KB, 200 KB or 500 KB
-• Photo and signature resizer for exam and job forms: SSC, IBPS, RRB, NEET, UPSC, PAN card and more
-• Set width and height in pixels, cm or mm, add a minimum KB, and convert iPhone HEIC to JPG
-• Batch resize several photos and download them together
+THE ANSWER FIRST
+Every guide opens with a quick answer, so you get what you came for in seconds. Then come the details: real numbers, comparison tables and step-by-step instructions, laid out cleanly for a phone screen.
 
-COMPRESS PDF TO THE EXACT SIZE
-• PDF compressor and PDF size reducer: compress PDF to 50 KB, 100 KB, 200 KB, 300 KB, 500 KB, 1 MB or 2 MB
-• Keeps text sharp, with a black-and-white option for scanned certificates
-• JPG to PDF, merge PDF, split PDF, reorder pages and sign a PDF
-
-PASSPORT SIZE PHOTO MAKER
-• Passport and visa photo maker with the exact sizes for India, the US, UK, Canada, Australia, Schengen, China and OCI
-• Digital photo files or a 4×6 print sheet
+WHAT YOU CAN READ
+• Personal finance: budgeting, debt, credit scores, bank accounts, student loans, car loans and taxes
+• Investing: index funds, compound interest, retirement and financial independence (FIRE)
+• Career and work: pay, interviews, burnout and job changes
+• Mind and self-improvement: habits, focus, sleep and stress
+• Living abroad: moving money between countries, travel rules and costs
+New guides arrive every week.
 
 MONEY CALCULATORS
-• EMI calculator with prepayment savings, SIP calculator with step-up, FD, RD, PPF, EPF and Sukanya Samriddhi calculator
-• Income tax calculator (new vs old regime), GST calculator, FIRE calculator, credit card payoff calculator and more
+• Loan and mortgage calculator: monthly payment, total interest and how much an extra payment each month saves
+• Investment growth calculator: see compound interest at work with a monthly investment and a yearly raise
+• Credit card payoff calculator: when you'll be debt-free, and the payment that clears it in two years
+• FIRE calculator: your financial independence number and how many years until you reach it
+• Emergency fund calculator: how many months of cover you have and how long until you're fully funded
+Results update as you type, with clear charts. Choose your currency: US dollar, euro, pound, Canadian and Australian dollar, rupee, yen and more.
 
-CLEAR GUIDES, IN PLAIN LANGUAGE
-• Personal finance, investing, credit scores, loans, insurance and tax
-• Mind and well-being, career and work, and money facts for 35+ countries
-• Every guide starts with a quick answer, with sources and worked examples
+FILE TOOLS THAT NEVER UPLOAD YOUR FILES
+• Photo resizer: shrink any photo to an exact size in KB for online forms and applications, several photos at once
+• PDF compressor: make a PDF small enough for an upload limit, from 100 KB to several MB
+• QR code generator: links, text and Wi-Fi QR codes in your choice of colour. They never expire and don't track scans
+Everything is processed on your device. Save to your phone or share straight to any app.
+
+MADE FOR READING
+• Save any guide to read later, even offline
+• Pick up where you left off with your reading history
+• Adjust the text size, and switch between light and dark mode
+• Search every guide, or browse by topic
 
 PRIVATE BY DESIGN
-• Your photos and PDFs are processed on your phone and never uploaded
-• Files are saved straight to your Downloads folder
-• No account, no sign-up, no ads, no watermark and no daily limit
-• Pages you've opened can be read offline
+Plainly has no accounts, no ads and no tracking. It doesn't ask for your location, contacts or storage permission. Your saved guides and settings stay on your phone.
 
-Use Plainly as your photo resizer, PDF compressor and passport photo maker for every online form.
-
-Plainly works on Android 10 and newer. The guides are for information and are not financial, legal or medical advice.
+Plainly is the app for the Blog Digest guides. The calculators give estimates for planning, not financial advice.
 ```
 
-## Hindi (hi-IN)
+---
 
-**App name** (29/30)
-```
-Plainly: फोटो और PDF रिसाइज़र
-```
+## Graphics (upload in this order)
 
-**Short description** (79/80)
-```
-फोटो, सिग्नेचर KB में रिसाइज़ करें, PDF छोटा करें, पासपोर्ट फोटो, EMI कैलकुलेटर
-```
-
-**Full description** (1438/4000)
-```
-Plainly एक फोटो रिसाइज़र, PDF कंप्रेसर और पासपोर्ट साइज़ फोटो मेकर है जो आपके फ़ोन पर ही काम करता है। आपकी फ़ाइलें कहीं अपलोड नहीं होतीं। साथ में EMI, SIP और टैक्स कैलकुलेटर, और पैसे, मन और करियर पर आसान भाषा में गाइड।
-
-फोटो और सिग्नेचर को किसी भी KB में रिसाइज़ करें
-• फोटो का साइज़ KB में कम करें: 10 KB, 20 KB, 50 KB, 100 KB, 200 KB या 500 KB
-• SSC, IBPS, RRB, NEET, UPSC और PAN कार्ड फ़ॉर्म के लिए फोटो और सिग्नेचर रिसाइज़र
-• पिक्सेल, cm या mm में साइज़ सेट करें, iPhone की HEIC फोटो को JPG में बदलें
-
-PDF को सही साइज़ में कंप्रेस करें
-• PDF का साइज़ कम करें: 50 KB, 100 KB, 200 KB, 300 KB, 500 KB, 1 MB या 2 MB
-• टेक्स्ट साफ़ रहता है; JPG से PDF, PDF मर्ज और स्प्लिट, PDF पर साइन
-
-पासपोर्ट साइज़ फोटो मेकर
-• भारत, अमेरिका, UK, कनाडा, ऑस्ट्रेलिया, शेंगेन, चीन और OCI के लिए सही साइज़ की फोटो
-• डिजिटल फ़ाइल या 4×6 प्रिंट शीट
-
-पैसों के कैलकुलेटर
-• EMI कैलकुलेटर, SIP कैलकुलेटर, FD, RD, PPF, EPF और सुकन्या समृद्धि कैलकुलेटर
-• इनकम टैक्स कैलकुलेटर (नई और पुरानी व्यवस्था), GST कैलकुलेटर और बहुत कुछ
-
-आसान भाषा में गाइड
-• पर्सनल फ़ाइनेंस, निवेश, क्रेडिट स्कोर, लोन, बीमा और टैक्स
-• मानसिक स्वास्थ्य, करियर और 35+ देशों की जानकारी (गाइड अंग्रेज़ी में हैं)
-
-आपकी प्राइवेसी सबसे पहले
-• फोटो और PDF आपके फ़ोन पर ही प्रोसेस होते हैं, कभी अपलोड नहीं होते
-• फ़ाइलें सीधे Downloads फ़ोल्डर में सेव होती हैं
-• कोई अकाउंट नहीं, साइन-अप नहीं, विज्ञापन नहीं, वॉटरमार्क नहीं
-
-गाइड केवल जानकारी के लिए हैं; यह वित्तीय, कानूनी या चिकित्सा सलाह नहीं है।
-```
-
-## Other store settings
-
-| Setting | Value |
+| Item | File |
 |---|---|
-| App category | **Productivity** (PDF, photo and document tools; avoids the extra declarations of the Finance category) |
-| Tags (Store settings → Manage tags, up to 5) | Pick the closest offered: PDF editor / Document tools, Photo editor / Image editor, Calculator, Personal finance, Education |
-| Contact email | your email |
-| Website | https://randomthoughtsever.blogspot.com/ |
-| Privacy policy | https://randomthoughtsever.blogspot.com/2021/06/privacy-policy.html |
-| Release notes (What's new) | First release: resize photos and signatures to any KB, compress PDFs, passport photos, EMI and SIP calculators, and clear money guides. Nothing is uploaded. |
+| App icon (512 × 512) | `store/play-icon-512.png` |
+| Feature graphic (1024 × 500) | `store/feature-graphic-1024x500.png` |
+| Phone screenshots (1080 × 1920, 8 of them) | `store/screenshots/screenshot-1.png` … `screenshot-8.png` |
 
-## Graphics
+The screenshots are real screens of the app, rendered from the app's own code with live articles from the blog
+(`ScreenshotTest` in `app/src/test`, framed by `store/make_screenshots.py`).
 
-| Field | File |
-|---|---|
-| App icon (512 × 512) | `play-icon-512.png` |
-| Feature graphic (1024 × 500) | `feature-graphic-1024x500.png` |
-| Phone screenshots (upload all 7, in this order) | `aso/screenshot-1-a1.png` … `aso/screenshot-7-a7.png` |
+1. Smart guides, plainly explained (home)
+2. The answer first. Then the detail. (article with Quick answer)
+3. Clean reading. No ads. No clutter. (article tables and lists)
+4. Know your loan in seconds (loan and mortgage calculator)
+5. Watch your money grow (investment growth calculator)
+6. Tools that never upload your files (tools)
+7. QR codes that never expire (QR code generator)
+8. Easy on your eyes, day and night (dark mode)
 
-The screenshots are framed with a headline because shoppers decide in seconds; the first three show the search terms the
-listing targets (photo and signature resizing, PDF compression, passport photos). Use the same 7 for the Hindi listing.
+## Store settings
 
-## After launch: what moves the ranking
-1. **Ratings.** The app asks for a rating with Google Play's in-app review prompt, once, after someone has saved two files
-   or opened the app five times over three days. Reply to every review in Play Console.
-2. **Installs from the blog.** Once the app is live, a "Get the app" banner on the blog's tool pages can send visitors to
-   the Play listing.
-3. **Store listing experiments.** Play Console → Store listing experiments lets you A/B test the icon, screenshots and
-   short description once you have a few hundred visitors a week.
-4. **Check search terms.** Play Console → Statistics → Store performance → "Search terms" shows which searches bring
-   installs. Send them to me and I'll adjust the listing.
+- **App category:** Finance
+- **Tags** (pick up to 5 that Play Console offers): Personal finance, Calculators, Budgeting, Investing, Productivity
+- **Contact email:** your email address (shown publicly on the listing)
+- **Website:** https://randomthoughtsever.blogspot.com

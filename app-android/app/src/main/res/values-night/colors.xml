@@ -1,9 +1,3 @@
 <resources>
-    <color name="brand">#9CC0E4</color>
-    <color name="brand_soft">#1E3550</color>
-    <color name="page">#121419</color>
-    <color name="bar">#191C24</color>
-    <color name="ink">#EEF0F5</color>
-    <color name="mute">#A9AEBB</color>
-    <color name="nav_idle">#9AA0AD</color>
+    <color name="page">#0E1621</color>
 </resources>

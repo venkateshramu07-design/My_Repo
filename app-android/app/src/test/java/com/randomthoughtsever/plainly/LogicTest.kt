@@ -1,0 +1,120 @@
+package com.randomthoughtsever.plainly
+
+import com.randomthoughtsever.plainly.tools.Calc
+import com.randomthoughtsever.plainly.tools.PdfWriter
+import com.randomthoughtsever.plainly.tools.QrEngine
+import com.randomthoughtsever.plainly.ui.Block
+import com.randomthoughtsever.plainly.ui.Reader
+import org.json.JSONObject
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import java.net.URL
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
+class LogicTest {
+    @Test fun loanMatchesTheStandardFormula() {
+        val r = Calc.loan(300_000.0, 6.5, 30.0, 0.0)!!
+        assertEquals(1896.20, r.payment, 0.01)
+        assertEquals(360, r.months)
+        assertEquals(382_633.47, r.interest, 1.0)
+        val zero = Calc.loan(12_000.0, 0.0, 1.0, 0.0)!!
+        assertEquals(1000.0, zero.payment, 1e-9)
+    }
+
+    @Test fun overpaymentsShortenTheLoan() {
+        val r = Calc.loan(300_000.0, 6.5, 30.0, 300.0)!!
+        assertTrue(r.months < 360)
+        assertTrue(r.baseInterest - r.interest > 80_000)
+    }
+
+    @Test fun growthWithNoReturnIsJustContributions() {
+        val g = Calc.growth(1000.0, 100.0, 0.0, 2, 0.0)
+        assertEquals(3400.0, g.value, 1e-6)
+        assertEquals(3400.0, g.contributed, 1e-6)
+        assertEquals(2, g.yearly.size)
+        assertTrue(Calc.growth(0.0, 500.0, 7.0, 20, 0.0).value > 240_000)
+    }
+
+    @Test fun cardPayoff() {
+        val c = Calc.card(5000.0, 22.9, 200.0)!!
+        assertEquals(35, c.months)
+        assertEquals(1859.78, c.interest, 0.5)
+        assertEquals(-1, Calc.card(5000.0, 22.9, 50.0)!!.months) // never clears
+    }
+
+    @Test fun fireNumberUsesTheWithdrawalRate() {
+        val f = Calc.fire(40_000.0, 0.0, 2000.0, 6.0, 4.0)!!
+        assertEquals(1_000_000.0, f.target, 1e-6)
+        assertTrue(f.years in 15.0..25.0)
+        assertEquals(0, Calc.monthsToFill(0.0, 100.0)); assertEquals(5, Calc.monthsToFill(450.0, 100.0)); assertEquals(-1, Calc.monthsToFill(10.0, 0.0))
+    }
+
+    @Test fun wifiCodesEscapeSpecialCharacters() {
+        assertEquals("WIFI:T:WPA;S:My\\;Net;P:pa\\:ss;;", QrEngine.wifi("My;Net", "pa:ss", "WPA", false))
+        assertEquals("WIFI:T:nopass;S:Cafe;H:true;;", QrEngine.wifi("Cafe", "x", "None", true))
+    }
+
+    @Test fun pdfWriterProducesAValidCrossReferenceTable() {
+        val jpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 1, 2, 3, 0xFF.toByte(), 0xD9.toByte())
+        val bytes = PdfWriter.write(listOf(PdfWriter.Page(jpeg, 10, 20, 595f, 842f), PdfWriter.Page(jpeg, 10, 20, 595f, 842f)))
+        val text = String(bytes, Charsets.ISO_8859_1)
+        assertTrue(text.startsWith("%PDF-1.4"))
+        assertTrue(text.trimEnd().endsWith("%%EOF"))
+        val startxref = text.substringAfterLast("startxref\n").substringBefore("\n").toInt()
+        assertTrue(text.substring(startxref).startsWith("xref"))
+        val entries = text.substring(startxref).lines().drop(3).takeWhile { it.endsWith(" n ") }
+        assertEquals(8, entries.size) // catalog, pages, 2 × (page, contents, image)
+        entries.forEachIndexed { i, e -> assertTrue(text.substring(e.take(10).toInt()).startsWith("${i + 1} 0 obj")) }
+    }
+
+    @Test fun readerTurnsHtmlIntoNativeBlocks() {
+        val html = """
+            <p><em>Updated 3 Nov 2026</em></p>
+            <p><strong>Quick answer:</strong> Pay <a href="/2026/10/x.html">this</a> first.</p>
+            <div class="bd-calc"><input><button>Go</button><p>widget text</p></div>
+            <h2>Why it matters</h2><p>Line one<br>line two</p>
+            <ul><li>A<ul><li>A1</li></ul></li><li>B</li></ul>
+            <table><thead><tr><th>Plan</th><th>Cost</th></tr></thead><tbody><tr><td>Basic</td><td>$5</td></tr></tbody></table>
+            <details><summary>Is it safe?</summary><p>Yes.</p></details>
+            <script>alert(1)</script><style>p{}</style>""".trimIndent()
+        val b = Reader.parse(html)
+        assertTrue(b[0] is Block.QuickAnswer)
+        assertEquals("Pay this first.", (b[0] as Block.QuickAnswer).text.text)
+        assertTrue((b[0] as Block.QuickAnswer).text.getLinkAnnotations(0, 15).isNotEmpty())
+        assertEquals("Why it matters", (b[1] as Block.Heading).text.text)
+        assertEquals("Line one\nline two", (b[2] as Block.Para).text.text)
+        assertEquals(listOf(0 to "A", 1 to "A1", 0 to "B"), (b[3] as Block.Bullets).items.map { it.first to it.second.text })
+        val t = b[4] as Block.Table
+        assertEquals(listOf("Plan", "Cost"), t.header!!.map { it.text }); assertEquals("$5", t.rows[0][1].text)
+        assertEquals("Is it safe?", (b[5] as Block.Faq).question)
+        assertEquals(6, b.size)
+        assertTrue(b.none { it.toString().contains("widget") || it.toString().contains("alert") })
+    }
+
+    /** Runs the reader over every live post, so a real-world layout that breaks it is caught. */
+    @Test fun readerHandlesEveryLivePost() {
+        val body = runCatching { URL("https://randomthoughtsever.blogspot.com/feeds/posts/default?alt=json&max-results=150").readText() }.getOrNull()
+        assumeTrue("network unavailable", body != null)
+        val entries = JSONObject(body!!).getJSONObject("feed").getJSONArray("entry")
+        var quick = 0; var tables = 0; var faqs = 0; var thin = 0
+        for (i in 0 until entries.length()) {
+            val e = entries.getJSONObject(i)
+            val title = e.getJSONObject("title").getString("\$t")
+            val blocks = Reader.parse(e.getJSONObject("content").getString("\$t"))
+            val text = blocks.joinToString(" ") { it.toString() }
+            val leak = Regex("function\\s*\\(|document\\.[a-z]+\\(|addEventListener|\\{\\s*display").find(text)
+            assertTrue("$title leaks code: " + leak?.let { text.substring(maxOf(0, it.range.first - 200), minOf(text.length, it.range.last + 100)) }, leak == null)
+            if (blocks.size < 8 && !title.contains("Privacy", true) && !title.contains("Terms", true)) { thin++; println("THIN: $title (${blocks.size})") }
+            if (blocks.any { it is Block.QuickAnswer }) quick++
+            tables += blocks.count { it is Block.Table }; faqs += blocks.count { it is Block.Faq }
+        }
+        println("posts=${entries.length()} quickAnswers=$quick tables=$tables faqs=$faqs thin=$thin")
+        assertTrue(thin <= 3)
+    }
+}
