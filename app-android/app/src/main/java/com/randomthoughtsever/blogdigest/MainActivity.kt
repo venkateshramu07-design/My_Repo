@@ -45,6 +45,7 @@ import androidx.webkit.WebViewFeature
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.review.ReviewManagerFactory
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.util.concurrent.Executors
@@ -153,6 +154,7 @@ class MainActivity : AppCompatActivity() {
     private var scriptsAtStart = false
     private var bridgeAvailable = false
     private val io = Executors.newSingleThreadExecutor()
+    private val prefs by lazy { getSharedPreferences("plainly", MODE_PRIVATE) }
 
     private val pickFiles = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
         var uris = WebChromeClient.FileChooserParams.parseResult(r.resultCode, r.data)
@@ -209,7 +211,12 @@ class MainActivity : AppCompatActivity() {
         })
 
         if (savedInstanceState != null) web.restoreState(savedInstanceState)
-        else web.loadUrl(startUrl(intent))
+        else {
+            web.loadUrl(startUrl(intent))
+            prefs.edit().putInt("opens", prefs.getInt("opens", 0) + 1)
+                .apply { if (!prefs.contains("first_open")) putLong("first_open", System.currentTimeMillis()) }.apply()
+            web.postDelayed({ maybeAskForReview() }, 8000)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -431,6 +438,8 @@ class MainActivity : AppCompatActivity() {
             values.clear(); values.put(MediaStore.Downloads.IS_PENDING, 0)
             contentResolver.update(uri, values, null, null)
             runOnUiThread {
+                prefs.edit().putInt("saves", prefs.getInt("saves", 0) + 1).apply()
+                web.postDelayed({ maybeAskForReview() }, 4000)
                 Snackbar.make(swipe, getString(R.string.saved, name), Snackbar.LENGTH_LONG)
                     .setAnchorView(nav)
                     .setAction(R.string.open) {
@@ -440,6 +449,25 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(this, R.string.no_app, Toast.LENGTH_SHORT).show()
                         }
                     }.show()
+            }
+        }
+    }
+
+    /**
+     * Google Play's in-app review prompt, shown once, at a good moment: after two files saved with the tools,
+     * or after five app opens spread over at least three days. Google also limits how often it can appear.
+     */
+    private fun maybeAskForReview() {
+        if (isFinishing || prefs.getBoolean("review_asked", false)) return
+        val saves = prefs.getInt("saves", 0)
+        val opens = prefs.getInt("opens", 0)
+        val days = (System.currentTimeMillis() - prefs.getLong("first_open", System.currentTimeMillis())) / 86_400_000L
+        if (saves < 2 && !(opens >= 5 && days >= 3)) return
+        val manager = ReviewManagerFactory.create(this)
+        manager.requestReviewFlow().addOnCompleteListener { request ->
+            if (request.isSuccessful && !isFinishing) {
+                prefs.edit().putBoolean("review_asked", true).apply()
+                manager.launchReviewFlow(this, request.result)
             }
         }
     }

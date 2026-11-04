@@ -59,4 +59,5 @@ dependencies {
     implementation("androidx.webkit:webkit:1.14.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.browser:browser:1.8.0")
+    implementation("com.google.android.play:review-ktx:2.0.2")
 }

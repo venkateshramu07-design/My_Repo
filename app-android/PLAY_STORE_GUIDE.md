@@ -85,14 +85,19 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
    - Purpose: **Developer communications**.
 5. Save and submit. Nothing else is collected by the app: no location, no contacts, no photos uploaded, no device IDs.
 
-## Step 5: Store listing (15 minutes)
+## Step 5: Store listing, optimised for Play Store search (20 minutes)
 
-Go to **Grow users → Store presence → Main store listing** and copy the text from `store/listing.md`:
-- Short description and full description.
-- Upload the **App icon** (`store/play-icon-512.png`), the **Feature graphic** (`store/feature-graphic-1024x500.png`) and
-  the 4 **Phone screenshots** (`store/screenshot-*.png`).
-- Then go to **Store settings**: category **News & Magazines**, and your contact email.
-- Click **Save**.
+Everything is in `store/listing.md`, written around keyword research on what people search for in the Play Store.
+
+1. Go to **Grow users → Store presence → Main store listing** and paste the **English** app name
+   (**Plainly: PDF & Photo Resizer**), short description and full description.
+2. Upload the **App icon** (`store/play-icon-512.png`), the **Feature graphic** (`store/feature-graphic-1024x500.png`)
+   and the **7 phone screenshots** from `store/aso/`, in order (screenshot-1 … screenshot-7).
+3. Click **Translations → Manage translations → Add your own translations → Hindi (hi-IN)** and paste the Hindi app name,
+   short description and full description from `store/listing.md`. Use the same graphics. People searching in Hindi
+   will then find the app too.
+4. Go to **Store settings**: category **Productivity**, tags as listed in `store/listing.md`, and your contact email.
+5. Click **Save**.
 
 ## Step 6: Closed test with 12 testers for 14 days (required for new personal accounts)
 
