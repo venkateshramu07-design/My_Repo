@@ -28,6 +28,12 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   notifications get a **"New on Plainly"** notification within about 15 minutes of a post going live (Android's limit for
   background checks). Cover art for new posts comes live from the website's design layer.
 - **Bottom bar** (floating, animated): **Today · Explore · Reads · Tools · You**.
+- **Motion**: every topic has its own short animated scene, drawn by the app (coins filling a jar for money, a chart
+  drawing itself for investing, a globe with a plane for countries, a growing plant for self improvement, a heartbeat for
+  health, a neural network for AI, and more). They play in "In 30 seconds" cards at random spots in Today's feed (they
+  move each day), on Explore's topic tiles, on every 4th card in Reads and in an "Up next" card after each article.
+  Covers slowly zoom like a film on Today's pick, stories, Reads and articles. With animations turned off in Android's
+  accessibility settings, still frames are shown.
 - **Explore**: search with suggestions, a "Surprise me" button, collections that fill themselves (Start here, Get out
   of debt, Invest & retire early, Countries in numbers, Passport & visa photos, and more), all 35 countries with flags,
   every topic with its real number of guides and newest title, and all guides from A to Z.

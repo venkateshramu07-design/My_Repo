@@ -95,21 +95,22 @@ fun QuickReadsScreen(nav: Nav) {
             val pager = rememberPagerState { list.size }
             VerticalPager(pager, Modifier.weight(1f), key = { list[it].id }, contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 40.dp),
                 pageSpacing = 14.dp) { i ->
-                QuickCard(list[i], i == 0 && pager.currentPage == 0, nav)
+                QuickCard(list[i], i, i == 0 && pager.currentPage == 0, nav)
             }
         }
     }
 }
 
 @Composable
-private fun QuickCard(e: Entry, hint: Boolean, nav: Nav) {
+private fun QuickCard(e: Entry, position: Int, hint: Boolean, nav: Nav) {
     val lib = AppGraph.library
     val scope = rememberCoroutineScope()
     val t = topicFor(e.label)
     Surface(shape = RoundedCornerShape(30.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 3.dp, modifier = Modifier.fillMaxSize()) {
         Column {
             Box {
-                Cover(e.image, e.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO), 56.dp, corner = 0.dp)
+                if (position % 4 == 2) TopicScene(e.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO))
+                else Cover(e.image, e.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO), 56.dp, corner = 0.dp, motion = true)
                 Text(t.title.uppercase(), style = MaterialTheme.typography.labelSmall, color = Color.White, fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.padding(14.dp).background(t.from.copy(alpha = .85f), RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 4.dp))
             }

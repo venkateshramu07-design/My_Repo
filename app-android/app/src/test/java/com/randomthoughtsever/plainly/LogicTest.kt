@@ -136,6 +136,15 @@ class LogicTest {
         assertTrue(ranked[1].startsWith("Credit Karma vs FICO"))
     }
 
+    @Test fun motionCardsAreSpreadOutAndChangeDaily() {
+        val a = com.randomthoughtsever.plainly.ui.motionSpots(200, 20000L).sorted()
+        val b = com.randomthoughtsever.plainly.ui.motionSpots(200, 20001L).sorted()
+        assertTrue(a.size in 14..26)
+        a.zipWithNext().forEach { (x, y) -> assertTrue("gap ${y - x}", y - x in 7..13) }
+        assertTrue(a.none { it % 7 == 0 })
+        assertTrue(a != b)
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

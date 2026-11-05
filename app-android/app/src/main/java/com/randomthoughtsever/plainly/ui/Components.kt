@@ -49,7 +49,7 @@ const val COVER_RATIO = 800f / 420f
 /** Cover image with a crossfade; while loading or when an article has no image, a topic-coloured tile is drawn instead. */
 @Composable
 fun Cover(image: String?, label: String, modifier: Modifier = Modifier, iconSize: Dp = 34.dp, corner: Dp = 18.dp,
-          alignment: Alignment = Alignment.Center) {
+          alignment: Alignment = Alignment.Center, motion: Boolean = false) {
     val t = topicFor(label)
     val fallback: @Composable () -> Unit = {
         Box(Modifier.fillMaxSize().background(Brush.linearGradient(listOf(t.from, t.to))), contentAlignment = Alignment.Center) {
@@ -58,10 +58,11 @@ fun Cover(image: String?, label: String, modifier: Modifier = Modifier, iconSize
     }
     // The coloured tile is always drawn underneath, so there is never an empty slot while the image loads or if it fails.
     Box(modifier.clip(RoundedCornerShape(corner))) {
-        fallback()
+        if (motion && image == null) TopicScene(label, Modifier.fillMaxSize()) else fallback()
         if (image != null) AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(image).crossfade(300).build(),
-            contentDescription = null, contentScale = ContentScale.Crop, alignment = alignment, modifier = Modifier.fillMaxSize(),
+            contentDescription = null, contentScale = ContentScale.Crop, alignment = alignment,
+            modifier = Modifier.fillMaxSize().then(if (motion) Modifier.kenBurns() else Modifier),
         )
     }
 }

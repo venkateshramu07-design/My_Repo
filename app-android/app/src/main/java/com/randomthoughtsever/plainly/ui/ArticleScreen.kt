@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.data.Entry
 import com.randomthoughtsever.plainly.ads.BannerAd
 import android.content.Intent
 import android.net.Uri
@@ -87,7 +88,7 @@ fun ArticleScreen(id: String, nav: Nav) {
         Box(Modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
                 Cover(preview.image, preview.label, Modifier.fillMaxWidth().statusBarsPadding().padding(top = 60.dp, start = 16.dp, end = 16.dp)
-                    .aspectRatio(COVER_RATIO), 64.dp, corner = 24.dp)
+                    .aspectRatio(COVER_RATIO), 64.dp, corner = 24.dp, motion = true)
                 Column(Modifier.padding(horizontal = 22.dp)) {
                     Spacer(Modifier.height(20.dp))
                     Kicker(topicFor(preview.label).title)
@@ -127,7 +128,7 @@ fun ArticleScreen(id: String, nav: Nav) {
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().verticalScroll(scroll)) {
             Box {
-                Cover(p.image, p.label, Modifier.fillMaxWidth().statusBarsPadding().padding(top = 60.dp, start = 16.dp, end = 16.dp).aspectRatio(COVER_RATIO), 64.dp, corner = 24.dp)
+                Cover(p.image, p.label, Modifier.fillMaxWidth().statusBarsPadding().padding(top = 60.dp, start = 16.dp, end = 16.dp).aspectRatio(COVER_RATIO), 64.dp, corner = 24.dp, motion = true)
             }
             Column(Modifier.padding(horizontal = 22.dp)) {
                 Spacer(Modifier.height(20.dp))
@@ -169,9 +170,13 @@ fun ArticleScreen(id: String, nav: Nav) {
             }
                 ?: Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) { repeat(6) { Shimmer(Modifier.fillMaxWidth().height(18.dp)) } }
             BannerAd("article:${p.id}:end", Modifier.padding(horizontal = 22.dp))
-            if (related.isNotEmpty()) Column(Modifier.padding(horizontal = 16.dp)) {
+            related.firstOrNull { !it.isToolPage }?.let { next ->
+                MotionCard(Entry(next.id, next.title, next.path, next.url, next.labels, next.published, next.excerpt, next.image), "UP NEXT", nav,
+                    Modifier.padding(horizontal = 20.dp, vertical = 12.dp))
+            }
+            if (related.size > 1) Column(Modifier.padding(horizontal = 16.dp)) {
                 Box(Modifier.padding(horizontal = 4.dp)) { SectionTitle("More in ${topicFor(p.label).title}") }
-                related.forEach { r -> PostRow(r) { nav.article(r.id) } }
+                related.drop(1).forEach { r -> PostRow(r) { nav.article(r.id) } }
             }
             Spacer(Modifier.height(40.dp))
             Spacer(Modifier.navigationBarsPadding())

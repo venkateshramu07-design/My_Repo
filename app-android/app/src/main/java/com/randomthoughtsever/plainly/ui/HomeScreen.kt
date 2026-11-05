@@ -318,7 +318,7 @@ private fun StoryViewer(label: String, posts: List<Post>, nav: Nav, onClose: () 
             }, label = "story") { i ->
                 val p = items[i]
                 Box(Modifier.fillMaxSize()) {
-                    Cover(p.image, p.label, Modifier.fillMaxWidth().fillMaxHeight(.55f), 72.dp, corner = 0.dp)
+                    Cover(p.image, p.label, Modifier.fillMaxWidth().fillMaxHeight(.55f), 72.dp, corner = 0.dp, motion = true)
                     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0f to Color.Transparent, .32f to Color.Transparent, .55f to NavyDeep, 1f to NavyDeep)))
                     Column(Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(24.dp)) {
                         Kicker(topicFor(p.label).title, Gold)
@@ -365,7 +365,7 @@ private fun TodaysPick(p: Post, nav: Nav) {
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
             Column {
                 Box {
-                    Cover(p.image, p.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO), 56.dp, corner = 0.dp)
+                    Cover(p.image, p.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO), 56.dp, corner = 0.dp, motion = true)
                     Row(Modifier.padding(14.dp).background(NavyDeep.copy(alpha = .78f), RoundedCornerShape(50)).padding(horizontal = 12.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(7.dp).clip(CircleShape).background(Gold)); Spacer(Modifier.width(6.dp))
@@ -611,6 +611,14 @@ internal fun mixTopics(list: List<Entry>): List<Entry> {
 
 private fun Post.toEntry() = Entry(id, title, path, url, labels, published, excerpt, image)
 
+/** Where animated cards go in a feed of [n] items: every 8 to 12 items, at spots that change each day. */
+internal fun motionSpots(n: Int, day: Long = LocalDate.now().toEpochDay()): Set<Int> {
+    val r = kotlin.random.Random(day)
+    val out = HashSet<Int>(); var i = 3 + r.nextInt(3)
+    while (i < n) { if (i % 7 != 0) out += i else out += i + 1; i += 8 + r.nextInt(5) }
+    return out
+}
+
 /** The never-ending part of Today: every guide, newest first, a big card every 7th, an ad after every 10th. */
 private fun moreToRead(scope: LazyListScope, more: List<Entry>, shown: Int, nav: Nav, loadMore: () -> Unit) = with(scope) {
     if (more.isEmpty()) return@with
@@ -621,9 +629,11 @@ private fun moreToRead(scope: LazyListScope, more: List<Entry>, shown: Int, nav:
         }
     }
     val page = more.take(shown)
+    val motion = motionSpots(page.size)
     page.forEachIndexed { i, e ->
         item(key = "more-${e.id}") {
-            if (i % 7 == 0) BigEntryCard(e, nav)
+            if (i in motion) MotionCard(e, "IN 30 SECONDS", nav, Modifier.padding(horizontal = 20.dp, vertical = 10.dp))
+            else if (i % 7 == 0) BigEntryCard(e, nav)
             else Box(Modifier.padding(horizontal = 16.dp)) { PostRow(e.ref, { nav.article(e.id) }) }
         }
         if (i % 10 == 9) item(key = "more-ad-$i") { BannerAd("home:feed:${i / 10}", Modifier.padding(horizontal = 20.dp)) }

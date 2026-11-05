@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -178,7 +180,7 @@ private fun ShelfCard(s: Shelf, count: Int, onClick: () -> Unit) {
 private fun TopicCard(t: Topic, count: Int, newest: Entry?, modifier: Modifier, onClick: () -> Unit) {
     Surface(onClick = onClick, shape = RoundedCornerShape(24.dp), color = Color.Transparent, modifier = modifier.height(150.dp)) {
         Box(Modifier.fillMaxSize().background(Brush.linearGradient(listOf(t.from, t.to)))) {
-            Icon(t.icon, null, tint = Color.White.copy(alpha = .14f), modifier = Modifier.size(96.dp).align(Alignment.TopEnd).padding(start = 18.dp, bottom = 18.dp))
+            TopicScene(t.label, Modifier.fillMaxWidth(.62f).fillMaxHeight(.62f).align(Alignment.TopEnd).graphicsLayer { alpha = .42f }, background = false, seconds = 6)
             Column(Modifier.padding(16.dp).fillMaxSize()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(t.icon, null, tint = Color.White, modifier = Modifier.size(22.dp))
