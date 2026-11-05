@@ -102,6 +102,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -350,15 +353,18 @@ private fun StoryViewer(label: String, posts: List<Post>, nav: Nav, onClose: () 
             }, label = "story") { i ->
                 val p = items[i]
                 Box(Modifier.fillMaxSize()) {
-                    Cover(p.image, p.label, Modifier.fillMaxWidth().fillMaxHeight(.55f), 72.dp, corner = 0.dp, motion = true)
-                    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0f to Color.Transparent, .32f to Color.Transparent, .55f to NavyDeep, 1f to NavyDeep)))
-                    Column(Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(24.dp)) {
+                    // A soft, blurred copy of the cover fills the background; the cover itself is shown whole, never cropped.
+                    Cover(p.image, p.label, Modifier.fillMaxWidth().fillMaxHeight(.6f).blur(28.dp).graphicsLayer { alpha = .55f }, 72.dp, corner = 0.dp)
+                    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0f to NavyDeep.copy(alpha = .35f), .45f to NavyDeep.copy(alpha = .75f), .62f to NavyDeep, 1f to NavyDeep)))
+                    Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(start = 20.dp, end = 20.dp, top = 76.dp, bottom = 24.dp)) {
+                        Cover(p.image, p.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO).shadow(16.dp, RoundedCornerShape(22.dp)), 72.dp, corner = 22.dp)
+                        Spacer(Modifier.height(24.dp))
                         Kicker(topicFor(p.label).title, Gold)
                         Spacer(Modifier.height(8.dp))
-                        Text(p.title, style = MaterialTheme.typography.headlineMedium, color = Color.White)
-                        Spacer(Modifier.height(14.dp))
-                        Text(p.excerpt, style = MaterialTheme.typography.bodyLarge, color = Color.White.copy(alpha = .88f), maxLines = 8, overflow = TextOverflow.Ellipsis)
-                        Spacer(Modifier.height(22.dp))
+                        Text(p.title, style = MaterialTheme.typography.headlineMedium, color = Color.White, maxLines = 4, overflow = TextOverflow.Ellipsis)
+                        Spacer(Modifier.height(12.dp))
+                        Text(p.excerpt, style = MaterialTheme.typography.bodyLarge, color = Color.White.copy(alpha = .88f), maxLines = 6, overflow = TextOverflow.Ellipsis)
+                        Spacer(Modifier.weight(1f).heightIn(min = 16.dp))
                         Button(onClick = { onClose(); nav.article(p.id) }, colors = ButtonDefaults.buttonColors(containerColor = Gold, contentColor = NavyDeep),
                             shape = RoundedCornerShape(50), modifier = Modifier.fillMaxWidth().height(52.dp)) {
                             Text("Read the full guide", fontWeight = FontWeight.Bold); Spacer(Modifier.width(8.dp))
