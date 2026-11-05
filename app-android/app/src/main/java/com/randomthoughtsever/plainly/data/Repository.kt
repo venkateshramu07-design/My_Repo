@@ -61,7 +61,7 @@ data class Post(
 ) {
     val label: String get() = labels.firstOrNull { it != "Start Here" } ?: "Guide"
     /** A page that is mainly a tool (labelled Tools or Calculators): those live in the Tools tab, not in reading lists. */
-    val isToolPage: Boolean get() = labels.any { it == "Tools" || it == "Calculators" }
+    val isToolPage: Boolean get() = isToolPage(labels, title)
 
     fun toJson(): JSONObject = JSONObject()
         .put("id", id).put("title", title).put("url", url).put("path", path).put("published", published)

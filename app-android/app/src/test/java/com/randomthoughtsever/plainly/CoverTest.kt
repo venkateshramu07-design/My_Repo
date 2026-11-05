@@ -41,6 +41,26 @@ class CoverTest {
         assertTrue(withAnswer >= index.size * 9 / 10)
     }
 
+    @Test fun toolPagesAreRecognisedByLabelOrTitle() {
+        val f = { labels: List<String>, title: String -> com.randomthoughtsever.plainly.data.isToolPage(labels, title) }
+        assertTrue(f(listOf("Tools"), "Resize Image to 20KB Online Free"))
+        assertTrue(f(listOf("Personal Finance"), "Life Insurance Calculator: How Much Does Life Insurance Cost by Age?"))
+        assertTrue(f(listOf("Personal Finance"), "Debt Consolidation Loans: When They Save Money (Calculator)"))
+        assertTrue(f(listOf("Career & Workplace"), "Raise Calculator: What Is a Fair Pay Raise in 2026 After Inflation?"))
+        assertTrue(!f(listOf("Personal Finance"), "Credit Karma vs FICO: Why Is My Credit Score Different on Every App?"))
+        assertTrue(!f(listOf("Psychology"), "What Is Karma? Meaning, Types and How It Works"))
+    }
+
+    /** Reads and Today show articles only: no guide left in them may be a tool page. */
+    @Test fun readingListsHaveNoToolPages() = runBlocking {
+        val index = Repository(ApplicationProvider.getApplicationContext()).index(force = true)
+        assumeTrue("network unavailable", index.isNotEmpty())
+        val reading = index.filterNot { it.isToolPage }
+        val leaked = reading.filter { Regex("(?i)calculator|resize|compress|converter|generator|photo maker").containsMatchIn(it.title) }
+        println("READS ${reading.size} articles, ${index.size - reading.size} tool pages left out")
+        assertTrue("tool pages in reading lists: ${leaked.map { it.title }}", leaked.isEmpty())
+    }
+
     /** The real index: nearly every guide should have a cover (designed, or the post's own photo), and the links must load. */
     @Test fun everyGuideInTheIndexHasACoverThatLoads() = runBlocking {
         val repo = Repository(ApplicationProvider.getApplicationContext())
