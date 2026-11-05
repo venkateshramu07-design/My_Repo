@@ -182,6 +182,41 @@ class LogicTest {
         assertTrue(b.first { it.title == "First guide" }.earned && b.first { it.title == "On a roll" }.earned && !b.first { it.title == "Bookworm" }.earned)
     }
 
+    @Test fun gamesFollowTheirRules() {
+        val g = "com.randomthoughtsever.plainly.ui"
+        // rock 0, paper 1, scissors 2
+        assertEquals(1, com.randomthoughtsever.plainly.ui.rpsOutcome(1, 0)); assertEquals(1, com.randomthoughtsever.plainly.ui.rpsOutcome(0, 2))
+        assertEquals(1, com.randomthoughtsever.plainly.ui.rpsOutcome(2, 1)); assertEquals(-1, com.randomthoughtsever.plainly.ui.rpsOutcome(0, 1))
+        assertEquals(0, com.randomthoughtsever.plainly.ui.rpsOutcome(2, 2))
+        // Number Rush: every answer is right, and it's one of 4 different options.
+        val r = kotlin.random.Random(7)
+        repeat(500) {
+            val q = com.randomthoughtsever.plainly.ui.nextSum(r)
+            val pct = Regex("^(\\d+)% of (\\d+)$").find(q.text)
+            val interest = Regex("^(\\d+) \\+ (\\d+)% interest$").find(q.text)
+            val expected = when {
+                pct != null -> pct.groupValues[2].toInt() * pct.groupValues[1].toInt() / 100
+                interest != null -> interest.groupValues.let { it[1].toInt() + it[1].toInt() * it[2].toInt() / 100 }
+                q.text.contains(" + ") -> q.text.split(" + ").sumOf { it.toInt() }
+                q.text.contains(" − ") -> q.text.split(" − ").let { it[0].toInt() - it[1].toInt() }
+                else -> q.text.split(" × ").let { it[0].toInt() * it[1].toInt() }
+            }
+            assertEquals(q.text, expected, q.answer)
+            assertEquals(4, q.options.toSet().size); assertTrue(q.answer in q.options)
+        }
+        // Unbeatable tic-tac-toe never loses: try every possible game where X moves first.
+        fun xCanWin(b: MutableList<Char>, xTurn: Boolean): Boolean {
+            com.randomthoughtsever.plainly.ui.tttWinner(b)?.let { return it.first == 'X' }
+            if (b.none { it == ' ' }) return false
+            return if (xTurn) b.indices.filter { b[it] == ' ' }.any { i -> b[i] = 'X'; val w = xCanWin(b, false); b[i] = ' '; w }
+            else { val m = com.randomthoughtsever.plainly.ui.tttMove(b, 'O', true); b[m] = 'O'; val w = xCanWin(b, true); b[m] = ' '; w }
+        }
+        assertTrue("the unbeatable phone lost a game", !xCanWin(MutableList(9) { ' ' }, true))
+        // Easy mode still takes an obvious win.
+        assertEquals(2, com.randomthoughtsever.plainly.ui.tttMove(listOf('O', 'O', ' ', 'X', 'X', ' ', ' ', ' ', ' '), 'O', false))
+        assertEquals(5, com.randomthoughtsever.plainly.ui.GAMES.size); assertTrue(g.isNotEmpty())
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

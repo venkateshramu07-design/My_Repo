@@ -8,7 +8,10 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   and "More to read" (every guide, newest first, mixed by topic, paged as you scroll). It reloads on open and resume, checks for a new post every minute while visible, and
   `data/NewPosts.kt` (WorkManager, every 15 min) posts a notification for new guides. Cover art comes live from the
   website's design layer (`version.txt` → `bd-redesign.js` → `BD_COVERS`), on top of the copy built into the app.
-- **Navigation**: floating animated bar with Today, Explore, Reads, Community, Tools and You (`ui/App.kt`).
+- **Navigation**: floating animated bar with Today, Explore, Reads, Community, Tools, You and Games (`ui/App.kt`).
+- **Games** (`ui/Games.kt`): Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe (minimax "Unbeatable") and Reaction
+  Time; best scores in SharedPreferences. `LogicTest.gamesFollowTheirRules` checks the rules, 500 maths questions and that
+  Unbeatable never loses any possible game.
 - **Personal layer** (`data/Profile.kt`, all on the phone): first-launch onboarding (`ui/Onboarding.kt`: goals, country and
   currency, optional numbers, then a plan), check-ups (`data/Checks.kt`, `ui/CheckScreen.kt`: Money Health, Stress and
   Career checks with a score, weakest area, fixes and a share picture from `ui/ShareCards.kt`), My numbers, Your plan,

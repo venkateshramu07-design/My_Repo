@@ -39,6 +39,9 @@ Tell Plainly what you want help with: paying off debt, saving and investing, a c
 YOUR NUMBERS, YOUR HABITS
 Add your pay and spending (kept on your phone) to see your FIRE number, safety net, savings rate and debt-free date. Daily 3 gives you a tip, a minute of calm breathing and a quiz question. Join a challenge like the 7-day no-spend or the 30-day debt sprint, keep your streak and earn badges.
 
+5 QUICK GAMES
+Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe and Reaction Time. Offline.
+
 COMMUNITY
 Share tips and wins, ask questions, discuss every guide and see how others answered the quizzes. No account: just a name and an emoji you choose.
 
@@ -71,8 +74,8 @@ Results update as you type, with clear charts. Choose your currency: US dollar, 
 • Passport and visa photo maker with official sizes for 8 countries
 • PDF toolkit: merge, split, reorder and sign PDFs; turn photos into a PDF
 • Resume builder and invoice generator with free PDF downloads
-• Currency converter, inflation calculator and debt payoff planner
-• Time zone planner, password generator, sleep calculator and more
+• Currency converter, inflation calculator and debt planner
+• Time zone planner, password generator and more
 Photos and PDFs are processed on your device and never uploaded. Save to your phone or share straight to any app.
 
 EXPLORE AND SWIPE
@@ -85,7 +88,7 @@ MADE FOR READING
 • Search every guide, or browse by topic
 
 PRIVATE BY DESIGN
-Plainly has no accounts. It doesn't ask for your location, contacts, camera or storage permission, and your photos, PDFs, saved guides and settings stay on your phone. The app is free and supported by a few clearly labelled ads; where the law requires it, you're asked for consent first.
+No accounts, and no location, contacts, camera or storage permission. Your photos, PDFs, numbers and settings stay on your phone. The app is free, supported by a few labelled ads; where the law requires it, you're asked for consent first.
 
 Plainly is the app for the Blog Digest guides. The calculators give estimates for planning, not financial advice.
 ```

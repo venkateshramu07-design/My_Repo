@@ -225,7 +225,7 @@ class ScreenshotTest {
     @Test @Config(qualifiers = "w360dp-h740dp-xxhdpi") fun smallPhoneBar() {
         launch(); waitFor { seen("TODAY'S PICK") }
         tab("Community"); pause(1500)
-        listOf("Today", "Explore", "Reads", "Community", "Tools", "You").forEach { l ->
+        listOf("Today", "Explore", "Reads", "Community", "Tools", "You", "Games").forEach { l ->
             val n = compose.onAllNodesWithText(l, useUnmergedTree = true).fetchSemanticsNodes().last()
             val layouts = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
             n.config[androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult].action?.invoke(layouts)
@@ -235,6 +235,14 @@ class ScreenshotTest {
             org.junit.Assert.assertTrue("$l is cut off: needs ${needs}px, has ${n.size.width}px", needs <= n.size.width + 1)
         }
         shot("30-small-phone-bar")
+    }
+
+    @Test fun games() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("Games"); waitFor(10, settle = 1500) { seen("Rock Paper Scissors") }
+        shot("31-games")
+        compose.onAllNodesWithText("Money Match").onFirst().performClick(); pause(1500)
+        shot("32-game-match")
     }
 
     @Test fun you() {

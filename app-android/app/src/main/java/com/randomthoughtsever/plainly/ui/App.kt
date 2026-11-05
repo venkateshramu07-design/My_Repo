@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import androidx.compose.material.icons.rounded.SportsEsports
 import androidx.compose.material.icons.rounded.Groups
 import com.randomthoughtsever.plainly.data.Profile
 import com.randomthoughtsever.plainly.ads.Ads
@@ -120,6 +121,7 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
     fun thread(id: String) = c.navigate("post/$id")
     fun challenges() = c.navigate("challenges")
     fun reads() = c.navigate("reads")
+    fun game(id: String) = c.navigate("game/$id")
     fun saved(history: Boolean = false) = c.navigate(if (history) "saved?history=true" else "saved")
     /** Switches to a bottom-bar tab the same way tapping it does. */
     fun tab(route: String) = c.navigate(route) {
@@ -152,7 +154,7 @@ private data class Tab(val route: String, val label: String, val icon: ImageVect
 private val TABS = listOf(
     Tab("today", "Today", Icons.Rounded.Today), Tab("explore", "Explore", Icons.Rounded.Explore),
     Tab("reads", "Reads", Icons.Rounded.AutoStories), Tab("community", "Community", Icons.Rounded.Groups),
-    Tab("tools", "Tools", Icons.Rounded.Handyman), Tab("you", "You", Icons.Rounded.Person),
+    Tab("tools", "Tools", Icons.Rounded.Handyman), Tab("you", "You", Icons.Rounded.Person), Tab("games", "Games", Icons.Rounded.SportsEsports),
 )
 
 /** Floating bottom bar: the selected tab's pill grows and fills, its icon pops, with a light haptic tick. */
@@ -160,15 +162,15 @@ private val TABS = listOf(
 private fun FloatingBar(route: String?, onSelect: (String) -> Unit) {
     val haptics = LocalHapticFeedback.current
     Surface(shape = RoundedCornerShape(30.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 12.dp,
-        modifier = Modifier.navigationBarsPadding().padding(start = 10.dp, end = 10.dp, bottom = 8.dp, top = 4.dp).fillMaxWidth().height(70.dp)) {
-        Row(Modifier.fillMaxSize().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        modifier = Modifier.navigationBarsPadding().padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 4.dp).fillMaxWidth().height(70.dp)) {
+        Row(Modifier.fillMaxSize().padding(horizontal = 2.dp), verticalAlignment = Alignment.CenterVertically) {
             TABS.forEach { t ->
                 val selected = route == t.route
-                val width by animateDpAsState(if (selected) 50.dp else 32.dp, spring(dampingRatio = .55f, stiffness = 500f), label = "pill")
+                val width by animateDpAsState(if (selected) 44.dp else 30.dp, spring(dampingRatio = .55f, stiffness = 500f), label = "pill")
                 val scale by animateFloatAsState(if (selected) 1.12f else 1f, spring(dampingRatio = .4f, stiffness = 600f), label = "icon")
                 val bg by animateColorAsState(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent, label = "bg")
                 val tint by animateColorAsState(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, label = "tint")
-                Column(Modifier.weight(if (t.label.length > 7) 1.35f else 1f).fillMaxHeight().selectable(selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() },
+                Column(Modifier.weight(if (t.label.length > 7) 1.3f else 1f).fillMaxHeight().selectable(selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() },
                     indication = null) { if (!selected) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove); onSelect(t.route) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                     Box(Modifier.width(width).height(32.dp).clip(CircleShape).background(bg), contentAlignment = Alignment.Center) {
@@ -209,6 +211,8 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
                 }
             }
             composable("community") { CommunityScreen(nav) }
+            composable("games") { GamesScreen(nav) }
+            composable("game/{id}") { GameScreen(it.arguments?.getString("id") ?: "rps", nav) }
             composable("post/{id}") { ThreadScreen(it.arguments?.getString("id") ?: "", nav) }
             composable("challenges") { ChallengesScreen(nav) }
             composable("check/{id}") { CheckScreen(it.arguments?.getString("id") ?: "money", nav) }
