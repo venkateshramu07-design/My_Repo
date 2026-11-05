@@ -5,7 +5,7 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
 
 - **Today** (`ui/HomeScreen.kt`): a finite page. Topic stories (full-screen, auto-advancing quick answers), a daily
   pick, just published, a live "money in 10 seconds" slider, flip-card quick answers, popular tools, a topic spotlight
-  and "You're all caught up". It reloads on open and resume, checks for a new post every minute while visible, and
+  and "More to read" (every guide, newest first, mixed by topic, paged as you scroll). It reloads on open and resume, checks for a new post every minute while visible, and
   `data/NewPosts.kt` (WorkManager, every 15 min) posts a notification for new guides. Cover art comes live from the
   website's design layer (`version.txt` → `bd-redesign.js` → `BD_COVERS`), on top of the copy built into the app.
 - **Navigation**: floating animated bar with Today, Explore, Reads, Tools and You (`ui/App.kt`).
