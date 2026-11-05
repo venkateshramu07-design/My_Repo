@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.data
 
+import androidx.compose.runtime.mutableStateOf
 import android.content.Context
 import android.content.SharedPreferences
 import com.randomthoughtsever.plainly.BuildConfig
@@ -45,7 +46,19 @@ object Community {
     private var idToken: String? = null
     private var expiresAt = 0L
 
-    fun init(context: Context) { prefs = context.getSharedPreferences("community", Context.MODE_PRIVATE) }
+    fun init(context: Context) { prefs = context.getSharedPreferences("community", Context.MODE_PRIVATE); joinedBox.value = prefs.getBoolean("joined", false) }
+
+    private val joinedBox = mutableStateOf(false)
+    /** Whether the reader has joined (on the phone; joining needs no server). Screens redraw when it changes. */
+    var joinedState: Boolean
+        get() = joinedBox.value
+        set(v) { joinedBox.value = v; if (::prefs.isInitialized) prefs.edit().putBoolean("joined", v).apply() }
+    var welcomed: Boolean
+        get() = ::prefs.isInitialized && prefs.getBoolean("welcomed", false)
+        set(v) { prefs.edit().putBoolean("welcomed", v).apply() }
+    /** First-steps progress: posted at least once; joined a guide's discussion. */
+    val posted get() = ::prefs.isInitialized && prefs.getBoolean("posted", false)
+    val discussed get() = ::prefs.isInitialized && prefs.getBoolean("discussed", false)
     val uid: String? get() = if (::prefs.isInitialized) prefs.getString("uid", null) else null
 
     private val docs get() = "$firestoreBase/v1/projects/$projectId/databases/(default)/documents"
@@ -134,6 +147,7 @@ object Community {
         commit(JSONObject().put("update", JSONObject().put("name", "$docName/posts/$id").put("fields", fields))
             .put("currentDocument", JSONObject().put("exists", false))
             .put("updateTransforms", JSONArray().put(JSONObject().put("fieldPath", "createdAt").put("setToServerValue", "REQUEST_TIME"))))
+        prefs.edit().putBoolean("posted", true).apply { if (guide.isNotBlank()) putBoolean("discussed", true) }.apply()
         Post(id, me, name, avatar, text.trim(), topic, guide, System.currentTimeMillis(), 0, 0)
     }
 
@@ -151,7 +165,7 @@ object Community {
                     .put("updateTransforms", JSONArray().put(JSONObject().put("fieldPath", "createdAt").put("setToServerValue", "REQUEST_TIME"))),
                     increment("posts/$postId", "comments", 1))
             }.isSuccess
-            if (ok) { prefs.edit().putStringSet("myComments", prefs.getStringSet("myComments", emptySet())!! + "posts/$postId/comments/$cid").apply(); return@withContext }
+            if (ok) { prefs.edit().putBoolean("discussed", true).apply(); prefs.edit().putStringSet("myComments", prefs.getStringSet("myComments", emptySet())!! + "posts/$postId/comments/$cid").apply(); return@withContext }
             if (attempt == 2) error("Couldn't post your comment. Try again.")
         }
     }

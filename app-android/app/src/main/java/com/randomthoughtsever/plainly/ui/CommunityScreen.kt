@@ -101,7 +101,6 @@ fun Avatar(emoji: String, size: Int = 40) = Box(Modifier.size(size.dp).clip(Circ
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(nav: Nav) {
-    if (!Community.enabled) { ComingSoon(nav); return }
     val profile = AppGraph.profile
     val scope = rememberCoroutineScope()
     var tab by rememberSaveable { mutableIntStateOf(0) }
@@ -117,6 +116,7 @@ fun CommunityScreen(nav: Nav) {
     }
     LaunchedEffect(Unit) { load() }
     if (composing) ComposeDialog("", "") { created -> composing = false; if (created != null) posts = listOf(created) + posts.orEmpty() }
+    val firstStepsVisible = firstSteps().any { !it.done }
     if (identity) IdentityDialog { identity = false }
 
     Column(Modifier.fillMaxSize()) {
@@ -134,6 +134,8 @@ fun CommunityScreen(nav: Nav) {
         if (tab == 1) { Leaders(); return@Column }
         PullToRefreshBox(refreshing, { scope.launch { refreshing = true; load(); refreshing = false } }, Modifier.fillMaxSize()) {
             LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
+                if (firstStepsVisible) item { FirstStepsCard(nav) { composing = true } }
+                item { ChallengesStrip(nav) }
                 item {
                     Surface(onClick = { composing = true }, shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface,
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp)) {
@@ -294,6 +296,14 @@ fun ComposeDialog(guide: String, preset: String, done: (Community.Post?) -> Unit
             if (guide.isBlank()) FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 TOPICS.forEach { t -> FilterChip(topic == t, { topic = t }, label = { Text(t) }) }
             }
+            if (guide.isBlank() && text.isBlank()) {
+                Text("Ideas to start", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
+                helloPrompts().forEach { idea ->
+                    Text(idea, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp).clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant).clickable { text = idea }.padding(10.dp))
+                }
+                Spacer(Modifier.height(6.dp))
+            }
             OutlinedTextField(text, { text = it.take(500); problem = null }, Modifier.fillMaxWidth().height(160.dp),
                 placeholder = { Text("A tip that worked for you, a small win, or a question for everyone") }, shape = RoundedCornerShape(16.dp))
             Text("${text.length}/500", style = MaterialTheme.typography.labelSmall, modifier = Modifier.align(Alignment.End))
@@ -415,17 +425,4 @@ fun PollShare(quizId: String, option: Int, color: Color) {
     val total = c.sum()
     if (total < 3) return
     Text(" ${Math.round(c[option] * 100f / total)}%", style = MaterialTheme.typography.labelLarge, color = color, fontWeight = FontWeight.Bold)
-}
-
-@Composable
-private fun ComingSoon(nav: Nav) = Column(Modifier.fillMaxSize().statusBarsPadding().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-    Spacer(Modifier.height(30.dp))
-    TopicScene("Love & Relationships", Modifier.size(180.dp).clip(RoundedCornerShape(40.dp)))
-    Spacer(Modifier.height(20.dp))
-    Text("Community is opening soon", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
-    Spacer(Modifier.height(8.dp))
-    Text("Share tips and wins, ask questions, discuss every guide, see how others answered the quizzes, and climb the streak leaderboard. No account needed.",
-        style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
-    Spacer(Modifier.height(20.dp))
-    Button(onClick = { nav.challenges() }, shape = RoundedCornerShape(50)) { Text("Meanwhile, start a challenge") }
 }

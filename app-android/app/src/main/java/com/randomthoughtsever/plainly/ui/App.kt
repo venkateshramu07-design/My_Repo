@@ -120,6 +120,7 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
     fun check(id: String) = c.navigate("check/$id")
     fun thread(id: String) = c.navigate("post/$id")
     fun challenges() = c.navigate("challenges")
+    fun challenge(key: String) = c.navigate("challenge/$key")
     fun reads() = c.navigate("reads")
     fun game(id: String) = c.navigate("game/$id")
     fun saved(history: Boolean = false) = c.navigate(if (history) "saved?history=true" else "saved")
@@ -153,8 +154,8 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
 private data class Tab(val route: String, val label: String, val icon: ImageVector)
 private val TABS = listOf(
     Tab("today", "Today", Icons.Rounded.Today), Tab("explore", "Explore", Icons.Rounded.Explore),
-    Tab("reads", "Reads", Icons.Rounded.AutoStories), Tab("community", "Community", Icons.Rounded.Groups),
-    Tab("tools", "Tools", Icons.Rounded.Handyman), Tab("you", "You", Icons.Rounded.Person), Tab("games", "Games", Icons.Rounded.SportsEsports),
+    Tab("reads", "Reads", Icons.Rounded.AutoStories), Tab("tools", "Tools", Icons.Rounded.Handyman),
+    Tab("you", "You", Icons.Rounded.Person), Tab("games", "Games", Icons.Rounded.SportsEsports), Tab("community", "Community", Icons.Rounded.Groups),
 )
 
 /** Floating bottom bar: the selected tab's pill grows and fills, its icon pops, with a light haptic tick. */
@@ -210,7 +211,8 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
                     if (health) nav.check("money")
                 }
             }
-            composable("community") { CommunityScreen(nav) }
+            composable("community") { if (com.randomthoughtsever.plainly.data.Community.joinedState) CommunityHome(nav) else JoinCommunity(nav) }
+            composable("challenge/{key}") { ChallengeScreen(it.arguments?.getString("key") ?: "", nav) }
             composable("games") { GamesScreen(nav) }
             composable("game/{id}") { GameScreen(it.arguments?.getString("id") ?: "rps", nav) }
             composable("post/{id}") { ThreadScreen(it.arguments?.getString("id") ?: "", nav) }

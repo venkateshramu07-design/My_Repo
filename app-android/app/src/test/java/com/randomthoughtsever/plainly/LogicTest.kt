@@ -217,6 +217,25 @@ class LogicTest {
         assertEquals(5, com.randomthoughtsever.plainly.ui.GAMES.size); assertTrue(g.isNotEmpty())
     }
 
+    @Test fun searchAnswersWhileTyping() {
+        fun e(id: String, title: String, label: String, quick: String = "") = com.randomthoughtsever.plainly.data.Entry(id, title, "/$id", "", listOf(label), "2026-10-01", quick, null)
+        val index = listOf(e("1", "What Is Karma? Meaning, Types and How It Works", "Psychology"),
+            e("2", "Credit Karma vs FICO: Why Is My Credit Score Different on Every App?", "Personal Finance"),
+            e("3", "What Is Inflation? Causes, Types and Effects Explained", "Economics"),
+            e("4", "How Does the Fed Control Inflation?", "Economics"),
+            e("5", "Dental Implant Loans", "Health & Wellness", "check your score on Credit Karma first"))
+        val s = com.randomthoughtsever.plainly.data.SearchRank
+        assertEquals(listOf("1", "2"), s.instant("kar", index).map { it.id }.take(2))   // partial word, titles first
+        assertEquals("3", s.instant("infl", index).first().id)
+        val withGroceries = index + e("6", "Why Are Groceries and Prices So Expensive When Inflation Is Down?", "Economics")
+        assertEquals("3", s.instant("infl", withGroceries).first().id)
+        assertEquals(listOf("3", "4"), s.instant("inflation", index).map { it.id })
+        assertEquals("2", s.instant("credit kar", index).first().id)                      // both words, last one partial
+        assertTrue(s.instant("zzzz", index).isEmpty())
+        assertTrue(s.instant("what is k", index).first().id == "1")                       // stop words, then a partial word
+        assertEquals(listOf(0 until 3), s.matches("Karma explained", "kar"))
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

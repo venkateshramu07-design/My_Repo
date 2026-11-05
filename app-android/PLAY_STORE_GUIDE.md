@@ -38,12 +38,21 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   with daily check-ins and one evening reminder. **Badges** and a **knowledge map** in You.
 - **Listen** to any article (the phone's own voice), **share any quick answer as a picture**, and a **home-screen widget**
   with the tip of the day and your streak.
+- **Joining the community**: a landing page explains what it's for, then three quick steps (name and emoji, topics,
+  rules) and a "You're in!" welcome. Members get a **first-steps checklist** (say hello with ready-made first posts,
+  answer today's poll, join a challenge, comment on a guide, keep a 3-day streak) that ticks itself off. Before Step 2C
+  is done, members still get their profile, first steps, the daily poll and challenges, with a clear note that posting
+  opens soon.
+- **Challenges** open their own page when joined: day N of N, today's task with a check-in button, a tip for each day,
+  how it works, guides that help, and invite a friend.
+- **Search answers while you type**: results from every guide appear on each keystroke (partial words count, matches
+  highlighted), with deeper full-text results added underneath and recent searches remembered.
 - **Community** (needs Step 2C): an anonymous name and emoji (no account), posts, likes, comments, a discussion under
   every guide, live "what others answered" on quizzes, and a streak leaderboard. Rules shown before the first post, a
   word and link filter, Report, Block, delete your own posts, and "Delete my community data" in Settings.
 - **Games** (the last tab): Rock Paper Scissors (first to 3), Money Match (memory pairs), Number Rush (45 seconds of quick
   money maths), Tic-Tac-Toe (Easy or Unbeatable) and Reaction Time, with best scores saved on the phone. All offline.
-- **Bottom bar** (floating, animated): **Today · Explore · Reads · Community · Tools · You · Games**.
+- **Bottom bar** (floating, animated): **Today · Explore · Reads · Tools · You · Games · Community**.
 - **Motion**: every topic has its own short animated scene, drawn by the app (coins filling a jar for money, a chart
   drawing itself for investing, a globe with a plane for countries, a growing plant for self improvement, a heartbeat for
   health, a neural network for AI, and more). They play in "In 30 seconds" cards at random spots in Today's feed (they

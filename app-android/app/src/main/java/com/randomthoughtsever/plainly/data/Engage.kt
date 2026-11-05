@@ -79,16 +79,52 @@ fun quizOfTheDay(goals: Set<String>, day: Long = LocalDate.now().toEpochDay()): 
     return pool[(day % pool.size).toInt()]
 }
 
-/** A challenge: [days] long, one small action to tick each day. */
-data class Challenge(val key: String, val title: String, val blurb: String, val days: Int, val action: String, val emoji: String, val goal: String)
+/** A challenge: [days] long, one small action to tick each day, how it works, a tip per day, and guides that help. */
+data class Challenge(val key: String, val title: String, val blurb: String, val days: Int, val action: String, val emoji: String, val goal: String,
+                     val how: List<String> = emptyList(), val tips: List<String> = emptyList(), val guides: Regex = Regex("$^"))
 
 val CHALLENGES = listOf(
-    Challenge("nospend", "7-day no-spend", "Spend only on essentials for a week and watch what you save.", 7, "No non-essential spending today", "💸", "save"),
-    Challenge("debt30", "30-day debt sprint", "Pay something extra on your highest-interest debt every day you can.", 30, "Put something extra toward my debt", "🎯", "debt"),
-    Challenge("calm7", "7-day calm", "One minute of slow breathing a day.", 7, "Do one minute of breathing", "🌿", "mind"),
-    Challenge("read21", "21-day reading habit", "Read one guide a day and build the habit.", 21, "Read one guide", "📚", "learn"),
-    Challenge("career14", "14-day career boost", "One small step a day: update your CV, learn, or reach out to someone.", 14, "Do one career step", "🚀", "career"),
-    Challenge("habit30", "30-day tiny habit", "Pick one tiny habit and do it every day for a month.", 30, "Do my tiny habit", "✅", "mind"),
+    Challenge("nospend", "7-day no-spend", "Spend only on essentials for a week and watch what you save.", 7, "No non-essential spending today", "💸", "save",
+        listOf("Write down what counts as essential before you start: rent, bills, groceries, transport, medicine.",
+            "Each evening, if you only spent on essentials, tap Check in.", "At the end, move what you didn't spend into savings."),
+        listOf("Delete saved cards from shopping apps for the week.", "Plan meals for three days so groceries are the only food spend.",
+            "Unsubscribe from shop emails. Fewer offers, fewer urges.", "Swap a paid plan for a free one: a walk, a library book, a call with a friend.",
+            "Check your subscriptions. Cancel one you forgot about.", "Wait 48 hours before any non-essential purchase.", "Add up what you didn't spend and save it today."),
+        Regex("(?i)budget|subscription|save|rich|groceries|money moves")),
+    Challenge("debt30", "30-day debt sprint", "Pay something extra on your highest-interest debt every day you can.", 30, "Put something extra toward my debt", "🎯", "debt",
+        listOf("List your debts and their interest rates. Your target is the highest rate.", "Any day you pay extra, even a small amount, tap Check in.",
+            "Use the credit card payoff calculator to see your new debt-free date."),
+        listOf("Turn on autopay for at least the minimum on every card.", "Round up today's coffee or lunch money and send it to the debt.",
+            "Call your card company and ask for a lower rate. It works more often than you'd think.", "Sell one thing you don't use and pay the debt with it.",
+            "Check whether a balance transfer or consolidation loan would cut your interest.", "Pay twice a month instead of once.",
+            "Celebrate the progress, not the total: every payment shrinks the interest."),
+        Regex("(?i)debt|credit card|consolidat|loan|credit score")),
+    Challenge("calm7", "7-day calm", "One minute of slow breathing a day.", 7, "Do one minute of breathing", "🌿", "mind",
+        listOf("Once a day, open Daily 3 on Today and do the one-minute breathing.", "Breathe in for 4 seconds and out for 6 with the circle.",
+            "Tap Check in when you're done. Notice how you feel before and after."),
+        listOf("Breathe out longer than you breathe in: it slows your heart.", "Try it before a stressful call or meeting.",
+            "Do your minute outside if you can.", "Put your phone face down for 10 minutes after.", "Try it in bed before sleep.",
+            "Pair it with a habit you already have, like the first coffee.", "Notice one thing you can hear, see and feel."),
+        Regex("(?i)stress|calm|anxiety|zen|sleep|burnout|mind")),
+    Challenge("read21", "21-day reading habit", "Read one guide a day and build the habit.", 21, "Read one guide", "📚", "learn",
+        listOf("Read any guide in Plainly each day. Short ones count.", "Tap Check in after you finish it.", "Your knowledge map in You fills in as you go."),
+        listOf("Start with your plan on Today.", "Try a Quick read in the Reads tab: one guide in a minute.", "Pick a topic you know nothing about.",
+            "Listen to a guide on a walk with the Listen button.", "Save one guide to read again later.", "Share one useful answer as a picture.",
+            "Take the quiz of the day to check what stuck."),
+        Regex("(?i)start here|explained|what is|guide")),
+    Challenge("career14", "14-day career boost", "One small step a day: update your CV, learn, or reach out to someone.", 14, "Do one career step", "🚀", "career",
+        listOf("Each day, do one 15-minute step for your career.", "Tap Check in when it's done.", "Use the Career Check to see what to focus on."),
+        listOf("Update one line of your CV with a result and a number.", "Message one former colleague just to catch up.",
+            "Spend 15 minutes learning an AI tool used in your job.", "Write down three wins from this month.", "Check what your role pays with the raise calculator.",
+            "Practise your answer to \"tell me about yourself\".", "Block one hour this week for deep work."),
+        Regex("(?i)career|job|interview|raise|salary|ai |burnout|work")),
+    Challenge("habit30", "30-day tiny habit", "Pick one tiny habit and do it every day for a month.", 30, "Do my tiny habit", "✅", "mind",
+        listOf("Choose a habit so small you can do it on your worst day (one push-up, one page, one glass of water).",
+            "Tie it to something you already do: \"after I brush my teeth, I will…\"", "Tap Check in each day you do it."),
+        listOf("If you miss a day, never miss two.", "Make the habit obvious: put the cue where you'll see it.", "Make it easy: under two minutes.",
+            "Track it here. Seeing the streak helps.", "Tell a friend what you're doing.", "Once it's automatic, make it slightly bigger.",
+            "Reward yourself right after doing it."),
+        Regex("(?i)habit|consistent|routine|healthy|morning")),
 )
 
 /** Badges, each with whether it's earned and the progress towards it. */

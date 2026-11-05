@@ -1,5 +1,11 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.data.Entry
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.AnnotatedString
 import kotlinx.coroutines.launch
 import com.randomthoughtsever.plainly.tools.Catalog
 import com.randomthoughtsever.plainly.data.SearchRank
@@ -136,31 +142,62 @@ fun TopicScreen(label: String, nav: Nav) {
     }
 }
 
+/**
+ * Search that answers while you type: results come from the index of every guide on the phone (no network wait, partial
+ * words count), with the matching letters highlighted. Blogger's full-text search runs in the background for deeper
+ * matches and adds them underneath. Tools that match are shown first.
+ */
 @Composable
 fun SearchScreen(nav: Nav, initial: String = "") {
+    val context = LocalContext.current
+    val prefs = remember { NewPosts.prefs(context) }
     var query by rememberSaveable { mutableStateOf(initial) }
-    var results by remember { mutableStateOf<List<Post>?>(null) }
-    var loading by remember { mutableStateOf(false) }
+    val index = rememberIndex()
+    val q = query.trim()
+    val instant = remember(q, index) { if (q.isEmpty() || index == null) emptyList() else SearchRank.instant(q, index) }
+    var deep by remember { mutableStateOf<List<Post>>(emptyList()) }
+    var deepLoading by remember { mutableStateOf(false) }
+    var recent by remember { mutableStateOf(prefs.getString("recentSearches", "").orEmpty().split('\n').filter { it.isNotBlank() }) }
+    fun saveRecent(term: String) {
+        val t = term.trim(); if (t.length < 2) return
+        recent = (listOf(t) + recent.filterNot { it.equals(t, true) }).take(8)
+        prefs.edit().putString("recentSearches", recent.joinToString("\n")).apply()
+    }
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { focus.requestFocus() }
-    LaunchedEffect(query) {
-        if (query.trim().length < 2) { results = null; return@LaunchedEffect }
-        delay(350); loading = true
-        results = runCatching { AppGraph.repo.search(query.trim()) }.getOrDefault(emptyList()); loading = false
+    LaunchedEffect(q) {
+        deep = emptyList()
+        if (q.length < 3) return@LaunchedEffect
+        delay(450); deepLoading = true
+        deep = runCatching { AppGraph.repo.search(q) }.getOrDefault(emptyList()); deepLoading = false
     }
+    val tokens = SearchRank.typed(q)
+    val tools = remember(q) {
+        if (tokens.isEmpty()) emptyList() else Catalog.all().filter { t ->
+            val words = "${t.title} ${t.blurb}".lowercase().split(Regex("[^\\p{L}\\p{N}]+"))
+            tokens.all { tok -> words.any { it.startsWith(tok) } }
+        }.take(4)
+    }
+    val extra = deep.filter { p -> instant.none { it.id == p.id } }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = nav::back) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") }
-            OutlinedTextField(query, { query = it }, Modifier.weight(1f).focusRequester(focus), placeholder = { Text("Search guides and topics") },
+            OutlinedTextField(query, { query = it }, Modifier.weight(1f).focusRequester(focus), placeholder = { Text("Search guides and tools") },
                 singleLine = true, shape = RoundedCornerShape(50), leadingIcon = { Icon(Icons.Rounded.Search, null) },
                 trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Rounded.Close, "Clear") } },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), keyboardActions = KeyboardActions())
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), keyboardActions = KeyboardActions(onSearch = { saveRecent(q) }))
         }
-        LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
-            val r = results
+        LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
             when {
-                loading && r == null -> items(5) { RowSkeleton() }
-                r == null -> {
+                q.isEmpty() -> {
+                    if (recent.isNotEmpty()) {
+                        item { Text("Recent searches", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
+                        items(recent) { r ->
+                            ListItem(headlineContent = { Text(r) }, leadingContent = { Icon(Icons.Rounded.History, null) },
+                                modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { query = r },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+                        }
+                    }
                     item { Text("Popular topics", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
                     items(Topics.take(8)) { t ->
                         ListItem(headlineContent = { Text(t.title) }, supportingContent = { Text(t.blurb) },
@@ -169,26 +206,56 @@ fun SearchScreen(nav: Nav, initial: String = "") {
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent))
                     }
                 }
+                index == null -> items(5) { RowSkeleton() }
                 else -> {
-                    val q = query.trim().lowercase()
-                    val tools = Catalog.all().filter { t -> SearchRank.words(q).all { w -> "${t.title} ${t.blurb}".lowercase().contains(w) } }.take(4)
                     if (tools.isNotEmpty()) {
                         item { Text("Tools", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
                         items(tools, key = { it.key }) { t ->
-                            ListItem(headlineContent = { Text(t.title) }, supportingContent = { Text(t.blurb) },
+                            ListItem(headlineContent = { Text(highlighted(t.title, q)) }, supportingContent = { Text(t.blurb) },
                                 leadingContent = { Box(Modifier.size(40.dp).background(t.color, RoundedCornerShape(13.dp)), contentAlignment = Alignment.Center) {
                                     Icon(t.icon, null, tint = Color.White) } },
-                                modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { t.open(nav) },
+                                modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { saveRecent(q); t.open(nav) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent))
                         }
                     }
-                    if (r.isEmpty() && tools.isEmpty()) item { EmptyState(Icons.Rounded.SearchOff, "No results", "Try another word, like \"credit score\" or \"burnout\".") }
-                    if (r.isNotEmpty()) {
-                        item { Text(if (r.size == 1) "1 guide" else "${r.size} guides", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
-                        items(r, key = { it.id }) { p -> PostRow(p) { nav.article(p.id) } }
+                    if (instant.isNotEmpty()) {
+                        item { Text(if (instant.size == 1) "1 guide" else "${instant.size} guides", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
+                        items(instant, key = { it.id }) { e -> SearchRow(e, q) { saveRecent(q); nav.article(e.id) } }
                     }
+                    if (extra.isNotEmpty()) {
+                        item { Text("More guides that mention it", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
+                        items(extra, key = { "d" + it.id }) { p -> PostRow(p) { saveRecent(q); nav.article(p.id) } }
+                    }
+                    if (deepLoading && instant.isEmpty()) items(3) { RowSkeleton() }
+                    if (instant.isEmpty() && tools.isEmpty() && extra.isEmpty() && !deepLoading)
+                        item { EmptyState(Icons.Rounded.SearchOff, "Nothing for \"$q\" yet", "Try fewer letters or another word, like \"credit\" or \"sleep\".") }
                 }
             }
+        }
+    }
+}
+
+/** The typed letters in bold and colour wherever a word starts with them. */
+@Composable
+fun highlighted(text: String, query: String): AnnotatedString {
+    val color = MaterialTheme.colorScheme.primary
+    return remember(text, query, color) {
+        buildAnnotatedString {
+            append(text)
+            SearchRank.matches(text, query).forEach { r -> addStyle(SpanStyle(fontWeight = FontWeight.ExtraBold, color = color, background = color.copy(alpha = .12f)), r.first, r.last + 1) }
+        }
+    }
+}
+
+@Composable
+private fun SearchRow(e: Entry, q: String, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).clickable(onClick = onClick).padding(horizontal = 4.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Cover(e.image, e.label, Modifier.size(width = 96.dp, height = 72.dp), 24.dp, alignment = Alignment.CenterEnd)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Kicker("${com.randomthoughtsever.plainly.data.intentOf(e.title).label} · ${topicFor(e.label).title}")
+            Text(highlighted(e.title, q), style = MaterialTheme.typography.titleMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
         }
     }
 }

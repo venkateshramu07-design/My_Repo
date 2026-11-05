@@ -466,16 +466,16 @@ fun ChallengeCards(nav: Nav) {
         }
         return
     }
-    joined.forEach { j -> CHALLENGES.firstOrNull { it.key == j.key }?.let { c -> ActiveChallenge(c, j.start, j.days) } }
+    joined.forEach { j -> CHALLENGES.firstOrNull { it.key == j.key }?.let { c -> ActiveChallenge(c, j.start, j.days) { nav.challenge(c.key) } } }
 }
 
 @Composable
-private fun ActiveChallenge(c: com.randomthoughtsever.plainly.data.Challenge, start: String, days: Set<String>) {
+private fun ActiveChallenge(c: com.randomthoughtsever.plainly.data.Challenge, start: String, days: Set<String>, open: () -> Unit) {
     val profile = AppGraph.profile
     val dayNo = (ChronoUnit.DAYS.between(LocalDate.parse(start), LocalDate.now()) + 1).toInt().coerceAtMost(c.days)
     val today = LocalDate.now().toString() in days
     val finished = days.size >= c.days
-    Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 2.dp,
+    Surface(onClick = open, shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 2.dp,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -512,7 +512,7 @@ fun ChallengesScreen(nav: Nav) {
         }
         items(CHALLENGES, key = { it.key }) { c ->
             val g = GOALS.firstOrNull { it.key == c.goal }
-            Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 1.dp,
+            Surface(onClick = { nav.challenge(c.key) }, shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 1.dp,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(Modifier.size(52.dp).clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(g?.from ?: Navy, g?.to ?: NavyBright))),
@@ -523,7 +523,7 @@ fun ChallengesScreen(nav: Nav) {
                         Text(c.blurb, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     if (c.key in joined) TextButton(onClick = { profile.leave(c.key) }) { Text("Leave") }
-                    else Button(onClick = { profile.join(c.key); Reminders.schedule(nav.context) }, shape = RoundedCornerShape(50)) { Text("Join") }
+                    else Button(onClick = { profile.join(c.key); Reminders.schedule(nav.context); nav.challenge(c.key) }, shape = RoundedCornerShape(50)) { Text("Join") }
                 }
             }
         }

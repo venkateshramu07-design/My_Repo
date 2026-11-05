@@ -8,7 +8,9 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   and "More to read" (every guide, newest first, mixed by topic, paged as you scroll). It reloads on open and resume, checks for a new post every minute while visible, and
   `data/NewPosts.kt` (WorkManager, every 15 min) posts a notification for new guides. Cover art comes live from the
   website's design layer (`version.txt` → `bd-redesign.js` → `BD_COVERS`), on top of the copy built into the app.
-- **Navigation**: floating animated bar with Today, Explore, Reads, Community, Tools, You and Games (`ui/App.kt`).
+- **Navigation**: floating animated bar with Today, Explore, Reads, Tools, You, Games and Community (`ui/App.kt`).
+- **Joining and challenges** (`ui/CommunityJoin.kt`): join landing, three-step join, welcome, first-steps checklist,
+  and each challenge's page (today's task and check-in, daily tip, how it works, guides).
 - **Games** (`ui/Games.kt`): Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe (minimax "Unbeatable") and Reaction
   Time; best scores in SharedPreferences. `LogicTest.gamesFollowTheirRules` checks the rules, 500 maths questions and that
   Unbeatable never loses any possible game.
@@ -29,7 +31,7 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   (so new posts join them by themselves), 35 countries with flags, topic counts, and the A-to-Z library.
 - **Reads** (`ui/QuickReads.kt`): a vertical pager of quick answers, "For you" or by group. **You** (`ui/YouScreen.kt`):
   streak, stats, topics read, saved, history and settings.
-- **Search**: Blogger finds posts and `data/SearchRank.kt` orders them by relevance; matching tools are shown first.
+- **Search** (`data/SearchRank.kt`): `instant()` ranks the full index on every keystroke (prefix matching, title first, matches highlighted); Blogger full-text results are merged underneath.
 - **Reader** (`ui/Reader.kt`): article HTML is parsed with jsoup into native blocks (headings, paragraphs with links,
   Quick answer card, lists, tables, FAQs, images). Scripts, styles and the site's web widgets are dropped; the matching
   native tool is offered instead. Links to other posts open in the app; external links open in Custom Tabs.

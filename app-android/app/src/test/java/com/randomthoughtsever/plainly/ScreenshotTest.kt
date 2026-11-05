@@ -152,6 +152,7 @@ class ScreenshotTest {
         C.projectId = "demo-plainly"; C.apiKey = "fake-api-key"
         C.authBase = "http://127.0.0.1:9099/identitytoolkit.googleapis.com"; C.tokenBase = "http://127.0.0.1:9099/securetoken.googleapis.com"
         C.firestoreBase = "http://127.0.0.1:8080"
+        ctx.getSharedPreferences("community", Context.MODE_PRIVATE).edit().putBoolean("joined", true).putBoolean("welcomed", true).commit()
         C.init(ctx); C.acceptedRules = true
         kotlinx.coroutines.runBlocking {
             C.resetSession(); C.createPost("Steady Cedar 31", "🌵", "Tip: I moved my savings transfer to payday. I don't miss money I never see.", "Money")
@@ -235,6 +236,39 @@ class ScreenshotTest {
             org.junit.Assert.assertTrue("$l is cut off: needs ${needs}px, has ${n.size.width}px", needs <= n.size.width + 1)
         }
         shot("30-small-phone-bar")
+    }
+
+    @Test fun joinCommunityAndAChallenge() {
+        ctx.getSharedPreferences("community", Context.MODE_PRIVATE).edit().clear().commit()
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("Community"); waitFor(10, settle = 1200) { seen("Join the community") }
+        shot("40-community-join")
+        compose.onAllNodesWithText("Join the community").onFirst().performClick(); pause(1500)
+        shot("41-join-step1")
+        compose.onAllNodesWithText("Next").onFirst().performClick(); pause(1200)
+        compose.onAllNodesWithText("Next").onFirst().performClick(); pause(1200)
+        shot("42-join-rules")
+        compose.onAllNodesWithText("I agree, join").onFirst().performClick(); waitFor(10, settle = 1500) { seen("You're in", ) }
+        org.junit.Assert.assertTrue(seen("You're in"))
+        shot("43-community-welcome")
+        compose.onAllNodesWithText("Show me my first steps").onFirst().performClick(); pause(1500)
+        org.junit.Assert.assertTrue(seen("YOUR FIRST STEPS"))
+        shot("44-community-first-steps")
+        compose.onAllNodesWithText("7-day no-spend").onFirst().performClick(); pause(1500)
+        compose.onAllNodesWithText("Join and start day 1").onFirst().performClick(); pause(1200)
+        org.junit.Assert.assertTrue(seen("TODAY'S TASK"))
+        shot("45-challenge-day1")
+        compose.onAllNodesWithText("Check in for day 1").onFirst().performClick(); pause(1200)
+        org.junit.Assert.assertTrue(seen("Done for today"))
+        shot("46-challenge-done")
+    }
+
+    @Test fun searchWhileTyping() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Search")).performClick(); pause(800)
+        compose.onNode(hasSetTextAction()).performTextReplacement("infl"); waitFor(30, settle = 800) { seen("Inflation", ) }
+        org.junit.Assert.assertTrue("no instant results for 'infl'", seen("Inflation"))
+        shot("47-search-infl")
     }
 
     @Test fun games() {
