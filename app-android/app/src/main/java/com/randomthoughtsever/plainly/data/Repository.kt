@@ -102,8 +102,13 @@ class Repository(private val context: Context) {
     suspend fun topic(label: String, start: Int = 1, count: Int = 20): List<Post> =
         list("${Blog.BASE}/feeds/posts/default/-/${Uri.encode(label)}?alt=json&max-results=$count&start-index=$start")
 
-    suspend fun search(query: String): List<Post> =
-        list("${Blog.BASE}/feeds/posts/default?alt=json&max-results=25&q=${Uri.encode(query)}")
+    /** Blogger finds the posts; SearchRank puts the most relevant first. If a multi-word search finds nothing, its longest word is tried. */
+    suspend fun search(query: String): List<Post> {
+        var found = list("${Blog.BASE}/feeds/posts/default?alt=json&max-results=50&q=${Uri.encode(query)}")
+        val ws = SearchRank.words(query)
+        if (found.isEmpty() && ws.size > 1) found = list("${Blog.BASE}/feeds/posts/default?alt=json&max-results=50&q=${Uri.encode(ws.maxBy { it.length })}")
+        return withContext(Dispatchers.Default) { SearchRank.rank(query, found) }
+    }
 
     fun cached(id: String): Post? = memory[id]
 

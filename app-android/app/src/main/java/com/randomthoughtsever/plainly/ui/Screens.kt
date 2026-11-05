@@ -1,5 +1,7 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.tools.Catalog
+import com.randomthoughtsever.plainly.data.SearchRank
 import androidx.compose.material3.Switch
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -184,12 +186,29 @@ fun SearchScreen(nav: Nav) {
                     items(Topics.take(8)) { t ->
                         ListItem(headlineContent = { Text(t.title) }, supportingContent = { Text(t.blurb) },
                             leadingContent = { Icon(t.icon, null, tint = t.to) },
-                            modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Color.Transparent),
+                            modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { nav.topic(t.label) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent))
                     }
                 }
-                r.isEmpty() -> item { EmptyState(Icons.Rounded.SearchOff, "No results", "Try another word, like \"credit score\" or \"burnout\".") }
-                else -> items(r, key = { it.id }) { p -> PostRow(p) { nav.article(p.id) } }
+                else -> {
+                    val q = query.trim().lowercase()
+                    val tools = Catalog.all().filter { t -> SearchRank.words(q).all { w -> "${t.title} ${t.blurb}".lowercase().contains(w) } }.take(4)
+                    if (tools.isNotEmpty()) {
+                        item { Text("Tools", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
+                        items(tools, key = { it.key }) { t ->
+                            ListItem(headlineContent = { Text(t.title) }, supportingContent = { Text(t.blurb) },
+                                leadingContent = { Box(Modifier.size(40.dp).background(t.color, RoundedCornerShape(13.dp)), contentAlignment = Alignment.Center) {
+                                    Icon(t.icon, null, tint = Color.White) } },
+                                modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { t.open(nav) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+                        }
+                    }
+                    if (r.isEmpty() && tools.isEmpty()) item { EmptyState(Icons.Rounded.SearchOff, "No results", "Try another word, like \"credit score\" or \"burnout\".") }
+                    if (r.isNotEmpty()) {
+                        item { Text(if (r.size == 1) "1 guide" else "${r.size} guides", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(8.dp)) }
+                        items(r, key = { it.id }) { p -> PostRow(p) { nav.article(p.id) } }
+                    }
+                }
             }
         }
     }

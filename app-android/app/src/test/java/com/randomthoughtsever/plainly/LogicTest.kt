@@ -107,6 +107,35 @@ class LogicTest {
         slots.forEach { assertTrue("slot $it is a heading", long[it] !is Block.Heading) }
     }
 
+    @Test fun searchPutsTheArticleAboutTheWordFirst() {
+        fun rank(q: String, titles: Map<String, String>) = titles.entries.sortedByDescending {
+            com.randomthoughtsever.plainly.data.SearchRank.score(q, it.key, emptyList(), "", it.value) }.map { it.key }
+        val posts = mapOf(
+            "Dental Implant Loans: Real Financing Options" to "Check your score on Credit Karma before you apply.",
+            "What Is Karma? Meaning, Types and How It Works" to "Karma means action. Karma has three types. Good karma...",
+            "Credit Karma vs FICO: Why Is My Credit Score Different?" to "Credit Karma shows VantageScore. Karma is free.",
+        )
+        assertEquals(listOf("What Is Karma? Meaning, Types and How It Works", "Credit Karma vs FICO: Why Is My Credit Score Different?",
+            "Dental Implant Loans: Real Financing Options"), rank("karma", posts))
+        assertEquals("Credit Karma vs FICO: Why Is My Credit Score Different?", rank("credit karma", posts).first())
+    }
+
+    /** The real search that went wrong on the phone: "karma" on the live blog. */
+    @Test fun liveKarmaSearchShowsTheKarmaArticlesFirst() {
+        val body = runCatching { URL("https://randomthoughtsever.blogspot.com/feeds/posts/default?alt=json&max-results=50&q=karma").readText() }.getOrNull()
+        assumeTrue("network unavailable", body != null)
+        val entries = JSONObject(body!!).getJSONObject("feed").getJSONArray("entry")
+        val ranked = (0 until entries.length()).map { entries.getJSONObject(it) }.map { e ->
+            val title = e.getJSONObject("title").getString("\$t")
+            val labels = e.optJSONArray("category")?.let { a -> List(a.length()) { a.getJSONObject(it).getString("term") } } ?: emptyList()
+            val text = e.getJSONObject("content").getString("\$t").replace(Regex("<[^>]+>"), " ")
+            title to com.randomthoughtsever.plainly.data.SearchRank.score("karma", title, labels, "", text)
+        }.filterNot { it.first.startsWith("Sitemap") }.sortedByDescending { it.second }.map { it.first }
+        println("KARMA " + ranked.take(4))
+        assertTrue(ranked[0].startsWith("What Is Karma"))
+        assertTrue(ranked[1].startsWith("Credit Karma vs FICO"))
+    }
+
     /** Runs the reader over every live post, so a real-world layout that breaks it is caught. */
     @Test fun readerHandlesEveryLivePost() {
         val body = runCatching { URL("https://randomthoughtsever.blogspot.com/feeds/posts/default?alt=json&max-results=150").readText() }.getOrNull()
