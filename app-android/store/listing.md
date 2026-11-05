@@ -25,7 +25,7 @@ Plainly: Money, Mind & Work
 ## Short description (max 80 characters)
 
 ```
-Money guides, 72 calculators and tools, PDF & photo tools. Fresh every day.
+Your money score, a plan made for you, 72 free tools and a friendly community.
 ```
 
 ## Full description (max 4,000 characters)
@@ -33,8 +33,17 @@ Money guides, 72 calculators and tools, PDF & photo tools. Fresh every day.
 ```
 Plainly gives you clear, practical guides on money, the mind and work, plus a set of calculators and file tools that run entirely on your phone. No account and no sign-up. Open it and start.
 
+MADE FOR YOU IN 20 SECONDS
+Tell Plainly what you want help with: paying off debt, saving and investing, a calmer mind, your career or living abroad. You get a plan with three guides and the tools to act on them. Take the 60-second Money Health Check for your score out of 100 and the one thing to fix first, then share it.
+
+YOUR NUMBERS, YOUR HABITS
+Add your pay and spending (kept on your phone) to see your FIRE number, safety net, savings rate and debt-free date. Daily 3 gives you a tip, a minute of calm breathing and a quiz question. Join a challenge like the 7-day no-spend or the 30-day debt sprint, keep your streak and earn badges.
+
+COMMUNITY
+Share tips and wins, ask questions, discuss every guide and see how others answered the quizzes. No account: just a name and an emoji you choose.
+
 A NEW PAGE EVERY DAY
-Today gives you a fresh pick every day, quick-answer stories you tap through, what was just published and flip cards that teach you something in 30 seconds. New guides appear the moment they're published, and you can get a notification for each one.
+A fresh pick every day, quick-answer stories, flip cards and quizzes. New guides appear the moment they're published.
 
 THE ANSWER FIRST
 Every guide opens with a quick answer, so you get what you came for in seconds. Then come the details: real numbers, comparison tables and step-by-step instructions, laid out cleanly for a phone screen.
@@ -63,13 +72,11 @@ Results update as you type, with clear charts. Choose your currency: US dollar, 
 • PDF toolkit: merge, split, reorder and sign PDFs; turn photos into a PDF
 • Resume builder and invoice generator with free PDF downloads
 • Currency converter, inflation calculator and debt payoff planner
-• Rent or buy, car affordability, life insurance and 401(k) calculators
-• Meeting time zone planner, password generator and word counter
-• Sleep cycle calculator, habit tracker and more
+• Time zone planner, password generator, sleep calculator and more
 Photos and PDFs are processed on your device and never uploaded. Save to your phone or share straight to any app.
 
 EXPLORE AND SWIPE
-Browse collections like "Get out of debt" and "Invest and retire early", money facts for 35 countries, every topic, or all guides from A to Z. Or swipe through quick answers in Reads: one guide per screen, its key point up front.
+Collections like "Get out of debt", money facts for 35 countries, every topic, or swipe through quick answers one screen at a time.
 
 MADE FOR READING
 • Save any guide to read later, even offline

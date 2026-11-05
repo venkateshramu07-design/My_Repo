@@ -49,8 +49,11 @@ class ScreenshotTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val ctx: Context = ApplicationProvider.getApplicationContext()
 
-    private fun launch(theme: String = "light", link: String? = null): ActivityScenario<MainActivity> {
-        ctx.getSharedPreferences("plainly", Context.MODE_PRIVATE).edit().putString("theme", theme).putString("currency", "USD").commit()
+    private fun launch(theme: String = "light", link: String? = null, onboarded: Boolean = true, autoDeck: Boolean = false): ActivityScenario<MainActivity> {
+        ctx.getSharedPreferences("plainly", Context.MODE_PRIVATE).edit().putString("theme", theme).putString("currency", "USD")
+            .putString("autoDeck", if (autoDeck) "" else java.time.LocalDate.now().toString()).commit()
+        ctx.getSharedPreferences("profile", Context.MODE_PRIVATE).edit().putBoolean("onboarded", onboarded)
+            .putStringSet("goals", setOf("debt", "save")).putString("country", "US").commit()
         Coil.setImageLoader(ImageLoader.Builder(ctx).allowHardware(false).crossfade(false).components { add(LocalCovers()) }.build())
         val intent = Intent(ctx, MainActivity::class.java).apply { if (link != null) { action = Intent.ACTION_VIEW; data = Uri.parse(link) } }
         val s = ActivityScenario.launch<MainActivity>(intent)
@@ -104,6 +107,64 @@ class ScreenshotTest {
         compose.onRoot().performTouchInput { swipeUp(startY = bottom * .8f, endY = bottom * .25f, durationMillis = 350) }; pause(700)
     }
 
+    @Test fun onboarding() {
+        ctx.getSharedPreferences("profile", Context.MODE_PRIVATE).edit().clear().commit()
+        launch(onboarded = false); waitFor(20, settle = 1500) { seen("Make it mine") }
+        shot("20-onboarding-welcome")
+        compose.onAllNodesWithText("Make it mine").onFirst().performClick(); pause(1200)
+        compose.onAllNodesWithText("Pay off debt").onFirst().performClick()
+        compose.onAllNodesWithText("A calmer mind").onFirst().performClick(); pause(800)
+        shot("21-onboarding-goals")
+        compose.onAllNodesWithText("Continue").onFirst().performClick(); pause(1200)
+        shot("22-onboarding-country")
+        compose.onAllNodesWithText("Continue with", substring = true).onFirst().performClick(); pause(1200)
+        compose.onAllNodesWithText("See my plan").onFirst().performClick()
+        waitFor(40, settle = 1500) { seen("Your plan is ready") }
+        shot("23-onboarding-plan")
+    }
+
+    @Test fun healthCheck() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        compose.onAllNodesWithText("Take the Money Health Check").onFirst().performClick(); pause(1500)
+        shot("24-check-question")
+        listOf("3 to 5 months", "More than the minimum", "5% to 15%", "Now and then", "Roughly", "Partly").forEach {
+            waitFor(10) { seen(it) }; pause(900); compose.onAllNodesWithText(it).onFirst().performClick(); pause(600)
+        }
+        pause(2500); shot("25-check-result")
+    }
+
+    @Test fun personalToday() {
+        ctx.getSharedPreferences("profile", Context.MODE_PRIVATE).edit()
+            .putString("numbers", "{\"income\":4200,\"spend\":3100,\"savings\":9000,\"invested\":24000,\"debt\":3500,\"debtPayment\":300}").commit()
+        launch(); waitFor(settle = 3000) { seen("TODAY'S PICK") }
+        scroll(1); shot("26-today-numbers")
+        scroll(1); shot("27-today-plan-daily")
+        compose.onAllNodesWithText("Quiz of the day").onFirst().performClick(); pause(1200)
+        compose.onAllNodesWithText("Quiz of the day").onFirst().performClick(); pause(600)
+        shot("28-today-daily3")
+    }
+
+    @Test fun communityFeed() {
+        // Points the app at the local Firebase emulators (see CommunityTest) and adds a few posts.
+        val up = runCatching { (java.net.URL("http://127.0.0.1:8080/").openConnection() as java.net.HttpURLConnection).responseCode == 200 }.getOrDefault(false)
+        org.junit.Assume.assumeTrue(up)
+        val C = com.randomthoughtsever.plainly.data.Community
+        C.projectId = "demo-plainly"; C.apiKey = "fake-api-key"
+        C.authBase = "http://127.0.0.1:9099/identitytoolkit.googleapis.com"; C.tokenBase = "http://127.0.0.1:9099/securetoken.googleapis.com"
+        C.firestoreBase = "http://127.0.0.1:8080"
+        C.init(ctx); C.acceptedRules = true
+        kotlinx.coroutines.runBlocking {
+            C.resetSession(); C.createPost("Steady Cedar 31", "🌵", "Tip: I moved my savings transfer to payday. I don't miss money I never see.", "Money")
+            C.resetSession(); val q = C.createPost("Sunny Lark 58", "🌻", "Has anyone tried the 7-day no-spend challenge? How did day 3 go?", "Ask anything")
+            C.comment(q.id, "Sunny Lark 58", "🌻", "Day 3 was the hardest for me!")
+            C.like(q.id, true)
+            C.resetSession()
+        }
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("Community"); waitFor(30, settle = 2000) { seen("no-spend") }
+        shot("29-community")
+    }
+
     @Test fun today() {
         launch(); waitFor(settle = 5000) { seen("TODAY'S PICK") }
         shot("01-today")
@@ -111,6 +172,11 @@ class ScreenshotTest {
         scroll(1); shot("01c-today-money")
         scroll(1); shot("01e-today-answers")
         scroll(6); pause(1500); shot("01d-today-end")
+    }
+
+    @Test fun dailyDeckOpensOnce() {
+        launch(autoDeck = true); waitFor(30, settle = 1500) { seen("Read the full guide") }
+        org.junit.Assert.assertTrue("Today in 60 seconds didn't open", seen("Read the full guide"))
     }
 
     @Test fun story() {
@@ -151,7 +217,8 @@ class ScreenshotTest {
 
     @Test fun quickReads() {
         launch(); waitFor { seen("TODAY'S PICK") }
-        tab("Reads"); waitFor(40, settle = 3000) { seen("Swipe up for the next one") }
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Quick reads")).performClick()
+        waitFor(40, settle = 3000) { seen("Swipe up for the next one") }
         shot("13-quick-reads")
     }
 

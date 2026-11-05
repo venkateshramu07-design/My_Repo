@@ -1,5 +1,7 @@
 package com.randomthoughtsever.plainly.ui
 
+import androidx.compose.material.icons.rounded.Groups
+import com.randomthoughtsever.plainly.data.Profile
 import com.randomthoughtsever.plainly.ads.Ads
 import android.app.Activity
 import android.content.Context
@@ -86,10 +88,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 object AppGraph {
     lateinit var repo: Repository
     lateinit var library: Library
+    lateinit var profile: Profile
+    lateinit var appContext: android.content.Context
 }
 
 /** Navigation actions shared by every screen. */
-class Nav(private val c: NavHostController, private val context: Context, private val scope: CoroutineScope) {
+class Nav(private val c: NavHostController, val context: Context, private val scope: CoroutineScope) {
     fun article(id: String) = c.navigate("article/$id")
     fun topic(label: String) = c.navigate("topic/${Uri.encode(label)}")
     fun tool(id: String) = c.navigate("tool/$id")
@@ -111,6 +115,10 @@ class Nav(private val c: NavHostController, private val context: Context, privat
     fun search(q: String) = c.navigate("search?q=${Uri.encode(q)}")
     fun shelf(key: String) = c.navigate("shelf/$key")
     fun library() = c.navigate("library")
+    fun check(id: String) = c.navigate("check/$id")
+    fun thread(id: String) = c.navigate("post/$id")
+    fun challenges() = c.navigate("challenges")
+    fun reads() = c.navigate("reads")
     fun saved(history: Boolean = false) = c.navigate(if (history) "saved?history=true" else "saved")
     /** Switches to a bottom-bar tab the same way tapping it does. */
     fun tab(route: String) = c.navigate(route) {
@@ -142,7 +150,7 @@ class Nav(private val c: NavHostController, private val context: Context, privat
 private data class Tab(val route: String, val label: String, val icon: ImageVector)
 private val TABS = listOf(
     Tab("today", "Today", Icons.Rounded.Today), Tab("explore", "Explore", Icons.Rounded.Explore),
-    Tab("reads", "Reads", Icons.Rounded.AutoStories), Tab("tools", "Tools", Icons.Rounded.Handyman),
+    Tab("community", "Community", Icons.Rounded.Groups), Tab("tools", "Tools", Icons.Rounded.Handyman),
     Tab("you", "You", Icons.Rounded.Person),
 )
 
@@ -187,11 +195,21 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
         bottomBar = { if (route in TABS.map { it.route }) FloatingBar(route) { nav.tab(it) } },
     ) { pad ->
         NavHost(
-            controller, startDestination = "today", modifier = Modifier.padding(bottom = pad.calculateBottomPadding()),
+            controller, startDestination = if (AppGraph.profile.onboarded) "today" else "onboarding", modifier = Modifier.padding(bottom = pad.calculateBottomPadding()),
             enterTransition = { fadeIn() + slideInHorizontally { it / 10 } }, exitTransition = { fadeOut() },
             popEnterTransition = { fadeIn() }, popExitTransition = { fadeOut() + slideOutHorizontally { it / 10 } },
         ) {
             composable("today") { HomeScreen(nav) }
+            composable("onboarding") {
+                OnboardingScreen(nav) { health ->
+                    controller.navigate("today") { popUpTo("onboarding") { inclusive = true } }
+                    if (health) nav.check("money")
+                }
+            }
+            composable("community") { CommunityScreen(nav) }
+            composable("post/{id}") { ThreadScreen(it.arguments?.getString("id") ?: "", nav) }
+            composable("challenges") { ChallengesScreen(nav) }
+            composable("check/{id}") { CheckScreen(it.arguments?.getString("id") ?: "money", nav) }
             composable("explore") { ExploreScreen(nav) }
             composable("reads") { QuickReadsScreen(nav) }
             composable("tools") { ToolsScreen(nav) }

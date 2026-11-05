@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import kotlinx.coroutines.launch
 import com.randomthoughtsever.plainly.tools.Catalog
 import com.randomthoughtsever.plainly.data.SearchRank
 import androidx.compose.material3.Switch
@@ -254,6 +255,25 @@ fun SettingsScreen(nav: Nav) {
                             else { NewPosts.setEnabled(context, on); notify = on }
                         })
                     })
+            }
+            if (com.randomthoughtsever.plainly.data.Community.enabled) item {
+                var confirm by remember { mutableStateOf(false) }
+                var status by remember { mutableStateOf<String?>(null) }
+                val scope = androidx.compose.runtime.rememberCoroutineScope()
+                if (confirm) androidx.compose.material3.AlertDialog(onDismissRequest = { confirm = false }, title = { Text("Delete my community data?") },
+                    text = { Text("This removes your posts, your comments, your leaderboard entry and your anonymous community ID. It can't be undone.") },
+                    confirmButton = { TextButton(onClick = { confirm = false; status = "Deleting…"
+                        scope.launch { status = runCatching { com.randomthoughtsever.plainly.data.Community.deleteMe() }.fold({ "Done. Your community data was deleted." }, { "Couldn't delete right now. Check your connection." }) } }) { Text("Delete") } },
+                    dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } })
+                ListItem(headlineContent = { Text("Delete my community data") }, supportingContent = { Text(status ?: "Your posts, comments and community ID") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent), modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { confirm = true })
+            }
+            item {
+                var remind by remember { mutableStateOf(NewPosts.prefs(context).getBoolean("reminders", true)) }
+                ListItem(headlineContent = { Text("Challenge and Daily 3 reminders") }, supportingContent = { Text("One evening nudge, only when something's left to do") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    trailingContent = { Switch(remind, { on -> remind = on; NewPosts.prefs(context).edit().putBoolean("reminders", on).apply()
+                        if (on) com.randomthoughtsever.plainly.data.Reminders.schedule(context) }) })
             }
             item { HorizontalDivider(Modifier.padding(vertical = 8.dp)) }
             val links = listOf(

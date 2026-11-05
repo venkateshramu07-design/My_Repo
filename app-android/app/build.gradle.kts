@@ -18,6 +18,13 @@ val testBanner = "ca-app-pub-3940256099942544/9214589741"
 val testInterstitial = "ca-app-pub-3940256099942544/1033173712"
 fun ad(key: String, fallback: String) = (admob.getProperty(key) ?: fallback).trim()
 
+// Community (Firebase) settings from community.properties: projectId and apiKey (a web API key; not secret, it ships in
+// the app and Firestore security rules protect the data). Without the file, the Community tab says it's opening soon.
+val community = Properties().apply {
+    val f = rootProject.file("community.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+
 // Release signing comes from keystore.properties (never committed): storeFile, storePassword, keyAlias, keyPassword.
 val signing = Properties().apply {
     val f = rootProject.file("keystore.properties")
@@ -34,6 +41,8 @@ android {
         targetSdk = 36
         versionCode = 2
         versionName = "1.1.0"
+        buildConfigField("String", "COMMUNITY_PROJECT", "\"${community.getProperty("projectId", "")}\"")
+        buildConfigField("String", "COMMUNITY_KEY", "\"${community.getProperty("apiKey", "")}\"")
         manifestPlaceholders["admobAppId"] = ad("appId", testAppId)
         buildConfigField("String", "ADMOB_BANNER", "\"${ad("banner", testBanner)}\"")
         buildConfigField("String", "ADMOB_INTERSTITIAL", "\"${ad("interstitial", testInterstitial)}\"")

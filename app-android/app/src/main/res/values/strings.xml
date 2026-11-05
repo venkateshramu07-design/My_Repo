@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Plainly</string>
+    <string name="widget_description">Tip of the day and your reading streak</string>
 </resources>

@@ -1,0 +1,89 @@
+rules_version = '2';
+// Plainly Community. People sign in anonymously (no account); request.auth.uid is their id.
+// Paste this into Firebase console > Firestore Database > Rules, then Publish.
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function name(v) { return v is string && v.size() >= 2 && v.size() <= 24; }
+    function text(v) { return v is string && v.size() >= 2 && v.size() <= 500; }
+    function emoji(v) { return v is string && v.size() >= 1 && v.size() <= 8; }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'avatar', 'text', 'topic', 'guide', 'createdAt', 'likes', 'comments'])
+        && request.resource.data.uid == me() && name(request.resource.data.name) && emoji(request.resource.data.avatar)
+        && text(request.resource.data.text) && request.resource.data.topic is string && request.resource.data.topic.size() <= 40
+        && request.resource.data.guide is string && request.resource.data.guide.size() <= 30
+        && request.resource.data.createdAt == request.time && request.resource.data.likes == 0 && request.resource.data.comments == 0;
+      allow delete: if signedIn() && resource.data.uid == me();
+      // Counters: a like counts once per person (its like doc is created in the same write); a comment adds one,
+      // and its id must be "<uid>_<new count>", created in the same write.
+      allow update: if signedIn() && (
+        (changed().hasOnly(['likes']) && request.resource.data.likes == resource.data.likes + 1
+           && existsAfter(/databases/$(db)/documents/posts/$(postId)/likes/$(me())) && !exists(/databases/$(db)/documents/posts/$(postId)/likes/$(me())))
+        || (changed().hasOnly(['likes']) && request.resource.data.likes == resource.data.likes - 1
+           && !existsAfter(/databases/$(db)/documents/posts/$(postId)/likes/$(me())) && exists(/databases/$(db)/documents/posts/$(postId)/likes/$(me())))
+        || (changed().hasOnly(['comments']) && request.resource.data.comments == resource.data.comments + 1
+           && existsAfter(/databases/$(db)/documents/posts/$(postId)/comments/$(me() + '_' + string(request.resource.data.comments)))
+           && !exists(/databases/$(db)/documents/posts/$(postId)/comments/$(me() + '_' + string(request.resource.data.comments))))
+      );
+
+      match /likes/{uid} {
+        allow read: if true;
+        allow create: if signedIn() && uid == me() && request.resource.data.keys().hasOnly(['at'])
+          && getAfter(/databases/$(db)/documents/posts/$(postId)).data.likes == get(/databases/$(db)/documents/posts/$(postId)).data.likes + 1;
+        allow delete: if signedIn() && uid == me();
+      }
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if signedIn() && commentId.matches(me() + '_[0-9]+')
+          && request.resource.data.keys().hasOnly(['uid', 'name', 'avatar', 'text', 'createdAt'])
+          && request.resource.data.uid == me() && name(request.resource.data.name) && emoji(request.resource.data.avatar)
+          && text(request.resource.data.text) && request.resource.data.createdAt == request.time;
+        allow delete: if signedIn() && resource.data.uid == me();
+      }
+    }
+
+    // Quiz polls: one vote per person per quiz, and the option's total goes up by exactly one in the same write.
+    match /polls/{quizId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['o0', 'o1', 'o2', 'o3']) && request.resource.data.size() == 1
+        && request.resource.data.values()[0] == 1 && votedNow(quizId);
+      allow update: if signedIn() && changed().size() == 1 && votedNow(quizId)
+        && ((changed().hasOnly(['o0']) && up('o0')) || (changed().hasOnly(['o1']) && up('o1'))
+            || (changed().hasOnly(['o2']) && up('o2')) || (changed().hasOnly(['o3']) && up('o3')));
+      function up(k) { return request.resource.data.get(k, 0) == resource.data.get(k, 0) + 1; }
+      function votedNow(q) {
+        return existsAfter(/databases/$(db)/documents/polls/$(q)/votes/$(me())) && !exists(/databases/$(db)/documents/polls/$(q)/votes/$(me()));
+      }
+      match /votes/{uid} {
+        allow read: if false;
+        allow create: if signedIn() && uid == me() && request.resource.data.keys().hasOnly(['o'])
+          && request.resource.data.o is int && request.resource.data.o >= 0 && request.resource.data.o <= 3;
+      }
+    }
+
+    // Streak leaderboard: people only write their own row.
+    match /users/{uid} {
+      allow read: if true;
+      allow create, update: if signedIn() && uid == me()
+        && request.resource.data.keys().hasOnly(['name', 'avatar', 'streak', 'reads', 'updatedAt'])
+        && name(request.resource.data.name) && emoji(request.resource.data.avatar)
+        && request.resource.data.streak is int && request.resource.data.streak >= 0 && request.resource.data.streak <= 3650
+        && request.resource.data.reads is int && request.resource.data.reads >= 0
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if signedIn() && uid == me();
+    }
+
+    // Reports: anyone signed in can file one; only the owner (in the Firebase console) can read them.
+    match /reports/{id} {
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid', 'target', 'reason', 'createdAt'])
+        && request.resource.data.uid == me() && request.resource.data.target is string && request.resource.data.reason is string
+        && request.resource.data.reason.size() <= 200 && request.resource.data.createdAt == request.time;
+      allow read, update, delete: if false;
+    }
+  }
+}

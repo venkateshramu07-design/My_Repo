@@ -8,7 +8,19 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   and "More to read" (every guide, newest first, mixed by topic, paged as you scroll). It reloads on open and resume, checks for a new post every minute while visible, and
   `data/NewPosts.kt` (WorkManager, every 15 min) posts a notification for new guides. Cover art comes live from the
   website's design layer (`version.txt` → `bd-redesign.js` → `BD_COVERS`), on top of the copy built into the app.
-- **Navigation**: floating animated bar with Today, Explore, Reads, Tools and You (`ui/App.kt`).
+- **Navigation**: floating animated bar with Today, Explore, Community, Tools and You (`ui/App.kt`); Reads opens from Today and Explore.
+- **Personal layer** (`data/Profile.kt`, all on the phone): first-launch onboarding (`ui/Onboarding.kt`: goals, country and
+  currency, optional numbers, then a plan), check-ups (`data/Checks.kt`, `ui/CheckScreen.kt`: Money Health, Stress and
+  Career checks with a score, weakest area, fixes and a share picture from `ui/ShareCards.kt`), My numbers, Your plan,
+  Daily 3 with a breathing minute and quiz, 31 quizzes tied to guides, challenges with an evening reminder
+  (`data/Reminders.kt`), badges and a knowledge map (`data/Engage.kt`, `ui/Personal.kt`), Fix/Decide/Learn/Facts labels,
+  Listen (`ui/Speaker.kt`, Android text-to-speech) and a home-screen widget (`PlainlyWidget.kt`).
+- **Community** (`data/Community.kt`, `ui/CommunityScreen.kt`): Firebase anonymous sign-in and Cloud Firestore over REST
+  (no Firebase SDK). Posts, likes, comments, guide discussions, quiz polls, a streak leaderboard, report/block/delete and
+  "Delete my community data". `firebase/firestore.rules` enforces ownership, one like and one vote per person, and
+  counters that can't be faked. Settings come from `community.properties` (`projectId`, `apiKey`). `CommunityTest` runs
+  everything, including cheating attempts, against the Firebase emulators (`cd firebase && firebase emulators:start
+  --only auth,firestore --project demo-plainly`).
 - **Explore** (`ui/ExploreScreen.kt`, `ui/Collections.kt`): built from `Repository.index()`, an index of every guide from the
   summary feed (cached, refreshed every 10 minutes). It has search suggestions, Surprise me, collections defined as rules
   (so new posts join them by themselves), 35 countries with flags, topic counts, and the A-to-Z library.

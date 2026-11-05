@@ -67,6 +67,20 @@ fun ExploreScreen(nav: Nav) {
         if (index == null) item { ExploreSkeleton() } else {
             val shelves = Shelves.map { it to index.count(it.match) }.filter { it.second >= 3 }
             item {
+                Surface(onClick = nav::reads, shape = RoundedCornerShape(24.dp), color = Color.Transparent, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
+                    Row(Modifier.background(Brush.linearGradient(listOf(Navy, NavyDeep))).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        TopicScene("Education", Modifier.size(64.dp).clip(RoundedCornerShape(18.dp)), background = false)
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Quick reads", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                            Text("Swipe through ${index.count { !it.isToolPage && it.quick.length > 60 }} answers, one a screen", style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = .8f))
+                        }
+                        Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = Gold)
+                    }
+                }
+            }
+            item {
                 Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Collections") }
                 LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(shelves, key = { it.first.key }) { (s, n) -> ShelfCard(s, n) { nav.shelf(s.key) } }

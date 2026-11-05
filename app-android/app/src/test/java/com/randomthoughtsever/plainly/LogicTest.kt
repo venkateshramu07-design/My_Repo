@@ -145,6 +145,43 @@ class LogicTest {
         assertTrue(a != b)
     }
 
+    @Test fun checkUpsScoreAndFindTheWeakestArea() {
+        val money = com.randomthoughtsever.plainly.data.CHECKS.first { it.id == "money" }
+        val best = money.questions.map { q -> q.options.indexOf(q.options.maxBy { it.points }) }
+        assertEquals(100, money.score(best).first)
+        val worst = money.questions.map { q -> q.options.indexOf(q.options.minBy { it.points }) }
+        assertEquals(0, money.score(worst).first)
+        val mixed = best.toMutableList().also { it[1] = 4 } // missed card payments
+        val (score, areas) = money.score(mixed)
+        assertTrue(score in 70..90)
+        assertEquals("Debt", money.weakest(areas))
+        assertEquals("Strong", com.randomthoughtsever.plainly.data.verdict(score))
+        com.randomthoughtsever.plainly.data.CHECKS.forEach { c -> c.areas.forEach { a -> assertTrue("${c.id}/$a has no fix", c.fixes.containsKey(a)) } }
+    }
+
+    @Test fun labelsSayWhatKindOfGuideItIs() {
+        val f = { t: String -> com.randomthoughtsever.plainly.data.intentOf(t) }
+        assertEquals(com.randomthoughtsever.plainly.data.Intent.FIX, f("How to Pay Off Credit Card Debt Fast"))
+        assertEquals(com.randomthoughtsever.plainly.data.Intent.DECIDE, f("SIP vs Lumpsum: Which Is Better in Mutual Funds?"))
+        assertEquals(com.randomthoughtsever.plainly.data.Intent.LEARN, f("What Is Inflation? Causes, Types and Effects Explained"))
+        assertEquals(com.randomthoughtsever.plainly.data.Intent.FACTS, f("Switzerland Income Tax 2026: Mortgages and Pensions"))
+        assertEquals(com.randomthoughtsever.plainly.data.Intent.FACTS, f("Minimum Wage by Country 2026: Hourly and Monthly Rates in US Dollars"))
+    }
+
+    @Test fun planDailyQuizAndBadges() {
+        fun e(id: String, title: String, label: String) = com.randomthoughtsever.plainly.data.Entry(id, title, "/$id", "", listOf(label), "2026-10-0$id", "", null)
+        val index = listOf(e("1", "How to Pay Off Credit Card Debt Fast", "Personal Finance"), e("2", "Sleep Hacks", "Health & Wellness"),
+            e("3", "Resize Image to 20KB Online Free", "Tools"), e("4", "Debt Consolidation Loans: When They Save Money", "Personal Finance"))
+        val plan = com.randomthoughtsever.plainly.ui.planFor(setOf("debt", "mind"), index).map { it.id }
+        assertTrue(plan.containsAll(listOf("1", "2")) && "3" !in plan)
+        val q = com.randomthoughtsever.plainly.data.quizOfTheDay(setOf("mind"), 20000L)
+        assertEquals("mind", q.goal)
+        assertTrue(com.randomthoughtsever.plainly.data.QUIZZES.all { it.correct in it.options.indices && it.options.size in 2..4 })
+        assertEquals(com.randomthoughtsever.plainly.data.QUIZZES.size, com.randomthoughtsever.plainly.data.QUIZZES.map { it.id }.toSet().size)
+        val b = com.randomthoughtsever.plainly.data.badges(1, 3, 0, 0, 0, 0, 0, 0, 0)
+        assertTrue(b.first { it.title == "First guide" }.earned && b.first { it.title == "On a roll" }.earned && !b.first { it.title == "Bookworm" }.earned)
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

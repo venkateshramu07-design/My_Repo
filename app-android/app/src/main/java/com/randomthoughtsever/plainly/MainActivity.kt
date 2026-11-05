@@ -35,7 +35,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AppGraph.repo = Repository(applicationContext)
         AppGraph.library = Library(applicationContext)
+        AppGraph.appContext = applicationContext
+        AppGraph.profile = com.randomthoughtsever.plainly.data.Profile(applicationContext)
         Catalog.load(applicationContext)
+        com.randomthoughtsever.plainly.data.Community.init(applicationContext)
+        runCatching { PlainlyWidget.refresh(applicationContext) }
+        if (AppGraph.profile.joined().isNotEmpty()) com.randomthoughtsever.plainly.data.Reminders.schedule(applicationContext)
+        com.randomthoughtsever.plainly.data.Community.publishStats(AppGraph.profile.name, AppGraph.profile.avatar, AppGraph.library.streak(), AppGraph.library.reads())
         if (android.os.Build.FINGERPRINT != "robolectric") Images.install(applicationContext) // tests install their own
         NewPosts.schedule(applicationContext)
         if (savedInstanceState == null) { AppGraph.library.countOpen(); handle(intent) }

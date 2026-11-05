@@ -1,5 +1,14 @@
 package com.randomthoughtsever.plainly.ui
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import com.randomthoughtsever.plainly.data.GOALS
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -64,6 +73,12 @@ fun YouScreen(nav: Nav) {
     val lib = AppGraph.library
     val context = LocalContext.current
     val streak = remember { lib.streak() }
+    var goals by remember { mutableStateOf(false) }
+    var numbers by remember { mutableStateOf(false) }
+    var identity by remember { mutableStateOf(false) }
+    if (goals) GoalsDialog(AppGraph.profile.goals) { g -> g?.let { AppGraph.profile.updateGoals(it) }; goals = false }
+    if (numbers) NumbersDialog(AppGraph.profile.numbers, AppGraph.profile.currency()) { n -> n?.let { AppGraph.profile.updateNumbers(it) }; numbers = false }
+    if (identity) IdentityDialog { identity = false }
     val days = remember { lib.openDays() }
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 28.dp)) {
         item {
@@ -80,6 +95,9 @@ fun YouScreen(nav: Nav) {
                 Stat(Icons.Rounded.Handyman, "${lib.toolUses()}", "files made", Modifier.weight(1f))
             }
         }
+        item { ChecksCard(nav) }
+        item { Badges() }
+        item { KnowledgeMap(nav) }
         item { YourTopics() }
         item {
             Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Saved", if (lib.saved.isNotEmpty()) "See all ${lib.saved.size}" else null) { nav.saved() } }
@@ -108,6 +126,10 @@ fun YouScreen(nav: Nav) {
         }
         item {
             Column(Modifier.padding(horizontal = 12.dp, vertical = 14.dp)) {
+                LinkRow(Icons.Rounded.EmojiEvents, "Challenges", "7-day no-spend, 30-day debt sprint and more") { nav.challenges() }
+                LinkRow(Icons.Rounded.Flag, "My goals", GOALS.filter { it.key in AppGraph.profile.goals }.joinToString { it.title }.ifBlank { "Choose what you want help with" }) { goals = true }
+                LinkRow(Icons.Rounded.Calculate, "My numbers", "Pay, spending, savings and debt (on your phone only)") { numbers = true }
+                LinkRow(Icons.Rounded.Groups, "Community profile", "${AppGraph.profile.avatar} ${AppGraph.profile.name}") { identity = true }
                 LinkRow(Icons.Rounded.Settings, "Settings", "Text size, notifications, privacy") { nav.settings() }
                 LinkRow(Icons.Rounded.Star, "Rate Plainly", "It helps other people find it") {
                     runCatching { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW,
@@ -122,6 +144,62 @@ fun YouScreen(nav: Nav) {
         item {
             Text("Plainly ${BuildConfig.VERSION_NAME} · No account needed", style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.fillMaxWidth().padding(16.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+private fun Badges() {
+    val lib = AppGraph.library; val p = AppGraph.profile
+    p.version
+    val list = remember(p.version) {
+        com.randomthoughtsever.plainly.data.badges(lib.reads(), lib.streak(), lib.saved.size, lib.toolUses(), p.quizStats().first,
+            com.randomthoughtsever.plainly.data.CHECKS.count { p.check(it.id) != null }, p.dailyCompleted(), p.finishedChallenges(), p.breaths())
+    }
+    Column(Modifier.padding(top = 6.dp)) {
+        Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Badges · ${list.count { it.earned }} of ${list.size}") }
+        LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(list) { b ->
+                Column(Modifier.width(84.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(progress = { b.progress }, modifier = Modifier.fillMaxSize(), strokeWidth = 4.dp,
+                            color = if (b.earned) Gold else MaterialTheme.colorScheme.primary, trackColor = MaterialTheme.colorScheme.surfaceVariant)
+                        Text(b.emoji, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.graphicsLayer { alpha = if (b.earned) 1f else .35f })
+                    }
+                    Text(b.title, style = MaterialTheme.typography.labelMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center, maxLines = 1)
+                    Text(b.how, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center, maxLines = 2)
+                }
+            }
+        }
+    }
+}
+
+/** How much of each topic the reader has explored: guides read out of all guides in that topic. */
+@Composable
+private fun KnowledgeMap(nav: Nav) {
+    val index = rememberIndex() ?: return
+    val read = remember { AppGraph.library.readIds() }
+    val rows = remember(index) {
+        Topics.map { t -> val all = index.filter { it.label == t.label && !it.isToolPage }; Triple(t, all.count { it.id in read }, all.size) }
+            .filter { it.third > 0 }.sortedByDescending { it.second.toFloat() / it.third }
+    }
+    Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+        SectionTitle("Knowledge map")
+        Text("Guides you've read in each topic. Tap one to keep going.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(8.dp))
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            rows.forEach { (t, n, total) ->
+                val f = n / total.toFloat()
+                Surface(onClick = { nav.topic(t.label) }, shape = RoundedCornerShape(16.dp), color = Color.Transparent) {
+                    Box(Modifier.background(Brush.linearGradient(listOf(t.from.copy(alpha = .25f + .75f * f), t.to.copy(alpha = .25f + .75f * f)))).padding(horizontal = 12.dp, vertical = 10.dp)) {
+                        Column {
+                            Text(t.title, style = MaterialTheme.typography.labelLarge, color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("$n of $total", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = .85f))
+                        }
+                    }
+                }
+            }
         }
     }
 }

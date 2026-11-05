@@ -1,5 +1,9 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.data.intentOf
+import androidx.compose.material.icons.rounded.AutoStories
+import com.randomthoughtsever.plainly.data.Quiz
+import com.randomthoughtsever.plainly.data.QUIZZES
 import com.randomthoughtsever.plainly.data.Images
 import com.randomthoughtsever.plainly.data.Entry
 import androidx.compose.material3.CircularProgressIndicator
@@ -144,6 +148,20 @@ fun HomeScreen(nav: Nav) {
     var fresh by remember { mutableStateOf<Post?>(null) }
     var story by remember { mutableStateOf<String?>(null) }
     val list = rememberLazyListState()
+    val profile = AppGraph.profile
+    profile.version
+    // Quiz cards for the feed: the reader's goals first, unanswered ones first.
+    val quizzes = remember(profile.version) {
+        QUIZZES.sortedWith(compareBy<Quiz>({ profile.answered(it.id) != null }, { it.goal !in profile.goals }))
+    }
+    // "Today in 60 seconds": the newest guides as stories, played once a day when Today first opens.
+    val prefs = remember { NewPosts.prefs(nav.context) }
+    LaunchedEffect(posts.isNotEmpty()) {
+        val today = LocalDate.now().toString()
+        if (posts.isNotEmpty() && profile.onboarded && prefs.getString("autoDeck", "") != today) {
+            prefs.edit().putString("autoDeck", today).apply(); delay(700); story = "new"
+        }
+    }
     // "More to read": every guide on the blog, newest first, after Today's sections. Loads 20 more as you reach the end.
     val index by produceState<List<Entry>>(emptyList(), posts.firstOrNull()?.id) { value = AppGraph.repo.index(force = false) }
     var shown by rememberSaveable { mutableIntStateOf(20) }
@@ -189,15 +207,21 @@ fun HomeScreen(nav: Nav) {
                     else -> {
                         val pick = dailyPick(posts)
                         item { Stories(posts) { story = it } }
+                        item { ChecksCard(nav) }
+                        if (profile.numbers.isSet) item { MyNumbersCard() }
+                        item { PlanCard(index, nav) }
+                        item { Daily3Card(index, nav) }
                         item { TodaysPick(pick, nav) }
+                        item { ChallengeCards(nav) }
                         if (AppGraph.library.history.isNotEmpty()) item { ContinueReading(nav) }
                         item { JustPublished(posts.filter { it.id != pick.id }.take(10), nav) }
                         item { MoneyIn10Seconds(nav) }
+                        if (!profile.numbers.isSet) item { MyNumbersCard() }
                         item { QuickAnswers(posts.filter { it.id != pick.id && it.excerpt.length > 60 }.drop(3).take(6), nav) }
                         item { BannerAd("home:1", Modifier.padding(horizontal = 20.dp)) }
                         item { TopicSpotlight(posts, nav) }
                         item { NotifyCard() }
-                        moreToRead(this, more, shown, nav) { shown += 20 }
+                        moreToRead(this, more, shown, nav, quizzes) { shown += 20 }
                     }
                 }
             }
@@ -249,8 +273,8 @@ private fun HomeHeader(nav: Nav, posts: List<Post>) {
                 Text(date.uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(greeting, style = MaterialTheme.typography.headlineMedium)
             }
+            IconButton(onClick = nav::reads) { Icon(Icons.Rounded.AutoStories, "Quick reads") }
             IconButton(onClick = nav::search) { Icon(Icons.Rounded.Search, "Search") }
-            IconButton(onClick = nav::settings) { Icon(Icons.Rounded.Settings, "Settings") }
         }
         if (newThisWeek > 0 || read > 0) Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (newThisWeek > 0) Pill("$newThisWeek new this week", Gold.copy(alpha = .22f), MaterialTheme.colorScheme.onBackground)
@@ -620,7 +644,7 @@ internal fun motionSpots(n: Int, day: Long = LocalDate.now().toEpochDay()): Set<
 }
 
 /** The never-ending part of Today: every guide, newest first, a big card every 7th, an ad after every 10th. */
-private fun moreToRead(scope: LazyListScope, more: List<Entry>, shown: Int, nav: Nav, loadMore: () -> Unit) = with(scope) {
+private fun moreToRead(scope: LazyListScope, more: List<Entry>, shown: Int, nav: Nav, quizzes: List<Quiz>, loadMore: () -> Unit) = with(scope) {
     if (more.isEmpty()) return@with
     item(key = "more-header") {
         Row(Modifier.padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 6.dp), verticalAlignment = Alignment.Bottom) {
@@ -630,7 +654,10 @@ private fun moreToRead(scope: LazyListScope, more: List<Entry>, shown: Int, nav:
     }
     val page = more.take(shown)
     val motion = motionSpots(page.size)
+    val quizAt = motion.map { it + 5 }.filter { it < page.size && it !in motion }
     page.forEachIndexed { i, e ->
+        val qi = quizAt.indexOf(i)
+        if (qi >= 0 && qi < quizzes.size) item(key = "quiz-${quizzes[qi].id}") { QuizCard(quizzes[qi], nav, Modifier.padding(horizontal = 20.dp, vertical = 10.dp)) }
         item(key = "more-${e.id}") {
             if (i in motion) MotionCard(e, "IN 30 SECONDS", nav, Modifier.padding(horizontal = 20.dp, vertical = 10.dp))
             else if (i % 7 == 0) BigEntryCard(e, nav)
@@ -651,7 +678,7 @@ private fun BigEntryCard(e: Entry, nav: Nav) {
         Column {
             Cover(e.image, e.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO), 48.dp, corner = 0.dp)
             Column(Modifier.padding(16.dp)) {
-                Text("${topicFor(e.label).title.uppercase()} · ${ageText(e.published)}", style = MaterialTheme.typography.labelSmall,
+                Text("${intentOf(e.title).label} · ${topicFor(e.label).title.uppercase()} · ${ageText(e.published)}", style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
                 Text(e.title, style = MaterialTheme.typography.titleLarge, maxLines = 3, overflow = TextOverflow.Ellipsis)

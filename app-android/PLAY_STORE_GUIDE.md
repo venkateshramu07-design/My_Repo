@@ -27,7 +27,21 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   it's on screen (a "Just published" pill slides in), and pull-to-refresh is always there. People who allow
   notifications get a **"New on Plainly"** notification within about 15 minutes of a post going live (Android's limit for
   background checks). Cover art for new posts comes live from the website's design layer.
-- **Bottom bar** (floating, animated): **Today · Explore · Reads · Tools · You**.
+- **First launch (about 20 seconds)**: "What do you want help with?" (pay off debt, save & invest, calmer mind, career,
+  abroad, economy), country and currency, optional numbers, then **"Your plan is ready"** with three guides and the tools,
+  and an invitation to the **60-second Money Health Check** (score out of 100, the area to fix first, a shareable picture).
+  There's also a Stress Check and a Career Check.
+- **Today is personal**: check-up scores, **My numbers** (FIRE number, months of safety net, savings rate, net worth,
+  debt-free date), **Your plan** with progress, **Daily 3** (tip of the day, a one-minute breathing exercise, quiz of the
+  day), your **challenges**, quiz cards in the feed, and "Today in 60 seconds" stories once a day.
+- **Challenges** (7-day no-spend, 30-day debt sprint, 7-day calm, 21-day reading, 14-day career boost, 30-day tiny habit)
+  with daily check-ins and one evening reminder. **Badges** and a **knowledge map** in You.
+- **Listen** to any article (the phone's own voice), **share any quick answer as a picture**, and a **home-screen widget**
+  with the tip of the day and your streak.
+- **Community** (needs Step 2C): an anonymous name and emoji (no account), posts, likes, comments, a discussion under
+  every guide, live "what others answered" on quizzes, and a streak leaderboard. Rules shown before the first post, a
+  word and link filter, Report, Block, delete your own posts, and "Delete my community data" in Settings.
+- **Bottom bar** (floating, animated): **Today · Explore · Community · Tools · You**. Reads opens from Today and Explore.
 - **Motion**: every topic has its own short animated scene, drawn by the app (coins filling a jar for money, a chart
   drawing itself for investing, a globe with a plane for countries, a growing plant for self improvement, a heartbeat for
   health, a neural network for AI, and more). They play in "In 30 seconds" cards at random spots in Today's feed (they
@@ -117,6 +131,27 @@ AdMob is Google's ad network for apps (the app version of AdSense) and pays out 
 8. After the app is live on Google Play (Step 7): in AdMob, open **Apps → Plainly → App settings → Add app store
    details** and link the Play listing. AdMob then reviews the app (a few days). Until that's done, few ads are shown.
 
+## Step 2C: Switch on Community with a free Firebase project (10 minutes)
+
+Community needs a small server to store posts. Firebase (Google) does this, free at Plainly's size (the free "Spark"
+plan allows 50,000 reads and 20,000 writes a day).
+
+1. Go to **https://console.firebase.google.com**, sign in with the same Google account, click **Create a project**, name
+   it **Plainly**, turn **Google Analytics off**, and click **Create**.
+2. **Build → Authentication → Get started → Sign-in method → Anonymous → Enable → Save.**
+3. **Build → Firestore Database → Create database.** Choose the location nearest your readers (for example `nam5` for
+   the US or `eur3` for Europe), start in **production mode**, and click **Create**.
+4. In Firestore, open the **Rules** tab, delete what's there, paste the whole of `firebase/firestore.rules` (in this
+   package), and click **Publish**. These rules stop anyone faking likes or votes, or posting as someone else.
+5. Click the **gear → Project settings**. Copy the **Project ID**. Under **Your apps**, click the **</>** (Web) icon,
+   name it `Plainly`, click **Register app**, and copy the **apiKey** value from the code shown.
+6. Send me the **Project ID** and **apiKey** (they aren't secret; security comes from the rules). I'll build them in.
+7. **Moderating** (a few minutes a week): in **Firestore → Data**, the **reports** collection lists what people reported.
+   Open the post it points to under **posts** and delete it if it breaks the rules. Google Play requires that you act
+   on reports.
+
+Until this is done, the Community tab shows "Community is opening soon" and everything else works.
+
 ## Step 3: Create the app (5 minutes)
 
 In Play Console, click **Create app** and enter:
@@ -135,7 +170,7 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 | **Privacy policy** | `https://randomthoughtsever.blogspot.com/2021/06/privacy-policy.html` (its "Plainly, Our Android App" section describes this app) |
 | **App access** | All functionality is available without special access |
 | **Ads** | **Yes, my app contains ads** |
-| **Content rating** | Start the questionnaire. Enter your email and choose the category **"Reference, News, or Educational"**. Answer **No** to every question (violence, sexuality, language, drugs, gambling, user interaction, sharing location, digital purchases). Submit. You'll get a rating such as "Everyone" or "Rated for 3+". |
+| **Content rating** | Start the questionnaire. Enter your email and choose the category **"Reference, News, or Educational"**. Answer **No** to violence, sexuality, language, drugs, gambling, sharing location and digital purchases. To **"Can users interact or exchange content?"** answer **Yes** (Community) and say that you moderate it (report and block, rules, removal). Submit. You'll get a rating such as "Everyone" or "Rated for 3+". |
 | **Target audience** | Tick **18 and over** only (the money and health guides are written for adults, and this avoids the extra rules for children's apps). |
 | **News apps** | No |
 | **Data safety** | See below |
@@ -149,8 +184,9 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 1. "Does your app collect or share any of the required user data types?" **Yes**.
 2. "Is all of the user data collected by your app encrypted in transit?" **Yes**.
 3. "Which of the following methods of account creation does your app support?" **My app does not allow users to create an account**.
-4. "Do you provide a way for users to request that their data is deleted?" **No** (you hold no user data; people
-   reset their advertising ID in their phone's settings).
+4. "Do you provide a way for users to request that their data is deleted?" **Yes**: Settings → **Delete my community
+   data** removes their posts, comments, leaderboard entry and anonymous ID (advertising data: people reset their
+   advertising ID in their phone's settings).
 5. Tick these data types, and for each answer **Collected: Yes, Shared: Yes, Processed ephemerally: No,
    Required** (users can't turn it off inside the app), with the purposes listed:
 
@@ -160,7 +196,9 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 | **App activity → App interactions** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
 | **App info and performance → Crash logs** | Analytics, Fraud prevention, security and compliance |
 | **App info and performance → Diagnostics** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
-| **Device or other IDs → Device or other IDs** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+| **Device or other IDs → Device or other IDs** | Advertising or marketing, Analytics, Fraud prevention, security and compliance, **App functionality** (the anonymous Community ID) |
+| **Personal info → Name** (the Community display name) | App functionality. Collected: Yes, Shared: No, **Optional** |
+| **App activity → Other user-generated content** (posts, comments, likes, quiz votes, reports) | App functionality. Collected: Yes, Shared: No, **Optional** |
 
 6. Click **Next**, check the summary and **Save**. This matches Google's own disclosure for its ads software and the
    app's privacy policy.

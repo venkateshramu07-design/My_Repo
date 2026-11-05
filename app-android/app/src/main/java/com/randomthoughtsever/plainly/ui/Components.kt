@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.data.intentOf
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -82,7 +83,7 @@ fun PostRow(title: String, image: String?, label: String, minutes: Int, onClick:
         Cover(image, label, Modifier.size(width = 104.dp, height = 78.dp), 26.dp, alignment = Alignment.CenterEnd)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Kicker(topicFor(label).title)
+            Kicker("${intentOf(title).label} · ${topicFor(label).title}")
             Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
             Text("$minutes min read", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

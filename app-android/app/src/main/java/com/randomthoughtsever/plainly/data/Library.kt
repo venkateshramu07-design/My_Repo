@@ -52,7 +52,7 @@ class Library(context: Context) {
         history.add(0, Ref.of(p))
         while (history.size > 30) history.removeAt(history.lastIndex)
         write("history", history)
-        prefs.edit().putInt("reads", prefs.getInt("reads", 0) + 1).apply()
+        prefs.edit().putInt("reads", prefs.getInt("reads", 0) + 1).putStringSet("readIds", readIds() + p.id).apply()
     }
 
     fun clearHistory() { history.clear(); write("history", history) }
@@ -75,6 +75,8 @@ class Library(context: Context) {
         prefs.edit().putString("days", days.joinToString(",")).apply()
     }
     fun openDays(): Set<String> = prefs.getString("days", "").orEmpty().split(',').filter { it.isNotBlank() }.toSet()
+    /** Every guide ever opened (ids), for the knowledge map and plan progress. */
+    fun readIds(): Set<String> = prefs.getStringSet("readIds", emptySet())!!.toSet()
     fun toolUses() = prefs.getInt("toolUses", 0)
     fun reads() = prefs.getInt("reads", 0)
 

@@ -1,5 +1,13 @@
 package com.randomthoughtsever.plainly.ui
 
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.FastRewind
+import androidx.compose.material.icons.rounded.FastForward
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.Headphones
 import com.randomthoughtsever.plainly.data.Entry
 import com.randomthoughtsever.plainly.ads.BannerAd
 import android.content.Intent
@@ -114,6 +122,10 @@ fun ArticleScreen(id: String, nav: Nav) {
     }
 
     val scroll = rememberScrollState()
+    val speaker = remember { Speaker(AppGraph.appContext) }
+    var speakerOpen by remember { mutableStateOf(false) }
+    var shareMenu by remember { mutableStateOf(false) }
+    DisposableEffect(Unit) { onDispose { speaker.release() } }
     val progress = if (scroll.maxValue > 0) scroll.value.toFloat() / scroll.maxValue else 0f
     var menu by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -165,11 +177,13 @@ fun ArticleScreen(id: String, nav: Nav) {
             }
             val blocks by produceState<List<Block>?>(null, p.id) { value = withContext(Dispatchers.Default) { Reader.parse(p.html) } }
             blocks?.let { b ->
+                LaunchedEffect(b) { speaker.load(spokenParts(p.title, b)) }
                 val slots = remember(b) { adSlots(b) }
                 ArticleBlocks(b, lib.textZoom, slots, { i -> BannerAd("article:${p.id}:$i") }) { link -> openLink(Uri.parse(link)) }
             }
                 ?: Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) { repeat(6) { Shimmer(Modifier.fillMaxWidth().height(18.dp)) } }
             BannerAd("article:${p.id}:end", Modifier.padding(horizontal = 22.dp))
+            ArticleDiscussion(p.id, nav)
             related.firstOrNull { !it.isToolPage }?.let { next ->
                 MotionCard(Entry(next.id, next.title, next.path, next.url, next.labels, next.published, next.excerpt, next.image), "UP NEXT", nav,
                     Modifier.padding(horizontal = 20.dp, vertical = 12.dp))
@@ -204,7 +218,35 @@ fun ArticleScreen(id: String, nav: Nav) {
                 }
             }
             Spacer(Modifier.width(8.dp))
-            RoundButton { IconButton(onClick = { nav.share(p.title, p.url) }) { Icon(Icons.Rounded.Share, "Share") } }
+            RoundButton { IconButton(onClick = { speakerOpen = true; if (!speaker.playing) speaker.play() }) { Icon(Icons.Rounded.Headphones, "Listen") } }
+            Spacer(Modifier.width(8.dp))
+            RoundButton {
+                Box {
+                    IconButton(onClick = { shareMenu = true }) { Icon(Icons.Rounded.Share, "Share") }
+                    DropdownMenu(shareMenu, { shareMenu = false }) {
+                        DropdownMenuItem(text = { Text("Share link") }, onClick = { shareMenu = false; nav.share(p.title, p.url) })
+                        DropdownMenuItem(text = { Text("Share as a picture") }, onClick = {
+                            shareMenu = false
+                            val t = topicFor(p.label)
+                            ShareCards.share(context, ShareCards.answer(context, t.title, p.title, p.excerpt, t.from.toArgb(), t.to.toArgb()), "plainly-${p.id}")
+                        })
+                    }
+                }
+            }
+        }
+        // Listening bar
+        if (speakerOpen) Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.primary, shadowElevation = 8.dp,
+            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(16.dp)) {
+            Row(Modifier.padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { speaker.skip(-1) }) { Icon(Icons.Rounded.FastRewind, "Back a paragraph", tint = MaterialTheme.colorScheme.onPrimary) }
+                IconButton(onClick = { if (speaker.playing) speaker.pause() else speaker.play() }) {
+                    Icon(if (speaker.playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow, "Play or pause", tint = MaterialTheme.colorScheme.onPrimary)
+                }
+                IconButton(onClick = { speaker.skip(1) }) { Icon(Icons.Rounded.FastForward, "Next paragraph", tint = MaterialTheme.colorScheme.onPrimary) }
+                Text(if (!speaker.ready) "Getting the voice ready…" else "Listening · ${speaker.index + 1} of ${speaker.parts.size}",
+                    color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 6.dp))
+                IconButton(onClick = { speaker.stop(); speakerOpen = false }) { Icon(Icons.Rounded.Close, "Stop", tint = MaterialTheme.colorScheme.onPrimary) }
+            }
         }
         LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().height(3.dp).align(Alignment.TopCenter),
             color = MaterialTheme.colorScheme.secondary, trackColor = Color.Transparent)
