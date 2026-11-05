@@ -33,6 +33,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Style
+import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.SelfImprovement
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Handyman
@@ -85,6 +90,19 @@ fun YouScreen(nav: Nav) {
             Row(Modifier.statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("You", style = MaterialTheme.typography.displaySmall, modifier = Modifier.weight(1f))
                 IconButton(onClick = nav::settings) { Icon(Icons.Rounded.Settings, "Settings") }
+            }
+        }
+        item { LevelCard(nav) }
+        item { Box(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) { WeeklyGoal() } }
+        item {
+            val pr = AppGraph.progress
+            Column(Modifier.padding(horizontal = 12.dp)) {
+                LinkRow(Icons.Rounded.Style, "My collection", "${pr.cards().size} guide cards · albums by topic") { nav.cards() }
+                LinkRow(Icons.Rounded.EditNote, "My notebook", "${pr.notes().size} saved lines") { nav.notebook() }
+                LinkRow(Icons.Rounded.AutoAwesome, "Weekly recap", "Your last 7 days as a story") { nav.recap("week") }
+                LinkRow(Icons.Rounded.SelfImprovement, "Calm corner", "${pr.calmMinutes()} calm minutes so far") { nav.calm() }
+                if (pr.tried().isNotEmpty()) LinkRow(Icons.Rounded.TaskAlt, "Things I'm trying",
+                    "${pr.tried().size} tried · ${pr.tried().count { it.result == "yes" }} worked") { nav.cards() }
             }
         }
         item { StreakCard(streak, days) }
@@ -154,7 +172,7 @@ private fun Badges() {
     p.version
     val list = remember(p.version) {
         com.randomthoughtsever.plainly.data.badges(lib.reads(), lib.streak(), lib.saved.size, lib.toolUses(), p.quizStats().first,
-            com.randomthoughtsever.plainly.data.CHECKS.count { p.check(it.id) != null }, p.dailyCompleted(), p.finishedChallenges(), p.breaths())
+            com.randomthoughtsever.plainly.data.CHECKS.count { p.check(it.id) != null }, p.dailyCompleted() + AppGraph.progress.runs(), p.finishedChallenges(), p.breaths())
     }
     Column(Modifier.padding(top = 6.dp)) {
         Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Badges · ${list.count { it.earned }} of ${list.size}") }

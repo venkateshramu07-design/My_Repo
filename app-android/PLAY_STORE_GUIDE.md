@@ -52,6 +52,12 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   outside links is filtered out; Hide and Block work on the phone; you moderate as usual in Blogger → **Comments**.
 - **Community on Firebase** (optional, Step 2C): anonymous posting inside the app, likes, live quiz results and a streak
   leaderboard.
+- **Play layer** (everything stays on the phone): XP and levels that unlock colour themes, emojis and profile rings;
+  weekly leagues against your own weeks; a 5-minute **Daily Run** (story, quiz, one small action, the daily puzzle, a
+  mood check-in) that ends with "done for today"; a **daily puzzle** (the same for everyone each day, shareable result);
+  **A Year of Money** money simulator; quick checks, collectible cards, a notebook and "I'm going to try this" in every
+  guide; a **Calm corner** (breathing, focus timer, sleep sounds); weekly and monthly **recaps**; seasonal events; a
+  question of the week; one smart daily reminder at most; and a home-screen widget with today's quiz.
 - **Games** (the last tab): Rock Paper Scissors (first to 3), Money Match (memory pairs), Number Rush (45 seconds of quick
   money maths), Tic-Tac-Toe (Easy or Unbeatable) and Reaction Time, with best scores saved on the phone. All offline.
 - **Bottom bar** (floating, animated): **Today · Explore · Reads · Tools · You · Games · Community**.

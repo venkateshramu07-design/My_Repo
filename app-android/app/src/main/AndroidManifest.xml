@@ -59,5 +59,11 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info" />
         </receiver>
+
+        <!-- Home-screen widget: today's quiz, answerable on the home screen, with level and Daily Run progress. -->
+        <receiver android:name=".PlayWidget" android:exported="false">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_play_info" />
+        </receiver>
     </application>
 </manifest>

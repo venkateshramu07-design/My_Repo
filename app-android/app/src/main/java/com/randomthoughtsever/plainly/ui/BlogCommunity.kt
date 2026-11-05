@@ -104,7 +104,7 @@ fun BlogCommunityScreen(nav: Nav) {
     val board = BlogTalk.board
 
     Column(Modifier.fillMaxSize()) {
-        MemberHeader()
+        MemberHeader(nav)
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
             SegmentedButton(tab == 0, { tab = 0 }, SegmentedButtonDefaults.itemShape(0, 2)) { Text("Conversations") }
             SegmentedButton(tab == 1, { tab = 1 }, SegmentedButtonDefaults.itemShape(1, 2)) { Text("Top voices") }
@@ -125,6 +125,7 @@ fun BlogCommunityScreen(nav: Nav) {
                     }
                 }
                 item { HowPostingWorks() }
+                item { QuestionOfWeekCard(nav) }
                 item(key = "waiting$tick") { WaitingBanner(nav) { tick++ } }
                 item { Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Latest conversations") } }
                 val list = notes

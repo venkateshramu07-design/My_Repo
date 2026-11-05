@@ -94,6 +94,9 @@ class ScreenshotTest {
         while (System.currentTimeMillis() < end) { compose.mainClock.advanceTimeByFrame(); ShadowLooper.idleMainLooper(50, TimeUnit.MILLISECONDS); Thread.sleep(40) }
     }
 
+    /** Clicks the first clickable element whose (merged) text contains [t]. */
+    private fun tapText(t: String) = compose.onAllNodes(androidx.compose.ui.test.hasClickAction() and hasText(t, substring = true)).onFirst()
+        .performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnClick)
     private fun seen(text: String) = compose.onAllNodesWithText(text, substring = true).fetchSemanticsNodes().isNotEmpty()
     private fun shot(name: String) = compose.onRoot().captureRoboImage("build/shots/$name.png")
     private fun tab(label: String) = compose.onNode(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).performClick()
@@ -140,9 +143,7 @@ class ScreenshotTest {
         launch(); waitFor(settle = 3000) { seen("TODAY'S PICK") }
         scroll(1); shot("26-today-numbers")
         scroll(1); shot("27-today-plan-daily")
-        compose.onAllNodesWithText("Quiz of the day").onFirst().performClick(); pause(1200)
-        compose.onAllNodesWithText("Quiz of the day").onFirst().performClick(); pause(600)
-        shot("28-today-daily3")
+        shot("28-today-play-strip")
     }
 
     @Test fun communityFeed() {
@@ -322,6 +323,44 @@ class ScreenshotTest {
             org.junit.Assert.assertTrue(seen("Copy and continue"))
             shot("51-community-compose")
         } finally { server.close(); com.randomthoughtsever.plainly.data.BlogTalk.base = "https://randomthoughtsever.blogspot.com" }
+    }
+
+    /** The play layer: Daily Run, daily puzzle, A Year of Money, Calm corner, levels, collection and recap. */
+    @Test fun playLayer() {
+        ctx.getSharedPreferences("progress", Context.MODE_PRIVATE).edit().clear().commit()
+        launch(); waitFor { seen("TODAY'S PICK") }
+        waitFor(10, settle = 1500) { seen("DAILY RUN") }
+        org.junit.Assert.assertTrue(seen("Start today's run"))
+        shot("60-today-daily-run")
+        tapText("Start today's run"); waitFor(20, settle = 2500) { seen("Got it") }
+        shot("61-run-story")
+        tapText("Got it"); pause(1500)
+        org.junit.Assert.assertTrue("XP toast", seen("XP"))
+        shot("62-run-quiz")
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Close")).performClick(); pause(1200)
+        tab("Games"); waitFor(10, settle = 1500) { seen("DAILY PUZZLE") }
+        shot("63-games-hub")
+        tapText("DAILY PUZZLE"); pause(1800)
+        shot("64-daily-puzzle")
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Back")).performClick(); pause(1000)
+        tapText("A Year of Money"); pause(1500)
+        shot("65-sim-intro")
+        tapText("Start the year"); pause(1500)
+        shot("66-sim-month")
+        val choice = compose.onAllNodes(androidx.compose.ui.test.hasClickAction()).fetchSemanticsNodes().size
+        org.junit.Assert.assertTrue(choice > 2)
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Back")).performClick(); pause(1000)
+        tab("You"); pause(2000)
+        org.junit.Assert.assertTrue(seen("LEVEL"))
+        shot("67-you-level")
+        tapText("LEVEL"); pause(1500)
+        shot("68-rewards")
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Back")).performClick(); pause(1000)
+        tapText("Calm corner"); pause(1500)
+        shot("69-calm")
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Back")).performClick(); pause(1000)
+        tapText("Weekly recap"); pause(1500)
+        shot("70-recap")
     }
 
     @Test fun searchWhileTyping() {

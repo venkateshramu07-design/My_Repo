@@ -91,6 +91,9 @@ object AppGraph {
     lateinit var repo: Repository
     lateinit var library: Library
     lateinit var profile: Profile
+    lateinit var progress: com.randomthoughtsever.plainly.data.Progress
+    /** An in-app place to open from a notification or invite link (see MainActivity.safeRoute). */
+    val route = androidx.compose.runtime.mutableStateOf<String?>(null)
     lateinit var appContext: android.content.Context
 }
 
@@ -125,6 +128,15 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
     fun challenge(key: String) = c.navigate("challenge/$key")
     fun reads() = c.navigate("reads")
     fun game(id: String) = c.navigate("game/$id")
+    fun run() = c.navigate("run")
+    fun games() = tab("games")
+    fun puzzle() = c.navigate("puzzle")
+    fun rewards() = c.navigate("rewards")
+    fun sim() = c.navigate("sim")
+    fun calm(mode: String = "breathe") = c.navigate("calm/$mode")
+    fun recap(kind: String) = c.navigate("recap/$kind")
+    fun cards() = c.navigate("cards")
+    fun notebook() = c.navigate("notebook")
     fun saved(history: Boolean = false) = c.navigate(if (history) "saved?history=true" else "saved")
     /** Switches to a bottom-bar tab the same way tapping it does. */
     fun tab(route: String) = c.navigate(route) {
@@ -196,11 +208,19 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
     val entry by controller.currentBackStackEntryAsState()
     val route = entry?.destination?.route
     LaunchedEffect(startArticle) { if (startArticle != null) { nav.article(startArticle); onStartHandled() } }
+    val pending = AppGraph.route.value
+    LaunchedEffect(pending) {
+        val r = pending ?: return@LaunchedEffect
+        AppGraph.route.value = null
+        if (!AppGraph.profile.onboarded) return@LaunchedEffect
+        if (r in TABS.map { it.route }) nav.tab(r) else controller.navigate(r)
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { if (route in TABS.map { it.route }) FloatingBar(route) { nav.tab(it) } },
     ) { pad ->
+      Box(Modifier.fillMaxSize()) {
         NavHost(
             controller, startDestination = if (AppGraph.profile.onboarded) "today" else "onboarding", modifier = Modifier.padding(bottom = pad.calculateBottomPadding()),
             enterTransition = { fadeIn() + slideInHorizontally { it / 10 } }, exitTransition = { fadeOut() },
@@ -216,6 +236,14 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
             composable("community") { if (com.randomthoughtsever.plainly.data.Community.joinedState) CommunityHome(nav) else JoinCommunity(nav) }
             composable("challenge/{key}") { ChallengeScreen(it.arguments?.getString("key") ?: "", nav) }
             composable("games") { GamesScreen(nav) }
+            composable("run") { DailyRunScreen(nav) }
+            composable("puzzle") { PuzzleScreen(nav) }
+            composable("rewards") { RewardsScreen(nav) }
+            composable("sim") { LifeSimScreen(nav) }
+            composable("calm/{mode}") { CalmScreen(it.arguments?.getString("mode") ?: "breathe", nav) }
+            composable("recap/{kind}") { RecapScreen(it.arguments?.getString("kind") ?: "week", nav) }
+            composable("cards") { CollectionScreen(nav) }
+            composable("notebook") { NotebookScreen(nav) }
             composable("game/{id}") { GameScreen(it.arguments?.getString("id") ?: "rps", nav) }
             composable("post/{id}") { ThreadScreen(it.arguments?.getString("id") ?: "", nav) }
             composable("talk/{id}") { TalkScreen(it.arguments?.getString("id") ?: "", nav) }
@@ -244,5 +272,7 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
                 }
             }
         }
+        PlayOverlay(nav)
+      }
     }
 }

@@ -345,10 +345,16 @@ fun SettingsScreen(nav: Nav) {
             }
             item {
                 var remind by remember { mutableStateOf(NewPosts.prefs(context).getBoolean("reminders", true)) }
-                ListItem(headlineContent = { Text("Challenge and Daily 3 reminders") }, supportingContent = { Text("One evening nudge, only when something's left to do") },
+                ListItem(headlineContent = { Text("Daily reminder") }, supportingContent = { Text("At most one a day, at the time you usually open Plainly, and only when there's something to do (a streak, a challenge, today's puzzle)") },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     trailingContent = { Switch(remind, { on -> remind = on; NewPosts.prefs(context).edit().putBoolean("reminders", on).apply()
                         if (on) com.randomthoughtsever.plainly.data.Reminders.schedule(context) }) })
+            }
+            item {
+                var sounds by remember { mutableStateOf(NewPosts.prefs(context).getBoolean("sounds", false)) }
+                ListItem(headlineContent = { Text("Sounds") }, supportingContent = { Text("Little chimes for XP, levels and puzzles") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    trailingContent = { Switch(sounds, { on -> sounds = on; NewPosts.prefs(context).edit().putBoolean("sounds", on).apply() }) })
             }
             item { HorizontalDivider(Modifier.padding(vertical = 8.dp)) }
             val links = listOf(

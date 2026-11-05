@@ -321,7 +321,7 @@ fun Daily3Card(index: List<Entry>, nav: Nav) {
     var breathing by remember { mutableStateOf(false) }
     var showTip by remember { mutableStateOf(false) }
     var showQuiz by remember { mutableStateOf(false) }
-    if (breathing) BreathingDialog { finished -> breathing = false; if (finished) { profile.addBreathing(); profile.markDaily("breathe") } }
+    if (breathing) BreathingDialog { finished -> breathing = false; if (finished) { profile.addBreathing(); profile.markDaily("breathe"); AppGraph.progress.addCalm(1) } }
     Surface(shape = RoundedCornerShape(26.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 2.dp,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
         Column(Modifier.padding(18.dp).animateContentSize()) {
@@ -407,7 +407,9 @@ fun QuizBody(q: Quiz, nav: Nav, onAnswered: () -> Unit = {}) {
             val bg = when (state) { 1 -> Color(0xFF2E7D5B); 2 -> Color(0xFFC0392B); else -> MaterialTheme.colorScheme.surfaceVariant }
             val fg = if (state == 1 || state == 2) Color.White else MaterialTheme.colorScheme.onSurface
             Surface(onClick = {
-                if (picked == null) { picked = i; profile.answer(q.id, i == q.correct); onAnswered(); Community.vote(q.id, i) }
+                if (picked == null) { picked = i; profile.answer(q.id, i == q.correct)
+                    AppGraph.progress.award("quiz:${q.id}", if (i == q.correct) 15 else 5, if (i == q.correct) "Quiz: right!" else "Quiz answered", "quizzes")
+                    onAnswered(); Community.vote(q.id, i) }
             }, shape = RoundedCornerShape(14.dp), color = bg, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                 Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(o, style = MaterialTheme.typography.titleSmall, color = fg, modifier = Modifier.weight(1f))
@@ -430,7 +432,7 @@ fun QuizBody(q: Quiz, nav: Nav, onAnswered: () -> Unit = {}) {
 
 /** A quiz card for feeds. */
 @Composable
-fun QuizCard(q: Quiz, nav: Nav, modifier: Modifier = Modifier) {
+fun QuizCard(q: Quiz, nav: Nav, modifier: Modifier = Modifier, onAnswered: () -> Unit = {}) {
     Surface(shape = RoundedCornerShape(26.dp), color = MaterialTheme.colorScheme.surface, border = BorderStroke(2.dp, Gold.copy(alpha = .6f)),
         modifier = modifier.fillMaxWidth()) {
         Column(Modifier.padding(18.dp)) {
@@ -439,7 +441,7 @@ fun QuizCard(q: Quiz, nav: Nav, modifier: Modifier = Modifier) {
                 Text("TEST YOURSELF", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold)
             }
             Spacer(Modifier.height(8.dp))
-            QuizBody(q, nav)
+            QuizBody(q, nav, onAnswered)
         }
     }
 }
@@ -488,9 +490,9 @@ private fun ActiveChallenge(c: com.randomthoughtsever.plainly.data.Challenge, st
             LinearProgressIndicator(progress = { days.size / c.days.toFloat() }, modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp).height(6.dp).clip(CircleShape),
                 color = Gold)
             when {
-                finished -> Button(onClick = { profile.completeChallenge(c.key) }, shape = RoundedCornerShape(50)) { Text("🏆 Claim your badge") }
+                finished -> Button(onClick = { profile.completeChallenge(c.key); AppGraph.progress.award("challenge:${c.key}:${java.time.LocalDate.now()}", 100, "Challenge complete!", "challenges") }, shape = RoundedCornerShape(50)) { Text("🏆 Claim your badge") }
                 today -> Text("✓ Done for today: ${c.action.lowercase()}", style = MaterialTheme.typography.labelLarge, color = Color(0xFF2E7D5B))
-                else -> Button(onClick = { profile.checkIn(c.key) }, shape = RoundedCornerShape(50)) { Text(c.action) }
+                else -> Button(onClick = { profile.checkIn(c.key); AppGraph.progress.award("ci:${c.key}:${java.time.LocalDate.now()}", 20, "Challenge check-in", "checkins_c") }, shape = RoundedCornerShape(50)) { Text(c.action) }
             }
         }
     }

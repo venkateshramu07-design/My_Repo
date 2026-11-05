@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Plainly</string>
     <string name="widget_description">Tip of the day and your reading streak</string>
+    <string name="widget_play_description">Answer today\'s quiz from your home screen, with your level and Daily Run</string>
 </resources>

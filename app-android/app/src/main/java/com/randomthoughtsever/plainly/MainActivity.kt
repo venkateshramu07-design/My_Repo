@@ -37,11 +37,14 @@ class MainActivity : ComponentActivity() {
         AppGraph.library = Library(applicationContext)
         AppGraph.appContext = applicationContext
         AppGraph.profile = com.randomthoughtsever.plainly.data.Profile(applicationContext)
+        AppGraph.progress = com.randomthoughtsever.plainly.data.Progress(applicationContext)
         Catalog.load(applicationContext)
         com.randomthoughtsever.plainly.data.Community.init(applicationContext)
         com.randomthoughtsever.plainly.data.BlogTalk.init(applicationContext)
-        runCatching { PlainlyWidget.refresh(applicationContext) }
-        if (AppGraph.profile.joined().isNotEmpty()) com.randomthoughtsever.plainly.data.Reminders.schedule(applicationContext)
+        com.randomthoughtsever.plainly.data.BlogTalk.onPublished = { n -> AppGraph.progress.award("comment:${n.id}", 40, "Your comment is live", "comments") }
+        runCatching { PlainlyWidget.refresh(applicationContext); PlayWidget.refresh(applicationContext) }
+        if (savedInstanceState == null) AppGraph.progress.recordOpen(java.time.LocalTime.now().hour)
+        com.randomthoughtsever.plainly.data.Reminders.schedule(applicationContext)
         com.randomthoughtsever.plainly.data.Community.publishStats(AppGraph.profile.name, AppGraph.profile.avatar, AppGraph.library.streak(), AppGraph.library.reads())
         if (android.os.Build.FINGERPRINT != "robolectric") Images.install(applicationContext) // tests install their own
         NewPosts.schedule(applicationContext)
@@ -62,6 +65,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        AppGraph.progress.reload()
+    }
+
+    override fun onPause() {
+        runCatching { PlayWidget.refresh(applicationContext) }
+        super.onPause()
+    }
+
     override fun onDestroy() {
         Ads.clearBanners()
         super.onDestroy()
@@ -75,10 +88,16 @@ class MainActivity : ComponentActivity() {
     /** Opens a blog link inside the app; anything else just opens the app. */
     private fun handle(intent: Intent?) {
         intent?.getStringExtra(NewPosts.EXTRA_POST)?.let { if (it.all(Char::isDigit)) { startArticle = it; return } }
+        intent?.getStringExtra(com.randomthoughtsever.plainly.data.Reminders.EXTRA_ROUTE)?.let { AppGraph.route.value = safeRoute(it); return }
         val uri = intent?.data ?: return
         if (uri.scheme != "https" || uri.host != Blog.HOST) return
+        // Invites: https://randomthoughtsever.blogspot.com/?plainly=challenge/nospend opens that page in the app.
+        uri.getQueryParameter("plainly")?.let { AppGraph.route.value = safeRoute(it); return }
         val path = uri.path ?: return
         if (!path.endsWith(".html") || path.startsWith("/p/")) return
         lifecycleScope.launch { AppGraph.repo.idForPath(path)?.let { startArticle = it } }
     }
+
+    /** Only these in-app places can be opened from a link or notification. */
+    private fun safeRoute(r: String): String? = r.takeIf { Regex("^(run|puzzle|sim|today|games|rewards|cards|calm/(breathe|focus|sleep)|recap/(week|month)|challenge/[a-z0-9]{2,20})$").matches(it) }
 }

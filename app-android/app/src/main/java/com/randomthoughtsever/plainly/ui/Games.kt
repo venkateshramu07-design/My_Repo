@@ -101,6 +101,7 @@ object Scores {
     fun submit(c: Context, id: String, score: Int, lowerIsBetter: Boolean = false): Boolean {
         val old = best(c, id)
         p(c).edit().putInt("plays", plays(c) + 1).apply()
+        runCatching { AppGraph.progress.award("game:$id:${java.time.LocalDate.now()}", 5, "Game played", "games") }
         val better = old == null || (if (lowerIsBetter) score < old else score > old)
         if (better) p(c).edit().putInt(id, score).apply()
         return better
@@ -117,10 +118,12 @@ fun GamesScreen(nav: Nav) {
         item {
             Column(Modifier.statusBarsPadding().padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 8.dp)) {
                 Text("Games", style = MaterialTheme.typography.displaySmall)
-                Text("Five quick games for a short break. They work offline.", style = MaterialTheme.typography.bodyLarge,
+                Text("A daily puzzle, a year of money to live, and five quick games. All offline.", style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
+        item { PuzzleCard(nav) }
+        item { SimCard(nav) }
         items(GAMES, key = { it.id }) { g ->
             val best = remember { Scores.best(context, g.id) }
             Surface(onClick = { nav.game(g.id) }, shape = RoundedCornerShape(26.dp), color = Color.Transparent,
@@ -514,3 +517,21 @@ private fun ReactionTime(g: Game) {
     }
 }
 
+
+/** A Year of Money, as a card for the Games hub. */
+@Composable
+fun SimCard(nav: Nav) {
+    val pr = AppGraph.progress
+    Surface(onClick = { nav.sim() }, shape = RoundedCornerShape(26.dp), color = Color.Transparent, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 7.dp)) {
+        Row(Modifier.background(Brush.linearGradient(listOf(Color(0xFF0F5F55), Color(0xFF1F4E79)))).padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(64.dp).clip(RoundedCornerShape(20.dp)).background(Color.White.copy(alpha = .18f)), contentAlignment = Alignment.Center) { Text("💰", fontSize = 34.sp) }
+            Spacer(Modifier.width(16.dp))
+            Column(Modifier.weight(1f)) {
+                Text("MONEY SIMULATOR", color = Gold, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.ExtraBold)
+                Text("A Year of Money", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                Text(if (pr.simBest() >= 0) "Best score ${pr.simBest()} · ${pr.simRuns()} years played" else "12 months, your choices, real lessons",
+                    style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = .85f))
+            }
+        }
+    }
+}

@@ -84,7 +84,14 @@ private val Type = Typography().let { t ->
 @Composable
 fun PlainlyTheme(mode: String, content: @Composable () -> Unit) {
     val dark = when (mode) { "dark" -> true; "light" -> false; else -> isSystemInDarkTheme() }
-    MaterialTheme(colorScheme = if (dark) DarkColors else LightColors, typography = Type, content = content)
+    // The colour theme the reader unlocked and chose (Levels & rewards); navy is the default.
+    val accent = runCatching { AppGraph.progress.accent }.getOrDefault("navy")
+    val scheme = if (dark) DarkColors else LightColors
+    val c = ACCENTS[accent]
+    val colors = if (c == null || accent == "navy") scheme else if (dark) scheme.copy(primary = androidx.compose.ui.graphics.lerp(c.second, Color.White, .4f),
+        primaryContainer = androidx.compose.ui.graphics.lerp(c.first, Color.Black, .4f), onPrimary = Color(0xFF0A1B2F))
+        else scheme.copy(primary = c.first, primaryContainer = androidx.compose.ui.graphics.lerp(c.second, Color.White, .82f))
+    MaterialTheme(colorScheme = colors, typography = Type, content = content)
 }
 
 /** The topics shown in Explore, with a colour pair and an icon each. Labels match the blog's labels. */

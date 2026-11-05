@@ -242,7 +242,8 @@ fun adSlots(blocks: List<Block>): Set<Int> {
 // ---------- Rendering ----------
 
 @Composable
-fun ArticleBlocks(blocks: List<Block>, zoom: Int, adsAfter: Set<Int> = emptySet(), ad: @Composable (Int) -> Unit = {}, onLink: (String) -> Unit) {
+fun ArticleBlocks(blocks: List<Block>, zoom: Int, adsAfter: Set<Int> = emptySet(), ad: @Composable (Int) -> Unit = {}, onCheck: ((String, Boolean) -> Unit)? = null,
+                  onLink: (String) -> Unit) {
     val c = MaterialTheme.colorScheme
     val k = zoom / 100f
     fun TextStyle.z() = copy(fontSize = fontSize * k, lineHeight = if (lineHeight == TextUnit.Unspecified) lineHeight else lineHeight * k)
@@ -254,7 +255,7 @@ fun ArticleBlocks(blocks: List<Block>, zoom: Int, adsAfter: Set<Int> = emptySet(
         SelectionContainer {
             Column(Modifier.fillMaxWidth().padding(horizontal = 22.dp)) {
                 blocks.forEachIndexed { i, b ->
-                    RenderBlock(b, i, body, links)
+                    if (b is Block.Faq && onCheck != null) QuickCheck(b, body, links, onCheck) else RenderBlock(b, i, body, links)
                     if (i in adsAfter) ad(i)
                 }
             }
@@ -363,6 +364,37 @@ private fun FaqBlock(f: Block.Faq, body: TextStyle, links: TextLinkStyles) {
             if (open) {
                 Spacer(Modifier.height(8.dp))
                 f.answer.forEachIndexed { i, b -> RenderBlock(b, i + 1, body.copy(fontSize = body.fontSize * .94f), links) }
+            }
+        }
+    }
+}
+
+/** A FAQ turned into a self-test: think of your answer, reveal it, then say whether you knew it. */
+@Composable
+private fun QuickCheck(f: Block.Faq, body: TextStyle, links: TextLinkStyles, onCheck: (String, Boolean) -> Unit) {
+    val c = MaterialTheme.colorScheme
+    var open by rememberSaveable(f.question) { mutableStateOf(false) }
+    var graded by rememberSaveable(f.question) { mutableStateOf<Boolean?>(null) }
+    Surface(onClick = { open = !open }, shape = RoundedCornerShape(18.dp), color = c.surfaceVariant.copy(alpha = .7f),
+        border = BorderStroke(1.5.dp, if (graded == true) c.primary else c.secondary.copy(alpha = .5f)), modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)) {
+        Column(Modifier.animateContentSize().padding(horizontal = 16.dp, vertical = 14.dp)) {
+            Text(if (graded == null) "QUICK CHECK · think, then tap" else if (graded == true) "QUICK CHECK · you knew it ✓" else "QUICK CHECK · learned ✓",
+                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.2.sp), color = c.secondary, fontWeight = FontWeight.ExtraBold)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(f.question, style = MaterialTheme.typography.titleMedium.copy(fontSize = body.fontSize * .96f), modifier = Modifier.weight(1f).padding(top = 4.dp))
+                Icon(Icons.Rounded.ExpandMore, null, Modifier.rotate(if (open) 180f else 0f), tint = c.primary)
+            }
+            if (open) {
+                Spacer(Modifier.height(8.dp))
+                f.answer.forEachIndexed { i, b -> RenderBlock(b, i + 1, body.copy(fontSize = body.fontSize * .94f), links) }
+                if (graded == null) Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
+                    Surface(onClick = { graded = true; onCheck(f.question, true) }, shape = RoundedCornerShape(50), color = c.primaryContainer) {
+                        Text("✓ I knew it", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp))
+                    }
+                    Surface(onClick = { graded = false; onCheck(f.question, false) }, shape = RoundedCornerShape(50), color = c.surface) {
+                        Text("💡 Learned something", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp))
+                    }
+                }
             }
         }
     }

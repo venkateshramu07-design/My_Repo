@@ -137,7 +137,7 @@ fun badges(reads: Int, streak: Int, saved: Int, tools: Int, quizRight: Int, chec
         b("🔥", "On a roll", "A 3-day streak", streak, 3), b("⚡", "Unstoppable", "A 14-day streak", streak, 14),
         b("🔖", "Collector", "Save 5 guides", saved, 5), b("🛠️", "Maker", "Make 3 files with the tools", tools, 3),
         b("🧠", "Quiz whiz", "Get 10 quiz answers right", quizRight, 10), b("🩺", "Checked up", "Finish a check-up", checks, 1),
-        b("☀️", "Daily 3", "Finish Daily 3 on 5 days", dailies, 5), b("🏆", "Finisher", "Complete a challenge", challengesDone, 1),
+        b("☀️", "Daily Run", "Finish the Daily Run 5 times", dailies, 5), b("🏆", "Finisher", "Complete a challenge", challengesDone, 1),
         b("🌿", "Breather", "Do 10 breathing minutes", breaths, 10),
     )
 }

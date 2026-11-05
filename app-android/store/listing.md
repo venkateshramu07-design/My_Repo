@@ -37,10 +37,13 @@ MADE FOR YOU IN 20 SECONDS
 Tell Plainly what you want help with: paying off debt, saving and investing, a calmer mind, your career or living abroad. You get a plan with three guides and the tools to act on them. Take the 60-second Money Health Check for your score out of 100 and the one thing to fix first, then share it.
 
 YOUR NUMBERS, YOUR HABITS
-Add your pay and spending (kept on your phone) to see your FIRE number, safety net, savings rate and debt-free date. Daily 3 gives you a tip, a minute of calm breathing and a quiz question. Join a challenge like the 7-day no-spend or the 30-day debt sprint, keep your streak and earn badges.
+Add your pay and spending (kept on your phone) to see your FIRE number, safety net, savings rate and debt-free date. Join a challenge like the 7-day no-spend or the 30-day debt sprint, keep your streak and earn badges.
 
-5 QUICK GAMES
-Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe and Reaction Time. Offline.
+YOUR 5-MINUTE DAILY RUN
+A story, a quiz, one small action, the daily puzzle and a mood check-in, then you're done for the day. Earn XP, level up, unlock colour themes and collect a card for every guide you finish.
+
+PLAY AND UNWIND
+A new daily puzzle (the same for everyone; share your result), A Year of Money (live 12 months of money decisions in five minutes), a Calm corner with breathing, a focus timer and sleep sounds, plus Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe and Reaction Time. Offline.
 
 COMMUNITY
 Read what other readers say about every guide, join the conversation, and see the most active voices. Reading needs no account; you post with your Google account, like any comment on the blog.
@@ -60,12 +63,7 @@ WHAT YOU CAN READ
 New guides arrive every week.
 
 MONEY CALCULATORS
-• Loan and mortgage calculator: monthly payment, total interest and how much an extra payment each month saves
-• Investment growth calculator: see compound interest at work with a monthly investment and a yearly raise
-• Credit card payoff calculator: when you'll be debt-free, and the payment that clears it in two years
-• FIRE calculator: your financial independence number and how many years until you reach it
-• Emergency fund calculator: how many months of cover you have and how long until you're fully funded
-Results update as you type, with clear charts. Choose your currency: US dollar, euro, pound, Canadian and Australian dollar, rupee, yen and more.
+Loan and mortgage, investment growth, credit card payoff, FIRE and emergency fund calculators. Results update as you type, with clear charts. Choose your currency: US dollar, euro, pound, Canadian and Australian dollar, rupee, yen and more.
 
 72 TOOLS IN ONE APP
 • Photo resizer: shrink any photo to an exact size in KB for online forms, several photos at once
@@ -82,10 +80,7 @@ EXPLORE AND SWIPE
 Collections like "Get out of debt", money facts for 35 countries, every topic, or swipe through quick answers one screen at a time.
 
 MADE FOR READING
-• Save any guide to read later, even offline
-• Pick up where you left off with your reading history
-• Adjust the text size, and switch between light and dark mode
-• Search every guide, or browse by topic
+Save guides for offline reading, quick checks inside every guide, a notebook for your favourite lines, text size and dark mode.
 
 PRIVATE BY DESIGN
 No accounts, and no location, contacts, camera or storage permission. Your photos, PDFs, numbers and settings stay on your phone. The app is free, supported by a few labelled ads; where the law requires it, you're asked for consent first.

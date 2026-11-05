@@ -32,6 +32,8 @@ object BlogTalk {
     data class Voice(val uid: String, val name: String, val photo: String, val notes: Int, val guides: Int, val last: Long)
 
     private var prefs: SharedPreferences? = null
+    /** Called when one of the reader's comments first appears on the blog (the app gives XP for it). */
+    var onPublished: ((Note) -> Unit)? = null
     fun init(context: Context) { prefs = context.getSharedPreferences("blogtalk", Context.MODE_PRIVATE) }
 
     /** Blogger's comment page for one post or page. Signing in and publishing happen there. */
@@ -91,6 +93,7 @@ object BlogTalk {
             .putStringSet("pending", p.getStringSet("pending", emptySet()).orEmpty().filterNot { s -> hits.keys.any { s.startsWith("${it.postId}\u0001${it.at}\u0001") } }.toSet())
             .apply()
         hits.keys.forEach { Community.markPosted(onGuide = it.postId != board) }
+        hits.values.forEach { n -> onPublished?.invoke(n!!) }
     }
 
     /** Same comment, allowing for the small changes Blogger or a paste make (spacing, punctuation, a trimmed end). */

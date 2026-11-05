@@ -118,7 +118,7 @@ fun JoinCommunity(nav: Nav) {
                 Spacer(Modifier.height(6.dp))
                 @OptIn(ExperimentalLayoutApi::class)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Profile.AVATARS.forEach { a ->
+                    AppGraph.progress.avatars().forEach { a ->
                         Surface(onClick = { avatar = a }, shape = CircleShape, color = if (a == avatar) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
                             border = BorderStroke(if (a == avatar) 2.dp else 1.dp, if (a == avatar) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)) {
                             Text(a, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(8.dp))
@@ -335,7 +335,7 @@ fun helloPrompts(): List<String> {
 }
 
 @Composable
-fun MemberHeader() {
+fun MemberHeader(nav: Nav? = null) {
     val p = AppGraph.profile
     var identity by remember { mutableStateOf(false) }
     if (identity) IdentityDialog { identity = false }
@@ -344,7 +344,8 @@ fun MemberHeader() {
             Text("Community", style = MaterialTheme.typography.displaySmall)
             Text("Signed in as ${p.avatar} ${p.name}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Surface(onClick = { identity = true }, shape = CircleShape, color = Color.Transparent) { Avatar(p.avatar, 44) }
+        if (nav != null) { LevelChip(nav); Spacer(Modifier.width(8.dp)) }
+        Surface(onClick = { identity = true }, shape = CircleShape, color = Color.Transparent) { FramedAvatar(p.avatar, 44) }
     }
 }
 
@@ -432,7 +433,7 @@ fun ChallengeScreen(key: String, nav: Nav) {
                             Text("🏆 You did it!", style = MaterialTheme.typography.headlineSmall)
                             Text("All ${c.days} days complete. Claim your badge, then pick your next challenge.", style = MaterialTheme.typography.bodyMedium)
                             Spacer(Modifier.height(12.dp))
-                            Button(onClick = { profile.completeChallenge(c.key); nav.challenges() }, shape = RoundedCornerShape(50)) { Text("Claim my badge") }
+                            Button(onClick = { profile.completeChallenge(c.key); AppGraph.progress.award("challenge:${c.key}:${java.time.LocalDate.now()}", 100, "Challenge complete!", "challenges"); nav.challenges() }, shape = RoundedCornerShape(50)) { Text("Claim my badge") }
                         }
                         today -> {
                             Text("✅ Done for today", style = MaterialTheme.typography.titleLarge, color = Color(0xFF2E7D5B))
@@ -443,7 +444,7 @@ fun ChallengeScreen(key: String, nav: Nav) {
                             Text("TODAY'S TASK", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold)
                             Text(c.action, style = MaterialTheme.typography.titleLarge)
                             Spacer(Modifier.height(12.dp))
-                            Button(onClick = { profile.checkIn(c.key) }, shape = RoundedCornerShape(50), modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                            Button(onClick = { profile.checkIn(c.key); AppGraph.progress.award("ci:${c.key}:${java.time.LocalDate.now()}", 20, "Challenge check-in", "checkins_c") }, shape = RoundedCornerShape(50), modifier = Modifier.fillMaxWidth().height(52.dp)) {
                                 Icon(Icons.Rounded.Check, null); Spacer(Modifier.width(6.dp)); Text("Check in for day $dayNo", fontWeight = FontWeight.Bold)
                             }
                         }
@@ -479,7 +480,7 @@ fun ChallengeScreen(key: String, nav: Nav) {
         }
         item {
             Row(Modifier.padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedButton(onClick = { nav.share("Join me: ${c.title} on Plainly", "https://play.google.com/store/apps/details?id=com.randomthoughtsever.plainly") },
+                OutlinedButton(onClick = { nav.share("Join me on the ${c.title} challenge on Plainly! Day ${dayNo} for me. Open it here:", "https://randomthoughtsever.blogspot.com/?plainly=challenge/${c.key}\n(Get Plainly free: https://play.google.com/store/apps/details?id=com.randomthoughtsever.plainly)") },
                     shape = RoundedCornerShape(50)) { Icon(Icons.Rounded.Share, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Invite a friend") }
                 if (j != null && !finished) TextButton(onClick = { profile.leave(c.key) }) { Text("Leave challenge") }
             }

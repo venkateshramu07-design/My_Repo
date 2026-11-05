@@ -8,6 +8,22 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   and "More to read" (every guide, newest first, mixed by topic, paged as you scroll). It reloads on open and resume, checks for a new post every minute while visible, and
   `data/NewPosts.kt` (WorkManager, every 15 min) posts a notification for new guides. Cover art comes live from the
   website's design layer (`version.txt` → `bd-redesign.js` → `BD_COVERS`), on top of the copy built into the app.
+- **Play layer** (all on the phone, no server; `data/Progress.kt`): XP and levels (titles, unlockable colour themes,
+  emojis and profile rings: `ui/Play.kt` Levels & rewards), personal weekly leagues and a weekly XP goal, an XP toast and
+  level-up confetti, optional sounds made on the phone. **Daily Run** (`ui/DailyRun.kt`): story, quiz, one small action
+  (`data/Daily.kt`), the daily puzzle and a mood check-in, then "done for today". **Daily puzzle** (`data/Puzzles.kt`,
+  `ui/Puzzle.kt`): Word Vault, Budget Balance and Growth Order in turn, seeded by the date (the same for everyone),
+  shareable emoji grid. **A Year of Money** (`data/LifeSim.kt`, `ui/LifeSimScreen.kt`): 12 simulated months with your
+  numbers, 20 events with choices, a score and the guides behind each lesson. **In articles** (`ui/ArticleExtras.kt`):
+  FAQs become quick checks, a collectible card per finished guide (Common/Rare/Legendary, `ui/Collection.kt` albums),
+  "Save to notebook" from text selection, "I'm going to try this" with a "did it work?" 3 days later. **Calm corner**
+  (`ui/Calm.kt`): breathing patterns, focus timer and sleep wind-down with rain/ocean/hum generated in real time.
+  **Recaps** (`ui/Recap.kt`): weekly and monthly story slides, shareable as a picture. **Living Today** (`ui/Living.kt`):
+  a sky that follows the time of day, seasonal events with 50% more XP (`Seasons`), Play & unwind strip, question of the
+  week, and Hot discussions from real blog comments. **Smart reminders** (`data/Reminders.kt`): at most one a day at the
+  reader's usual hour, only for a streak at risk, a challenge, the Daily Run or a "did it work?". **Play widget**
+  (`PlayWidget.kt`): answer today's quiz on the home screen. **Invites**: `https://randomthoughtsever.blogspot.com/?plainly=challenge/<key>`
+  opens that challenge in the app (only an allowlist of places, see `MainActivity.safeRoute`).
 - **Navigation**: floating animated bar with Today, Explore, Reads, Tools, You, Games and Community (`ui/App.kt`).
 - **Joining and challenges** (`ui/CommunityJoin.kt`): join landing, three-step join, welcome, first-steps checklist,
   and each challenge's page (today's task and check-in, daily tip, how it works, guides).

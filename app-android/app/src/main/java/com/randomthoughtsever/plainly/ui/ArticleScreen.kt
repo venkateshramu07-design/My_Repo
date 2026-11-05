@@ -85,6 +85,7 @@ fun ArticleScreen(id: String, nav: Nav) {
         val p = post
         if (p == null) failed = true else {
             lib.opened(p)
+            AppGraph.progress.award("read:${p.id}", 20, "New guide opened", "reads")
             related = runCatching { repo.topic(p.label, 1, 8) }.getOrDefault(emptyList()).filter { it.id != p.id }.take(4)
             nav.maybeAskForReview()
         }
@@ -122,6 +123,23 @@ fun ArticleScreen(id: String, nav: Nav) {
     }
 
     val scroll = rememberScrollState()
+    val pr = AppGraph.progress
+    val checks = remember(p.id) { androidx.compose.runtime.mutableStateMapOf<String, Boolean>() }
+    var finished by remember(p.id) { mutableStateOf(false) }
+    var reveal by remember { mutableStateOf<com.randomthoughtsever.plainly.data.Progress.Card?>(null) }
+    val quiz = remember(p.id) { com.randomthoughtsever.plainly.data.QUIZZES.firstOrNull { it.post == p.id } }
+    var faqs by remember(p.id) { mutableStateOf(0) }
+    /** Collects the guide's card once it's finished, or upgrades it after quick checks and the quiz. */
+    fun collect() {
+        if (!finished) return
+        val quizRight = quiz != null && AppGraph.profile.answered(quiz.id) == true
+        val known = checks.count { it.value }
+        val mastered = (quiz == null || quizRight) && faqs >= 2 && known == faqs || quizRight && faqs > 0 && known == faqs
+        val tested = quizRight || (faqs > 0 && checks.size * 2 >= faqs)
+        pr.collect(p.id, p.title, p.label, if (mastered) 2 else if (tested) 1 else 0)?.let { reveal = it }
+    }
+    reveal?.let { c -> CardRevealDialog(c, nav) { reveal = null } }
+    val noteBar = remember { NoteToolbar() }
     val speaker = remember { Speaker(AppGraph.appContext) }
     var speakerOpen by remember { mutableStateOf(false) }
     var shareMenu by remember { mutableStateOf(false) }
@@ -179,7 +197,18 @@ fun ArticleScreen(id: String, nav: Nav) {
             blocks?.let { b ->
                 LaunchedEffect(b) { speaker.load(spokenParts(p.title, b)) }
                 val slots = remember(b) { adSlots(b) }
-                ArticleBlocks(b, lib.textZoom, slots, { i -> BannerAd("article:${p.id}:$i") }) { link -> openLink(Uri.parse(link)) }
+                LaunchedEffect(b) { faqs = b.count { it is Block.Faq } }
+                androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalTextToolbar provides noteBar) {
+                    ArticleBlocks(b, lib.textZoom, slots, { i -> BannerAd("article:${p.id}:$i") }, onCheck = { q, knew ->
+                        checks[q] = knew; pr.award("check:${p.id}:${q.hashCode()}", if (knew) 5 else 3, if (knew) "You knew it" else "Learned something", "checks"); collect()
+                    }) { link -> openLink(Uri.parse(link)) }
+                }
+                LaunchedEffect(b) {
+                    androidx.compose.runtime.snapshotFlow { scroll.maxValue > 0 && scroll.value >= scroll.maxValue * .8f }.collect { end ->
+                        if (end && !finished) { finished = true; pr.award("finish:${p.id}", 15, "Guide finished", "finished"); collect() }
+                    }
+                }
+                EndOfGuide(p, quiz, nav) { collect() }
             }
                 ?: Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) { repeat(6) { Shimmer(Modifier.fillMaxWidth().height(18.dp)) } }
             BannerAd("article:${p.id}:end", Modifier.padding(horizontal = 22.dp))
@@ -248,6 +277,7 @@ fun ArticleScreen(id: String, nav: Nav) {
                 IconButton(onClick = { speaker.stop(); speakerOpen = false }) { Icon(Icons.Rounded.Close, "Stop", tint = MaterialTheme.colorScheme.onPrimary) }
             }
         }
+        NotePopup(noteBar) { text -> pr.addNote(text, p.id, p.title) }
         LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().height(3.dp).align(Alignment.TopCenter),
             color = MaterialTheme.colorScheme.secondary, trackColor = Color.Transparent)
     }

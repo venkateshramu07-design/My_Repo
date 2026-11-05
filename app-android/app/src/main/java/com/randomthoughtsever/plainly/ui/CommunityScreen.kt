@@ -135,6 +135,7 @@ fun CommunityScreen(nav: Nav) {
         PullToRefreshBox(refreshing, { scope.launch { refreshing = true; load(); refreshing = false } }, Modifier.fillMaxSize()) {
             LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
                 if (firstStepsVisible) item { FirstStepsCard(nav) { composing = true } }
+                item { QuestionOfWeekCard(nav) }
                 item { ChallengesStrip(nav) }
                 item {
                     Surface(onClick = { composing = true }, shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface,
@@ -354,7 +355,7 @@ fun IdentityDialog(done: () -> Unit) {
                 OutlinedTextField(name, { name = it.take(24) }, singleLine = true, label = { Text("Name") }, isError = bad) }
             TextButton(onClick = { name = Profile.randomName() }) { Text("Random name") }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                items(Profile.AVATARS) { a ->
+                items(AppGraph.progress.avatars()) { a ->
                     Surface(onClick = { avatar = a }, shape = CircleShape, color = if (a == avatar) MaterialTheme.colorScheme.primaryContainer else Color.Transparent) {
                         Text(a, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(6.dp))
                     }

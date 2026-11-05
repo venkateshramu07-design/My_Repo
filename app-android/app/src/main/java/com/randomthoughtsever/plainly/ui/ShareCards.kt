@@ -49,6 +49,16 @@ object ShareCards {
         block(c, answer, sans, 44f, 0xF2FFFFFF.toInt(), 110f, box.top + 100f, 860, ((box.height() - 130f) / 62f).toInt().coerceAtLeast(3))
     }
 
+    /** A recap or achievement: a title, one big number, and a few lines underneath. */
+    fun recap(context: Context, kicker: String, title: String, big: String, bigLabel: String, lines: List<String>): Bitmap =
+        card(context, 0xFF0A1B2F.toInt(), 0xFF3B2F6B.toInt()) { c, serif, sans ->
+            text(c, kicker.uppercase(), sans, 38f, 0xFFF2C46B.toInt(), 90f, 170f, bold = true)
+            block(c, title, serif, 70f, 0xFFFFFFFF.toInt(), 90f, 200f, 900, 2)
+            centered(c, big, serif, 210f, 0xFFFFFFFF.toInt(), 620f)
+            centered(c, bigLabel, sans, 44f, 0xCCFFFFFF.toInt(), 690f)
+            lines.take(5).forEachIndexed { i, l -> centered(c, l, sans, 46f, 0xF2FFFFFF.toInt(), 820f + i * 72f) }
+        }
+
     fun share(context: Context, bmp: Bitmap, name: String) {
         val bytes = ByteArrayOutputStream().also { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }.toByteArray()
         shareFile(context, bytes, "$name.png", "image/png")

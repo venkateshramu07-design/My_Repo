@@ -278,6 +278,112 @@ class LogicTest {
         assertTrue(form.inputStream.bufferedReader().readText().contains("Comment as"))
     }
 
+    /** XP, levels, leagues, the Daily Run, cards, check-ins and "I tried this", on a controllable calendar. */
+    @Test fun progressRewardsTheRightThings() {
+        val ctx = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        ctx.getSharedPreferences("progress", android.content.Context.MODE_PRIVATE).edit().clear().commit()
+        var day = java.time.LocalDate.of(2026, 3, 2) // a Monday, no seasonal event
+        val pr = com.randomthoughtsever.plainly.data.Progress(ctx) { day }
+        assertEquals(1.0, pr.multiplier(), 0.0)
+        assertTrue(pr.award("read:1", 20, "x")); assertTrue(!pr.award("read:1", 20, "x"))          // once per key
+        assertEquals(20, pr.xp); assertEquals(1, pr.level())
+        assertEquals(listOf(0, 100, 300, 600, 1000), (1..5).map { pr.need(it) })
+        pr.award("big", 90, "x"); assertEquals(2, pr.level()); assertEquals(2, pr.levelUp)        // level-up flagged
+        assertTrue(pr.avatars().containsAll(listOf("🐯", "🦄")))                                   // level 2 unlocks emojis
+        assertEquals("navy", pr.accent.also { pr.accent = "plum" })                               // plum needs level 5
+        assertEquals("navy", pr.accent)
+        // Daily Run: five steps, a bonus once, and a streak across days
+        com.randomthoughtsever.plainly.data.Progress.RUN_STEPS.forEach { pr.runStep(it) }
+        assertEquals(1, pr.runs()); assertEquals(1, pr.runStreak())
+        day = day.plusDays(1); com.randomthoughtsever.plainly.data.Progress.RUN_STEPS.forEach { pr.runStep(it) }
+        assertEquals(2, pr.runStreak()); assertEquals(160 + 50, pr.weekXp())
+        assertEquals("Silver", pr.league().name)
+        // Seasonal events give 50% more
+        day = java.time.LocalDate.of(2026, 1, 5); assertEquals(1.5, pr.multiplier(), 0.0)
+        val before = pr.xp; pr.award("event-test", 20, "x"); assertEquals(before + 30, pr.xp)
+        day = java.time.LocalDate.of(2026, 3, 4)
+        // Cards only upgrade
+        assertTrue(pr.collect("g1", "Guide", "Investing", 0) != null)
+        assertTrue(pr.collect("g1", "Guide", "Investing", 0) == null)
+        assertEquals(2, pr.collect("g1", "Guide", "Investing", 2)!!.rarity)
+        assertTrue(pr.collect("g1", "Guide", "Investing", 1) == null)
+        // I tried this: asked again after three days, snooze moves it
+        pr.startTrying("g1", "Guide"); assertTrue(pr.followUp() == null)
+        day = day.plusDays(3); assertEquals("g1", pr.followUp()!!.postId)
+        pr.snoozeTried("g1"); assertTrue(pr.followUp() == null)
+        day = day.plusDays(3); pr.answerTried("g1", "yes"); assertTrue(pr.followUp() == null)
+        // Check-in, notebook, usual hour
+        pr.saveCheckIn(com.randomthoughtsever.plainly.data.Progress.CheckIn(4, -1, "good")); assertEquals(4, pr.checkIn()!!.mood)
+        pr.addNote("Pay yourself first", "g1", "Guide"); pr.addNote("Pay yourself first", "g1", "Guide"); assertEquals(1, pr.notes().size)
+        assertEquals(19, pr.usualHour()); listOf(8, 22, 21, 20, 21).forEach { pr.recordOpen(it) }; assertEquals(21, pr.usualHour())
+        val r = com.randomthoughtsever.plainly.ui.recapStats(pr, com.randomthoughtsever.plainly.ui.RecapRange(day.minusDays(10), 11, "t", "k"))
+        assertTrue(r.xp > 0 && r.moods.contains(4))
+    }
+
+    /** Daily puzzles: the same for everyone on a day, always solvable, and scored correctly. */
+    @Test fun dailyPuzzlesAreFairAndSolvable() {
+        val P = com.randomthoughtsever.plainly.data.Puzzles
+        assertTrue(P.WORDS.size >= 60 && P.WORDS.all { it.length == 5 && it.all { c -> c in 'A'..'Z' } })
+        assertEquals(listOf(0, 2, 2, 0, 2), P.mark("NONNY", "MONEY"))          // repeated letters only count as often as they appear
+        assertEquals(listOf(2, 2, 2, 2, 2), P.mark("money", "MONEY"))
+        assertEquals(listOf(1, 1, 0, 0, 0), P.mark("OMAAA", "MONEY"))
+        var d = java.time.LocalDate.of(2026, 11, 1)
+        assertEquals(1, P.number(d)); assertEquals(P.word(d), P.word(d))
+        assertEquals(3, (0L..2L).map { P.kind(d.plusDays(it)) }.toSet().size)
+        repeat(400) {
+            val b = P.budget(d)
+            assertEquals(b.target, P.total(b, b.solution)); assertEquals(8, b.items.map { it.second }.toSet().size)
+            val g = P.growth(d)
+            assertEquals(4, P.rightPlaces(P.bestOrder(g), g)); assertEquals(4, g.map { it.end }.toSet().size)
+            d = d.plusDays(1)
+        }
+        val s = com.randomthoughtsever.plainly.data.Puzzles.Saving("A", 1000, 0, 0.12, 1)
+        assertEquals(1000 * Math.pow(1.01, 12.0), s.end, 0.01)
+    }
+
+    /** A Year of Money: deterministic per seed, every choice keeps the numbers sane, scores stay in range. */
+    @Test fun moneyYearPlaysFair() {
+        val S = com.randomthoughtsever.plainly.data.LifeSim
+        val start = S.start(com.randomthoughtsever.plainly.data.Numbers())
+        assertEquals(3000.0, start.income, 0.0)
+        assertEquals(S.events(42).map { it.key }, S.events(42).map { it.key }); assertEquals(12, S.events(42).size)
+        S.EVENTS.forEach { e -> e.choices.forEach { c ->
+            val after = c.apply(start)
+            assertTrue("${e.key}: ${c.label}", after.savings >= -0.01 && after.debt >= 0 && after.wellbeing in 0..100)
+        } }
+        for (seed in 1L..200L) {
+            var st = start
+            S.events(seed).forEachIndexed { i, e -> st = S.month(e.choices[(seed % e.choices.size).toInt()].apply(st), S.markets(seed)[i]) }
+            assertEquals(12, st.month); assertTrue(S.score(start, st) in 0..100); assertTrue(st.savings >= 0 && st.debt >= 0)
+        }
+        // Paying down debt beats ignoring it
+        val ignore = (1..12).fold(start) { s, _ -> S.month(s, 0.0) }
+        val pay = (1..12).fold(start) { s, _ -> S.month(S.EVENTS.first { it.key == "card" }.choices[1].apply(s), 0.0) }
+        assertTrue(pay.debt < ignore.debt)
+    }
+
+    @Test fun remindersSeasonsAndQuestions() {
+        val R = com.randomthoughtsever.plainly.data.Reminders
+        val ch = com.randomthoughtsever.plainly.data.CHALLENGES.first()
+        assertEquals("run", R.message(false, 5, ch, false, null, "P")!!.second)            // a streak at risk comes first
+        assertEquals("challenge/${ch.key}", R.message(true, 5, ch, false, null, "P")!!.second)
+        assertEquals("run", R.message(true, 0, null, false, null, "P")!!.second)
+        assertTrue(R.message(true, 0, null, true, "Guide", "P")!!.first.contains("Guide"))
+        assertTrue(R.message(true, 9, null, true, null, "P") == null)                       // nothing to do, no nudge
+        val Sz = com.randomthoughtsever.plainly.data.Seasons
+        assertEquals("newyear", Sz.current(java.time.LocalDate.of(2027, 1, 3))!!.key)
+        assertTrue(Sz.current(java.time.LocalDate.of(2026, 3, 1)) == null)
+        assertEquals("review", Sz.current(java.time.LocalDate.of(2026, 12, 31))!!.key)
+        val posts = com.randomthoughtsever.plainly.data.QUIZZES.map { it.post }.toSet()
+        assertTrue(com.randomthoughtsever.plainly.data.WEEK_QUESTIONS.all { it.post in posts })
+        assertEquals(com.randomthoughtsever.plainly.data.questionOfTheWeek(java.time.LocalDate.of(2026, 11, 2)),
+            com.randomthoughtsever.plainly.data.questionOfTheWeek(java.time.LocalDate.of(2026, 11, 8)))   // same all week
+        val m = com.randomthoughtsever.plainly.ui.recapRange("month", java.time.LocalDate.of(2026, 12, 3))
+        assertEquals(java.time.LocalDate.of(2026, 11, 1), m.from); assertEquals(30, m.days)
+        assertEquals(7, com.randomthoughtsever.plainly.ui.recapRange("week").days)
+        assertTrue(com.randomthoughtsever.plainly.data.MICRO_ACTIONS.map { it.goal }.toSet().containsAll(com.randomthoughtsever.plainly.data.GOALS.map { it.key }))
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

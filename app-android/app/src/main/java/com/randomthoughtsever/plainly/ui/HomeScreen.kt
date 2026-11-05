@@ -102,6 +102,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -207,11 +208,15 @@ fun HomeScreen(nav: Nav) {
                     else -> {
                         val pick = dailyPick(posts)
                         item { Stories(posts) { story = it } }
+                        item { DailyRunCard(nav) }
+                        item { SeasonBanner(nav) }
+                        item { TriedFollowUpCard() }
+                        item { RecapCard(nav) }
                         item { ChecksCard(nav) }
                         if (profile.numbers.isSet) item { MyNumbersCard() }
                         item { PlanCard(index, nav) }
-                        item { Daily3Card(index, nav) }
                         item { TodaysPick(pick, nav) }
+                        item { PlayStrip(nav) }
                         item { ChallengeCards(nav) }
                         if (AppGraph.library.history.isNotEmpty()) item { ContinueReading(nav) }
                         item { JustPublished(posts.filter { it.id != pick.id }.take(10), nav) }
@@ -220,6 +225,8 @@ fun HomeScreen(nav: Nav) {
                         item { QuickAnswers(posts.filter { it.id != pick.id && it.excerpt.length > 60 }.drop(3).take(6), nav) }
                         item { BannerAd("home:1", Modifier.padding(horizontal = 20.dp)) }
                         item { TopicSpotlight(posts, nav) }
+                        item { HotDiscussions(nav) }
+                        item { QuestionOfWeekCard(nav) }
                         item { NotifyCard() }
                         moreToRead(this, more, shown, nav, quizzes) { shown += 20 }
                     }
@@ -265,7 +272,8 @@ private fun HomeHeader(nav: Nav, posts: List<Post>) {
     val date = LocalDate.now().format(DateTimeFormatter.ofPattern(android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEEEMMMMd"), Locale.getDefault()))
     val newThisWeek = posts.count { age(it) <= 7 }
     val read = AppGraph.library.history.size
-    Column(Modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 12.dp, bottom = 6.dp)) {
+    val dark = MaterialTheme.colorScheme.background.luminance() < .5f
+    Column(Modifier.fillMaxWidth().background(skyBrush(hour, dark)).statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 12.dp, bottom = 6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Logo(40.dp)
             Spacer(Modifier.width(12.dp))
@@ -273,6 +281,7 @@ private fun HomeHeader(nav: Nav, posts: List<Post>) {
                 Text(date.uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(greeting, style = MaterialTheme.typography.headlineMedium)
             }
+            LevelChip(nav)
             IconButton(onClick = nav::search) { Icon(Icons.Rounded.Search, "Search") }
         }
         if (newThisWeek > 0 || read > 0) Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
