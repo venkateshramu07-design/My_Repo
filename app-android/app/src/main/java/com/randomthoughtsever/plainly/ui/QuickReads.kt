@@ -77,7 +77,7 @@ fun QuickReadsScreen(nav: Nav) {
     val index = rememberIndex()
     var group by rememberSaveable { mutableStateOf("For you") }
     val list = remember(index, group) {
-        val usable = index.orEmpty().filter { it.quick.length > 60 && isReadingTopic(it.label) }
+        val usable = index.orEmpty().filter { it.quick.length > 60 && isReadingTopic(it.label) && !it.isToolPage }
         if (group == "For you") forYou(usable) else usable.filter { it.label in GROUPS[group]!! }
     }
     Column(Modifier.fillMaxSize()) {

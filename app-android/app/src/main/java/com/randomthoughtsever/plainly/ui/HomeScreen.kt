@@ -115,9 +115,7 @@ import com.randomthoughtsever.plainly.ads.BannerAd
 import com.randomthoughtsever.plainly.data.NewPosts
 import com.randomthoughtsever.plainly.data.Post
 import com.randomthoughtsever.plainly.tools.Calc
-import com.randomthoughtsever.plainly.tools.Catalog
 import com.randomthoughtsever.plainly.tools.Money
-import com.randomthoughtsever.plainly.tools.ToolCard
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -128,11 +126,11 @@ import java.util.Locale
 import kotlin.math.absoluteValue
 
 /** Keeps Today's posts across tab switches. */
-private object HomeCache { var posts: List<Post> = emptyList(); var loadedAt = 0L }
+private object HomeCache { var posts: List<Post> = emptyList(); var loadedAt = 0L; var newestId: String? = null }
 
 /**
  * Today: stories by topic, a daily pick, what's just been published, a live
- * money widget, flip-card quick answers, popular tools and a topic spotlight, followed by "More to read": every guide, newest first.
+ * money widget, flip-card quick answers and a topic spotlight (articles only; tools have their own tab), followed by "More to read": every guide, newest first.
  * New posts show up the moment Today opens or comes back to the screen, and it checks every minute while visible.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,7 +148,7 @@ fun HomeScreen(nav: Nav) {
     val index by produceState<List<Entry>>(emptyList(), posts.firstOrNull()?.id) { value = AppGraph.repo.index(force = false) }
     var shown by rememberSaveable { mutableIntStateOf(20) }
     val more = remember(posts, index) {
-        (posts.map { it.toEntry() } + index).distinctBy { it.id }.sortedByDescending { it.published }
+        (posts.map { it.toEntry() } + index.filterNot { it.isToolPage }).distinctBy { it.id }.sortedByDescending { it.published }
             .let { all -> if (posts.isEmpty()) all else all.filter { it.id != dailyPick(posts).id } }
             .let(::mixTopics)
     }
@@ -159,8 +157,11 @@ fun HomeScreen(nav: Nav) {
 
     suspend fun load() {
         val before = posts.firstOrNull()?.id
-        runCatching { repo.latest(1, 30) }.onSuccess { p ->
+        // Today shows articles only; tool pages are in the Tools tab (new ones appear there under "New").
+        runCatching { repo.latest(1, 50) }.onSuccess { all ->
+            val p = all.filterNot { it.isToolPage }
             if (p.isEmpty()) return@onSuccess
+            HomeCache.newestId = all.first().id
             posts = p; HomeCache.posts = p; HomeCache.loadedAt = System.currentTimeMillis()
             if (before != null && p.first().id != before) fresh = p.first()
         }
@@ -173,7 +174,7 @@ fun HomeScreen(nav: Nav) {
         while (true) {
             delay(60_000)
             val newest = repo.newest()
-            if (newest != null && posts.isNotEmpty() && newest.first != posts.first().id) load()
+            if (newest != null && posts.isNotEmpty() && newest.first != HomeCache.newestId) load()
         }
     }
     LaunchedEffect(fresh) { if (fresh != null) { delay(10_000); fresh = null } }
@@ -194,7 +195,6 @@ fun HomeScreen(nav: Nav) {
                         item { MoneyIn10Seconds(nav) }
                         item { QuickAnswers(posts.filter { it.id != pick.id && it.excerpt.length > 60 }.drop(3).take(6), nav) }
                         item { BannerAd("home:1", Modifier.padding(horizontal = 20.dp)) }
-                        item { PopularTools(nav) }
                         item { TopicSpotlight(posts, nav) }
                         item { NotifyCard() }
                         moreToRead(this, more, shown, nav) { shown += 20 }
@@ -539,21 +539,6 @@ private fun FlipCard(p: Post, nav: Nav, modifier: Modifier) {
 // ---------- Tools and topics ----------
 
 @Composable
-private fun PopularTools(nav: Nav) {
-    val all = Catalog.all()
-    val picks = listOf("n:photo", "n:pdf", "w:bd-fx", "w:bd-pp").mapNotNull { k -> all.firstOrNull { it.key == k } }
-    if (picks.size < 4) return
-    Column(Modifier.padding(horizontal = 20.dp)) {
-        SectionTitle("Popular tools", "All ${all.size}") { nav.tab("tools") }
-        picks.chunked(2).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(bottom = 12.dp)) {
-                row.forEach { t -> ToolCard(t, Modifier.weight(1f)) { t.open(nav) } }
-            }
-        }
-    }
-}
-
-@Composable
 private fun TopicSpotlight(posts: List<Post>, nav: Nav) {
     val labels = Topics.map { it.label }
     var selected by rememberSaveable { mutableStateOf(posts.map { it.label }.firstOrNull { it in labels } ?: labels.first()) }
@@ -567,7 +552,9 @@ private fun TopicSpotlight(posts: List<Post>, nav: Nav) {
         }
         AnimatedContent(selected, transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(150)) }, label = "topic") { label ->
             val local = posts.filter { it.label == label }.take(3)
-            val shown by produceState(local, label) { if (local.size < 3) value = runCatching { AppGraph.repo.topic(label, 1, 3) }.getOrDefault(local) }
+            val shown by produceState(local, label) {
+                if (local.size < 3) value = runCatching { AppGraph.repo.topic(label, 1, 8).filterNot { it.isToolPage }.take(3) }.getOrDefault(local)
+            }
             Column(Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
                 shown.forEach { p -> PostRow(p) { nav.article(p.id) } }
                 TextButton(onClick = { nav.topic(label) }, modifier = Modifier.padding(start = 4.dp)) {
@@ -616,7 +603,7 @@ internal fun mixTopics(list: List<Entry>): List<Entry> {
     val out = ArrayList<Entry>(list.size)
     while (left.isNotEmpty()) {
         val last = out.lastOrNull()?.label
-        val i = left.take(12).indexOfFirst { it.label != last }.let { if (it < 0) 0 else it }
+        val i = left.take(40).indexOfFirst { it.label != last }.let { if (it < 0) 0 else it }
         out += left.removeAt(i)
     }
     return out

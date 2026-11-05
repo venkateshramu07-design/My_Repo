@@ -17,6 +17,18 @@ import java.util.concurrent.ConcurrentHashMap
  * Blogger serves an image at any size: the size sits in the URL ("/s1600/name.jpg", "/s72-c-rw/…" or "=w640-h400").
  * Covers ask for 640 × 336, cropped to the app's cover shape, as WebP: about 50 KB instead of 0.5 MB or a blurry 72 px thumbnail.
  */
+/**
+ * Removes CSS rules and script blocks from plain text (the feed's preview often starts with a tool's styles), keeping the
+ * words around them. A rule starts like a selector: ".x", "#x", "@media", "*", or an HTML tag name.
+ */
+fun withoutCode(text: String): String {
+    val start = "(?:[.#][\\w-]|@|\\*|\\b(?:html|body|a|p|div|span|img|input|button|select|table|th|td|tr|ul|ol|li|h[1-6]|svg|canvas|label|textarea|small|b|i)\\b)"
+    var t = text
+    while (true) { val n = t.replace(Regex("$start[^{}]*?\\{[^{}]*\\}"), " "); if (n == t) break; t = n }
+    t = t.replace(Regex("$start[^{}]*\\{[^{}]*$"), " ") // a rule cut off at the end of the preview
+    return t.replace(Regex("\\s+"), " ").trim()
+}
+
 fun bloggerCover(url: String): String {
     if (!url.contains("googleusercontent.com") && !url.contains("bp.blogspot.com")) return url
     val size = "w640-h336-p-k-no-nu-rw"
@@ -48,6 +60,8 @@ data class Post(
     val minutes: Int,
 ) {
     val label: String get() = labels.firstOrNull { it != "Start Here" } ?: "Guide"
+    /** A page that is mainly a tool (labelled Tools or Calculators): those live in the Tools tab, not in reading lists. */
+    val isToolPage: Boolean get() = labels.any { it == "Tools" || it == "Calculators" }
 
     fun toJson(): JSONObject = JSONObject()
         .put("id", id).put("title", title).put("url", url).put("path", path).put("published", published)
@@ -207,6 +221,13 @@ class Repository(private val context: Context) {
         }.getOrDefault(emptyList())
     }
 
+    private val quickAnswers: Map<String, String> by lazy {
+        runCatching {
+            val o = JSONObject(context.assets.open("quick.json").bufferedReader().readText())
+            o.keys().asSequence().associateWith { o.getString(it) }
+        }.getOrDefault(emptyMap())
+    }
+
     /** What's known about a guide before its full text arrives (from Today's posts or the index), so it can open instantly. */
     fun preview(id: String): Entry? = memory[id]?.let { Entry(it.id, it.title, it.path, it.url, it.labels, it.published, it.excerpt, it.image) }
         ?: indexCache?.firstOrNull { it.id == id }
@@ -216,10 +237,14 @@ class Repository(private val context: Context) {
     private fun entry(e: JSONObject): Entry {
         val url = alternate(e).replace("http://", "https://")
         val path = pathOf(url)
-        val summary = e.optJSONObject("summary")?.optString("\$t").orEmpty().replace(Regex("\\s+"), " ").trim()
-        val quick = summary.substringAfter("Quick answer:", summary).removePrefix("Updated").replace(Regex("^\\s*\\d{1,2} \\w+ \\d{4}\\s*"), "").trim()
+        val id = e.getJSONObject("id").getString("\$t").substringAfter("post-")
+        // Quick answer: from the copy built into the app, or the full post if it's already downloaded (Today), or
+        // else the feed's short preview with any CSS/JS removed (it often starts with a tool's styles).
+        val summary = withoutCode(e.optJSONObject("summary")?.optString("\$t").orEmpty())
+        val quick = quickAnswers[id] ?: memory[id]?.excerpt?.takeIf { it.length > 40 }
+            ?: summary.substringAfter("Quick answer:", summary).removePrefix("Updated").replace(Regex("^\\s*\\d{1,2} \\w+ \\d{4}\\s*"), "").trim()
         return Entry(
-            id = e.getJSONObject("id").getString("\$t").substringAfter("post-"),
+            id = id,
             title = Html.fromHtml(e.getJSONObject("title").getString("\$t"), Html.FROM_HTML_MODE_LEGACY).toString(),
             path = path, url = url,
             labels = e.optJSONArray("category")?.let { a -> List(a.length()) { a.getJSONObject(it).getString("term") } } ?: emptyList(),

@@ -6,5 +6,6 @@ data class Entry(
     val quick: String, val image: String?,
 ) {
     val label: String get() = labels.firstOrNull { it != "Start Here" } ?: "Guide"
+    val isToolPage: Boolean get() = labels.any { it == "Tools" || it == "Calculators" }
     val ref get() = Ref(id, title, image, label, 4)
 }

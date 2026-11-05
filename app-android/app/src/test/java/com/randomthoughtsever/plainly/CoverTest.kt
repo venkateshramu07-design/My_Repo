@@ -26,6 +26,21 @@ class CoverTest {
         assertEquals("https://example.com/a.jpg", bloggerCover("https://example.com/a.jpg"))
     }
 
+    @Test fun previewTextLosesCss() {
+        assertEquals("Hello world", com.randomthoughtsever.plainly.data.withoutCode(".bd-calc{--c-ink:var(--x,#fff);} .a b{c:d}Hello   world .x{y:z"))
+    }
+
+    /** No quick answer in the index may contain CSS or code (the feed's preview often starts with a tool's styles). */
+    @Test fun indexQuickAnswersAreText() = runBlocking {
+        val index = Repository(ApplicationProvider.getApplicationContext()).index(force = true)
+        assumeTrue("network unavailable", index.isNotEmpty())
+        val bad = index.filter { Regex("\\{|var\\(--|function\\s*\\(").containsMatchIn(it.quick) }
+        assertTrue("code in quick answers: ${bad.take(3).map { it.title + ": " + it.quick.take(60) }}", bad.isEmpty())
+        val withAnswer = index.count { it.quick.length > 60 }
+        println("QUICK $withAnswer of ${index.size} guides have a quick answer")
+        assertTrue(withAnswer >= index.size * 9 / 10)
+    }
+
     /** The real index: nearly every guide should have a cover (designed, or the post's own photo), and the links must load. */
     @Test fun everyGuideInTheIndexHasACoverThatLoads() = runBlocking {
         val repo = Repository(ApplicationProvider.getApplicationContext())
