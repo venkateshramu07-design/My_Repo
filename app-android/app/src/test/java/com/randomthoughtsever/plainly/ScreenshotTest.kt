@@ -217,9 +217,24 @@ class ScreenshotTest {
 
     @Test fun quickReads() {
         launch(); waitFor { seen("TODAY'S PICK") }
-        compose.onNode(androidx.compose.ui.test.hasContentDescription("Quick reads")).performClick()
-        waitFor(40, settle = 3000) { seen("Swipe up for the next one") }
+        tab("Reads"); waitFor(40, settle = 3000) { seen("Swipe up for the next one") }
         shot("13-quick-reads")
+    }
+
+    /** The six-tab bar on a small (360 dp) phone: every label must fit. */
+    @Test @Config(qualifiers = "w360dp-h740dp-xxhdpi") fun smallPhoneBar() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("Community"); pause(1500)
+        listOf("Today", "Explore", "Reads", "Community", "Tools", "You").forEach { l ->
+            val n = compose.onAllNodesWithText(l, useUnmergedTree = true).fetchSemanticsNodes().last()
+            val layouts = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+            n.config[androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult].action?.invoke(layouts)
+            val r = layouts.first()
+            val needs = r.multiParagraph.intrinsics.maxIntrinsicWidth
+            println("BAR $l needs=${needs}px has=${n.size.width}px")
+            org.junit.Assert.assertTrue("$l is cut off: needs ${needs}px, has ${n.size.width}px", needs <= n.size.width + 1)
+        }
+        shot("30-small-phone-bar")
     }
 
     @Test fun you() {

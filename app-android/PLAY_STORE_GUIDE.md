@@ -41,7 +41,7 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
 - **Community** (needs Step 2C): an anonymous name and emoji (no account), posts, likes, comments, a discussion under
   every guide, live "what others answered" on quizzes, and a streak leaderboard. Rules shown before the first post, a
   word and link filter, Report, Block, delete your own posts, and "Delete my community data" in Settings.
-- **Bottom bar** (floating, animated): **Today · Explore · Community · Tools · You**. Reads opens from Today and Explore.
+- **Bottom bar** (floating, animated): **Today · Explore · Reads · Community · Tools · You**.
 - **Motion**: every topic has its own short animated scene, drawn by the app (coins filling a jar for money, a chart
   drawing itself for investing, a globe with a plane for countries, a growing plant for self improvement, a heartbeat for
   health, a neural network for AI, and more). They play in "In 30 seconds" cards at random spots in Today's feed (they

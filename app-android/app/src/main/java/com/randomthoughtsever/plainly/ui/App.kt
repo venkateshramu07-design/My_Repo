@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.navArgument
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bookmarks
@@ -150,8 +151,8 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
 private data class Tab(val route: String, val label: String, val icon: ImageVector)
 private val TABS = listOf(
     Tab("today", "Today", Icons.Rounded.Today), Tab("explore", "Explore", Icons.Rounded.Explore),
-    Tab("community", "Community", Icons.Rounded.Groups), Tab("tools", "Tools", Icons.Rounded.Handyman),
-    Tab("you", "You", Icons.Rounded.Person),
+    Tab("reads", "Reads", Icons.Rounded.AutoStories), Tab("community", "Community", Icons.Rounded.Groups),
+    Tab("tools", "Tools", Icons.Rounded.Handyman), Tab("you", "You", Icons.Rounded.Person),
 )
 
 /** Floating bottom bar: the selected tab's pill grows and fills, its icon pops, with a light haptic tick. */
@@ -159,22 +160,23 @@ private val TABS = listOf(
 private fun FloatingBar(route: String?, onSelect: (String) -> Unit) {
     val haptics = LocalHapticFeedback.current
     Surface(shape = RoundedCornerShape(30.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 12.dp,
-        modifier = Modifier.navigationBarsPadding().padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 4.dp).fillMaxWidth().height(70.dp)) {
+        modifier = Modifier.navigationBarsPadding().padding(start = 10.dp, end = 10.dp, bottom = 8.dp, top = 4.dp).fillMaxWidth().height(70.dp)) {
         Row(Modifier.fillMaxSize().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             TABS.forEach { t ->
                 val selected = route == t.route
-                val width by animateDpAsState(if (selected) 60.dp else 36.dp, spring(dampingRatio = .55f, stiffness = 500f), label = "pill")
+                val width by animateDpAsState(if (selected) 50.dp else 32.dp, spring(dampingRatio = .55f, stiffness = 500f), label = "pill")
                 val scale by animateFloatAsState(if (selected) 1.12f else 1f, spring(dampingRatio = .4f, stiffness = 600f), label = "icon")
                 val bg by animateColorAsState(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent, label = "bg")
                 val tint by animateColorAsState(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, label = "tint")
-                Column(Modifier.weight(1f).fillMaxHeight().selectable(selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() },
+                Column(Modifier.weight(if (t.label.length > 7) 1.35f else 1f).fillMaxHeight().selectable(selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() },
                     indication = null) { if (!selected) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove); onSelect(t.route) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                     Box(Modifier.width(width).height(32.dp).clip(CircleShape).background(bg), contentAlignment = Alignment.Center) {
-                        Icon(t.icon, null, tint = tint, modifier = Modifier.size(22.dp).graphicsLayer { scaleX = scale; scaleY = scale })
+                        Icon(t.icon, null, tint = tint, modifier = Modifier.size(21.dp).graphicsLayer { scaleX = scale; scaleY = scale })
                     }
                     Spacer(Modifier.height(3.dp))
-                    Text(t.label, style = MaterialTheme.typography.labelSmall, color = tint, maxLines = 1,
+                    Text(t.label, style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, letterSpacing = 0.sp), color = tint, maxLines = 1,
+                        softWrap = false,
                         fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium)
                 }
             }

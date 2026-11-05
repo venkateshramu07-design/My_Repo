@@ -273,7 +273,6 @@ private fun HomeHeader(nav: Nav, posts: List<Post>) {
                 Text(date.uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(greeting, style = MaterialTheme.typography.headlineMedium)
             }
-            IconButton(onClick = nav::reads) { Icon(Icons.Rounded.AutoStories, "Quick reads") }
             IconButton(onClick = nav::search) { Icon(Icons.Rounded.Search, "Search") }
         }
         if (newThisWeek > 0 || read > 0) Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
