@@ -124,7 +124,7 @@ object Calc {
 
 private val CURRENCIES = listOf("USD", "EUR", "GBP", "CAD", "AUD", "INR", "JPY", "CHF", "SGD", "AED", "NZD", "ZAR", "BRL", "MXN", "PHP", "NGN")
 
-private object Money {
+internal object Money {
     private fun prefs(c: Context) = c.getSharedPreferences("plainly", Context.MODE_PRIVATE)
     fun get(c: Context): String = prefs(c).getString("currency", null)
         ?: runCatching { Currency.getInstance(Locale.getDefault()).currencyCode }.getOrNull()?.takeIf { it in CURRENCIES } ?: "USD"

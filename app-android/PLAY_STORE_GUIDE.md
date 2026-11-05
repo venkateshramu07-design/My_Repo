@@ -19,13 +19,26 @@ version 1.1.0 (code 2). It targets Android 16 (API 36), as Google Play requires,
 ## What the app is
 
 Plainly is a native Android app with its own screens. It is not a copy of the website in a browser window:
-- **Today**: greeting, a featured carousel that moves on by itself, continue-reading, quick tools, topics and the latest guides.
+- **Today**: a finished page, not an endless feed. It has topic **stories** you tap through (a ring lights up when a topic
+  has something new), **Today's pick** (changes every day), **Just published**, a live **Money in 10 seconds** slider,
+  flip-card **30-second answers**, popular tools, a topic spotlight and **You're all caught up** at the end.
+- **New posts appear straight away**: Today reloads whenever the app is opened or brought back, checks every minute while
+  it's on screen (a "Just published" pill slides in), and pull-to-refresh is always there. People who allow
+  notifications get a **"New on Plainly"** notification within about 15 minutes of a post going live (Android's limit for
+  background checks). Cover art for new posts comes live from the website's design layer.
 - **Explore**: colourful topic tiles and search.
 - **Reader**: each article is rebuilt as native text, with a Quick answer card, tables, lists and FAQs, adjustable text
-  size, a reading-progress bar, bookmarks, sharing and links between articles that stay inside the app.
-- **Tools**, all running on the phone: photo resizer to an exact KB size, PDF compressor, QR code maker (links, text and
-  Wi-Fi), and loan/mortgage, investment growth, credit card payoff, FIRE and emergency fund calculators with live charts
-  and 16 currencies.
+  size, a reading-progress bar, bookmarks, sharing, and links between articles that stay inside the app. If the post has
+  a tool, a "Try it" button opens it.
+- **Tools: all 72**, with search and categories:
+  - 8 built into the app that also work offline: photo resizer, PDF compressor, QR codes, and loan, investment growth,
+    card payoff, FIRE and emergency fund calculators.
+  - The website's 64 interactive tools, for example the passport photo maker, PDF merge and sign, resume and invoice
+    makers, currency converter, rent-or-buy and debt planners, and the time zone planner. Each opens full screen inside
+    the app with the app's colours. Only the tool is shown, without the article or the website's menus or ads. Files they
+    make are saved to the phone.
+  - **New tools appear automatically**: publish a post with the label **Tools** or **Calculators** and it shows up in
+    the app's "New" section.
 - **Saved**: saved articles readable offline, plus reading history.
 - Light and dark mode. No account and no storage permission.
 - **Ads (Google AdMob)**, kept few and clearly labelled "Advertisement":
@@ -54,6 +67,9 @@ Anyone can use it: people install it and it opens straight away. The upload key 
    - **Tools → Loan & mortgage calculator**: change the numbers and watch the chart update. Tap **Currency** to change it.
    - **Saved**: your bookmarked guide is there. Turn on aeroplane mode and open it: it still reads.
    - **Settings** (gear icon on Today): try Dark mode.
+   - **Today**: tap the "Latest" circle at the top for stories, drag the Money in 10 seconds slider, and flip a 30-second answer card.
+   - **Tools**: search "passport", open the passport photo maker, pick a photo and download the result.
+   - **Notifications**: tap **Turn on** on the "Never miss a new guide" card.
    - **Ads**: you'll see "Advertisement" banners marked **Test Ad** on Today, in articles and under the calculators.
      Save files in a tool twice and a full-screen test ad appears after the second save.
 4. Before you install the Play Store version later, uninstall this test copy (the Play version replaces it).
@@ -113,6 +129,7 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 | **Government apps** | No |
 | **Financial features** | "My app doesn't provide any financial features" (the calculators only do arithmetic: no loans, payments, trading or banking) |
 | **Health apps** | None of these |
+| **Notifications** | Nothing to declare. The app asks people's permission before showing new-guide notifications. |
 | **Advertising ID** | **Yes**. Purpose: **Advertising or marketing** (and **Analytics** if offered). |
 
 **Data safety answers** (these cover what Google's ads software collects; the app itself collects nothing else):

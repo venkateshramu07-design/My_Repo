@@ -53,7 +53,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.randomthoughtsever.plainly.data.Blog
 import com.randomthoughtsever.plainly.data.Post
-import com.randomthoughtsever.plainly.tools.toolFor
+import com.randomthoughtsever.plainly.tools.Catalog
+import com.randomthoughtsever.plainly.tools.ToolEntry
+import androidx.compose.material.icons.rounded.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -93,19 +95,11 @@ fun ArticleScreen(id: String, nav: Nav) {
     var menu by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    fun openLink(uri: Uri) {
-        val path = uri.path ?: ""
-        val isBlog = (uri.scheme == "https" && uri.host == Blog.HOST) || uri.scheme == "file"
-        when {
-            isBlog && Regex("^/\\d{4}/\\d{2}/.+\\.html$").matches(path) -> scope.launch {
-                val target = repo.idForPath(path)
-                if (target != null) nav.article(target) else nav.web(Blog.BASE + path)
-            }
-            isBlog && path.startsWith("/search/label/") -> nav.topic(Uri.decode(path.removePrefix("/search/label/")))
-            uri.scheme == "https" || uri.scheme == "http" -> nav.web(uri.toString())
-            uri.scheme in setOf("mailto", "tel") -> runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) }
-            else -> Unit
-        }
+    fun openLink(uri: Uri) = when {
+        uri.scheme == "https" && uri.host == Blog.HOST -> nav.blogLink(uri)
+        uri.scheme == "https" || uri.scheme == "http" -> { nav.web(uri.toString()); Unit }
+        uri.scheme in setOf("mailto", "tel") -> { nav.external(uri); Unit }
+        else -> Unit
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -124,16 +118,20 @@ fun ArticleScreen(id: String, nav: Nav) {
                     Text("${formatDate(p.published)} · ${p.minutes} min read", style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                toolFor(p.path)?.let { tool ->
+                val articleTool = remember(p.id) {
+                    Catalog.forPath(p.path) ?: if (p.html.contains("bd-calc")) ToolEntry("a:${p.id}", "Interactive tool", "From this guide",
+                        Icons.Rounded.Build, Color(0xFF1F6FB2), "", post = p.id, widget = "all") else null
+                }
+                articleTool?.let { tool ->
                     Spacer(Modifier.height(18.dp))
-                    Surface(onClick = { nav.tool(tool.id) }, shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.primaryContainer) {
+                    Surface(onClick = { tool.open(nav) }, shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.primaryContainer) {
                         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Box(Modifier.size(44.dp).background(tool.color, RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
                                 Icon(tool.icon, null, tint = Color.White)
                             }
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)) {
-                                Text("Open the ${tool.title.lowercase()}", style = MaterialTheme.typography.titleSmall)
+                                Text("Try it: ${tool.title}", style = MaterialTheme.typography.titleSmall)
                                 Text(tool.blurb, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = MaterialTheme.colorScheme.primary)

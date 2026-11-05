@@ -15,6 +15,8 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.randomthoughtsever.plainly.ads.Ads
 import com.randomthoughtsever.plainly.data.Blog
+import com.randomthoughtsever.plainly.data.NewPosts
+import com.randomthoughtsever.plainly.tools.Catalog
 import com.randomthoughtsever.plainly.data.Library
 import com.randomthoughtsever.plainly.data.Repository
 import com.randomthoughtsever.plainly.ui.AppGraph
@@ -32,6 +34,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AppGraph.repo = Repository(applicationContext)
         AppGraph.library = Library(applicationContext)
+        Catalog.load(applicationContext)
+        NewPosts.schedule(applicationContext)
         if (savedInstanceState == null) { AppGraph.library.countOpen(); handle(intent) }
         Ads.start(this)
 
@@ -61,6 +65,7 @@ class MainActivity : ComponentActivity() {
 
     /** Opens a blog link inside the app; anything else just opens the app. */
     private fun handle(intent: Intent?) {
+        intent?.getStringExtra(NewPosts.EXTRA_POST)?.let { if (it.all(Char::isDigit)) { startArticle = it; return } }
         val uri = intent?.data ?: return
         if (uri.scheme != "https" || uri.host != Blog.HOST) return
         val path = uri.path ?: return

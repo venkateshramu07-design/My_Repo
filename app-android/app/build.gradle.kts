@@ -92,6 +92,8 @@ dependencies {
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("com.google.android.gms:play-services-ads:24.9.0")
     implementation("com.google.android.ump:user-messaging-platform:3.2.0")
+    implementation("androidx.webkit:webkit:1.14.0")
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
 
     // JVM tests: pure maths and parsing, plus Robolectric to render real screens for checks and store screenshots.
     testImplementation("junit:junit:4.13.2")

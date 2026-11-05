@@ -9,13 +9,13 @@ W, H = 1080, 1920
 NAVY, DEEP, GOLD, PAGE = (31, 78, 121), (10, 27, 47), (226, 178, 98), (246, 244, 240)
 
 SLIDES = [
-    ('01-today', 'Smart guides,\nplainly explained', 'Money, mind and work. Fresh every week.', 'dark'),
-    ('02-article', 'The answer first.\nThen the detail.', 'Every guide opens with a quick answer.', 'light'),
-    ('03-article-body', 'Clean reading,\nmade for your phone', 'Tables, lists and plain answers. No sign-up.', 'dark'),
+    ('01-today', 'Your day,\nplainly explained', 'A fresh pick every day, stories by topic and what\'s new.', 'dark'),
+    ('11-story', 'Quick answers\nyou can tap through', 'The key point of every new guide in seconds.', 'light'),
+    ('05-tools', '72 tools\nin your pocket', 'Photos, PDFs, money, work and travel.', 'dark'),
+    ('01c-today-money', 'See your money\ngrow as you drag', 'Live calculators that answer in a moment.', 'light'),
+    ('02-article', 'The answer first.\nThen the detail.', 'Every guide opens with a quick answer.', 'dark'),
     ('06-loan', 'Know your loan\nin seconds', 'Payments, interest and overpayments.', 'light'),
-    ('07-growth', 'Watch your\nmoney grow', 'Investment, FIRE and card payoff calculators.', 'dark'),
-    ('05-tools', 'Tools that never\nupload your files', 'Resize photos, shrink PDFs, make QR codes.', 'light'),
-    ('08-qr', 'QR codes that\nnever expire', 'Links, text and Wi-Fi. Save or share.', 'dark'),
+    ('01e-today-answers', 'Flip a card,\nlearn something', '30-second answers on money, mind and work.', 'dark'),
     ('09-today-dark', 'Easy on your eyes,\nday and night', 'Dark mode and text size. No account needed.', 'light'),
 ]
 

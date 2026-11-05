@@ -50,16 +50,54 @@ data class Post(
 class Repository(private val context: Context) {
     private val memory = ConcurrentHashMap<String, Post>()
     private val cacheDir = File(context.cacheDir, "feed").apply { mkdirs() }
-    private val covers: Map<String, String> by lazy {
+    /** Cover art per post path: the copy built into the app, then the website's live list (so new posts get theirs). */
+    @Volatile private var covers: Map<String, String> = runCatching {
+        val o = JSONObject(context.assets.open("covers.json").bufferedReader().readText())
+        o.keys().asSequence().associateWith { o.getString(it) }
+    }.getOrDefault(emptyMap()) + readCoverFile()
+    private val coverFile get() = File(context.filesDir, "covers-live.json")
+    @Volatile private var coversCheckedAt = 0L
+
+    private fun readCoverFile(): Map<String, String> = runCatching {
+        val o = JSONObject(File(context.filesDir, "covers-live.json").readText())
+        o.keys().asSequence().associateWith { o.getString(it) }
+    }.getOrDefault(emptyMap())
+
+    /**
+     * Reads the website's current cover list (the same one the site's design layer uses: version.txt names the release,
+     * and bd-redesign.js carries BD_COVERS). Checked at most every 30 minutes.
+     */
+    suspend fun refreshCovers() = withContext(Dispatchers.IO) {
+        if (System.currentTimeMillis() - coversCheckedAt < 30 * 60_000) return@withContext
+        coversCheckedAt = System.currentTimeMillis()
         runCatching {
-            val o = JSONObject(context.assets.open("covers.json").bufferedReader().readText())
-            o.keys().asSequence().associateWith { o.getString(it) }
-        }.getOrDefault(emptyMap())
+            val ver = fetch("https://raw.githubusercontent.com/venkateshramu07-design/My_Repo/ccr-ee047f91-rbyv4x/seo/theme/version.txt").trim()
+            if (!ver.matches(Regex("[0-9a-f]{40}"))) return@runCatching
+            val js = fetch("https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@$ver/seo/theme/bd-redesign.js")
+            val json = Regex("BD_COVERS\\s*=\\s*(\\{.*?\\});", RegexOption.DOT_MATCHES_ALL).find(js)?.groupValues?.get(1) ?: return@runCatching
+            val o = JSONObject(json)
+            val live = o.keys().asSequence().filter { it.startsWith("/") }.associateWith { o.getString(it) }
+                .filterValues { it.startsWith("https://cdn.jsdelivr.net/gh/venkateshramu07-design/") }
+            if (live.isEmpty()) return@runCatching
+            coverFile.writeText(JSONObject(live).toString())
+            covers = covers + live
+        }
+    }
+
+    /** The newest post's id and title (a tiny request), used to spot new posts as soon as they're published. */
+    suspend fun newest(): Pair<String, String>? = withContext(Dispatchers.IO) {
+        runCatching {
+            val e = JSONObject(fetch("${Blog.BASE}/feeds/posts/summary?alt=json&max-results=1&orderby=published"))
+                .getJSONObject("feed").getJSONArray("entry").getJSONObject(0)
+            e.getJSONObject("id").getString("\$t").substringAfter("post-") to e.getJSONObject("title").getString("\$t")
+        }.getOrNull()
     }
     @Volatile private var pathIndex: Map<String, String>? = null
 
-    suspend fun latest(start: Int = 1, count: Int = 20): List<Post> =
-        list("${Blog.BASE}/feeds/posts/default?alt=json&max-results=$count&start-index=$start")
+    suspend fun latest(start: Int = 1, count: Int = 20): List<Post> {
+        if (start == 1) runCatching { kotlinx.coroutines.withTimeoutOrNull(5000) { refreshCovers() } }
+        return list("${Blog.BASE}/feeds/posts/default?alt=json&orderby=published&max-results=$count&start-index=$start")
+    }
 
     suspend fun topic(label: String, start: Int = 1, count: Int = 20): List<Post> =
         list("${Blog.BASE}/feeds/posts/default/-/${Uri.encode(label)}?alt=json&max-results=$count&start-index=$start")
@@ -165,6 +203,14 @@ class Repository(private val context: Context) {
         } catch (e: Exception) {
             if (file.exists()) file.readText() else throw e
         }
+    }
+
+    private fun fetch(url: String): String {
+        val c = (URL(url).openConnection() as HttpURLConnection).apply {
+            connectTimeout = 10000; readTimeout = 15000; useCaches = false
+            setRequestProperty("User-Agent", "PlainlyApp/1.1 (Android)")
+        }
+        return c.inputStream.bufferedReader().use { it.readText() }
     }
 
     private fun sha(s: String) = MessageDigest.getInstance("SHA-1").digest(s.toByteArray()).joinToString("") { "%02x".format(it) }

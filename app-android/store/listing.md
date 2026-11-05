@@ -25,13 +25,16 @@ Plainly: Money, Mind & Work
 ## Short description (max 80 characters)
 
 ```
-Money guides, loan & investment calculators, PDF and photo tools. No sign-up.
+Money guides, 72 calculators and tools, PDF & photo tools. Fresh every day.
 ```
 
 ## Full description (max 4,000 characters)
 
 ```
 Plainly gives you clear, practical guides on money, the mind and work, plus a set of calculators and file tools that run entirely on your phone. No account and no sign-up. Open it and start.
+
+A NEW PAGE EVERY DAY
+Today gives you a fresh pick every day, quick-answer stories you tap through, what was just published and flip cards that teach you something in 30 seconds. New guides appear the moment they're published, and you can get a notification for each one.
 
 THE ANSWER FIRST
 Every guide opens with a quick answer, so you get what you came for in seconds. Then come the details: real numbers, comparison tables and step-by-step instructions, laid out cleanly for a phone screen.
@@ -52,11 +55,18 @@ MONEY CALCULATORS
 • Emergency fund calculator: how many months of cover you have and how long until you're fully funded
 Results update as you type, with clear charts. Choose your currency: US dollar, euro, pound, Canadian and Australian dollar, rupee, yen and more.
 
-FILE TOOLS THAT NEVER UPLOAD YOUR FILES
-• Photo resizer: shrink any photo to an exact size in KB for online forms and applications, several photos at once
-• PDF compressor: make a PDF small enough for an upload limit, from 100 KB to several MB
-• QR code generator: links, text and Wi-Fi QR codes in your choice of colour. They never expire and don't track scans
-Everything is processed on your device. Save to your phone or share straight to any app.
+72 TOOLS IN ONE APP
+• Photo resizer: shrink any photo to an exact size in KB for online forms, several photos at once
+• PDF compressor: make a PDF small enough for an upload limit
+• QR code generator: links, text and Wi-Fi QR codes that never expire
+• Passport and visa photo maker with official sizes for 8 countries
+• PDF toolkit: merge, split, reorder and sign PDFs; turn photos into a PDF
+• Resume builder and invoice generator with free PDF downloads
+• Currency converter, inflation calculator and debt payoff planner
+• Rent or buy, car affordability, life insurance and 401(k) calculators
+• Meeting time zone planner, password generator and word counter
+• Sleep cycle calculator, habit tracker and more
+Photos and PDFs are processed on your device and never uploaded. Save to your phone or share straight to any app.
 
 MADE FOR READING
 • Save any guide to read later, even offline
@@ -83,14 +93,14 @@ Plainly is the app for the Blog Digest guides. The calculators give estimates fo
 The screenshots are real screens of the app, rendered from the app's own code with live articles from the blog
 (`ScreenshotTest` in `app/src/test`, framed by `store/make_screenshots.py`).
 
-1. Smart guides, plainly explained (home)
-2. The answer first. Then the detail. (article with Quick answer)
-3. Clean reading, made for your phone (article tables and lists)
-4. Know your loan in seconds (loan and mortgage calculator)
-5. Watch your money grow (investment growth calculator)
-6. Tools that never upload your files (tools)
-7. QR codes that never expire (QR code generator)
-8. Easy on your eyes, day and night (dark mode, no account needed)
+1. Your day, plainly explained (Today)
+2. Quick answers you can tap through (stories)
+3. 72 tools in your pocket (Tools)
+4. See your money grow as you drag (Today's money widget)
+5. The answer first. Then the detail. (article)
+6. Know your loan in seconds (loan calculator)
+7. Flip a card, learn something (30-second answers)
+8. Easy on your eyes, day and night (dark mode)
 
 ## Store settings
 

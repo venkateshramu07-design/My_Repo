@@ -1,5 +1,9 @@
 package com.randomthoughtsever.plainly.ui
 
+import androidx.compose.material3.Switch
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.rememberLauncherForActivityResult
+import com.randomthoughtsever.plainly.data.NewPosts
 import com.randomthoughtsever.plainly.ads.Ads
 import com.randomthoughtsever.plainly.ads.BannerAd
 import androidx.compose.foundation.background
@@ -225,6 +229,8 @@ fun SavedScreen(nav: Nav) {
 fun SettingsScreen(nav: Nav) {
     val lib = AppGraph.library
     val context = LocalContext.current
+    var notify by remember { mutableStateOf(NewPosts.enabled(context) && NewPosts.canNotify(context)) }
+    val askNotify = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok -> NewPosts.setEnabled(context, ok); notify = ok }
     Column(Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Settings", style = MaterialTheme.typography.titleLarge) },
             navigationIcon = { IconButton(onClick = nav::back) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") } },
@@ -241,6 +247,16 @@ fun SettingsScreen(nav: Nav) {
             }
             item { Spacer(Modifier.height(8.dp)); Text("Reading text size: ${lib.textZoom}%", style = MaterialTheme.typography.titleMedium) }
             item { Slider(lib.textZoom.toFloat(), { lib.setZoom(it.toInt()) }, valueRange = 80f..150f, steps = 13) }
+            item {
+                ListItem(headlineContent = { Text("New guide notifications") }, supportingContent = { Text("A notification when a new guide is published") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    trailingContent = {
+                        Switch(notify, { on ->
+                            if (on && !NewPosts.canNotify(context) && android.os.Build.VERSION.SDK_INT >= 33) askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                            else { NewPosts.setEnabled(context, on); notify = on }
+                        })
+                    })
+            }
             item { HorizontalDivider(Modifier.padding(vertical = 8.dp)) }
             val links = listOf(
                 "Rate Plainly" to "market://details?id=${BuildConfig.APPLICATION_ID}",

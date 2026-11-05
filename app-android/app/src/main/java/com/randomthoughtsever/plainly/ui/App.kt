@@ -42,6 +42,11 @@ import com.randomthoughtsever.plainly.tools.PdfScreen
 import com.randomthoughtsever.plainly.tools.PhotoScreen
 import com.randomthoughtsever.plainly.tools.QrScreen
 import com.randomthoughtsever.plainly.tools.ToolsScreen
+import com.randomthoughtsever.plainly.tools.WebToolScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 
 /** App-wide objects, created once in MainActivity. */
 object AppGraph {
@@ -50,10 +55,24 @@ object AppGraph {
 }
 
 /** Navigation actions shared by every screen. */
-class Nav(private val c: NavHostController, private val context: Context) {
+class Nav(private val c: NavHostController, private val context: Context, private val scope: CoroutineScope) {
     fun article(id: String) = c.navigate("article/$id")
     fun topic(label: String) = c.navigate("topic/${Uri.encode(label)}")
     fun tool(id: String) = c.navigate("tool/$id")
+    fun webTool(post: String, widget: String) = c.navigate("web/$post/$widget")
+    /** Opens another page of the blog inside the app: an article, a topic, or (for anything else) the website in a Custom Tab. */
+    fun blogLink(uri: Uri) {
+        val path = uri.path ?: ""
+        when {
+            Regex("^/\\d{4}/\\d{2}/.+\\.html$").matches(path) -> scope.launch {
+                val id = AppGraph.repo.idForPath(path)
+                if (id != null) article(id) else web(uri.toString())
+            }
+            path.startsWith("/search/label/") -> topic(Uri.decode(path.removePrefix("/search/label/")))
+            else -> web(uri.toString())
+        }
+    }
+    fun external(uri: Uri) = runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) }
     fun search() = c.navigate("search")
     /** Switches to a bottom-bar tab the same way tapping it does. */
     fun tab(route: String) = c.navigate(route) {
@@ -91,7 +110,7 @@ private val TABS = listOf(
 @Composable
 fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> Unit) {
     val controller = rememberNavController()
-    val nav = androidx.compose.runtime.remember(controller) { Nav(controller, context) }
+    val nav = androidx.compose.runtime.rememberCoroutineScope().let { sc -> remember(controller) { Nav(controller, context, sc) } }
     val entry by controller.currentBackStackEntryAsState()
     val route = entry?.destination?.route
     LaunchedEffect(startArticle) { if (startArticle != null) { nav.article(startArticle); onStartHandled() } }
@@ -126,6 +145,7 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
             composable("settings") { SettingsScreen(nav) }
             composable("article/{id}") { ArticleScreen(it.arguments?.getString("id") ?: "", nav) }
             composable("topic/{label}") { TopicScreen(Uri.decode(it.arguments?.getString("label") ?: ""), nav) }
+            composable("web/{post}/{widget}") { WebToolScreen(it.arguments?.getString("post") ?: "", it.arguments?.getString("widget") ?: "all", nav) }
             composable("tool/{id}") {
                 when (val id = it.arguments?.getString("id") ?: "") {
                     "photo" -> PhotoScreen(nav)

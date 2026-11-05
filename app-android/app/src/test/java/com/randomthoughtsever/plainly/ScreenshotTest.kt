@@ -94,13 +94,35 @@ class ScreenshotTest {
     private fun shot(name: String) = compose.onRoot().captureRoboImage("build/shots/$name.png")
     private fun tab(label: String) = compose.onNode(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).performClick()
 
+    /** Finds a tool with the Tools search box and opens it. */
+    private fun openTool(search: String, title: String) {
+        compose.onNode(hasSetTextAction()).performTextReplacement(search); pause(1200)
+        compose.onAllNodesWithText(title).onFirst().performClick(); pause(2500)
+    }
+
+    private fun scroll(times: Int) = repeat(times) {
+        compose.onRoot().performTouchInput { swipeUp(startY = bottom * .8f, endY = bottom * .25f, durationMillis = 350) }; pause(700)
+    }
+
     @Test fun today() {
-        launch(); waitFor(settle = 5000) { seen("Latest") }
+        launch(); waitFor(settle = 5000) { seen("TODAY'S PICK") }
         shot("01-today")
+        scroll(1); shot("01b-today-fresh")
+        scroll(1); shot("01c-today-money")
+        scroll(1); shot("01e-today-answers")
+        scroll(6); pause(1500); shot("01d-today-end")
+    }
+
+    @Test fun story() {
+        launch(); waitFor(settle = 3000) { seen("TODAY'S PICK") }
+        compose.onAllNodesWithText("Latest").onFirst().performClick()
+        waitFor(20, settle = 1500) { seen("Read the full guide") }
+        org.junit.Assert.assertTrue("story viewer did not open", seen("Read the full guide"))
+        com.github.takahirom.roborazzi.captureScreenRoboImage("build/shots/11-story.png")
     }
 
     @Test fun todayDark() {
-        launch("dark"); waitFor(settle = 5000) { seen("Latest") }
+        launch("dark"); waitFor(settle = 5000) { seen("TODAY'S PICK") }
         shot("09-today-dark")
     }
 
@@ -113,38 +135,38 @@ class ScreenshotTest {
     }
 
     @Test fun explore() {
-        launch(); waitFor { seen("Latest") }
+        launch(); waitFor { seen("TODAY'S PICK") }
         tab("Explore"); pause(2500)
         shot("04-explore")
     }
 
     @Test fun tools() {
-        launch(); waitFor { seen("Latest") }
+        launch(); waitFor { seen("TODAY'S PICK") }
         tab("Tools"); pause(2500)
         shot("05-tools")
-        compose.onAllNodesWithText("Loan & mortgage calculator").onFirst().performClick(); pause(2500)
+        openTool("loan", "Loan & mortgage calculator")
         shot("06-loan")
     }
 
     @Test fun growth() {
-        launch(); waitFor { seen("Latest") }
+        launch(); waitFor { seen("TODAY'S PICK") }
         tab("Tools"); pause(2500)
-        compose.onAllNodesWithText("Investment growth calculator").onFirst().performClick(); pause(2500)
+        openTool("investment growth", "Investment growth calculator")
         shot("07-growth")
     }
 
     @Test fun qr() {
-        launch(); waitFor { seen("Latest") }
+        launch(); waitFor { seen("TODAY'S PICK") }
         tab("Tools"); pause(2500)
-        compose.onAllNodesWithText("QR code maker").onFirst().performClick(); pause(2500)
+        openTool("qr code maker", "QR code maker")
         compose.onNode(hasSetTextAction()).performTextReplacement("randomthoughtsever.blogspot.com"); pause(1500)
         shot("08-qr")
     }
 
     @Test fun photo() {
-        launch(); waitFor { seen("Latest") }
+        launch(); waitFor { seen("TODAY'S PICK") }
         tab("Tools"); pause(2500)
-        compose.onAllNodesWithText("Photo resizer").onFirst().performClick(); pause(1500)
+        openTool("photo resizer", "Photo resizer")
         shot("10-photo")
     }
 }

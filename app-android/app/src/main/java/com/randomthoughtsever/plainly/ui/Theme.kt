@@ -1,5 +1,7 @@
 package com.randomthoughtsever.plainly.ui
 
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountBalance
@@ -103,7 +105,13 @@ val Topics = listOf(
     Topic("Zen & Mindfulness", "Zen", "Calm, stories and stillness", Icons.Rounded.AutoAwesome, Color(0xFF3F4A2A), Color(0xFF8A9A5B)),
     Topic("Leadership", "Leadership", "Leading people and teams", Icons.Rounded.Flag, Color(0xFF5A2B1A), Color(0xFFA9583A)),
     Topic("Education", "Education", "Learning and student money", Icons.Rounded.School, Color(0xFF2A3F5F), Color(0xFF5A80B3)),
-    Topic("Health & Wellness", "Wellbeing", "Mind and body together", Icons.Rounded.Biotech, Color(0xFF1C4B4B), Color(0xFF3F8F8F)),
 ).distinctBy { it.title }.filter { it.title != "Wellbeing" }
 
-fun topicFor(label: String): Topic = Topics.firstOrNull { it.label == label } ?: Topics.first()
+/** Labels used for tool posts: they have their own look but aren't listed as reading topics. */
+private val ToolTopics = listOf(
+    Topic("Tools", "Tools", "Free tools that run on your phone", Icons.Rounded.Build, Color(0xFF1F4E79), Color(0xFF3B79B5)),
+    Topic("Calculators", "Calculators", "Money calculators", Icons.Rounded.Calculate, Color(0xFF0F5F55), Color(0xFF2E9C88)),
+)
+
+fun topicFor(label: String): Topic = Topics.firstOrNull { it.label == label } ?: ToolTopics.firstOrNull { it.label == label } ?: Topics.first()
+fun isReadingTopic(label: String) = Topics.any { it.label == label }

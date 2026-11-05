@@ -7,7 +7,21 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.randomthoughtsever.plainly.ads.BannerAd
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -95,40 +109,85 @@ fun QuickTools(nav: Nav) {
 }
 
 @Composable
-fun ToolCard(t: ToolDef, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun ToolCard(t: ToolEntry, modifier: Modifier = Modifier, onClick: () -> Unit) =
+    ToolCard(t.title, t.blurb, t.icon, t.color, modifier, if (t.isNew) "NEW" else if (t.offline) "OFFLINE" else null, onClick)
+
+@Composable
+fun ToolCard(t: ToolDef, modifier: Modifier = Modifier, onClick: () -> Unit) = ToolCard(t.title, t.blurb, t.icon, t.color, modifier, null, onClick)
+
+@Composable
+fun ToolCard(title: String, blurb: String, icon: ImageVector, color: Color, modifier: Modifier = Modifier, badge: String? = null, onClick: () -> Unit) {
     Surface(onClick = onClick, modifier = modifier, shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface,
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .6f))) {
         Column(Modifier.padding(16.dp)) {
-            Box(Modifier.size(46.dp).background(t.color, RoundedCornerShape(15.dp)), contentAlignment = Alignment.Center) {
-                Icon(t.icon, null, tint = Color.White)
+            Row(verticalAlignment = Alignment.Top) {
+                Box(Modifier.size(46.dp).background(color, RoundedCornerShape(15.dp)), contentAlignment = Alignment.Center) {
+                    Icon(icon, null, tint = Color.White)
+                }
+                Spacer(Modifier.weight(1f))
+                badge?.let {
+                    Text(it, style = MaterialTheme.typography.labelSmall, color = if (it == "NEW") Color(0xFF8A5A12) else MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.background(if (it == "NEW") Color(0xFFF6E7CB) else MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(50))
+                            .padding(horizontal = 7.dp, vertical = 2.dp))
+                }
             }
             Spacer(Modifier.height(14.dp))
-            Text(t.title, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(title, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis, minLines = 2)
             Spacer(Modifier.height(4.dp))
-            Text(t.blurb, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2,
+            Text(blurb, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2,
                 overflow = TextOverflow.Ellipsis)
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ToolsScreen(nav: Nav) {
+    val context = LocalContext.current
+    var query by rememberSaveable { mutableStateOf("") }
+    var group by rememberSaveable { mutableStateOf("All") }
+    var version by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) { Catalog.load(context); version++; Catalog.discover(); version++ }
+    val all = remember(version) { Catalog.all() }
+    val groups = remember(version) { listOf("All") + Catalog.GROUPS.filter { g -> all.any { it.group == g } } }
+    val q = query.trim().lowercase()
+    val shown = all.filter { t -> (group == "All" || t.group == group) && (q.isEmpty() || t.title.lowercase().contains(q) || t.blurb.lowercase().contains(q)) }
+
     LazyVerticalGrid(GridCells.Fixed(2), Modifier.fillMaxSize(), contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item(span = { GridItemSpan(2) }) {
             Column(Modifier.statusBarsPadding().padding(top = 16.dp, start = 4.dp)) {
                 Text("Tools", style = MaterialTheme.typography.displaySmall)
-                Text("Everything runs on your phone. Files are never uploaded.", style = MaterialTheme.typography.bodyLarge,
+                Text("${all.size} tools for photos, PDFs, money, work and travel.", style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(14.dp))
+                OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth(), singleLine = true, shape = RoundedCornerShape(50),
+                    placeholder = { Text("Search ${all.size} tools") }, leadingIcon = { Icon(Icons.Rounded.Search, null) },
+                    trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Rounded.Close, "Clear") } })
             }
         }
-        for (group in listOf("Files", "Money")) {
-            item(span = { GridItemSpan(2) }) {
-                Text(if (group == "Files") "Photos, PDFs & QR codes" else "Money calculators", style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(top = 14.dp, start = 4.dp))
+        item(span = { GridItemSpan(2) }) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(groups) { g -> FilterChip(group == g, { group = g }, label = { Text(g) }, shape = RoundedCornerShape(50)) }
             }
-            items(AllTools.filter { it.group == group }) { t -> ToolCard(t, Modifier.fillMaxWidth()) { nav.tool(t.id) } }
         }
+        if (shown.isEmpty()) item(span = { GridItemSpan(2) }) {
+            Text("No tool matches \"$query\".", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(24.dp))
+        }
+        if (group == "All" && q.isEmpty()) {
+            Catalog.GROUPS.forEachIndexed { gi, g ->
+                val inGroup = shown.filter { it.group == g }
+                if (inGroup.isEmpty()) return@forEachIndexed
+                item(span = { GridItemSpan(2) }) {
+                    Row(Modifier.padding(top = 10.dp, start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(g, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+                        Text("${inGroup.size}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                items(inGroup, key = { it.key }) { t -> ToolCard(t, Modifier.fillMaxWidth()) { t.open(nav) } }
+                if (gi == 3) item(span = { GridItemSpan(2) }) { BannerAd("tools:1") }
+            }
+        } else items(shown, key = { it.key }) { t -> ToolCard(t, Modifier.fillMaxWidth()) { t.open(nav) } }
     }
 }
 
