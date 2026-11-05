@@ -36,6 +36,11 @@ class Speaker(context: Context) {
     }
 
     fun load(text: List<String>) { parts = text.filter { it.isNotBlank() }; index = 0 }
+    /** Reads in another language (after the article is translated), if the phone has that voice. */
+    fun language(tag: String?) {
+        val l = if (tag == null) Locale.getDefault() else Locale.forLanguageTag(tag)
+        tts?.language = l.takeIf { (tts?.isLanguageAvailable(it) ?: -1) >= 0 } ?: Locale.US
+    }
 
     fun play() {
         val t = tts ?: return

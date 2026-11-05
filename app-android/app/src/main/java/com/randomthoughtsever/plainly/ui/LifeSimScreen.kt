@@ -224,6 +224,7 @@ private fun SimResult(start: LifeSim.State, end: LifeSim.State, worth: List<Doub
                 OutlinedButton(onClick = again, shape = RoundedCornerShape(50)) { Text("Play another year") }
                 OutlinedButton(onClick = nav::back, shape = RoundedCornerShape(50)) { Text("Done") }
             }
+            SupportNudge(nav, "Liked A Year of Money?")
             Text("Best so far: ${AppGraph.progress.simBest().coerceAtLeast(score)}", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 12.dp))
         }
         if (score >= 70) Confetti(Modifier.matchParentSize())

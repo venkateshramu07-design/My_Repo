@@ -44,6 +44,13 @@ android {
         buildConfigField("String", "COMMUNITY_PROJECT", "\"${community.getProperty("projectId", "")}\"")
         buildConfigField("String", "COMMUNITY_KEY", "\"${community.getProperty("apiKey", "")}\"")
         // Optional: the id of a blog post or page whose comments are the community's general board (without Firebase).
+        // Support: PayPal and UPI buttons (the same details as the blog's support box). Off by default because Google Play
+        // expects tips to the developer to go through Play Billing; preview APKs are built with -PsupportLinks=true.
+        // Preview APKs can be limited to phone processors (-Pabis=arm64-v8a,armeabi-v7a); Play's .aab splits by itself.
+        (project.findProperty("abis") as String?)?.let { ndk { abiFilters += it.split(",") } }
+        buildConfigField("boolean", "SUPPORT_LINKS", "${(project.findProperty("supportLinks") ?: "false") == "true"}")
+        buildConfigField("String", "SUPPORT_PAYPAL", "\"VenkateshramuM\"")
+        buildConfigField("String", "SUPPORT_UPI", "\"venkateshramu000@okhdfcbank\"")
         buildConfigField("String", "COMMUNITY_BOARD", "\"${community.getProperty("board", "").filter { it.isDigit() }}\"")
         manifestPlaceholders["admobAppId"] = ad("appId", testAppId)
         buildConfigField("String", "ADMOB_BANNER", "\"${ad("banner", testBanner)}\"")
@@ -105,6 +112,10 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:3.2.0")
     implementation("androidx.webkit:webkit:1.14.0")
     implementation("androidx.work:work-runtime-ktx:2.10.1")
+    // On-device article translation (models download once per language, then work offline).
+    implementation("com.google.mlkit:translate:17.0.3")
+    // "Support Plainly" tips through Google Play.
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
 
     // JVM tests: pure maths and parsing, plus Robolectric to render real screens for checks and store screenshots.
     testImplementation("junit:junit:4.13.2")

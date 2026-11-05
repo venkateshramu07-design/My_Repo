@@ -384,6 +384,30 @@ class LogicTest {
         assertTrue(com.randomthoughtsever.plainly.data.MICRO_ACTIONS.map { it.goal }.toSet().containsAll(com.randomthoughtsever.plainly.data.GOALS.map { it.key }))
     }
 
+    @Test fun supportAsksPolitelyAndTranslationKeepsStructure() {
+        val S = com.randomthoughtsever.plainly.data.Support
+        val day = S.DAY; val now = 100 * day
+        assertTrue(!S.shouldAsk(now, now - 1 * day, 0, 0, 10, 5, 0))                 // too new
+        assertTrue(!S.shouldAsk(now, now - 9 * day, 0, 0, 2, 1, 0))                  // not enough value yet
+        assertTrue(S.shouldAsk(now, now - 9 * day, 0, 0, 5, 0, 0))
+        assertTrue(!S.shouldAsk(now, now - 9 * day, now - 2 * day, 0, 5, 0, 0))      // asked this week
+        assertTrue(!S.shouldAsk(now, now - 60 * day, 0, now - 10 * day, 50, 9, 0))   // tipped this month
+        assertTrue(!S.shouldAsk(now, now - 60 * day, 0, 0, 50, 9, 6))                // closed it six times: stop asking
+        assertTrue(S.upi(99).startsWith("upi://pay?pa=venkateshramu000@okhdfcbank&") && S.upi(99).contains("&am=99&") && S.upi(99).contains("cu=INR"))
+        assertEquals("https://paypal.me/VenkateshramuM/5USD", S.paypal(5, "USD"))
+        assertEquals("USD", S.paypalCurrency("INR")); assertEquals("EUR", S.paypalCurrency("EUR"))
+        val T = com.randomthoughtsever.plainly.data.Translate
+        assertEquals("Español", T.deviceLang(java.util.Locale("es", "MX"))!!.native)
+        assertTrue(T.deviceLang(java.util.Locale.US) == null)
+        assertTrue(T.LANGS.size >= 20 && T.LANGS.map { it.code }.toSet().size == T.LANGS.size)
+        val blocks = com.randomthoughtsever.plainly.ui.Reader.parse("<h2>Save first</h2><p>Pay <a href='https://x.example'>yourself</a> first.</p>" +
+            "<ul><li>One</li><li>Two</li></ul><table><tr><th>A</th></tr><tr><td>b</td></tr></table><img src='https://x.example/i.png'>")
+        val out = kotlinx.coroutines.runBlocking { T.blocks(blocks, { it.uppercase() }) }
+        assertEquals(blocks.map { it::class }, out.map { it::class })
+        assertTrue(out.any { it is com.randomthoughtsever.plainly.ui.Block.Para && it.text.text == "PAY YOURSELF FIRST." })
+        assertTrue(out.any { it is com.randomthoughtsever.plainly.ui.Block.Bullets && it.items.map { i -> i.second.text } == listOf("ONE", "TWO") })
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

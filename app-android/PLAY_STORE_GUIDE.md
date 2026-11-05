@@ -58,6 +58,10 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   **A Year of Money** money simulator; quick checks, collectible cards, a notebook and "I'm going to try this" in every
   guide; a **Calm corner** (breathing, focus timer, sleep sounds); weekly and monthly **recaps**; seasonal events; a
   question of the week; one smart daily reminder at most; and a home-screen widget with today's quiz.
+- **Translate any article** into 26 languages on the phone (Spanish, Hindi, French, Arabic, Chinese, Tamil, Telugu and
+  more). Each language downloads once (~30 MB), then works offline.
+- **Support Plainly**: optional tips, asked gently (after a finished guide, the Daily Run or a simulated year, at most
+  weekly) and always reachable from You and Settings. See Step 2D.
 - **Games** (the last tab): Rock Paper Scissors (first to 3), Money Match (memory pairs), Number Rush (45 seconds of quick
   money maths), Tic-Tac-Toe (Easy or Unbeatable) and Reaction Time, with best scores saved on the phone. All offline.
 - **Bottom bar** (floating, animated): **Today · Explore · Reads · Tools · You · Games · Community**.
@@ -182,6 +186,18 @@ plan allows 50,000 reads and 20,000 writes a day).
    on reports.
 
 Until this is done (or if you skip it), the Community runs on the blog's comments as described above.
+
+## Step 2D: Tips ("Support Plainly") through Google Play (10 minutes, after the first upload)
+
+People can tip from inside the app. On Google Play, tips to a developer have to use Google Play's billing, so the Play
+build shows Play tips only (PayPal and UPI stay on the blog).
+1. Play Console → **Setup → Payments profile**: create a payments (merchant) profile if you don't have one.
+2. After your first upload (any testing track): **Monetize → Products → In-app products → Create product**, three times:
+   - `tip_small`: name "A coffee", price about US$1.99
+   - `tip_medium`: name "A treat", price about US$4.99
+   - `tip_large`: name "A big thank-you", price about US$9.99
+   The IDs must be exactly these. Let Play set local prices for other countries, then **Activate** each one.
+3. That's it: the Support screen shows them with local prices. Google keeps its fee (15% for most small developers).
 
 ## Step 3: Create the app (5 minutes)
 

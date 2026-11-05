@@ -59,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -85,10 +86,11 @@ fun PlayOverlay(nav: Nav) {
     val award = pr.lastAward
     LaunchedEffect(award?.at) { if (award != null) { Sounds.chime(); delay(2200); if (pr.lastAward == award) pr.lastAward = null } }
     Box(Modifier.fillMaxSize()) {
-        AnimatedVisibility(award != null, Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 10.dp),
+        AnimatedVisibility(award != null, Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 64.dp),
             enter = slideInVertically { -it } + fadeIn(), exit = slideOutVertically { -it } + fadeOut()) {
             val a = remember(award?.at) { award }
-            Surface(shape = RoundedCornerShape(50), color = NavyDeep, shadowElevation = 8.dp, border = BorderStroke(1.dp, Gold.copy(alpha = .6f))) {
+            // A plain box (not a Surface) so taps go straight through to whatever is underneath.
+            Box(Modifier.shadow(8.dp, RoundedCornerShape(50)).background(NavyDeep, RoundedCornerShape(50)).border(1.dp, Gold.copy(alpha = .6f), RoundedCornerShape(50))) {
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text("+${a?.amount ?: 0} XP", color = Gold, fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.labelLarge)
                     Spacer(Modifier.width(8.dp))

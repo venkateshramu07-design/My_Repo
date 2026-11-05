@@ -137,6 +137,7 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
     fun recap(kind: String) = c.navigate("recap/$kind")
     fun cards() = c.navigate("cards")
     fun notebook() = c.navigate("notebook")
+    fun support() = c.navigate("support")
     fun saved(history: Boolean = false) = c.navigate(if (history) "saved?history=true" else "saved")
     /** Switches to a bottom-bar tab the same way tapping it does. */
     fun tab(route: String) = c.navigate(route) {
@@ -244,6 +245,7 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
             composable("recap/{kind}") { RecapScreen(it.arguments?.getString("kind") ?: "week", nav) }
             composable("cards") { CollectionScreen(nav) }
             composable("notebook") { NotebookScreen(nav) }
+            composable("support") { SupportScreen(nav) }
             composable("game/{id}") { GameScreen(it.arguments?.getString("id") ?: "rps", nav) }
             composable("post/{id}") { ThreadScreen(it.arguments?.getString("id") ?: "", nav) }
             composable("talk/{id}") { TalkScreen(it.arguments?.getString("id") ?: "", nav) }

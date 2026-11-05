@@ -3,6 +3,7 @@ package com.randomthoughtsever.plainly.ui
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.FastRewind
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -140,6 +141,10 @@ fun ArticleScreen(id: String, nav: Nav) {
     }
     reveal?.let { c -> CardRevealDialog(c, nav) { reveal = null } }
     val noteBar = remember { NoteToolbar() }
+    // Translation (on the phone): the chosen language, the translated title and blocks, and progress.
+    val tr = remember(p.id) { ArticleTranslation() }
+    var picking by remember { mutableStateOf(false) }
+    if (picking) LanguagePicker(tr.lang) { code -> picking = false; if (code != null) { com.randomthoughtsever.plainly.data.Translate.setPreferred(AppGraph.appContext, code.ifBlank { null }); tr.request(code.ifBlank { null }) } }
     val speaker = remember { Speaker(AppGraph.appContext) }
     var speakerOpen by remember { mutableStateOf(false) }
     var shareMenu by remember { mutableStateOf(false) }
@@ -164,7 +169,7 @@ fun ArticleScreen(id: String, nav: Nav) {
                 Spacer(Modifier.height(20.dp))
                 Kicker(topicFor(p.label).title)
                 Spacer(Modifier.height(8.dp))
-                Text(p.title, style = MaterialTheme.typography.headlineLarge)
+                Text(tr.title ?: p.title, style = MaterialTheme.typography.headlineLarge)
                 Spacer(Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Logo(26.dp); Spacer(Modifier.width(8.dp))
@@ -194,11 +199,16 @@ fun ArticleScreen(id: String, nav: Nav) {
                 Spacer(Modifier.height(10.dp))
             }
             val blocks by produceState<List<Block>?>(null, p.id) { value = withContext(Dispatchers.Default) { Reader.parse(p.html) } }
-            blocks?.let { b ->
-                LaunchedEffect(b) { speaker.load(spokenParts(p.title, b)) }
+            blocks?.let { original ->
+                LaunchedEffect(original) { if (tr.lang == null) tr.request(com.randomthoughtsever.plainly.data.Translate.preferred(AppGraph.appContext)) }
+                LaunchedEffect(original, tr.wanted) { tr.run(p.title, original) }
+                TranslateBar(tr, onPick = { picking = true }) { code -> com.randomthoughtsever.plainly.data.Translate.setPreferred(AppGraph.appContext, code); tr.request(code) }
+                val b = tr.blocks ?: original
+                LaunchedEffect(b) { speaker.load(spokenParts(tr.title ?: p.title, b)); speaker.language(tr.lang) }
                 val slots = remember(b) { adSlots(b) }
                 LaunchedEffect(b) { faqs = b.count { it is Block.Faq } }
-                androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalTextToolbar provides noteBar) {
+                androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalTextToolbar provides noteBar,
+                    androidx.compose.ui.platform.LocalLayoutDirection provides if (tr.rtl) androidx.compose.ui.unit.LayoutDirection.Rtl else androidx.compose.ui.platform.LocalLayoutDirection.current) {
                     ArticleBlocks(b, lib.textZoom, slots, { i -> BannerAd("article:${p.id}:$i") }, onCheck = { q, knew ->
                         checks[q] = knew; pr.award("check:${p.id}:${q.hashCode()}", if (knew) 5 else 3, if (knew) "You knew it" else "Learned something", "checks"); collect()
                     }) { link -> openLink(Uri.parse(link)) }
@@ -209,6 +219,7 @@ fun ArticleScreen(id: String, nav: Nav) {
                     }
                 }
                 EndOfGuide(p, quiz, nav) { collect() }
+                if (finished) SupportNudge(nav, "Found this guide useful?")
             }
                 ?: Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) { repeat(6) { Shimmer(Modifier.fillMaxWidth().height(18.dp)) } }
             BannerAd("article:${p.id}:end", Modifier.padding(horizontal = 22.dp))
@@ -246,6 +257,9 @@ fun ArticleScreen(id: String, nav: Nav) {
                         tint = if (lib.isSaved(p.id)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface)
                 }
             }
+            Spacer(Modifier.width(8.dp))
+            RoundButton { IconButton(onClick = { picking = true }) { Icon(Icons.Rounded.Translate, "Translate",
+                tint = if (tr.lang != null) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface) } }
             Spacer(Modifier.width(8.dp))
             RoundButton { IconButton(onClick = { speakerOpen = true; if (!speaker.playing) speaker.play() }) { Icon(Icons.Rounded.Headphones, "Listen") } }
             Spacer(Modifier.width(8.dp))

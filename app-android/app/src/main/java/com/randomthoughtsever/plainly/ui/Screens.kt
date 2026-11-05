@@ -357,6 +357,28 @@ fun SettingsScreen(nav: Nav) {
                     trailingContent = { Switch(sounds, { on -> sounds = on; NewPosts.prefs(context).edit().putBoolean("sounds", on).apply() }) })
             }
             item { HorizontalDivider(Modifier.padding(vertical = 8.dp)) }
+            item {
+                val scopeT = androidx.compose.runtime.rememberCoroutineScope()
+                var langs by remember { mutableStateOf<List<com.randomthoughtsever.plainly.data.Translate.Lang>?>(null) }
+                androidx.compose.runtime.LaunchedEffect(Unit) { langs = com.randomthoughtsever.plainly.data.Translate.downloaded() }
+                var picking by remember { mutableStateOf(false) }
+                if (picking) LanguagePicker(com.randomthoughtsever.plainly.data.Translate.preferred(context)) { code -> picking = false
+                    if (code != null) com.randomthoughtsever.plainly.data.Translate.setPreferred(context, code.ifBlank { null }) }
+                ListItem(headlineContent = { Text("🌐 Article language") },
+                    supportingContent = { Text(com.randomthoughtsever.plainly.data.Translate.lang(com.randomthoughtsever.plainly.data.Translate.preferred(context))?.let {
+                        "Articles open in ${it.native} (translated on your phone)" } ?: "English (original). Tap to read articles in another language") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent), modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { picking = true })
+                langs?.takeIf { it.isNotEmpty() }?.let { l ->
+                    ListItem(headlineContent = { Text("Downloaded languages") }, supportingContent = { Text(l.joinToString { it.native } + " · tap to remove and free space") },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent), modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable {
+                            scopeT.launch { l.forEach { com.randomthoughtsever.plainly.data.Translate.remove(it.code) }; langs = emptyList() }
+                        })
+                }
+            }
+            item {
+                ListItem(headlineContent = { Text("💛 Support Plainly") }, supportingContent = { Text("Optional tips that keep Plainly free") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent), modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { nav.support() })
+            }
             val links = listOf(
                 "Rate Plainly" to "market://details?id=${BuildConfig.APPLICATION_ID}",
                 "Privacy policy" to Blog.PRIVACY,

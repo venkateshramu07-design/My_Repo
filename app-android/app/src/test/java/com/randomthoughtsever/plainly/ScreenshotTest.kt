@@ -363,6 +363,25 @@ class ScreenshotTest {
         shot("70-recap")
     }
 
+    @Test fun supportAndLanguages() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("You"); pause(2000)
+        repeat(8) { if (!seen("Support Plainly")) scroll(1) }
+        tapText("Support Plainly"); pause(2500)
+        org.junit.Assert.assertTrue(seen("made by one person"))
+        shot("71-support")
+    }
+
+    @Test fun translatePicker() {
+        launch(link = "https://randomthoughtsever.blogspot.com/2026/11/american-opportunity-tax-credit-2026.html")
+        val translate = androidx.compose.ui.test.hasContentDescription("Translate")
+        waitFor(90, settle = 2500) { compose.onAllNodes(translate).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(translate).performClick(); pause(1500)
+        com.github.takahirom.roborazzi.captureScreenRoboImage("build/shots/72-translate-picker.png")
+        org.junit.Assert.assertTrue("picker", seen("Read articles in"))
+        org.junit.Assert.assertTrue("languages", seen("Español"))
+    }
+
     @Test fun searchWhileTyping() {
         launch(); waitFor { seen("TODAY'S PICK") }
         compose.onNode(androidx.compose.ui.test.hasContentDescription("Search")).performClick(); pause(800)

@@ -254,6 +254,7 @@ private fun RunFinished(nav: Nav) {
                 RunStat("${pr.xpOn(LocalDate.now())}", "XP today"); RunStat("🔥 ${pr.runStreak()}", "run streak"); RunStat("Lv ${pr.level()}", pr.title())
             }
             RunButton("Back to Today") { nav.tab("today") }
+            SupportNudge(nav, "Enjoying your Daily Run?")
             Spacer(Modifier.height(10.dp))
             Text("Got a few more minutes?", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 12.dp))
             Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {

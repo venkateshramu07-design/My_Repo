@@ -24,6 +24,15 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   reader's usual hour, only for a streak at risk, a challenge, the Daily Run or a "did it work?". **Play widget**
   (`PlayWidget.kt`): answer today's quiz on the home screen. **Invites**: `https://randomthoughtsever.blogspot.com/?plainly=challenge/<key>`
   opens that challenge in the app (only an allowlist of places, see `MainActivity.safeRoute`).
+- **Translate** (`data/Translate.kt`, `ui/ArticleExtras.kt`): any article in 26 languages, translated on the phone with
+  Google ML Kit (each language model downloads once, ~30 MB, then works offline). Translate button on every article, a
+  one-tap suggestion in the phone's own language, a remembered choice, right-to-left layout for Arabic, Urdu and
+  Persian, Listen in the translated language, and downloaded languages removable in Settings.
+- **Support Plainly** (`data/Support.kt`, `ui/Support.kt`): optional tips through Google Play Billing (products
+  `tip_small`, `tip_medium`, `tip_large`). PayPal (paypal.me/VenkateshramuM) and UPI (venkateshramu000@okhdfcbank), the
+  same as the blog, appear only in builds made with `-PsupportLinks=true` (preview APKs), because Google Play expects
+  tips to the developer to go through Play Billing. Asked politely after real value (finished guide, Daily Run,
+  simulated year), at most once a week, never in the first 3 days or for 30 days after a tip; always in You and Settings.
 - **Navigation**: floating animated bar with Today, Explore, Reads, Tools, You, Games and Community (`ui/App.kt`).
 - **Joining and challenges** (`ui/CommunityJoin.kt`): join landing, three-step join, welcome, first-steps checklist,
   and each challenge's page (today's task and check-in, daily tip, how it works, guides).

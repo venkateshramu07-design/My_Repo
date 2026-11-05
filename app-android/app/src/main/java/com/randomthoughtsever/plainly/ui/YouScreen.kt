@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Style
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.AutoAwesome
@@ -149,6 +150,7 @@ fun YouScreen(nav: Nav) {
                 LinkRow(Icons.Rounded.Calculate, "My numbers", "Pay, spending, savings and debt (on your phone only)") { numbers = true }
                 LinkRow(Icons.Rounded.Groups, "Community profile", "${AppGraph.profile.avatar} ${AppGraph.profile.name}") { identity = true }
                 LinkRow(Icons.Rounded.Settings, "Settings", "Text size, notifications, privacy") { nav.settings() }
+                LinkRow(Icons.Rounded.Favorite, "Support Plainly", "Plainly is free. A small tip keeps it going") { nav.support() }
                 LinkRow(Icons.Rounded.Star, "Rate Plainly", "It helps other people find it") {
                     runCatching { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW,
                         android.net.Uri.parse("market://details?id=${BuildConfig.APPLICATION_ID}"))) }
