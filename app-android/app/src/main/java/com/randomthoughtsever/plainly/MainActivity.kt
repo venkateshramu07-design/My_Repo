@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.randomthoughtsever.plainly.ads.Ads
 import com.randomthoughtsever.plainly.data.Blog
+import com.randomthoughtsever.plainly.data.Images
 import com.randomthoughtsever.plainly.data.NewPosts
 import com.randomthoughtsever.plainly.tools.Catalog
 import com.randomthoughtsever.plainly.data.Library
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
         AppGraph.repo = Repository(applicationContext)
         AppGraph.library = Library(applicationContext)
         Catalog.load(applicationContext)
+        if (android.os.Build.FINGERPRINT != "robolectric") Images.install(applicationContext) // tests install their own
         NewPosts.schedule(applicationContext)
         if (savedInstanceState == null) { AppGraph.library.countOpen(); handle(intent) }
         Ads.start(this)

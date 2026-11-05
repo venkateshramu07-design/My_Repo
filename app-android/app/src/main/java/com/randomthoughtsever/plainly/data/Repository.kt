@@ -13,6 +13,21 @@ import java.net.URL
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * Blogger serves an image at any size: the size sits in the URL ("/s1600/name.jpg", "/s72-c-rw/…" or "=w640-h400").
+ * Covers ask for 640 × 336, cropped to the app's cover shape, as WebP: about 50 KB instead of 0.5 MB or a blurry 72 px thumbnail.
+ */
+fun bloggerCover(url: String): String {
+    if (!url.contains("googleusercontent.com") && !url.contains("bp.blogspot.com")) return url
+    val size = "w640-h336-p-k-no-nu-rw"
+    return when {
+        Regex("/[swh]\\d+[^/]*/[^/]+$").containsMatchIn(url) -> url.replace(Regex("/[swh]\\d+[^/]*/([^/]+)$"), "/$size/$1")
+        Regex("=[swh]\\d+[^/]*$").containsMatchIn(url) -> url.replace(Regex("=[swh]\\d+[^/]*$"), "=$size")
+        url.contains("/img/a/") -> "$url=$size"
+        else -> url
+    }
+}
+
 object Blog {
     const val HOST = "randomthoughtsever.blogspot.com"
     const val BASE = "https://$HOST"
@@ -178,17 +193,23 @@ class Repository(private val context: Context) {
         if (fresh != null && fresh.isNotEmpty()) {
             indexCache = fresh; indexAt = System.currentTimeMillis()
             runCatching { indexFile.writeText(JSONArray(fresh.map { e -> JSONObject().put("id", e.id).put("title", e.title).put("path", e.path)
-                .put("url", e.url).put("labels", JSONArray(e.labels)).put("published", e.published).put("quick", e.quick) }).toString()) }
+                .put("url", e.url).put("labels", JSONArray(e.labels)).put("published", e.published).put("quick", e.quick)
+                .put("image", e.image ?: "") }).toString()) }
             fresh
         } else indexCache ?: runCatching {
             val a = JSONArray(indexFile.readText())
             List(a.length()) { i -> a.getJSONObject(i).let { o ->
                 val path = o.getString("path")
                 Entry(o.getString("id"), o.getString("title"), path, o.getString("url"),
-                    o.getJSONArray("labels").let { l -> List(l.length()) { l.getString(it) } }, o.getString("published"), o.getString("quick"), coverFor(path))
+                    o.getJSONArray("labels").let { l -> List(l.length()) { l.getString(it) } }, o.getString("published"), o.getString("quick"),
+                    coverFor(path) ?: o.optString("image").ifBlank { null })
             } }.also { indexCache = it }
         }.getOrDefault(emptyList())
     }
+
+    /** What's known about a guide before its full text arrives (from Today's posts or the index), so it can open instantly. */
+    fun preview(id: String): Entry? = memory[id]?.let { Entry(it.id, it.title, it.path, it.url, it.labels, it.published, it.excerpt, it.image) }
+        ?: indexCache?.firstOrNull { it.id == id }
 
     fun coverFor(path: String): String? = covers[path]?.let { "$it-800.webp" }
 
@@ -204,7 +225,9 @@ class Repository(private val context: Context) {
             labels = e.optJSONArray("category")?.let { a -> List(a.length()) { a.getJSONObject(it).getString("term") } } ?: emptyList(),
             published = e.getJSONObject("published").getString("\$t").take(10),
             quick = quick.take(400).let { if (quick.length > 400) it.substringBeforeLast(' ') + "…" else it },
-            image = coverFor(path),
+            // The website's designed cover if it has one, otherwise the first photo in the post (Blogger's thumbnail, made bigger).
+            image = coverFor(path) ?: e.optJSONObject("media\$thumbnail")?.optString("url")?.takeIf { it.startsWith("http") }
+                ?.replace("http://", "https://")?.let(::bloggerCover),
         )
     }
 
@@ -237,7 +260,8 @@ class Repository(private val context: Context) {
 
     private fun firstImage(html: String): String? = Regex("<img[^>]+src=\"([^\"]+)\"").findAll(html)
         .map { it.groupValues[1] }
-        .firstOrNull { it.startsWith("https://") && !it.contains("emoji") }
+        .firstOrNull { it.startsWith("https://") && !it.contains("emoji") && !it.contains("/seo/covers/") }
+        ?.let(::bloggerCover)
 
     private fun plain(html: String): String = Html.fromHtml(
         html.replace(Regex("(?is)<(script|style)[^>]*>.*?</\\1>"), " "), Html.FROM_HTML_MODE_LEGACY,

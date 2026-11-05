@@ -81,6 +81,28 @@ fun ArticleScreen(id: String, nav: Nav) {
         }
     }
     val p = post
+    val preview = remember(id) { repo.preview(id) }
+    if (p == null && !failed && preview != null) {
+        // Opens straight away with what the list already knew (cover, topic, title) while the full text downloads.
+        Box(Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxSize()) {
+                Cover(preview.image, preview.label, Modifier.fillMaxWidth().statusBarsPadding().padding(top = 60.dp, start = 16.dp, end = 16.dp)
+                    .aspectRatio(COVER_RATIO), 64.dp, corner = 24.dp)
+                Column(Modifier.padding(horizontal = 22.dp)) {
+                    Spacer(Modifier.height(20.dp))
+                    Kicker(topicFor(preview.label).title)
+                    Spacer(Modifier.height(8.dp))
+                    Text(preview.title, style = MaterialTheme.typography.headlineLarge)
+                    Spacer(Modifier.height(22.dp))
+                    repeat(7) { i -> Shimmer(Modifier.fillMaxWidth(if (i % 3 == 2) .6f else 1f).height(16.dp)); Spacer(Modifier.height(12.dp)) }
+                }
+            }
+            Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 10.dp, vertical = 6.dp)) {
+                RoundButton { IconButton(onClick = nav::back) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") } }
+            }
+        }
+        return
+    }
     if (p == null) {
         Box(Modifier.fillMaxSize().statusBarsPadding(), contentAlignment = Alignment.Center) {
             if (failed) EmptyState(Icons.Rounded.CloudOff, "Couldn't open this article", "Check your connection and try again.")

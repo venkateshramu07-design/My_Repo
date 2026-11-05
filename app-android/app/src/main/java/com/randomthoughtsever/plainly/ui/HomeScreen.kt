@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.data.Images
 import com.randomthoughtsever.plainly.data.Entry
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.lazy.LazyListScope
@@ -153,6 +154,8 @@ fun HomeScreen(nav: Nav) {
             .let { all -> if (posts.isEmpty()) all else all.filter { it.id != dailyPick(posts).id } }
             .let(::mixTopics)
     }
+    val context = LocalContext.current
+    LaunchedEffect(more.size, shown) { Images.prefetch(context, more.take(shown + 20).drop((shown - 20).coerceAtLeast(0)).map { it.image }) }
 
     suspend fun load() {
         val before = posts.firstOrNull()?.id
