@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.randomthoughtsever.plainly.ads.Ads
 import com.randomthoughtsever.plainly.data.Blog
 import com.randomthoughtsever.plainly.data.Library
 import com.randomthoughtsever.plainly.data.Repository
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
         AppGraph.repo = Repository(applicationContext)
         AppGraph.library = Library(applicationContext)
         if (savedInstanceState == null) { AppGraph.library.countOpen(); handle(intent) }
+        Ads.start(this)
 
         setContent {
             val lib = AppGraph.library
@@ -45,6 +47,11 @@ class MainActivity : ComponentActivity() {
                 PlainlyRoot(this, startArticle) { startArticle = null }
             }
         }
+    }
+
+    override fun onDestroy() {
+        Ads.clearBanners()
+        super.onDestroy()
     }
 
     override fun onNewIntent(intent: Intent) {

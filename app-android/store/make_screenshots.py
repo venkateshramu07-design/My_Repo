@@ -11,12 +11,12 @@ NAVY, DEEP, GOLD, PAGE = (31, 78, 121), (10, 27, 47), (226, 178, 98), (246, 244,
 SLIDES = [
     ('01-today', 'Smart guides,\nplainly explained', 'Money, mind and work. Fresh every week.', 'dark'),
     ('02-article', 'The answer first.\nThen the detail.', 'Every guide opens with a quick answer.', 'light'),
-    ('03-article-body', 'Clean reading.\nNo ads. No clutter.', 'Tables, lists and text made for your phone.', 'dark'),
+    ('03-article-body', 'Clean reading,\nmade for your phone', 'Tables, lists and plain answers. No sign-up.', 'dark'),
     ('06-loan', 'Know your loan\nin seconds', 'Payments, interest and overpayments.', 'light'),
     ('07-growth', 'Watch your\nmoney grow', 'Investment, FIRE and card payoff calculators.', 'dark'),
     ('05-tools', 'Tools that never\nupload your files', 'Resize photos, shrink PDFs, make QR codes.', 'light'),
     ('08-qr', 'QR codes that\nnever expire', 'Links, text and Wi-Fi. Save or share.', 'dark'),
-    ('09-today-dark', 'Easy on your eyes,\nday and night', 'No account. No tracking. Just open and read.', 'light'),
+    ('09-today-dark', 'Easy on your eyes,\nday and night', 'Dark mode and text size. No account needed.', 'light'),
 ]
 
 def font(name, size): return ImageFont.truetype(os.path.join(FONT, name), size)

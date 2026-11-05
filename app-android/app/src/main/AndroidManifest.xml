@@ -16,6 +16,12 @@
         android:theme="@style/Theme.Plainly"
         android:enableOnBackInvokedCallback="true">
 
+        <!-- AdMob app ID (set in app/build.gradle.kts from admob.properties). -->
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="${admobAppId}" />
+        <!-- Starts the ads SDK on a background thread so the app opens just as fast. -->
+        <meta-data android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION" android:value="true" />
+        <meta-data android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING" android:value="true" />
+
         <!-- Hands a single finished file (resized photo, PDF, QR code) to the app the user shares it with. -->
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -208,7 +208,7 @@ fun PdfScreen(nav: Nav) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(onClick = {
                     saveToPhone(context, r.bytes, "${r.name}-${targetKb}kb.pdf", "application/pdf")
-                    AppGraph.library.countToolUse(); message = "Saved to Downloads/Plainly"; nav.maybeAskForReview()
+                    AppGraph.library.countToolUse(); message = "Saved to Downloads/Plainly"; nav.afterTask()
                 }, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(16.dp)) { Icon(Icons.Rounded.Download, null); Spacer(Modifier.width(6.dp)); Text("Save") }
                 OutlinedButton(onClick = { shareFile(context, r.bytes, "${r.name}-compressed.pdf", "application/pdf") },
                     Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(16.dp)) { Icon(Icons.Rounded.Share, null); Spacer(Modifier.width(6.dp)); Text("Share") }

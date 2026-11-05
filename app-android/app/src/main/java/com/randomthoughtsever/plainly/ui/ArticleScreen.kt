@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.ads.BannerAd
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -142,8 +143,12 @@ fun ArticleScreen(id: String, nav: Nav) {
                 Spacer(Modifier.height(10.dp))
             }
             val blocks by produceState<List<Block>?>(null, p.id) { value = withContext(Dispatchers.Default) { Reader.parse(p.html) } }
-            blocks?.let { ArticleBlocks(it, lib.textZoom) { link -> openLink(Uri.parse(link)) } }
+            blocks?.let { b ->
+                val slots = remember(b) { adSlots(b) }
+                ArticleBlocks(b, lib.textZoom, slots, { i -> BannerAd("article:${p.id}:$i") }) { link -> openLink(Uri.parse(link)) }
+            }
                 ?: Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) { repeat(6) { Shimmer(Modifier.fillMaxWidth().height(18.dp)) } }
+            BannerAd("article:${p.id}:end", Modifier.padding(horizontal = 22.dp))
             if (related.isNotEmpty()) Column(Modifier.padding(horizontal = 16.dp)) {
                 Box(Modifier.padding(horizontal = 4.dp)) { SectionTitle("More in ${topicFor(p.label).title}") }
                 related.forEach { r -> PostRow(r) { nav.article(r.id) } }

@@ -97,6 +97,16 @@ class LogicTest {
         assertTrue(b.none { it.toString().contains("widget") || it.toString().contains("alert") })
     }
 
+    @Test fun articleAdsNeverFollowAHeadingAndShortArticlesGetFewOrNone() {
+        fun para() = Block.Para(androidx.compose.ui.text.AnnotatedString("x"))
+        fun head() = Block.Heading(2, androidx.compose.ui.text.AnnotatedString("h"))
+        assertTrue(com.randomthoughtsever.plainly.ui.adSlots(List(8) { para() }).isEmpty())
+        val long = listOf(Block.QuickAnswer(androidx.compose.ui.text.AnnotatedString("q"))) + List(29) { if (it % 4 == 3) head() else para() }
+        val slots = com.randomthoughtsever.plainly.ui.adSlots(long)
+        assertEquals(2, slots.size)
+        slots.forEach { assertTrue("slot $it is a heading", long[it] !is Block.Heading) }
+    }
+
     /** Runs the reader over every live post, so a real-world layout that breaks it is caught. */
     @Test fun readerHandlesEveryLivePost() {
         val body = runCatching { URL("https://randomthoughtsever.blogspot.com/feeds/posts/default?alt=json&max-results=150").readText() }.getOrNull()

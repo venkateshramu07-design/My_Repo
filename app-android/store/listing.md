@@ -12,6 +12,7 @@ How the text is optimised for Play Store search:
   *emergency fund*, *compress PDF*, *resize photo in KB*, *QR code generator*, *Wi-Fi QR code*, *budgeting*, *personal finance*.
   Each appears once or twice in natural sentences. Google Play penalises keyword lists and repetition.
 - Google Play doesn't allow "free", "best", "#1", "top" or prices in the title or icon, so none are used.
+- The app shows ads (Google AdMob), so the listing never says "no ads". Play Console marks the listing "Contains ads".
 
 ---
 
@@ -30,7 +31,7 @@ Money guides, loan & investment calculators, PDF and photo tools. No sign-up.
 ## Full description (max 4,000 characters)
 
 ```
-Plainly gives you clear, practical guides on money, the mind and work, plus a set of calculators and file tools that run entirely on your phone. No account, no sign-up, no ads. Open it and start.
+Plainly gives you clear, practical guides on money, the mind and work, plus a set of calculators and file tools that run entirely on your phone. No account and no sign-up. Open it and start.
 
 THE ANSWER FIRST
 Every guide opens with a quick answer, so you get what you came for in seconds. Then come the details: real numbers, comparison tables and step-by-step instructions, laid out cleanly for a phone screen.
@@ -64,7 +65,7 @@ MADE FOR READING
 • Search every guide, or browse by topic
 
 PRIVATE BY DESIGN
-Plainly has no accounts, no ads and no tracking. It doesn't ask for your location, contacts or storage permission. Your saved guides and settings stay on your phone.
+Plainly has no accounts. It doesn't ask for your location, contacts, camera or storage permission, and your photos, PDFs, saved guides and settings stay on your phone. The app is free and supported by a few clearly labelled ads; where the law requires it, you're asked for consent first.
 
 Plainly is the app for the Blog Digest guides. The calculators give estimates for planning, not financial advice.
 ```
@@ -84,12 +85,12 @@ The screenshots are real screens of the app, rendered from the app's own code wi
 
 1. Smart guides, plainly explained (home)
 2. The answer first. Then the detail. (article with Quick answer)
-3. Clean reading. No ads. No clutter. (article tables and lists)
+3. Clean reading, made for your phone (article tables and lists)
 4. Know your loan in seconds (loan and mortgage calculator)
 5. Watch your money grow (investment growth calculator)
 6. Tools that never upload your files (tools)
 7. QR codes that never expire (QR code generator)
-8. Easy on your eyes, day and night (dark mode)
+8. Easy on your eyes, day and night (dark mode, no account needed)
 
 ## Store settings
 

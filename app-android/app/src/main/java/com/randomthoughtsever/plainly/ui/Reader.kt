@@ -226,10 +226,23 @@ object Reader {
     }
 }
 
+/**
+ * Where inline ads go in an article: after the 4th block following the Quick answer, and two-thirds of the way through,
+ * never right after a heading (so an ad never separates a heading from its text). Short articles get one or none.
+ */
+fun adSlots(blocks: List<Block>): Set<Int> {
+    if (blocks.size < 10) return emptySet()
+    fun fix(i: Int): Int { var k = i; while (k < blocks.size - 2 && blocks[k] is Block.Heading) k++; return k }
+    val start = blocks.indexOfFirst { it is Block.QuickAnswer }.coerceAtLeast(0)
+    val first = fix(start + 4)
+    val second = fix(blocks.size * 2 / 3)
+    return if (blocks.size >= 18 && second - first >= 6) setOf(first, second) else setOf(first)
+}
+
 // ---------- Rendering ----------
 
 @Composable
-fun ArticleBlocks(blocks: List<Block>, zoom: Int, onLink: (String) -> Unit) {
+fun ArticleBlocks(blocks: List<Block>, zoom: Int, adsAfter: Set<Int> = emptySet(), ad: @Composable (Int) -> Unit = {}, onLink: (String) -> Unit) {
     val c = MaterialTheme.colorScheme
     val k = zoom / 100f
     fun TextStyle.z() = copy(fontSize = fontSize * k, lineHeight = if (lineHeight == TextUnit.Unspecified) lineHeight else lineHeight * k)
@@ -240,7 +253,10 @@ fun ArticleBlocks(blocks: List<Block>, zoom: Int, onLink: (String) -> Unit) {
     CompositionLocalProvider(LocalUriHandler provides handler) {
         SelectionContainer {
             Column(Modifier.fillMaxWidth().padding(horizontal = 22.dp)) {
-                blocks.forEachIndexed { i, b -> RenderBlock(b, i, body, links) }
+                blocks.forEachIndexed { i, b ->
+                    RenderBlock(b, i, body, links)
+                    if (i in adsAfter) ad(i)
+                }
             }
         }
     }

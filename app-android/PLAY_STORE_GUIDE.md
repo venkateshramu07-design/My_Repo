@@ -8,13 +8,13 @@ the 14-day test that Google requires for new personal accounts, then up to a wee
 
 | File | What it's for |
 |---|---|
-| `plainly-1.0.0.aab` | **The file you upload to Google Play.** |
-| `plainly-1.0.0-test.apk` | To try the app on your own Android phone first. Don't upload this one. |
+| `plainly-1.1.0.aab` | **The file you upload to Google Play.** I build it once you send me your AdMob IDs (Step 2B). |
+| `plainly-1.1.0-preview.apk` | To try the app on your own Android phone first. It shows Google's sample "Test Ad" banners in the real ad spots. Don't upload this one. |
 | `plainly-upload.jks` + `SIGNING-KEY.txt` | Your private upload key and its passwords. **Keep both safe** (for example in Google Drive and on a USB stick). Every future update must be signed with this key. Never share them publicly. |
 | `store/` folder | Icon, feature graphic, 8 screenshots and all the listing text (`store/listing.md`). |
 
 App details: name **Plainly**, store title **"Plainly: Money, Mind & Work"**, package `com.randomthoughtsever.plainly`,
-version 1.0.0 (code 1). It targets Android 16 (API 36), as Google Play requires, and runs on Android 10 and newer.
+version 1.1.0 (code 2). It targets Android 16 (API 36), as Google Play requires, and runs on Android 10 and newer.
 
 ## What the app is
 
@@ -27,7 +27,17 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   Wi-Fi), and loan/mortgage, investment growth, credit card payoff, FIRE and emergency fund calculators with live charts
   and 16 currencies.
 - **Saved**: saved articles readable offline, plus reading history.
-- Light and dark mode. No account, no ads, no tracking, no storage permission.
+- Light and dark mode. No account and no storage permission.
+- **Ads (Google AdMob)**, kept few and clearly labelled "Advertisement":
+  - one banner on Today between Topics and Latest, and one after the 8th guide in Latest;
+  - one in each topic list, after the 6th guide;
+  - in articles: one after the first few paragraphs, one two-thirds through long articles (never straight after a
+    heading), and one before "More in…";
+  - one at the bottom of each calculator, below the result;
+  - one full-screen ad at most every 4 minutes, only after someone saves a file in a tool, and never the first time.
+  - No ads on Saved, Settings, Search or Explore, and none next to buttons.
+  - Where the law requires it (EEA, UK, Switzerland and some US states), Google's consent form appears first, and
+    **Settings → Privacy choices** lets people change their answer. Ad space collapses when there is no ad or no internet.
 
 Anyone can use it: people install it and it opens straight away. The upload key is only for you as the publisher.
 
@@ -35,7 +45,7 @@ Anyone can use it: people install it and it opens straight away. The upload key 
 
 ## Step 1: Try the app on your phone (10 minutes)
 
-1. Send `plainly-1.0.0-test.apk` to your Android phone (email it to yourself or put it in Google Drive) and tap it.
+1. Send `plainly-1.1.0-preview.apk` to your Android phone (email it to yourself or put it in Google Drive) and tap it.
 2. Android will say it's blocked for security. Tap **Settings**, turn on **Allow from this source**, go back and tap **Install**.
 3. Open **Plainly** and check:
    - **Today** loads the latest guides with their covers. Swipe the featured cards, and pull down to refresh.
@@ -44,6 +54,8 @@ Anyone can use it: people install it and it opens straight away. The upload key 
    - **Tools → Loan & mortgage calculator**: change the numbers and watch the chart update. Tap **Currency** to change it.
    - **Saved**: your bookmarked guide is there. Turn on aeroplane mode and open it: it still reads.
    - **Settings** (gear icon on Today): try Dark mode.
+   - **Ads**: you'll see "Advertisement" banners marked **Test Ad** on Today, in articles and under the calculators.
+     Save files in a tool twice and a full-screen test ad appears after the second save.
 4. Before you install the Play Store version later, uninstall this test copy (the Play version replaces it).
 
 ## Step 2: Create a Google Play developer account (1-2 days, US$25 once)
@@ -54,6 +66,27 @@ Anyone can use it: people install it and it opens straight away. The upload key 
 4. Enter your legal name and address, and verify your **phone number** and **email**.
 5. Complete **identity verification** by uploading a government photo ID. Google usually confirms within 1-2 days by email.
 6. Google may also ask you to prove you have an Android phone, by installing the **Play Console** app on it and signing in.
+
+## Step 2B: Set up AdMob and send me 3 IDs (20 minutes)
+
+AdMob is Google's ad network for apps (the app version of AdSense) and pays out the same way.
+
+1. Go to **https://admob.google.com** and sign in with the same Google account. If you already use AdSense for the
+   blog, AdMob links to it and pays to the same bank account (Google pays monthly once you pass US$100).
+2. **Apps → Add app → Android**. To "Is the app listed on a supported app store?" answer **No** for now. App name:
+   **Plainly**. Click **Add app**. Copy the **App ID** (it looks like `ca-app-pub-1234567890123456~1234567890`).
+3. **Ad units → Add ad unit → Banner**. Name it `Inline banner` and click **Create**. Copy its **ad unit ID** (it looks like
+   `ca-app-pub-1234567890123456/1234567890`).
+4. **Add ad unit → Interstitial**. Name it `After saving a file` and click **Create**. Copy its ad unit ID.
+5. **Privacy & messaging → European regulations → Create message**. Select Plainly, add your privacy policy URL
+   (`https://randomthoughtsever.blogspot.com/2021/06/privacy-policy.html`), keep the default options and click **Publish**.
+   Then do the same under **US state regulations**. This is the consent form the app shows in those regions.
+6. Send me the **App ID** and the **two ad unit IDs** in chat. They aren't secret (they're inside every copy of the app).
+   I'll build the signed `plainly-1.1.0.aab` with them.
+7. **Don't tap the ads in your own app** once it uses your real IDs. Google bans accounts for that. Test copies I build
+   always show sample ads, which are safe to tap.
+8. After the app is live on Google Play (Step 7): in AdMob, open **Apps → Plainly → App settings → Add app store
+   details** and link the Play listing. AdMob then reviews the app (a few days). Until that's done, few ads are shown.
 
 ## Step 3: Create the app (5 minutes)
 
@@ -72,7 +105,7 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 |---|---|
 | **Privacy policy** | `https://randomthoughtsever.blogspot.com/2021/06/privacy-policy.html` (its "Plainly, Our Android App" section describes this app) |
 | **App access** | All functionality is available without special access |
-| **Ads** | No, my app does not contain ads |
+| **Ads** | **Yes, my app contains ads** |
 | **Content rating** | Start the questionnaire. Enter your email and choose the category **"Reference, News, or Educational"**. Answer **No** to every question (violence, sexuality, language, drugs, gambling, user interaction, sharing location, digital purchases). Submit. You'll get a rating such as "Everyone" or "Rated for 3+". |
 | **Target audience** | Tick **18 and over** only (the money and health guides are written for adults, and this avoids the extra rules for children's apps). |
 | **News apps** | No |
@@ -80,13 +113,27 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 | **Government apps** | No |
 | **Financial features** | "My app doesn't provide any financial features" (the calculators only do arithmetic: no loans, payments, trading or banking) |
 | **Health apps** | None of these |
-| **Advertising ID** | No |
+| **Advertising ID** | **Yes**. Purpose: **Advertising or marketing** (and **Analytics** if offered). |
 
-**Data safety answers:**
-1. "Does your app collect or share any of the required user data types?" Answer **No**.
-   (Saved articles, history and settings never leave the phone; photos and PDFs are processed on the phone; there are
-   no accounts, analytics or ads. Data that stays on the device doesn't count as "collected" under Google's rules.)
-2. Click **Next**, review the summary ("No data collected, no data shared") and **Save**.
+**Data safety answers** (these cover what Google's ads software collects; the app itself collects nothing else):
+1. "Does your app collect or share any of the required user data types?" **Yes**.
+2. "Is all of the user data collected by your app encrypted in transit?" **Yes**.
+3. "Which of the following methods of account creation does your app support?" **My app does not allow users to create an account**.
+4. "Do you provide a way for users to request that their data is deleted?" **No** (you hold no user data; people
+   reset their advertising ID in their phone's settings).
+5. Tick these data types, and for each answer **Collected: Yes, Shared: Yes, Processed ephemerally: No,
+   Required** (users can't turn it off inside the app), with the purposes listed:
+
+| Data type (section → type) | Purposes to tick |
+|---|---|
+| **Location → Approximate location** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+| **App activity → App interactions** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+| **App info and performance → Crash logs** | Analytics, Fraud prevention, security and compliance |
+| **App info and performance → Diagnostics** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+| **Device or other IDs → Device or other IDs** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+
+6. Click **Next**, check the summary and **Save**. This matches Google's own disclosure for its ads software and the
+   app's privacy policy.
 
 ## Step 5: Store listing (15 minutes)
 
@@ -113,8 +160,8 @@ the app can be published.
 3. Under **Countries / regions**, add all countries.
 4. Click **Create release**:
    - When asked about app signing, keep **Play App Signing** with a Google-generated key (the recommended default).
-   - **Upload `plainly-1.0.0.aab`.**
-   - Release name: `1.0.0`. Release notes: `First release of Plainly.`
+   - **Upload `plainly-1.1.0.aab`.**
+   - Release name: `1.1.0`. Release notes: `First release of Plainly.`
 5. Click **Next**, then **Save**, then **Send for review** (in **Publishing overview**). The first review usually takes from a few hours to a few days.
 6. When it's approved, copy the **opt-in link** from the Testers tab and send it to your testers. Each tester opens the
    link, taps **Become a tester**, installs Plainly from Google Play and keeps it installed.

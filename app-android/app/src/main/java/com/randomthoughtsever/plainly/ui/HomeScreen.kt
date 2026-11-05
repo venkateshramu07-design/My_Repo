@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.ads.BannerAd
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -138,8 +140,12 @@ fun HomeScreen(nav: Nav) {
                             }
                         }
                     }
+                    item { BannerAd("home:1", Modifier.padding(horizontal = 20.dp)) }
                     item { Column(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Latest") } }
-                    items(posts.drop(5), key = { it.id }) { p -> Box(Modifier.padding(horizontal = 16.dp)) { PostRow(p) { nav.article(p.id) } } }
+                    itemsIndexed(posts.drop(5), key = { _, p -> p.id }) { i, p ->
+                        Box(Modifier.padding(horizontal = 16.dp)) { PostRow(p) { nav.article(p.id) } }
+                        if (i == 7) BannerAd("home:2", Modifier.padding(horizontal = 20.dp))
+                    }
                     if (!HomeCache.end) item {
                         LaunchedEffect(posts.size) { if (!loadingMore) { loadingMore = true; load(false); loadingMore = false } }
                         Box(Modifier.fillMaxWidth().padding(20.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 3.dp) }

@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.tools
 
+import com.randomthoughtsever.plainly.ads.BannerAd
 import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -420,5 +421,6 @@ fun CalculatorScreen(id: String, nav: Nav) {
         }
         Text("Estimates for planning only, not financial advice.", style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
+        BannerAd("calc:$id", maxHeightDp = 260)
     }
 }

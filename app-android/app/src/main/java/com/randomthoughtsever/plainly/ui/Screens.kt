@@ -1,5 +1,7 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.ads.Ads
+import com.randomthoughtsever.plainly.ads.BannerAd
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -136,7 +139,10 @@ fun TopicScreen(label: String, nav: Nav) {
         if (list == null) items(6) { Box(Modifier.padding(horizontal = 16.dp)) { RowSkeleton() } }
         else if (list.isEmpty()) item { EmptyState(Icons.Rounded.SearchOff, "Nothing here yet", "Pull down on Today to refresh, or check your connection.") }
         else {
-            items(list, key = { it.id }) { p -> Box(Modifier.padding(horizontal = 16.dp)) { PostRow(p) { nav.article(p.id) } } }
+            itemsIndexed(list, key = { _, p -> p.id }) { i, p ->
+                Box(Modifier.padding(horizontal = 16.dp)) { PostRow(p) { nav.article(p.id) } }
+                if (i == 5) BannerAd("topic:$label:1", Modifier.padding(horizontal = 20.dp))
+            }
             if (!end) item {
                 LaunchedEffect(list.size) { more() }
                 Box(Modifier.fillMaxWidth().padding(20.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(26.dp), strokeWidth = 3.dp) }
@@ -250,6 +256,11 @@ fun SettingsScreen(nav: Nav) {
                         else nav.web(url)
                     })
             }
+            if (Ads.privacyOptionsRequired) item {
+                ListItem(headlineContent = { Text("Privacy choices") }, supportingContent = { Text("Change your ad consent settings") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { (context as? android.app.Activity)?.let(Ads::showPrivacyOptions) })
+            }
             item {
                 ListItem(headlineContent = { Text("Share Plainly") }, colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable {
@@ -262,7 +273,7 @@ fun SettingsScreen(nav: Nav) {
                     Logo(44.dp); Spacer(Modifier.width(12.dp))
                     Column {
                         Text("Plainly ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.titleMedium)
-                        Text("No account, no ads, no tracking. Guides from Blog Digest.", style = MaterialTheme.typography.bodySmall,
+                        Text("No account needed. Guides from Blog Digest.", style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }

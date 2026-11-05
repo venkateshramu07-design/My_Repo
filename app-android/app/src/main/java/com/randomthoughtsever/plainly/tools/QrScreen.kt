@@ -147,7 +147,7 @@ fun QrScreen(nav: Nav) {
             Button(onClick = {
                 val b = qr ?: return@Button
                 saveToPhone(context, QrEngine.png(b), "plainly-qr-${System.currentTimeMillis() / 1000}.png", "image/png")
-                AppGraph.library.countToolUse(); message = "Saved to Pictures/Plainly"; nav.maybeAskForReview()
+                AppGraph.library.countToolUse(); message = "Saved to Pictures/Plainly"; nav.afterTask()
             }, Modifier.weight(1f).height(50.dp), enabled = qr != null, shape = RoundedCornerShape(16.dp)) {
                 Icon(Icons.Rounded.Download, null); Spacer(Modifier.width(6.dp)); Text("Save")
             }

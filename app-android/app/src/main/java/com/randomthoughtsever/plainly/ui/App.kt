@@ -1,5 +1,6 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.ads.Ads
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -66,6 +67,11 @@ class Nav(private val c: NavHostController, private val context: Context) {
     }
     fun share(title: String, url: String) = context.startActivity(Intent.createChooser(
         Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_SUBJECT, title).putExtra(Intent.EXTRA_TEXT, "$title\n$url"), null))
+    /** After a file is saved: maybe a full-screen ad (rarely, see Ads.afterTask); if none is shown, maybe the rating prompt. */
+    fun afterTask() {
+        val activity = context as? Activity ?: return
+        if (!Ads.afterTask(activity)) maybeAskForReview()
+    }
     /** Google Play's in-app rating prompt, once, after the reader has got real value from the app. */
     fun maybeAskForReview() {
         val lib = AppGraph.library

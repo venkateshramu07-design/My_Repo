@@ -195,7 +195,7 @@ fun PhotoScreen(nav: Nav) {
             Button(onClick = {
                 val kbLabel = targetKb.ifBlank { "100" }
                 results.forEach { saveToPhone(context, it.bytes, "${it.name}-${kbLabel}kb.jpg", "image/jpeg") }
-                AppGraph.library.countToolUse(); message = "Saved to Pictures/Plainly"; nav.maybeAskForReview()
+                AppGraph.library.countToolUse(); message = "Saved to Pictures/Plainly"; nav.afterTask()
             }, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(16.dp)) {
                 Icon(Icons.Rounded.Download, null); Spacer(Modifier.width(6.dp)); Text("Save")
             }

@@ -6,6 +6,18 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// AdMob IDs come from admob.properties (appId, banner, interstitial). They aren't secret: they ship inside the app.
+// Without that file, Google's sample IDs are used, which show "Test Ad" banners and earn nothing.
+// Debug builds always use the sample ad units, so tapping ads while testing can never break AdMob's rules.
+val admob = Properties().apply {
+    val f = rootProject.file("admob.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val testAppId = "ca-app-pub-3940256099942544~3347511713"
+val testBanner = "ca-app-pub-3940256099942544/9214589741"
+val testInterstitial = "ca-app-pub-3940256099942544/1033173712"
+fun ad(key: String, fallback: String) = (admob.getProperty(key) ?: fallback).trim()
+
 // Release signing comes from keystore.properties (never committed): storeFile, storePassword, keyAlias, keyPassword.
 val signing = Properties().apply {
     val f = rootProject.file("keystore.properties")
@@ -20,8 +32,11 @@ android {
         applicationId = "com.randomthoughtsever.plainly"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
+        manifestPlaceholders["admobAppId"] = ad("appId", testAppId)
+        buildConfigField("String", "ADMOB_BANNER", "\"${ad("banner", testBanner)}\"")
+        buildConfigField("String", "ADMOB_INTERSTITIAL", "\"${ad("interstitial", testInterstitial)}\"")
     }
 
     signingConfigs {
@@ -36,6 +51,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "ADMOB_BANNER", "\"$testBanner\"")
+            buildConfigField("String", "ADMOB_INTERSTITIAL", "\"$testInterstitial\"")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -71,6 +90,8 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.google.android.play:review-ktx:2.0.2")
     implementation("org.jsoup:jsoup:1.18.3")
+    implementation("com.google.android.gms:play-services-ads:24.9.0")
+    implementation("com.google.android.ump:user-messaging-platform:3.2.0")
 
     // JVM tests: pure maths and parsing, plus Robolectric to render real screens for checks and store screenshots.
     testImplementation("junit:junit:4.13.2")
@@ -90,4 +111,12 @@ tasks.withType<Test>().configureEach {
     systemProperty("roborazzi.record.filePathStrategy", "relativePathFromCurrentDirectory")
     maxHeapSize = "3g"
     testLogging { events("passed", "failed"); exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL; showStandardStreams = true }
+}
+
+// The .aab is what goes to Google Play, so it must never carry the sample ad IDs.
+tasks.matching { it.name == "bundleRelease" }.configureEach {
+    doFirst {
+        if (admob.getProperty("appId") == null || admob.getProperty("banner") == null || admob.getProperty("interstitial") == null)
+            throw GradleException("admob.properties with appId, banner and interstitial is required for the Play Store bundle.")
+    }
 }
