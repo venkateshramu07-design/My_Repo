@@ -153,6 +153,61 @@ class Repository(private val context: Context) {
             .onEach { memory[it.id] = it }
     }
 
+    @Volatile private var indexCache: List<Entry>? = null
+    @Volatile private var indexAt = 0L
+    private val indexFile get() = File(context.filesDir, "index.json")
+
+    /**
+     * Every guide on the blog (title, topic, date and its quick answer), from the light summary feed: about 300 posts
+     * in 2-3 small requests. Kept in memory and on the phone, refreshed every 10 minutes, so a new post shows up quickly.
+     */
+    suspend fun index(force: Boolean = false): List<Entry> = withContext(Dispatchers.IO) {
+        indexCache?.let { if (!force && System.currentTimeMillis() - indexAt < 10 * 60_000) return@withContext it }
+        val fresh = runCatching {
+            val all = ArrayList<Entry>()
+            var start = 1
+            while (start < 2000) {
+                val entries = JSONObject(fetch("${Blog.BASE}/feeds/posts/summary?alt=json&orderby=published&max-results=150&start-index=$start"))
+                    .getJSONObject("feed").optJSONArray("entry") ?: break
+                if (entries.length() == 0) break
+                for (i in 0 until entries.length()) all += entry(entries.getJSONObject(i))
+                start += entries.length() // Blogger may return fewer than asked for, so only an empty page means the end
+            }
+            all.filterNot { it.labels.isEmpty() && it.path.startsWith("/2021/06/") }.filterNot { it.title.startsWith("Sitemap", true) }
+        }.getOrNull()
+        if (fresh != null && fresh.isNotEmpty()) {
+            indexCache = fresh; indexAt = System.currentTimeMillis()
+            runCatching { indexFile.writeText(JSONArray(fresh.map { e -> JSONObject().put("id", e.id).put("title", e.title).put("path", e.path)
+                .put("url", e.url).put("labels", JSONArray(e.labels)).put("published", e.published).put("quick", e.quick) }).toString()) }
+            fresh
+        } else indexCache ?: runCatching {
+            val a = JSONArray(indexFile.readText())
+            List(a.length()) { i -> a.getJSONObject(i).let { o ->
+                val path = o.getString("path")
+                Entry(o.getString("id"), o.getString("title"), path, o.getString("url"),
+                    o.getJSONArray("labels").let { l -> List(l.length()) { l.getString(it) } }, o.getString("published"), o.getString("quick"), coverFor(path))
+            } }.also { indexCache = it }
+        }.getOrDefault(emptyList())
+    }
+
+    fun coverFor(path: String): String? = covers[path]?.let { "$it-800.webp" }
+
+    private fun entry(e: JSONObject): Entry {
+        val url = alternate(e).replace("http://", "https://")
+        val path = pathOf(url)
+        val summary = e.optJSONObject("summary")?.optString("\$t").orEmpty().replace(Regex("\\s+"), " ").trim()
+        val quick = summary.substringAfter("Quick answer:", summary).removePrefix("Updated").replace(Regex("^\\s*\\d{1,2} \\w+ \\d{4}\\s*"), "").trim()
+        return Entry(
+            id = e.getJSONObject("id").getString("\$t").substringAfter("post-"),
+            title = Html.fromHtml(e.getJSONObject("title").getString("\$t"), Html.FROM_HTML_MODE_LEGACY).toString(),
+            path = path, url = url,
+            labels = e.optJSONArray("category")?.let { a -> List(a.length()) { a.getJSONObject(it).getString("term") } } ?: emptyList(),
+            published = e.getJSONObject("published").getString("\$t").take(10),
+            quick = quick.take(400).let { if (quick.length > 400) it.substringBeforeLast(' ') + "…" else it },
+            image = coverFor(path),
+        )
+    }
+
     private fun alternate(e: JSONObject): String {
         val links = e.getJSONArray("link")
         for (i in 0 until links.length()) if (links.getJSONObject(i).getString("rel") == "alternate") return links.getJSONObject(i).getString("href")

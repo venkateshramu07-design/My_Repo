@@ -62,7 +62,24 @@ class Library(context: Context) {
 
     // Counters for asking for a Play Store rating at a good moment.
     fun countToolUse() = prefs.edit().putInt("toolUses", prefs.getInt("toolUses", 0) + 1).apply()
+    /** Days in a row the app has been opened, ending today. */
+    fun streak(): Int {
+        val days = prefs.getString("days", "").orEmpty().split(',').filter { it.isNotBlank() }.toSet()
+        var d = java.time.LocalDate.now(); var n = 0
+        while (d.toString() in days) { n++; d = d.minusDays(1) }
+        return n
+    }
+    private fun markToday() {
+        val today = java.time.LocalDate.now().toString()
+        val days = (prefs.getString("days", "").orEmpty().split(',').filter { it.isNotBlank() } + today).distinct().takeLast(400)
+        prefs.edit().putString("days", days.joinToString(",")).apply()
+    }
+    fun openDays(): Set<String> = prefs.getString("days", "").orEmpty().split(',').filter { it.isNotBlank() }.toSet()
+    fun toolUses() = prefs.getInt("toolUses", 0)
+    fun reads() = prefs.getInt("reads", 0)
+
     fun countOpen() {
+        markToday()
         prefs.edit().putInt("opens", prefs.getInt("opens", 0) + 1)
             .apply { if (!prefs.contains("firstOpen")) putLong("firstOpen", System.currentTimeMillis()) }.apply()
     }

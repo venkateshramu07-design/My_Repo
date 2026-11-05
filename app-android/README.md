@@ -8,7 +8,13 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   and "You're all caught up". It reloads on open and resume, checks for a new post every minute while visible, and
   `data/NewPosts.kt` (WorkManager, every 15 min) posts a notification for new guides. Cover art comes live from the
   website's design layer (`version.txt` → `bd-redesign.js` → `BD_COVERS`), on top of the copy built into the app.
-- **Explore / Topic / Search**: topic tiles, per-topic feeds, debounced search.
+- **Navigation**: floating animated bar with Today, Explore, Reads, Tools and You (`ui/App.kt`).
+- **Explore** (`ui/ExploreScreen.kt`, `ui/Collections.kt`): built from `Repository.index()`, an index of every guide from the
+  summary feed (cached, refreshed every 10 minutes). It has search suggestions, Surprise me, collections defined as rules
+  (so new posts join them by themselves), 35 countries with flags, topic counts, and the A-to-Z library.
+- **Reads** (`ui/QuickReads.kt`): a vertical pager of quick answers, "For you" or by group. **You** (`ui/YouScreen.kt`):
+  streak, stats, topics read, saved, history and settings.
+- **Search**: Blogger finds posts and `data/SearchRank.kt` orders them by relevance; matching tools are shown first.
 - **Reader** (`ui/Reader.kt`): article HTML is parsed with jsoup into native blocks (headings, paragraphs with links,
   Quick answer card, lists, tables, FAQs, images). Scripts, styles and the site's web widgets are dropped; the matching
   native tool is offered instead. Links to other posts open in the app; external links open in Custom Tabs.

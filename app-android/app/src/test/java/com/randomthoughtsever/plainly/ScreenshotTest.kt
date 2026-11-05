@@ -136,8 +136,29 @@ class ScreenshotTest {
 
     @Test fun explore() {
         launch(); waitFor { seen("TODAY'S PICK") }
-        tab("Explore"); pause(2500)
+        tab("Explore"); waitFor(40, settle = 2500) { seen("Collections") }
         shot("04-explore")
+        scroll(1); shot("04b-explore-countries")
+        scroll(2); shot("04c-explore-topics")
+    }
+
+    @Test fun shelfAndLibrary() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("Explore"); waitFor(40, settle = 1500) { seen("Collections") }
+        compose.onAllNodesWithText("Start here").onFirst().performClick(); waitFor(20, settle = 2000) { seen("COLLECTION") }
+        shot("12-shelf")
+    }
+
+    @Test fun quickReads() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("Reads"); waitFor(40, settle = 3000) { seen("Swipe up for the next one") }
+        shot("13-quick-reads")
+    }
+
+    @Test fun you() {
+        launch(); waitFor { seen("TODAY'S PICK") }
+        tab("You"); pause(2500)
+        shot("14-you")
     }
 
     @Test fun tools() {

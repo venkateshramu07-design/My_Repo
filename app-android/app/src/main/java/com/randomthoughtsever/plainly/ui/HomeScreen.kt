@@ -601,7 +601,7 @@ private fun CaughtUp(nav: Nav) {
         Spacer(Modifier.height(14.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FilledTonalButton(onClick = { nav.tab("explore") }) { Text("Browse all guides") }
-            OutlinedButton(onClick = { nav.tab("saved") }) { Icon(Icons.Rounded.Bookmarks, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Saved") }
+            OutlinedButton(onClick = { nav.saved() }) { Icon(Icons.Rounded.Bookmarks, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Saved") }
         }
     }
 }
@@ -612,7 +612,7 @@ private fun Offline(nav: Nav, retry: () -> Unit) {
         EmptyState(Icons.Rounded.CloudOff, "You're offline", "Connect to the internet to see today's guides. Your saved guides and the app's own tools still work.")
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FilledTonalButton(onClick = retry) { Text("Try again") }
-            OutlinedButton(onClick = { nav.tab("saved") }) { Text("Saved guides") }
+            OutlinedButton(onClick = { nav.saved() }) { Text("Saved guides") }
         }
     }
 }

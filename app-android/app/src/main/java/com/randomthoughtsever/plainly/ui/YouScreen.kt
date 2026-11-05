@@ -1,0 +1,218 @@
+package com.randomthoughtsever.plainly.ui
+
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Bookmarks
+import androidx.compose.material.icons.rounded.Handyman
+import androidx.compose.material.icons.rounded.LocalFireDepartment
+import androidx.compose.material.icons.rounded.MenuBook
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.randomthoughtsever.plainly.BuildConfig
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
+
+/** You: your streak and numbers, the topics you read most, your saved guides and history, and the settings that matter. */
+@Composable
+fun YouScreen(nav: Nav) {
+    val lib = AppGraph.library
+    val context = LocalContext.current
+    val streak = remember { lib.streak() }
+    val days = remember { lib.openDays() }
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 28.dp)) {
+        item {
+            Row(Modifier.statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("You", style = MaterialTheme.typography.displaySmall, modifier = Modifier.weight(1f))
+                IconButton(onClick = nav::settings) { Icon(Icons.Rounded.Settings, "Settings") }
+            }
+        }
+        item { StreakCard(streak, days) }
+        item {
+            Row(Modifier.padding(horizontal = 20.dp, vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Stat(Icons.Rounded.MenuBook, "${lib.reads()}", "guides read", Modifier.weight(1f))
+                Stat(Icons.Rounded.Bookmarks, "${lib.saved.size}", "saved", Modifier.weight(1f))
+                Stat(Icons.Rounded.Handyman, "${lib.toolUses()}", "files made", Modifier.weight(1f))
+            }
+        }
+        item { YourTopics() }
+        item {
+            Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Saved", if (lib.saved.isNotEmpty()) "See all ${lib.saved.size}" else null) { nav.saved() } }
+            if (lib.saved.isEmpty()) Text("Tap the bookmark on any guide to keep it here. Saved guides open even without internet.",
+                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 20.dp))
+            else Column(Modifier.padding(horizontal = 16.dp)) { lib.saved.take(3).forEach { r -> PostRow(r, { nav.article(r.id) }) } }
+        }
+        if (lib.history.isNotEmpty()) item {
+            Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Recently read", "See all") { nav.saved(history = true) } }
+            LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(lib.history.take(10), key = { it.id }) { r ->
+                    Column(Modifier.width(170.dp).clip(RoundedCornerShape(18.dp)).clickable { nav.article(r.id) }) {
+                        Cover(r.image, r.label, Modifier.fillMaxWidth().height(96.dp), 26.dp, alignment = Alignment.CenterEnd)
+                        Spacer(Modifier.height(6.dp))
+                        Text(r.title, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
+                }
+            }
+        }
+        item {
+            Box(Modifier.padding(horizontal = 20.dp)) { SectionTitle("Look and feel") }
+            val modes = listOf("system" to "System", "light" to "Light", "dark" to "Dark")
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                modes.forEachIndexed { i, (k, l) -> SegmentedButton(lib.theme == k, { lib.setThemeMode(k) }, SegmentedButtonDefaults.itemShape(i, modes.size)) { Text(l) } }
+            }
+        }
+        item {
+            Column(Modifier.padding(horizontal = 12.dp, vertical = 14.dp)) {
+                LinkRow(Icons.Rounded.Settings, "Settings", "Text size, notifications, privacy") { nav.settings() }
+                LinkRow(Icons.Rounded.Star, "Rate Plainly", "It helps other people find it") {
+                    runCatching { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW,
+                        android.net.Uri.parse("market://details?id=${BuildConfig.APPLICATION_ID}"))) }
+                        .onFailure { nav.web("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}") }
+                }
+                LinkRow(Icons.Rounded.Share, "Share Plainly", "Send it to a friend") {
+                    nav.share("Plainly: Money, Mind & Work", "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+                }
+            }
+        }
+        item {
+            Text("Plainly ${BuildConfig.VERSION_NAME} · No account needed", style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.fillMaxWidth().padding(16.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+private fun StreakCard(streak: Int, days: Set<String>) {
+    val today = LocalDate.now()
+    Surface(shape = RoundedCornerShape(28.dp), color = Color.Transparent, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
+        Column(Modifier.background(Brush.linearGradient(listOf(Navy, NavyDeep))).padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(52.dp).clip(CircleShape).background(Gold.copy(alpha = .2f)), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.LocalFireDepartment, null, tint = Gold, modifier = Modifier.size(30.dp))
+                }
+                Spacer(Modifier.width(14.dp))
+                Column {
+                    Text(if (streak <= 1) "Day 1" else "$streak-day streak", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+                    Text(if (streak <= 1) "Come back tomorrow to start a streak." else "Open Plainly tomorrow to keep it going.",
+                        style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = .78f))
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                (6 downTo 0).map { today.minusDays(it.toLong()) }.forEach { d ->
+                    val on = d.toString() in days
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(Modifier.size(30.dp).clip(CircleShape).background(if (on) Gold else Color.White.copy(alpha = .12f)), contentAlignment = Alignment.Center) {
+                            if (on) Icon(Icons.Rounded.LocalFireDepartment, null, tint = NavyDeep, modifier = Modifier.size(16.dp))
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(d.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault()), style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = if (d == today) 1f else .65f), fontWeight = if (d == today) FontWeight.ExtraBold else FontWeight.Normal)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Stat(icon: ImageVector, value: String, label: String, modifier: Modifier) {
+    Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface, modifier = modifier) {
+        Column(Modifier.padding(14.dp)) {
+            Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.height(8.dp))
+            Text(value, style = MaterialTheme.typography.headlineSmall)
+            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun YourTopics() {
+    val counts = AppGraph.library.history.groupingBy { it.label }.eachCount().entries.filter { isReadingTopic(it.key) }
+        .sortedByDescending { it.value }.take(5)
+    Column(Modifier.padding(horizontal = 20.dp)) {
+        SectionTitle("What you read")
+        if (counts.isEmpty()) {
+            Text("Read a few guides and your favourite topics show up here.", style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            return@Column
+        }
+        val max = counts.first().value.toFloat()
+        counts.forEach { (label, n) ->
+            val t = topicFor(label)
+            val f by animateFloatAsState(n / max, tween(700), label = "topic")
+            Row(Modifier.padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(t.icon, null, tint = t.to, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Text(t.title, style = MaterialTheme.typography.labelLarge, modifier = Modifier.width(110.dp), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Box(Modifier.weight(1f).height(12.dp).clip(RoundedCornerShape(6.dp)).background(MaterialTheme.colorScheme.surfaceVariant)) {
+                    Box(Modifier.fillMaxWidth(f).fillMaxHeight().clip(RoundedCornerShape(6.dp)).background(Brush.horizontalGradient(listOf(t.from, t.to))))
+                }
+                Spacer(Modifier.width(10.dp))
+                Text("$n", style = MaterialTheme.typography.labelLarge)
+            }
+        }
+    }
+}
+
+@Composable
+private fun LinkRow(icon: ImageVector, title: String, sub: String, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+            Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleSmall)
+            Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+    }
+}

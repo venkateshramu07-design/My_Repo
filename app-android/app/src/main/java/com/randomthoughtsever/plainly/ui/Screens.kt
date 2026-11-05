@@ -86,28 +86,6 @@ import com.randomthoughtsever.plainly.data.Blog
 import com.randomthoughtsever.plainly.data.Post
 import kotlinx.coroutines.delay
 
-@Composable
-fun ExploreScreen(nav: Nav) {
-    LazyVerticalGrid(GridCells.Fixed(2), Modifier.fillMaxSize(), contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item(span = { GridItemSpan(2) }) {
-            Column(Modifier.statusBarsPadding().padding(top = 16.dp, bottom = 8.dp, start = 4.dp)) {
-                Text("Explore", style = MaterialTheme.typography.displaySmall)
-                Text("Guides by topic, explained plainly.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(16.dp))
-                Surface(onClick = nav::search, shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Rounded.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant); Spacer(Modifier.width(10.dp))
-                        Text("Search every guide", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-            }
-        }
-        items(Topics) { t -> TopicTile(t) { nav.topic(t.label) } }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopicScreen(label: String, nav: Nav) {
@@ -158,8 +136,8 @@ fun TopicScreen(label: String, nav: Nav) {
 }
 
 @Composable
-fun SearchScreen(nav: Nav) {
-    var query by rememberSaveable { mutableStateOf("") }
+fun SearchScreen(nav: Nav, initial: String = "") {
+    var query by rememberSaveable { mutableStateOf(initial) }
     var results by remember { mutableStateOf<List<Post>?>(null) }
     var loading by remember { mutableStateOf(false) }
     val focus = remember { FocusRequester() }
@@ -215,12 +193,13 @@ fun SearchScreen(nav: Nav) {
 }
 
 @Composable
-fun SavedScreen(nav: Nav) {
+fun SavedScreen(nav: Nav, history: Boolean = false) {
     val lib = AppGraph.library
-    var tab by rememberSaveable { mutableIntStateOf(0) }
+    var tab by rememberSaveable { mutableIntStateOf(if (history) 1 else 0) }
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("Library", style = MaterialTheme.typography.displaySmall, modifier = Modifier.weight(1f))
+        Row(Modifier.statusBarsPadding().padding(start = 4.dp, end = 8.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = nav::back) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") }
+            Text("Your library", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
             IconButton(onClick = nav::settings) { Icon(Icons.Rounded.Settings, "Settings") }
         }
         TabRow(tab, containerColor = Color.Transparent, modifier = Modifier.padding(horizontal = 8.dp)) {

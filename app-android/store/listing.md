@@ -68,6 +68,9 @@ Results update as you type, with clear charts. Choose your currency: US dollar, 
 • Sleep cycle calculator, habit tracker and more
 Photos and PDFs are processed on your device and never uploaded. Save to your phone or share straight to any app.
 
+EXPLORE AND SWIPE
+Browse collections like "Get out of debt" and "Invest and retire early", money facts for 35 countries, every topic, or all guides from A to Z. Or swipe through quick answers in Reads: one guide per screen, its key point up front.
+
 MADE FOR READING
 • Save any guide to read later, even offline
 • Pick up where you left off with your reading history
@@ -94,13 +97,13 @@ The screenshots are real screens of the app, rendered from the app's own code wi
 (`ScreenshotTest` in `app/src/test`, framed by `store/make_screenshots.py`).
 
 1. Your day, plainly explained (Today)
-2. Quick answers you can tap through (stories)
-3. 72 tools in your pocket (Tools)
-4. See your money grow as you drag (Today's money widget)
-5. The answer first. Then the detail. (article)
-6. Know your loan in seconds (loan calculator)
-7. Flip a card, learn something (30-second answers)
-8. Easy on your eyes, day and night (dark mode)
+2. Explore 295 guides your way (Explore)
+3. Swipe through quick answers (Reads)
+4. 72 tools in your pocket (Tools)
+5. Stories that teach you something (stories)
+6. See your money grow as you drag (Today's money widget)
+7. The answer first. Then the detail. (article)
+8. Your streak, your library (You)
 
 ## Store settings
 

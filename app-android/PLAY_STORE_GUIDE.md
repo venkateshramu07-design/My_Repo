@@ -26,7 +26,14 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   it's on screen (a "Just published" pill slides in), and pull-to-refresh is always there. People who allow
   notifications get a **"New on Plainly"** notification within about 15 minutes of a post going live (Android's limit for
   background checks). Cover art for new posts comes live from the website's design layer.
-- **Explore**: colourful topic tiles and search.
+- **Bottom bar** (floating, animated): **Today · Explore · Reads · Tools · You**.
+- **Explore**: search with suggestions, a "Surprise me" button, collections that fill themselves (Start here, Get out
+  of debt, Invest & retire early, Countries in numbers, Passport & visa photos, and more), all 35 countries with flags,
+  every topic with its real number of guides and newest title, and all guides from A to Z.
+- **Reads**: swipe up through quick answers, one guide per screen, filtered "For you" (the topics you read most) or by
+  Money, Mind, Work and World. Save, share or open the full guide.
+- **You**: your reading streak, guides read, saved and files made, the topics you read most, saved guides, history,
+  light/dark mode and settings.
 - **Reader**: each article is rebuilt as native text, with a Quick answer card, tables, lists and FAQs, adjustable text
   size, a reading-progress bar, bookmarks, sharing, and links between articles that stay inside the app. If the post has
   a tool, a "Try it" button opens it.
@@ -39,7 +46,6 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
     make are saved to the phone.
   - **New tools appear automatically**: publish a post with the label **Tools** or **Calculators** and it shows up in
     the app's "New" section.
-- **Saved**: saved articles readable offline, plus reading history.
 - Light and dark mode. No account and no storage permission.
 - **Ads (Google AdMob)**, kept few and clearly labelled "Advertisement":
   - one banner on Today between Topics and Latest, and one after the 8th guide in Latest;

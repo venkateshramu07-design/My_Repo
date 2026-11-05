@@ -11,6 +11,40 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.rounded.AutoStories
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.navArgument
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Explore
@@ -74,6 +108,10 @@ class Nav(private val c: NavHostController, private val context: Context, privat
     }
     fun external(uri: Uri) = runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) }
     fun search() = c.navigate("search")
+    fun search(q: String) = c.navigate("search?q=${Uri.encode(q)}")
+    fun shelf(key: String) = c.navigate("shelf/$key")
+    fun library() = c.navigate("library")
+    fun saved(history: Boolean = false) = c.navigate(if (history) "saved?history=true" else "saved")
     /** Switches to a bottom-bar tab the same way tapping it does. */
     fun tab(route: String) = c.navigate(route) {
         popUpTo(c.graph.findStartDestination().id) { saveState = true }
@@ -104,8 +142,37 @@ class Nav(private val c: NavHostController, private val context: Context, privat
 private data class Tab(val route: String, val label: String, val icon: ImageVector)
 private val TABS = listOf(
     Tab("today", "Today", Icons.Rounded.Today), Tab("explore", "Explore", Icons.Rounded.Explore),
-    Tab("tools", "Tools", Icons.Rounded.Handyman), Tab("saved", "Saved", Icons.Rounded.Bookmarks),
+    Tab("reads", "Reads", Icons.Rounded.AutoStories), Tab("tools", "Tools", Icons.Rounded.Handyman),
+    Tab("you", "You", Icons.Rounded.Person),
 )
+
+/** Floating bottom bar: the selected tab's pill grows and fills, its icon pops, with a light haptic tick. */
+@Composable
+private fun FloatingBar(route: String?, onSelect: (String) -> Unit) {
+    val haptics = LocalHapticFeedback.current
+    Surface(shape = RoundedCornerShape(30.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 12.dp,
+        modifier = Modifier.navigationBarsPadding().padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 4.dp).fillMaxWidth().height(70.dp)) {
+        Row(Modifier.fillMaxSize().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            TABS.forEach { t ->
+                val selected = route == t.route
+                val width by animateDpAsState(if (selected) 60.dp else 36.dp, spring(dampingRatio = .55f, stiffness = 500f), label = "pill")
+                val scale by animateFloatAsState(if (selected) 1.12f else 1f, spring(dampingRatio = .4f, stiffness = 600f), label = "icon")
+                val bg by animateColorAsState(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent, label = "bg")
+                val tint by animateColorAsState(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, label = "tint")
+                Column(Modifier.weight(1f).fillMaxHeight().selectable(selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() },
+                    indication = null) { if (!selected) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove); onSelect(t.route) },
+                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                    Box(Modifier.width(width).height(32.dp).clip(CircleShape).background(bg), contentAlignment = Alignment.Center) {
+                        Icon(t.icon, null, tint = tint, modifier = Modifier.size(22.dp).graphicsLayer { scaleX = scale; scaleY = scale })
+                    }
+                    Spacer(Modifier.height(3.dp))
+                    Text(t.label, style = MaterialTheme.typography.labelSmall, color = tint, maxLines = 1,
+                        fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> Unit) {
@@ -117,20 +184,7 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = {
-            if (route in TABS.map { it.route }) NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                TABS.forEach { t ->
-                    NavigationBarItem(
-                        selected = route == t.route,
-                        onClick = { nav.tab(t.route) },
-                        icon = { Icon(t.icon, null) }, label = { Text(t.label, style = MaterialTheme.typography.labelMedium) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary, selectedTextColor = MaterialTheme.colorScheme.primary,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer),
-                    )
-                }
-            }
-        },
+        bottomBar = { if (route in TABS.map { it.route }) FloatingBar(route) { nav.tab(it) } },
     ) { pad ->
         NavHost(
             controller, startDestination = "today", modifier = Modifier.padding(bottom = pad.calculateBottomPadding()),
@@ -139,9 +193,15 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
         ) {
             composable("today") { HomeScreen(nav) }
             composable("explore") { ExploreScreen(nav) }
+            composable("reads") { QuickReadsScreen(nav) }
             composable("tools") { ToolsScreen(nav) }
-            composable("saved") { SavedScreen(nav) }
-            composable("search") { SearchScreen(nav) }
+            composable("you") { YouScreen(nav) }
+            composable("saved?history={history}", listOf(navArgument("history") { defaultValue = "false" })) {
+                SavedScreen(nav, it.arguments?.getString("history") == "true")
+            }
+            composable("search?q={q}", listOf(navArgument("q") { defaultValue = "" })) { SearchScreen(nav, Uri.decode(it.arguments?.getString("q") ?: "")) }
+            composable("shelf/{key}") { ShelfScreen(it.arguments?.getString("key") ?: "", nav) }
+            composable("library") { LibraryScreen(nav) }
             composable("settings") { SettingsScreen(nav) }
             composable("article/{id}") { ArticleScreen(it.arguments?.getString("id") ?: "", nav) }
             composable("topic/{label}") { TopicScreen(Uri.decode(it.arguments?.getString("label") ?: ""), nav) }

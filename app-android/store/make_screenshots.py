@@ -10,13 +10,13 @@ NAVY, DEEP, GOLD, PAGE = (31, 78, 121), (10, 27, 47), (226, 178, 98), (246, 244,
 
 SLIDES = [
     ('01-today', 'Your day,\nplainly explained', 'A fresh pick every day, stories by topic and what\'s new.', 'dark'),
-    ('11-story', 'Quick answers\nyou can tap through', 'The key point of every new guide in seconds.', 'light'),
-    ('05-tools', '72 tools\nin your pocket', 'Photos, PDFs, money, work and travel.', 'dark'),
+    ('04-explore', 'Explore 295 guides\nyour way', 'Collections, 35 countries and every topic.', 'light'),
+    ('13-quick-reads', 'Swipe through\nquick answers', 'The key point of a guide in seconds.', 'dark'),
+    ('05-tools', '72 tools\nin your pocket', 'Photos, PDFs, money, work and travel.', 'light'),
+    ('11-story', 'Stories that\nteach you something', 'Tap through the newest guides.', 'dark'),
     ('01c-today-money', 'See your money\ngrow as you drag', 'Live calculators that answer in a moment.', 'light'),
     ('02-article', 'The answer first.\nThen the detail.', 'Every guide opens with a quick answer.', 'dark'),
-    ('06-loan', 'Know your loan\nin seconds', 'Payments, interest and overpayments.', 'light'),
-    ('01e-today-answers', 'Flip a card,\nlearn something', '30-second answers on money, mind and work.', 'dark'),
-    ('09-today-dark', 'Easy on your eyes,\nday and night', 'Dark mode and text size. No account needed.', 'light'),
+    ('14-you', 'Your streak,\nyour library', 'Saved guides, history and what you read most.', 'light'),
 ]
 
 def font(name, size): return ImageFont.truetype(os.path.join(FONT, name), size)
