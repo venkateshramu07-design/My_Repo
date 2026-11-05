@@ -7,3 +7,6 @@ keystore.properties
 *.keystore
 *.aab
 *.apk
+
+# Firebase emulator logs
+*-debug.log
