@@ -43,7 +43,7 @@ Add your pay and spending (kept on your phone) to see your FIRE number, safety n
 Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe and Reaction Time. Offline.
 
 COMMUNITY
-Share tips and wins, ask questions, discuss every guide and see how others answered the quizzes. No account: just a name and an emoji you choose.
+Read what other readers say about every guide, join the conversation, and see the most active voices. Reading needs no account; you post with your Google account, like any comment on the blog.
 
 A NEW PAGE EVERY DAY
 A fresh pick every day, quick-answer stories, flip cards and quizzes. New guides appear the moment they're published.

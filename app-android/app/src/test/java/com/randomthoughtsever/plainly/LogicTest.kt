@@ -236,6 +236,48 @@ class LogicTest {
         assertEquals(listOf(0 until 3), s.matches("Karma explained", "kar"))
     }
 
+    /** The Firebase-free community: Blogger comment feeds parsed into conversations, spam dropped, your own posts recognised. */
+    @Test fun blogCommentsBecomeConversations() {
+        val t = com.randomthoughtsever.plainly.data.BlogTalk
+        fun entry(id: String, post: String, path: String, name: String, html: String, at: String, photo: String = "//blogger.googleusercontent.com/img/a/x=s35") = JSONObject()
+            .put("id", JSONObject().put("\$t", "tag:blogger.com,1999:blog-1.post-$id"))
+            .put("published", JSONObject().put("\$t", at))
+            .put("content", JSONObject().put("type", "html").put("\$t", html))
+            .put("link", org.json.JSONArray().put(JSONObject().put("rel", "alternate").put("href", "https://randomthoughtsever.blogspot.com$path?showComment=1#c$id")))
+            .put("author", org.json.JSONArray().put(JSONObject().put("name", JSONObject().put("\$t", name))
+                .put("uri", JSONObject().put("\$t", "https://www.blogger.com/profile/$name")).put("gd\$image", JSONObject().put("src", photo))))
+            .put("thr\$in-reply-to", JSONObject().put("href", "https://randomthoughtsever.blogspot.com$path").put("ref", "tag:blogger.com,1999:blog-1.post-$post"))
+        val feed = JSONObject().put("feed", JSONObject().put("entry", org.json.JSONArray()
+            .put(entry("c1", "111", "/2026/10/emergency-fund.html", "Asha", "Great guide!<br />I keep 4 months &amp; it helped.", "2026-11-01T10:00:00.000+05:30"))
+            .put(entry("c2", "111", "/2026/10/emergency-fund.html", "Spammer", "Nice! <a href=\"https://cheap-loans.example\" rel=\"nofollow\">loans</a>", "2026-11-01T11:00:00.000+05:30"))
+            .put(entry("c3", "222", "/p/free-tools.html", "Ben", "Where is the PDF tool?", "2026-11-02T10:00:00.000+05:30"))
+            .put(entry("c4", "333", "/2026/09/karma.html", "Asha", "Visit www.mysite.example for more", "2026-11-02T12:00:00.000+05:30"))
+            .put(entry("c5", "333", "/2026/09/karma.html", "Chen", "Day 3 was the hardest for me", "2026-11-03T09:00:00.000+05:30", "https://img1.blogblog.com/img/b16-rounded.gif")))).toString()
+        val notes = t.parse(feed)
+        assertEquals(listOf("c5", "c1"), notes.map { it.id })                          // newest first; link spam and page comments gone
+        assertEquals("Great guide!\nI keep 4 months & it helped.", notes[1].text)
+        assertEquals("111", notes[1].postId); assertEquals("https://blogger.googleusercontent.com/img/a/x=s35", notes[1].photo)
+        assertEquals("", notes[0].photo)                                                 // Blogger's placeholder means "no photo"
+        val v = t.voices(t.parse(feed) + notes.map { it.copy(id = it.id + "b", postId = "444") })
+        assertEquals(2, v.first().notes); assertEquals(2, v.first().guides)
+        // Your post is recognised even after Blogger or the paste changes spacing and punctuation.
+        assertTrue(t.same("Great guide!\nI keep 4 months & it helped.", "Great guide! I keep 4 months & it helped"))
+        assertTrue(!t.same("Day 3 was the hardest for me", "Great guide! I keep 4 months"))
+        assertEquals("https://www.blogger.com/comment/fullpage/post/6417357851361576411/111", t.formUrl("111"))
+    }
+
+    /** The live blog: its comment feed parses, and Blogger's comment page for a guide is there to post on. */
+    @Test fun liveBlogCommentsWork() {
+        val posts = runCatching { URL("https://randomthoughtsever.blogspot.com/feeds/posts/summary?alt=json&max-results=1").readText() }.getOrNull()
+        assumeTrue(posts != null)
+        val id = JSONObject(posts!!).getJSONObject("feed").getJSONArray("entry").getJSONObject(0).getJSONObject("id").getString("\$t").substringAfterLast("post-")
+        val comments = URL("https://randomthoughtsever.blogspot.com/feeds/comments/default?alt=json&max-results=200").readText()
+        com.randomthoughtsever.plainly.data.BlogTalk.parse(comments).forEach { assertTrue(it.text.isNotBlank() && it.postId.isNotBlank()) }
+        val form = URL(com.randomthoughtsever.plainly.data.BlogTalk.formUrl(id)).openConnection() as java.net.HttpURLConnection
+        assertEquals(200, form.responseCode)
+        assertTrue(form.inputStream.bufferedReader().readText().contains("Comment as"))
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

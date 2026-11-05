@@ -20,8 +20,15 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   Daily 3 with a breathing minute and quiz, 31 quizzes tied to guides, challenges with an evening reminder
   (`data/Reminders.kt`), badges and a knowledge map (`data/Engage.kt`, `ui/Personal.kt`), Fix/Decide/Learn/Facts labels,
   Listen (`ui/Speaker.kt`, Android text-to-speech) and a home-screen widget (`PlainlyWidget.kt`).
-- **Community** (`data/Community.kt`, `ui/CommunityScreen.kt`): Firebase anonymous sign-in and Cloud Firestore over REST
-  (no Firebase SDK). Posts, likes, comments, guide discussions, quiz polls, a streak leaderboard, report/block/delete and
+- **Community without Firebase** (`data/BlogTalk.kt`, `ui/BlogCommunity.kt`), the default: conversations are the blog's
+  own comments. The public comment feeds are read natively (spam with outside links dropped): latest conversations
+  across all guides, each guide's conversation (also under every article), and "Top voices" (most comments). To post or
+  reply, the app copies the text and opens Blogger's comment page for that guide in a Custom Tab (Blogger has no API to
+  post comments, and Google sign-in doesn't work in a WebView); when the comment appears in the feed the app marks it
+  "(you)" and ticks the first steps. Hide and block are on the phone. Optional `board=<post or page id>` in
+  `community.properties` adds a general board for posts that aren't about one guide.
+- **Community on Firebase** (`data/Community.kt`, `ui/CommunityScreen.kt`), when `community.properties` has a Firebase
+  project: anonymous sign-in and Cloud Firestore over REST (no Firebase SDK). Posts, likes, comments, guide discussions, quiz polls, a streak leaderboard, report/block/delete and
   "Delete my community data". `firebase/firestore.rules` enforces ownership, one like and one vote per person, and
   counters that can't be faked. Settings come from `community.properties` (`projectId`, `apiKey`). `CommunityTest` runs
   everything, including cheating attempts, against the Firebase emulators (`cd firebase && firebase emulators:start
@@ -67,7 +74,7 @@ For each update, raise `versionCode` (and `versionName`) in `app/build.gradle.kt
 
 ## Security and privacy
 
-- No login, accounts or analytics. Ads: Google Mobile Ads SDK (AdMob) with Google's UMP consent form, started only
+- No login, accounts or analytics in the app. (Posting to the community happens on Blogger's own page, with the reader's Google account.) Ads: Google Mobile Ads SDK (AdMob) with Google's UMP consent form, started only
   when consent rules allow (`ads/Ads.kt`). Permissions: INTERNET, ACCESS_NETWORK_STATE and the advertising ID (added by the ads SDK).
 - AdMob IDs come from `admob.properties` (`appId`, `banner`, `interstitial`). Without it, Google's sample IDs are used.
   Debug builds always use the sample ad units, and `bundleRelease` fails without real IDs, so a Play upload can't carry sample ads.

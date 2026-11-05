@@ -19,7 +19,7 @@ val testInterstitial = "ca-app-pub-3940256099942544/1033173712"
 fun ad(key: String, fallback: String) = (admob.getProperty(key) ?: fallback).trim()
 
 // Community (Firebase) settings from community.properties: projectId and apiKey (a web API key; not secret, it ships in
-// the app and Firestore security rules protect the data). Without the file, the Community tab says it's opening soon.
+// the app and Firestore security rules protect the data). Without them, the community runs on the blog's comments.
 val community = Properties().apply {
     val f = rootProject.file("community.properties")
     if (f.exists()) f.inputStream().use { load(it) }
@@ -43,6 +43,8 @@ android {
         versionName = "1.1.0"
         buildConfigField("String", "COMMUNITY_PROJECT", "\"${community.getProperty("projectId", "")}\"")
         buildConfigField("String", "COMMUNITY_KEY", "\"${community.getProperty("apiKey", "")}\"")
+        // Optional: the id of a blog post or page whose comments are the community's general board (without Firebase).
+        buildConfigField("String", "COMMUNITY_BOARD", "\"${community.getProperty("board", "").filter { it.isDigit() }}\"")
         manifestPlaceholders["admobAppId"] = ad("appId", testAppId)
         buildConfigField("String", "ADMOB_BANNER", "\"${ad("banner", testBanner)}\"")
         buildConfigField("String", "ADMOB_INTERSTITIAL", "\"${ad("interstitial", testInterstitial)}\"")

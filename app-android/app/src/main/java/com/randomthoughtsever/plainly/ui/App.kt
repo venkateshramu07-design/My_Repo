@@ -119,6 +119,8 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
     fun library() = c.navigate("library")
     fun check(id: String) = c.navigate("check/$id")
     fun thread(id: String) = c.navigate("post/$id")
+    /** A guide's conversation in the blog-comments community. */
+    fun talk(id: String) = c.navigate("talk/$id")
     fun challenges() = c.navigate("challenges")
     fun challenge(key: String) = c.navigate("challenge/$key")
     fun reads() = c.navigate("reads")
@@ -216,6 +218,7 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
             composable("games") { GamesScreen(nav) }
             composable("game/{id}") { GameScreen(it.arguments?.getString("id") ?: "rps", nav) }
             composable("post/{id}") { ThreadScreen(it.arguments?.getString("id") ?: "", nav) }
+            composable("talk/{id}") { TalkScreen(it.arguments?.getString("id") ?: "", nav) }
             composable("challenges") { ChallengesScreen(nav) }
             composable("check/{id}") { CheckScreen(it.arguments?.getString("id") ?: "money", nav) }
             composable("explore") { ExploreScreen(nav) }

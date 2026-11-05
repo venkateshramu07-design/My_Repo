@@ -335,6 +335,14 @@ fun SettingsScreen(nav: Nav) {
                 ListItem(headlineContent = { Text("Delete my community data") }, supportingContent = { Text(status ?: "Your posts, comments and community ID") },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent), modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { confirm = true })
             }
+            else item {
+                var shown by remember { mutableStateOf(false) }
+                ListItem(headlineContent = { Text("Your community posts") },
+                    supportingContent = { Text(if (shown) "Shown again: everything you hid or blocked." else
+                        "They're comments on the blog, under your Google account. To delete one, open it on the blog and tap the bin. Tap here to show what you hid or blocked again.") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { com.randomthoughtsever.plainly.data.BlogTalk.unblockAll(); shown = true })
+            }
             item {
                 var remind by remember { mutableStateOf(NewPosts.prefs(context).getBoolean("reminders", true)) }
                 ListItem(headlineContent = { Text("Challenge and Daily 3 reminders") }, supportingContent = { Text("One evening nudge, only when something's left to do") },

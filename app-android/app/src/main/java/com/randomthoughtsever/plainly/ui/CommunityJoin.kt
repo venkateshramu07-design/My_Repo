@@ -80,6 +80,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.randomthoughtsever.plainly.data.BlogTalk
 import com.randomthoughtsever.plainly.data.CHALLENGES
 import com.randomthoughtsever.plainly.data.Community
 import com.randomthoughtsever.plainly.data.GOALS
@@ -104,7 +105,8 @@ fun JoinCommunity(nav: Nav) {
         label = "join") { s ->
         when (s) {
             0 -> JoinLanding { step = 1 }
-            1 -> JoinStep(1, "How do you want to appear?", "Pick a name and an emoji. No real name, email or phone number, ever.",
+            1 -> JoinStep(1, "How do you want to appear?", if (Community.enabled) "Pick a name and an emoji. No real name, email or phone number, ever."
+                else "Pick a name and an emoji for your profile in the app. On posts, the blog shows the name of the Google account you comment with.",
                 "Next", Community.problem(name) == null && name.trim().length >= 2, back = { step = 0 }, next = { step = 2 }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Avatar(avatar, 64); Spacer(Modifier.width(14.dp))
@@ -149,7 +151,8 @@ fun JoinCommunity(nav: Nav) {
             }) {
                 listOf("🤝" to "Be kind. No insults, hate or harassment.", "💬" to "Share experience, not financial advice. Nothing here is professional advice.",
                     "🚫" to "No spam, selling or links (guides on the blog are fine).", "🔒" to "Keep yourself safe: no phone numbers, addresses or account details.",
-                    "🚩" to "Report anything that breaks these rules. We remove it, and repeat offenders are blocked.").forEach { (e, t) ->
+                    "🚩" to if (Community.enabled) "Report anything that breaks these rules. We remove it, and repeat offenders are blocked."
+                        else "Hide or block anything that breaks these rules. The blog's owner removes it, and repeat offenders are blocked.").forEach { (e, t) ->
                     Row(Modifier.padding(vertical = 7.dp)) { Text(e, style = MaterialTheme.typography.titleLarge); Spacer(Modifier.width(12.dp)); Text(t, style = MaterialTheme.typography.bodyLarge) }
                 }
             }
@@ -171,12 +174,14 @@ private fun JoinLanding(join: () -> Unit) {
         Spacer(Modifier.height(20.dp))
         Text("Join the Plainly community", style = MaterialTheme.typography.displaySmall, color = Color.White)
         Spacer(Modifier.height(8.dp))
-        Text("Real people working on the same things you are: money, a calmer mind, their careers. Free, friendly, and no account.",
+        Text("Real people working on the same things you are: money, a calmer mind, their careers. " +
+            if (Community.enabled) "Free, friendly, and no account." else "Free and friendly. Reading is open to all; to post, you use your Google account, like any comment on the blog.",
             style = MaterialTheme.typography.bodyLarge, color = Color.White.copy(alpha = .82f))
         Spacer(Modifier.height(18.dp))
         listOf(Icons.Rounded.EmojiPeople to "Share tips and small wins", Icons.AutoMirrored.Rounded.Chat to "Ask questions and get answers from readers",
-            Icons.Rounded.Forum to "Discuss every guide with others", Icons.Rounded.HowToVote to "See how everyone answered the quizzes",
-            Icons.Rounded.EmojiEvents to "Do challenges together and climb the streak board").forEach { (icon, t) ->
+            Icons.Rounded.Forum to "Discuss every guide with others",
+            Icons.Rounded.HowToVote to if (Community.enabled) "See how everyone answered the quizzes" else "Test yourself with a quiz every day",
+            Icons.Rounded.EmojiEvents to if (Community.enabled) "Do challenges together and climb the streak board" else "Do challenges and become a top voice").forEach { (icon, t) ->
             Row(Modifier.padding(vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(38.dp).clip(CircleShape).background(Gold.copy(alpha = .2f)), contentAlignment = Alignment.Center) { Icon(icon, null, tint = Gold, modifier = Modifier.size(20.dp)) }
                 Spacer(Modifier.width(12.dp))
@@ -217,17 +222,20 @@ private fun JoinStep(n: Int, title: String, sub: String, cta: String, enabled: B
 // ---------- After joining: welcome and first steps ----------
 
 /** One of the first things a new member should do, with whether it's done and where it leads. */
-data class FirstStep(val key: String, val emoji: String, val title: String, val how: String, val done: Boolean, val needsServer: Boolean)
+data class FirstStep(val key: String, val emoji: String, val title: String, val how: String, val done: Boolean)
 
+/** On the blog-comments community, "Say hello" needs a board post to say it on; without one the step is left out. */
 fun firstSteps(): List<FirstStep> {
     val p = AppGraph.profile; val lib = AppGraph.library
-    return listOf(
-        FirstStep("profile", "🙂", "Set up your profile", "Done when you joined: ${p.avatar} ${p.name}", true, false),
-        FirstStep("hello", "👋", "Say hello", "Post a short introduction: what you're working on.", Community.posted, true),
-        FirstStep("poll", "🗳️", "Answer today's poll", "One quick question. See how others answered.", p.quizStats().second > 0, false),
-        FirstStep("challenge", "🏁", "Join a challenge", "Pick one and check in each day. Others are doing it too.", p.joined().isNotEmpty() || p.finishedChallenges() > 0, false),
-        FirstStep("discuss", "💬", "Comment on a guide", "Open any guide and add your thoughts under Discussion.", Community.discussed, true),
-        FirstStep("streak", "🔥", "Keep a 3-day streak", "Open Plainly three days in a row. You're on day ${lib.streak().coerceAtLeast(1)}.", lib.streak() >= 3, false),
+    val hello = Community.enabled || BlogTalk.board.isNotBlank()
+    return listOfNotNull(
+        FirstStep("profile", "🙂", "Set up your profile", "Done when you joined: ${p.avatar} ${p.name}", true),
+        if (hello) FirstStep("hello", "👋", "Say hello", "Post a short introduction: what you're working on.", Community.posted) else null,
+        FirstStep("poll", "🗳️", if (Community.enabled) "Answer today's poll" else "Answer today's quiz",
+            if (Community.enabled) "One quick question. See how others answered." else "One quick question, and why the answer is right.", p.quizStats().second > 0),
+        FirstStep("challenge", "🏁", "Join a challenge", "Pick one and check in each day. Others are doing it too.", p.joined().isNotEmpty() || p.finishedChallenges() > 0),
+        FirstStep("discuss", "💬", "Comment on a guide", "Open any guide and add your thoughts under Discussion.", Community.discussed),
+        FirstStep("streak", "🔥", "Keep a 3-day streak", "Open Plainly three days in a row. You're on day ${lib.streak().coerceAtLeast(1)}.", lib.streak() >= 3),
     )
 }
 
@@ -236,7 +244,7 @@ fun firstSteps(): List<FirstStep> {
 fun CommunityHome(nav: Nav) {
     var welcomed by remember { mutableStateOf(Community.welcomed) }
     if (!welcomed) { Welcome { Community.welcomed = true; welcomed = true }; return }
-    if (Community.enabled) CommunityScreen(nav) else CommunityWaiting(nav)
+    if (Community.enabled) CommunityScreen(nav) else BlogCommunityScreen(nav)
 }
 
 @Composable
@@ -290,8 +298,7 @@ fun FirstStepsCard(nav: Nav, onSayHello: () -> Unit) {
             }
             LinearProgressIndicator(progress = { done / steps.size.toFloat() }, modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp).height(6.dp).clip(CircleShape), color = Gold)
             steps.forEach { s ->
-                val locked = s.needsServer && !Community.enabled
-                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).clickable(enabled = !s.done && !locked) {
+                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).clickable(enabled = !s.done) {
                     when (s.key) {
                         "hello" -> onSayHello(); "poll" -> poll = !poll; "challenge" -> nav.challenges(); "discuss" -> nav.tab("explore")
                     }
@@ -303,11 +310,10 @@ fun FirstStepsCard(nav: Nav, onSayHello: () -> Unit) {
                     Column(Modifier.weight(1f)) {
                         Text(s.title, style = MaterialTheme.typography.titleSmall,
                             color = if (s.done) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface)
-                        Text(if (locked) "Opens when posting goes live." else s.how, style = MaterialTheme.typography.bodySmall,
+                        Text(s.how, style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
-                    if (locked) Icon(Icons.Rounded.Lock, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                    else if (!s.done && s.key != "streak") Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                    if (!s.done && s.key != "streak") Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                 }
                 if (s.key == "poll" && poll && !s.done) Box(Modifier.padding(start = 48.dp, bottom = 8.dp)) { QuizBody(quizOfTheDay(AppGraph.profile.goals), nav) }
             }
@@ -326,39 +332,6 @@ fun helloPrompts(): List<String> {
             "career" -> "ask for a raise"; "abroad" -> "plan my move abroad"; else -> "read one guide a day" }}. Who's with me?",
         "Hi all! What's one money habit that changed things for you?",
     )
-}
-
-/** When the community server isn't switched on yet: members still get their first steps, the poll and challenges, and an honest note. */
-@Composable
-private fun CommunityWaiting(nav: Nav) {
-    val p = AppGraph.profile
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
-        item { MemberHeader() }
-        item {
-            Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
-                Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("🚀", style = MaterialTheme.typography.headlineMedium); Spacer(Modifier.width(12.dp))
-                    Column {
-                        Text("Posts and comments open soon", style = MaterialTheme.typography.titleMedium)
-                        Text("You're a member already: your profile and progress are saved. Meanwhile, finish your first steps below.",
-                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-            }
-        }
-        item { FirstStepsCard(nav) {} }
-        item { ChallengesStrip(nav) }
-        item {
-            Surface(shape = RoundedCornerShape(26.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 1.dp,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
-                Column(Modifier.padding(18.dp)) {
-                    Text("TODAY'S POLL", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold)
-                    Spacer(Modifier.height(6.dp))
-                    QuizBody(quizOfTheDay(p.goals), nav)
-                }
-            }
-        }
-    }
 }
 
 @Composable

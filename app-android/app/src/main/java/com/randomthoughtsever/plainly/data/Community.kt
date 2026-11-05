@@ -24,7 +24,7 @@ import java.time.Instant
  * rules in /firebase/firestore.rules decide what each person may write (only their own posts, one like and one vote
  * each, counters that can't be faked). Reporting goes to a reports collection the owner reviews; blocking is on the phone.
  *
- * Switched on by community.properties (projectId, apiKey). Without it, the Community tab says it's opening soon.
+ * Switched on by community.properties (projectId, apiKey). Without it, the community runs on the blog's own comments (BlogTalk).
  */
 object Community {
     data class Post(val id: String, val uid: String, val name: String, val avatar: String, val text: String, val topic: String, val guide: String,
@@ -59,6 +59,8 @@ object Community {
     /** First-steps progress: posted at least once; joined a guide's discussion. */
     val posted get() = ::prefs.isInitialized && prefs.getBoolean("posted", false)
     val discussed get() = ::prefs.isInitialized && prefs.getBoolean("discussed", false)
+    /** For the blog-comments community: a comment of yours showed up on the blog. */
+    fun markPosted(onGuide: Boolean) { if (::prefs.isInitialized) prefs.edit().putBoolean("posted", true).apply { if (onGuide) putBoolean("discussed", true) }.apply() }
     val uid: String? get() = if (::prefs.isInitialized) prefs.getString("uid", null) else null
 
     private val docs get() = "$firestoreBase/v1/projects/$projectId/databases/(default)/documents"

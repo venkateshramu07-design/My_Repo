@@ -326,7 +326,8 @@ fun RulesDialog(done: (Boolean) -> Unit) = AlertDialog(onDismissRequest = { done
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         listOf("Be kind. No insults, hate or harassment.", "Share experience, not financial advice. Nothing here is professional advice.",
             "No spam, selling or links (guides on the blog are fine).", "Keep yourself safe: no phone numbers, addresses or account details.",
-            "Report anything that breaks the rules. Posts that do are removed, and repeat offenders are blocked.").forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
+            if (Community.enabled) "Report anything that breaks the rules. Posts that do are removed, and repeat offenders are blocked."
+            else "Posts are comments on the blog: they're public, and the blog's owner removes any that break the rules.").forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
     }
 }, confirmButton = { Button(onClick = { done(true) }, shape = RoundedCornerShape(50)) { Text("I agree") } },
     dismissButton = { TextButton(onClick = { done(false) }) { Text("Not now") } })
@@ -398,7 +399,7 @@ private fun Leaders() {
 /** At the end of an article: what readers say about it, and a button to join in. */
 @Composable
 fun ArticleDiscussion(guideId: String, nav: Nav) {
-    if (!Community.enabled) return
+    if (!Community.enabled) { BlogArticleDiscussion(guideId, nav); return }
     var posts by remember { mutableStateOf<List<Community.Post>?>(null) }
     var composing by remember { mutableStateOf(false) }
     LaunchedEffect(guideId) { posts = runCatching { Community.discussion(guideId) }.getOrDefault(emptyList()) }

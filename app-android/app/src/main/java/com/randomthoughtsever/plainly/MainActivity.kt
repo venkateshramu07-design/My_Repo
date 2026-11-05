@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
         AppGraph.profile = com.randomthoughtsever.plainly.data.Profile(applicationContext)
         Catalog.load(applicationContext)
         com.randomthoughtsever.plainly.data.Community.init(applicationContext)
+        com.randomthoughtsever.plainly.data.BlogTalk.init(applicationContext)
         runCatching { PlainlyWidget.refresh(applicationContext) }
         if (AppGraph.profile.joined().isNotEmpty()) com.randomthoughtsever.plainly.data.Reminders.schedule(applicationContext)
         com.randomthoughtsever.plainly.data.Community.publishStats(AppGraph.profile.name, AppGraph.profile.avatar, AppGraph.library.streak(), AppGraph.library.reads())

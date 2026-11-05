@@ -40,16 +40,18 @@ Plainly is a native Android app with its own screens. It is not a copy of the we
   with the tip of the day and your streak.
 - **Joining the community**: a landing page explains what it's for, then three quick steps (name and emoji, topics,
   rules) and a "You're in!" welcome. Members get a **first-steps checklist** (say hello with ready-made first posts,
-  answer today's poll, join a challenge, comment on a guide, keep a 3-day streak) that ticks itself off. Before Step 2C
-  is done, members still get their profile, first steps, the daily poll and challenges, with a clear note that posting
-  opens soon.
+  answer today's quiz, join a challenge, comment on a guide, keep a 3-day streak) that ticks itself off.
 - **Challenges** open their own page when joined: day N of N, today's task with a check-in button, a tip for each day,
   how it works, guides that help, and invite a friend.
 - **Search answers while you type**: results from every guide appear on each keystroke (partial words count, matches
   highlighted), with deeper full-text results added underneath and recent searches remembered.
-- **Community** (needs Step 2C): an anonymous name and emoji (no account), posts, likes, comments, a discussion under
-  every guide, live "what others answered" on quizzes, and a streak leaderboard. Rules shown before the first post, a
-  word and link filter, Report, Block, delete your own posts, and "Delete my community data" in Settings.
+- **Community, without Firebase** (works now, nothing to set up): conversations are your blog's comments. The app shows
+  the latest comments from every guide, each guide's whole conversation (also under every article), and "Top voices".
+  To post or reply, people write in the app, tap **Copy and continue**, and Blogger's comment box for that guide opens;
+  they paste, sign in with Google if asked, and tap Publish. When it appears, the app marks it as theirs. Spam with
+  outside links is filtered out; Hide and Block work on the phone; you moderate as usual in Blogger → **Comments**.
+- **Community on Firebase** (optional, Step 2C): anonymous posting inside the app, likes, live quiz results and a streak
+  leaderboard.
 - **Games** (the last tab): Rock Paper Scissors (first to 3), Money Match (memory pairs), Number Rush (45 seconds of quick
   money maths), Tic-Tac-Toe (Easy or Unbeatable) and Reaction Time, with best scores saved on the phone. All offline.
 - **Bottom bar** (floating, animated): **Today · Explore · Reads · Tools · You · Games · Community**.
@@ -142,9 +144,21 @@ AdMob is Google's ad network for apps (the app version of AdSense) and pays out 
 8. After the app is live on Google Play (Step 7): in AdMob, open **Apps → Plainly → App settings → Add app store
    details** and link the Play listing. AdMob then reviews the app (a few days). Until that's done, few ads are shown.
 
-## Step 2C: Switch on Community with a free Firebase project (10 minutes)
+## Step 2B-2: Community settings on Blogger (2 minutes, recommended)
 
-Community needs a small server to store posts. Firebase (Google) does this, free at Plainly's size (the free "Spark"
+The Community runs on your blog's comments, so Blogger's comment settings apply. In Blogger → **Settings → Comments**:
+- **Who can comment**: "Users with Google Accounts" (now) works. "Anyone - including Anonymous" lets people post without
+  signing in, but brings much more spam.
+- **Comment moderation**: "Always" means each post waits for your approval (the app tells people that); "Never"
+  shows posts at once. Either way, delete anything that breaks the rules under Blogger → **Comments**.
+- Optional: a general board for posts that aren't about one guide. Publish a page or post called "Plainly Community"
+  with comments on, send me its id (the number in the editor's address bar), and I'll build it in. The "Say hello" first
+  step then appears.
+
+## Step 2C (optional): Firebase for in-app posting without a Google sign-in (10 minutes)
+
+The community already works without this. Firebase adds anonymous posting inside the app, likes, live quiz results and
+a streak leaderboard. It needs a small server to store posts. Firebase (Google) does this, free at Plainly's size (the free "Spark"
 plan allows 50,000 reads and 20,000 writes a day).
 
 1. Go to **https://console.firebase.google.com**, sign in with the same Google account, click **Create a project**, name
@@ -161,7 +175,7 @@ plan allows 50,000 reads and 20,000 writes a day).
    Open the post it points to under **posts** and delete it if it breaks the rules. Google Play requires that you act
    on reports.
 
-Until this is done, the Community tab shows "Community is opening soon" and everything else works.
+Until this is done (or if you skip it), the Community runs on the blog's comments as described above.
 
 ## Step 3: Create the app (5 minutes)
 
@@ -181,7 +195,7 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 | **Privacy policy** | `https://randomthoughtsever.blogspot.com/2021/06/privacy-policy.html` (its "Plainly, Our Android App" section describes this app) |
 | **App access** | All functionality is available without special access |
 | **Ads** | **Yes, my app contains ads** |
-| **Content rating** | Start the questionnaire. Enter your email and choose the category **"Reference, News, or Educational"**. Answer **No** to violence, sexuality, language, drugs, gambling, sharing location and digital purchases. To **"Can users interact or exchange content?"** answer **Yes** (Community) and say that you moderate it (report and block, rules, removal). Submit. You'll get a rating such as "Everyone" or "Rated for 3+". |
+| **Content rating** | Start the questionnaire. Enter your email and choose the category **"Reference, News, or Educational"**. Answer **No** to violence, sexuality, language, drugs, gambling, sharing location and digital purchases. To **"Can users interact or exchange content?"** answer **Yes** (Community) and say that you moderate it (rules, hide and block, removal of comments on the blog). Submit. You'll get a rating such as "Everyone" or "Rated for 3+". |
 | **Target audience** | Tick **18 and over** only (the money and health guides are written for adults, and this avoids the extra rules for children's apps). |
 | **News apps** | No |
 | **Data safety** | See below |
@@ -195,9 +209,9 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 1. "Does your app collect or share any of the required user data types?" **Yes**.
 2. "Is all of the user data collected by your app encrypted in transit?" **Yes**.
 3. "Which of the following methods of account creation does your app support?" **My app does not allow users to create an account**.
-4. "Do you provide a way for users to request that their data is deleted?" **Yes**: Settings → **Delete my community
-   data** removes their posts, comments, leaderboard entry and anonymous ID (advertising data: people reset their
-   advertising ID in their phone's settings).
+4. "Do you provide a way for users to request that their data is deleted?" **Yes**: advertising data is reset with the
+   advertising ID in the phone's settings; community comments are deleted on the blog by the person who wrote them
+   (with Firebase on: Settings → **Delete my community data** removes their posts, comments, leaderboard entry and ID).
 5. Tick these data types, and for each answer **Collected: Yes, Shared: Yes, Processed ephemerally: No,
    Required** (users can't turn it off inside the app), with the purposes listed:
 
@@ -207,7 +221,14 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 | **App activity → App interactions** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
 | **App info and performance → Crash logs** | Analytics, Fraud prevention, security and compliance |
 | **App info and performance → Diagnostics** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
-| **Device or other IDs → Device or other IDs** | Advertising or marketing, Analytics, Fraud prevention, security and compliance, **App functionality** (the anonymous Community ID) |
+| **Device or other IDs → Device or other IDs** | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+
+Community on the blog's comments (the default) adds nothing here: the app sends no posts or names anywhere; people
+publish on Blogger's own page with their Google account. **Only if you switch on Firebase (Step 2C)**, also tick:
+
+| Data type (section → type) | Purposes to tick |
+|---|---|
+| **Device or other IDs → Device or other IDs** | add **App functionality** (the anonymous Community ID) |
 | **Personal info → Name** (the Community display name) | App functionality. Collected: Yes, Shared: No, **Optional** |
 | **App activity → Other user-generated content** (posts, comments, likes, quiz votes, reports) | App functionality. Collected: Yes, Shared: No, **Optional** |
 
