@@ -136,6 +136,15 @@ class LogicTest {
         assertTrue(ranked[1].startsWith("Credit Karma vs FICO"))
     }
 
+    @Test fun moreToReadMixesTopics() {
+        fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
+        val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),
+            e("m1", "Psychology", "2026-10-29"), e("f1", "Personal Finance", "2026-10-28"), e("t4", "Tools", "2026-10-27"))
+        val mixed = com.randomthoughtsever.plainly.ui.mixTopics(feed).map { it.id }
+        assertEquals(listOf("t1", "m1", "t2", "f1", "t3", "t4"), mixed)
+        assertEquals(feed.size, mixed.toSet().size)
+    }
+
     /** Runs the reader over every live post, so a real-world layout that breaks it is caught. */
     @Test fun readerHandlesEveryLivePost() {
         val body = runCatching { URL("https://randomthoughtsever.blogspot.com/feeds/posts/default?alt=json&max-results=150").readText() }.getOrNull()

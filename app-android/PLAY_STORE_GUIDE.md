@@ -21,7 +21,7 @@ version 1.1.0 (code 2). It targets Android 16 (API 36), as Google Play requires,
 Plainly is a native Android app with its own screens. It is not a copy of the website in a browser window:
 - **Today**: a finished page, not an endless feed. It has topic **stories** you tap through (a ring lights up when a topic
   has something new), **Today's pick** (changes every day), **Just published**, a live **Money in 10 seconds** slider,
-  flip-card **30-second answers**, popular tools, a topic spotlight and **You're all caught up** at the end.
+  flip-card **30-second answers**, popular tools, a topic spotlight, then **More to read**: every guide on the blog, newest first and mixed by topic, loading as you scroll.
 - **New posts appear straight away**: Today reloads whenever the app is opened or brought back, checks every minute while
   it's on screen (a "Just published" pill slides in), and pull-to-refresh is always there. People who allow
   notifications get a **"New on Plainly"** notification within about 15 minutes of a post going live (Android's limit for

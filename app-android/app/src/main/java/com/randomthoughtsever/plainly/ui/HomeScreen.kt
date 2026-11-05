@@ -1,5 +1,8 @@
 package com.randomthoughtsever.plainly.ui
 
+import com.randomthoughtsever.plainly.data.Entry
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.lazy.LazyListScope
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -127,8 +130,8 @@ import kotlin.math.absoluteValue
 private object HomeCache { var posts: List<Post> = emptyList(); var loadedAt = 0L }
 
 /**
- * Today: a finished page, not an endless feed. Stories by topic, a daily pick, what's just been published, a live
- * money widget, flip-card quick answers, popular tools and a topic spotlight, ending with "You're all caught up".
+ * Today: stories by topic, a daily pick, what's just been published, a live
+ * money widget, flip-card quick answers, popular tools and a topic spotlight, followed by "More to read": every guide, newest first.
  * New posts show up the moment Today opens or comes back to the screen, and it checks every minute while visible.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -142,6 +145,14 @@ fun HomeScreen(nav: Nav) {
     var fresh by remember { mutableStateOf<Post?>(null) }
     var story by remember { mutableStateOf<String?>(null) }
     val list = rememberLazyListState()
+    // "More to read": every guide on the blog, newest first, after Today's sections. Loads 20 more as you reach the end.
+    val index by produceState<List<Entry>>(emptyList(), posts.firstOrNull()?.id) { value = AppGraph.repo.index(force = false) }
+    var shown by rememberSaveable { mutableIntStateOf(20) }
+    val more = remember(posts, index) {
+        (posts.map { it.toEntry() } + index).distinctBy { it.id }.sortedByDescending { it.published }
+            .let { all -> if (posts.isEmpty()) all else all.filter { it.id != dailyPick(posts).id } }
+            .let(::mixTopics)
+    }
 
     suspend fun load() {
         val before = posts.firstOrNull()?.id
@@ -183,7 +194,7 @@ fun HomeScreen(nav: Nav) {
                         item { PopularTools(nav) }
                         item { TopicSpotlight(posts, nav) }
                         item { NotifyCard() }
-                        item { CaughtUp(nav) }
+                        moreToRead(this, more, shown, nav) { shown += 20 }
                     }
                 }
             }
@@ -213,6 +224,11 @@ private fun dailyPick(posts: List<Post>): Post {
 }
 
 private fun age(p: Post): Long = runCatching { ChronoUnit.DAYS.between(LocalDate.parse(p.published), LocalDate.now()) }.getOrDefault(99)
+private fun ageText(published: String): String {
+    val d = runCatching { ChronoUnit.DAYS.between(LocalDate.parse(published), LocalDate.now()) }.getOrDefault(999)
+    return when { d == 0L -> "Today"; d == 1L -> "Yesterday"; d < 14 -> "$d days ago"; d < 60 -> "${d / 7} weeks ago"
+        else -> runCatching { LocalDate.parse(published).format(DateTimeFormatter.ofPattern("MMM yyyy", Locale.getDefault())) }.getOrDefault(published) }
+}
 private fun ageText(p: Post) = when (val d = age(p)) { 0L -> "Today"; 1L -> "Yesterday"; in 2..13 -> "$d days ago"; else -> "${d / 7} weeks ago" }
 
 @Composable
@@ -588,20 +604,63 @@ private fun NotifyCard() {
     }
 }
 
-@Composable
-private fun CaughtUp(nav: Nav) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(Modifier.size(56.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-            Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(30.dp))
+/**
+ * Keeps the feed varied: newest first, but the next guide is never from the same topic as the one before it when
+ * another topic is waiting nearby (so ten "Resize image to N KB" pages don't come in a row).
+ */
+internal fun mixTopics(list: List<Entry>): List<Entry> {
+    val left = list.toMutableList()
+    val out = ArrayList<Entry>(list.size)
+    while (left.isNotEmpty()) {
+        val last = out.lastOrNull()?.label
+        val i = left.take(12).indexOfFirst { it.label != last }.let { if (it < 0) 0 else it }
+        out += left.removeAt(i)
+    }
+    return out
+}
+
+private fun Post.toEntry() = Entry(id, title, path, url, labels, published, excerpt, image)
+
+/** The never-ending part of Today: every guide, newest first, a big card every 7th, an ad after every 10th. */
+private fun moreToRead(scope: LazyListScope, more: List<Entry>, shown: Int, nav: Nav, loadMore: () -> Unit) = with(scope) {
+    if (more.isEmpty()) return@with
+    item(key = "more-header") {
+        Row(Modifier.padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 6.dp), verticalAlignment = Alignment.Bottom) {
+            Text("More to read", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            Text("${more.size} guides", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Spacer(Modifier.height(12.dp))
-        Text("You're all caught up", style = MaterialTheme.typography.titleLarge)
-        Text("New guides appear here the moment they're published.", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.height(14.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FilledTonalButton(onClick = { nav.tab("explore") }) { Text("Browse all guides") }
-            OutlinedButton(onClick = { nav.saved() }) { Icon(Icons.Rounded.Bookmarks, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Saved") }
+    }
+    val page = more.take(shown)
+    page.forEachIndexed { i, e ->
+        item(key = "more-${e.id}") {
+            if (i % 7 == 0) BigEntryCard(e, nav)
+            else Box(Modifier.padding(horizontal = 16.dp)) { PostRow(e.ref, { nav.article(e.id) }) }
+        }
+        if (i % 10 == 9) item(key = "more-ad-$i") { BannerAd("home:feed:${i / 10}", Modifier.padding(horizontal = 20.dp)) }
+    }
+    if (shown < more.size) item(key = "more-loader-$shown") {
+        LaunchedEffect(shown) { delay(120); loadMore() }
+        Box(Modifier.fillMaxWidth().padding(20.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 3.dp) }
+    }
+}
+
+@Composable
+private fun BigEntryCard(e: Entry, nav: Nav) {
+    Surface(onClick = { nav.article(e.id) }, shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surface, shadowElevation = 2.dp,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)) {
+        Column {
+            Cover(e.image, e.label, Modifier.fillMaxWidth().aspectRatio(COVER_RATIO), 48.dp, corner = 0.dp)
+            Column(Modifier.padding(16.dp)) {
+                Text("${topicFor(e.label).title.uppercase()} · ${ageText(e.published)}", style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(4.dp))
+                Text(e.title, style = MaterialTheme.typography.titleLarge, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                if (e.quick.isNotBlank()) {
+                    Spacer(Modifier.height(6.dp))
+                    Text(e.quick, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2,
+                        overflow = TextOverflow.Ellipsis)
+                }
+            }
         }
     }
 }
