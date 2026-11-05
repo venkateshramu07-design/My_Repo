@@ -328,7 +328,7 @@ fun RulesDialog(done: (Boolean) -> Unit) = AlertDialog(onDismissRequest = { done
         listOf("Be kind. No insults, hate or harassment.", "Share experience, not financial advice. Nothing here is professional advice.",
             "No spam, selling or links (guides on the blog are fine).", "Keep yourself safe: no phone numbers, addresses or account details.",
             if (Community.enabled) "Report anything that breaks the rules. Posts that do are removed, and repeat offenders are blocked."
-            else "Posts are comments on the blog: they're public, and the blog's owner removes any that break the rules.").forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
+            else "Posts are comments on the blog: they're public. Report anything that breaks the rules; the blog's owner removes it.").forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
     }
 }, confirmButton = { Button(onClick = { done(true) }, shape = RoundedCornerShape(50)) { Text("I agree") } },
     dismissButton = { TextButton(onClick = { done(false) }) { Text("Not now") } })

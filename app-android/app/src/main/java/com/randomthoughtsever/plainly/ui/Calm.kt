@@ -94,6 +94,9 @@ fun CalmScreen(mode: String, nav: Nav) {
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when (tab) { 0 -> Breathe(); 1 -> Focus(); else -> Sleep { sound = "off" } }
         }
+        Text("For relaxation only, not medical advice. If you're struggling, please talk to a doctor or a local helpline.",
+            color = Color.White.copy(alpha = .55f), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 24.dp, vertical = 8.dp))
     }
 }
 

@@ -101,6 +101,8 @@ fun LifeSimScreen(nav: Nav) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
                         }
                     }
+                    Text("A simplified game for learning, not financial advice. Real returns, rates and outcomes vary.", style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp))
                     if (pr.simBest() >= 0) Text("Your best: ${pr.simBest()} (${LifeSim.grade(pr.simBest())}) · ${pr.simRuns()} years played",
                         style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp))
                     Spacer(Modifier.height(18.dp))

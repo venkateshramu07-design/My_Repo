@@ -15,7 +15,7 @@ val MICRO_ACTIONS = listOf(
     MicroAction("Set up autopay for at least the minimum on one card", "A missed payment costs fees and score points.", "debt", Regex("(?i)credit|debt")),
     MicroAction("Write down three things you spent on yesterday", "Noticing spending is the first step of every budget.", "save", Regex("(?i)budget|spend")),
     MicroAction("Unsubscribe from one shop's emails", "Fewer offers, fewer impulse buys.", "save", Regex("(?i)budget|spend|save")),
-    MicroAction("Do one minute of slow breathing: in 4, out 6", "Longer out-breaths slow your heart.", "mind", Regex("(?i)stress|calm|anxiety")),
+    MicroAction("Do one minute of slow breathing: in 4, out 6", "Many people find slow breathing calming.", "mind", Regex("(?i)stress|calm|anxiety")),
     MicroAction("Put your phone in another room for 30 minutes", "Distance makes focus easier than willpower.", "mind", Regex("(?i)focus|habit|deep work")),
     MicroAction("Go to bed 15 minutes earlier tonight", "Small sleep gains add up quickly.", "mind", Regex("(?i)sleep")),
     MicroAction("Drink a glass of water before your next coffee", "Tiny habits stick when tied to an existing one.", "mind", Regex("(?i)habit|health")),

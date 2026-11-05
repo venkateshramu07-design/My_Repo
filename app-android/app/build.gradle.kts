@@ -48,9 +48,11 @@ android {
         // expects tips to the developer to go through Play Billing; preview APKs are built with -PsupportLinks=true.
         // Preview APKs can be limited to phone processors (-Pabis=arm64-v8a,armeabi-v7a); Play's .aab splits by itself.
         (project.findProperty("abis") as String?)?.let { ndk { abiFilters += it.split(",") } }
-        buildConfigField("boolean", "SUPPORT_LINKS", "${(project.findProperty("supportLinks") ?: "false") == "true"}")
-        buildConfigField("String", "SUPPORT_PAYPAL", "\"VenkateshramuM\"")
-        buildConfigField("String", "SUPPORT_UPI", "\"venkateshramu000@okhdfcbank\"")
+        val links = (project.findProperty("supportLinks") ?: "false") == "true"
+        buildConfigField("boolean", "SUPPORT_LINKS", "$links")
+        // Without the switch the payment details aren't even in the app.
+        buildConfigField("String", "SUPPORT_PAYPAL", if (links) "\"VenkateshramuM\"" else "\"\"")
+        buildConfigField("String", "SUPPORT_UPI", if (links) "\"venkateshramu000@okhdfcbank\"" else "\"\"")
         buildConfigField("String", "COMMUNITY_BOARD", "\"${community.getProperty("board", "").filter { it.isDigit() }}\"")
         manifestPlaceholders["admobAppId"] = ad("appId", testAppId)
         buildConfigField("String", "ADMOB_BANNER", "\"${ad("banner", testBanner)}\"")
@@ -115,7 +117,7 @@ dependencies {
     // On-device article translation (models download once per language, then work offline).
     implementation("com.google.mlkit:translate:17.0.3")
     // "Support Plainly" tips through Google Play.
-    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    implementation("com.android.billingclient:billing-ktx:8.0.0")
 
     // JVM tests: pure maths and parsing, plus Robolectric to render real screens for checks and store screenshots.
     testImplementation("junit:junit:4.13.2")
@@ -143,4 +145,10 @@ tasks.matching { it.name == "bundleRelease" }.configureEach {
         if (admob.getProperty("appId") == null || admob.getProperty("banner") == null || admob.getProperty("interstitial") == null)
             throw GradleException("admob.properties with appId, banner and interstitial is required for the Play Store bundle.")
     }
+}
+
+// A Google Play upload must never carry outside payment links (Play Payments policy) or sample ads.
+gradle.taskGraph.whenReady {
+    if (allTasks.any { it.name == "bundleRelease" } && (project.findProperty("supportLinks") ?: "false") == "true")
+        throw GradleException("Don't build the Play bundle with -PsupportLinks=true: Google Play requires tips to go through Play Billing.")
 }

@@ -28,7 +28,7 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   Google ML Kit (each language model downloads once, ~30 MB, then works offline). Translate button on every article, a
   one-tap suggestion in the phone's own language, a remembered choice, right-to-left layout for Arabic, Urdu and
   Persian, Listen in the translated language, and downloaded languages removable in Settings.
-- **Support Plainly** (`data/Support.kt`, `ui/Support.kt`): optional tips through Google Play Billing (products
+- **Support Plainly** (`data/Support.kt`, `ui/Support.kt`): optional tips through Google Play Billing Library 8 (products
   `tip_small`, `tip_medium`, `tip_large`). PayPal (paypal.me/VenkateshramuM) and UPI (venkateshramu000@okhdfcbank), the
   same as the blog, appear only in builds made with `-PsupportLinks=true` (preview APKs), because Google Play expects
   tips to the developer to go through Play Billing. Asked politely after real value (finished guide, Daily Run,

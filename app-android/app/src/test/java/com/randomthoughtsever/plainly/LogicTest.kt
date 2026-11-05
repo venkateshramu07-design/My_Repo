@@ -393,8 +393,14 @@ class LogicTest {
         assertTrue(!S.shouldAsk(now, now - 9 * day, now - 2 * day, 0, 5, 0, 0))      // asked this week
         assertTrue(!S.shouldAsk(now, now - 60 * day, 0, now - 10 * day, 50, 9, 0))   // tipped this month
         assertTrue(!S.shouldAsk(now, now - 60 * day, 0, 0, 50, 9, 6))                // closed it six times: stop asking
-        assertTrue(S.upi(99).startsWith("upi://pay?pa=venkateshramu000@okhdfcbank&") && S.upi(99).contains("&am=99&") && S.upi(99).contains("cu=INR"))
-        assertEquals("https://paypal.me/VenkateshramuM/5USD", S.paypal(5, "USD"))
+        if (com.randomthoughtsever.plainly.BuildConfig.SUPPORT_LINKS) {
+            assertTrue(S.upi(99).startsWith("upi://pay?pa=venkateshramu000@okhdfcbank&") && S.upi(99).contains("&am=99&") && S.upi(99).contains("cu=INR"))
+            assertEquals("https://paypal.me/VenkateshramuM/5USD", S.paypal(5, "USD"))
+        } else {
+            // Normal (Play) builds carry no outside payment details at all.
+            assertEquals("", com.randomthoughtsever.plainly.BuildConfig.SUPPORT_PAYPAL); assertEquals("", com.randomthoughtsever.plainly.BuildConfig.SUPPORT_UPI)
+            assertTrue(!S.linksEnabled)
+        }
         assertEquals("USD", S.paypalCurrency("INR")); assertEquals("EUR", S.paypalCurrency("EUR"))
         val T = com.randomthoughtsever.plainly.data.Translate
         assertEquals("Español", T.deviceLang(java.util.Locale("es", "MX"))!!.native)

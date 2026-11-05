@@ -102,7 +102,7 @@ val CHALLENGES = listOf(
     Challenge("calm7", "7-day calm", "One minute of slow breathing a day.", 7, "Do one minute of breathing", "🌿", "mind",
         listOf("Once a day, open Daily 3 on Today and do the one-minute breathing.", "Breathe in for 4 seconds and out for 6 with the circle.",
             "Tap Check in when you're done. Notice how you feel before and after."),
-        listOf("Breathe out longer than you breathe in: it slows your heart.", "Try it before a stressful call or meeting.",
+        listOf("Breathe out longer than you breathe in. Many people find it calming.", "Try it before a stressful call or meeting.",
             "Do your minute outside if you can.", "Put your phone face down for 10 minutes after.", "Try it in bed before sleep.",
             "Pair it with a habit you already have, like the first coffee.", "Notice one thing you can hear, see and feel."),
         Regex("(?i)stress|calm|anxiety|zen|sleep|burnout|mind")),

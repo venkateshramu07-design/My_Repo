@@ -113,7 +113,7 @@ object LifeSim {
             Choice("Just pay it", "Your budget is tighter.") { it.copy(spend = it.spend + it.income * 0.05) },
         ), Regex("(?i)rent|buy|mortgage")),
         Event("bonus", "🎉", "A surprise bonus!", { "You get ${fmt(it.income * 0.5)}." }, listOf(
-            Choice("Pay down debt", "The best guaranteed return.") { val x = it.income * 0.5; val d = minOf(x, it.debt); it.copy(debt = it.debt - d, savings = it.savings + x - d, wellbeing = wb(it, 4)) },
+            Choice("Pay down debt", "Less debt means less interest to pay.") { val x = it.income * 0.5; val d = minOf(x, it.debt); it.copy(debt = it.debt - d, savings = it.savings + x - d, wellbeing = wb(it, 4)) },
             Choice("Invest it", "It's working for you now.") { it.copy(invested = it.invested + it.income * 0.5, wellbeing = wb(it, 2)) },
             Choice("Treat yourself", "A great holiday.") { it.copy(wellbeing = wb(it, 10)) },
             Choice("Split: half saved, half fun", "Balanced.") { it.copy(savings = it.savings + it.income * 0.25, wellbeing = wb(it, 6)) },

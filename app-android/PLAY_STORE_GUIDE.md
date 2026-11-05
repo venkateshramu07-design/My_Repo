@@ -199,6 +199,20 @@ build shows Play tips only (PayPal and UPI stay on the blog).
    The IDs must be exactly these. Let Play set local prices for other countries, then **Activate** each one.
 3. That's it: the Support screen shows them with local prices. Google keeps its fee (15% for most small developers).
 
+## Before you submit: what keeps Plainly from being rejected
+
+These are already handled in the app; keep them that way:
+- **Payments:** the Play build has Google Play tips only. `bundleRelease` refuses to build with `-PsupportLinks=true`, and
+  without it the PayPal and UPI details aren't in the app at all. Keep those links on the blog.
+- **Billing Library 8** (Google stopped accepting version 7 for updates in 2026).
+- **Target API 36**, native code aligned for 16 KB memory pages (checked), no unused foreground-service permission.
+- **Ads:** real AdMob IDs are required for `bundleRelease`; interstitials only after a finished task, never at launch or exit.
+- **User content:** rules before the first post, Report, Hide and Block on every community post.
+- **No medical or financial promises:** calculators and the simulator say "not financial advice"; the Calm corner says
+  "for relaxation only, not medical advice".
+- **Store listing:** no "free", "best" or "#1" in the title or short description; every feature named exists in the app.
+- **Accurate declarations:** use the answers in Step 4 exactly; update them if you add features.
+
 ## Step 3: Create the app (5 minutes)
 
 In Play Console, click **Create app** and enter:
@@ -217,17 +231,17 @@ On the app's **Dashboard**, open each task under **Set up your app** and answer 
 | **Privacy policy** | `https://randomthoughtsever.blogspot.com/2021/06/privacy-policy.html` (its "Plainly, Our Android App" section describes this app) |
 | **App access** | All functionality is available without special access |
 | **Ads** | **Yes, my app contains ads** |
-| **Content rating** | Start the questionnaire. Enter your email and choose the category **"Reference, News, or Educational"**. Answer **No** to violence, sexuality, language, drugs, gambling, sharing location and digital purchases. To **"Can users interact or exchange content?"** answer **Yes** (Community) and say that you moderate it (rules, hide and block, removal of comments on the blog). Submit. You'll get a rating such as "Everyone" or "Rated for 3+". |
+| **Content rating** | Start the questionnaire. Enter your email and choose the category **"Reference, News, or Educational"**. Answer **No** to violence, sexuality, language, drugs, gambling and sharing location. To **digital purchases** answer **Yes** (optional tips through Google Play). To **"Can users interact or exchange content?"** answer **Yes** (Community) and say that you moderate it: rules shown before posting, Report (to you through the blog's contact form), Hide and Block in the app, and removal of comments in Blogger. Submit. You'll get a rating such as "Everyone" or "Rated for 3+". |
 | **Target audience** | Tick **18 and over** only (the money and health guides are written for adults, and this avoids the extra rules for children's apps). |
 | **News apps** | No |
 | **Data safety** | See below |
 | **Government apps** | No |
 | **Financial features** | "My app doesn't provide any financial features" (the calculators only do arithmetic: no loans, payments, trading or banking) |
-| **Health apps** | None of these |
+| **Health apps** | Plainly has a Calm corner (breathing, focus timer, sleep wind-down) and stress and sleep guides. Tick the closest wellness options offered, such as stress management / relaxation / mindfulness and sleep. Don't tick anything medical: the app says it's for relaxation only, not medical advice. |
 | **Notifications** | Nothing to declare. The app asks people's permission before showing new-guide notifications. |
 | **Advertising ID** | **Yes**. Purpose: **Advertising or marketing** (and **Analytics** if offered). |
 
-**Data safety answers** (these cover what Google's ads software collects; the app itself collects nothing else):
+**Data safety answers** (these cover what Google's ads software collects, plus Google ML Kit's diagnostics for translation, which fall under the same "App info and performance" and "Device or other IDs" rows; tips are paid through Google Play, which handles the payment details, so you don't declare financial info; the app itself collects nothing else):
 1. "Does your app collect or share any of the required user data types?" **Yes**.
 2. "Is all of the user data collected by your app encrypted in transit?" **Yes**.
 3. "Which of the following methods of account creation does your app support?" **My app does not allow users to create an account**.

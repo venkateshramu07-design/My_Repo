@@ -12,7 +12,8 @@ How the text is optimised for Play Store search:
   *emergency fund*, *compress PDF*, *resize photo in KB*, *QR code generator*, *Wi-Fi QR code*, *budgeting*, *personal finance*.
   Each appears once or twice in natural sentences. Google Play penalises keyword lists and repetition.
 - Google Play doesn't allow "free", "best", "#1", "top" or prices in the title or icon, so none are used.
-- The app shows ads (Google AdMob), so the listing never says "no ads". Play Console marks the listing "Contains ads".
+- The app shows ads (Google AdMob), so the listing never says "no ads". Play Console marks the listing "Contains ads"
+  and, once the tip products exist, "In-app purchases". "Free" is kept out of the title and short description.
 
 ---
 
@@ -25,13 +26,13 @@ Plainly: Money, Mind & Work
 ## Short description (max 80 characters)
 
 ```
-Your money score, a plan made for you, 72 free tools and a friendly community.
+Your money score, a plan made for you, 72 handy tools and a friendly community.
 ```
 
 ## Full description (max 4,000 characters)
 
 ```
-Plainly gives you clear, practical guides on money, the mind and work, plus a set of calculators and file tools that run entirely on your phone. No account and no sign-up. Open it and start.
+Plainly gives you clear, practical guides on money, the mind and work, plus a set of calculators and file tools that run entirely on your phone. No account needed to read, play or use the tools. Open it and start.
 
 MADE FOR YOU IN 20 SECONDS
 Tell Plainly what you want help with: paying off debt, saving and investing, a calmer mind, your career or living abroad. You get a plan with three guides and the tools to act on them. Take the 60-second Money Health Check for your score out of 100 and the one thing to fix first, then share it.
@@ -83,7 +84,7 @@ MADE FOR READING
 Save guides for offline reading, quick checks inside every guide, a notebook for your favourite lines, text size and dark mode.
 
 PRIVATE BY DESIGN
-No accounts, and no location, contacts, camera or storage permission. Your photos, PDFs, numbers and settings stay on your phone. The app is free, supported by a few labelled ads; where the law requires it, you're asked for consent first.
+No accounts, and no location, contacts, camera or storage permission. Your photos, PDFs, numbers and settings stay on your phone. The app is free, supported by a few labelled ads and optional tips; where the law requires it, you're asked for consent first.
 
 Plainly is the app for the Blog Digest guides. The calculators give estimates for planning, not financial advice.
 ```

@@ -152,7 +152,7 @@ fun JoinCommunity(nav: Nav) {
                 listOf("🤝" to "Be kind. No insults, hate or harassment.", "💬" to "Share experience, not financial advice. Nothing here is professional advice.",
                     "🚫" to "No spam, selling or links (guides on the blog are fine).", "🔒" to "Keep yourself safe: no phone numbers, addresses or account details.",
                     "🚩" to if (Community.enabled) "Report anything that breaks these rules. We remove it, and repeat offenders are blocked."
-                        else "Hide or block anything that breaks these rules. The blog's owner removes it, and repeat offenders are blocked.").forEach { (e, t) ->
+                        else "Report anything that breaks these rules (or hide and block it). The blog's owner removes it, and repeat offenders are blocked.").forEach { (e, t) ->
                     Row(Modifier.padding(vertical = 7.dp)) { Text(e, style = MaterialTheme.typography.titleLarge); Spacer(Modifier.width(12.dp)); Text(t, style = MaterialTheme.typography.bodyLarge) }
                 }
             }
@@ -233,7 +233,7 @@ fun firstSteps(): List<FirstStep> {
         if (hello) FirstStep("hello", "👋", "Say hello", "Post a short introduction: what you're working on.", Community.posted) else null,
         FirstStep("poll", "🗳️", if (Community.enabled) "Answer today's poll" else "Answer today's quiz",
             if (Community.enabled) "One quick question. See how others answered." else "One quick question, and why the answer is right.", p.quizStats().second > 0),
-        FirstStep("challenge", "🏁", "Join a challenge", "Pick one and check in each day. Others are doing it too.", p.joined().isNotEmpty() || p.finishedChallenges() > 0),
+        FirstStep("challenge", "🏁", "Join a challenge", "Pick one and check in each day.", p.joined().isNotEmpty() || p.finishedChallenges() > 0),
         FirstStep("discuss", "💬", "Comment on a guide", "Open any guide and add your thoughts under Discussion.", Community.discussed),
         FirstStep("streak", "🔥", "Keep a 3-day streak", "Open Plainly three days in a row. You're on day ${lib.streak().coerceAtLeast(1)}.", lib.streak() >= 3),
     )

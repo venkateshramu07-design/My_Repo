@@ -240,7 +240,21 @@ fun Face(photo: String, name: String, size: Int = 40) {
 @Composable
 fun NoteCard(n: BlogTalk.Note, nav: Nav, onReply: () -> Unit, onRemoved: () -> Unit, showGuide: Boolean = true) {
     var menu by remember { mutableStateOf(false) }
+    var reporting by remember { mutableStateOf(false) }
+    var reported by remember { mutableStateOf(false) }
     val mine = BlogTalk.mine(n)
+    if (reporting) ReportDialog { reason -> reporting = false
+        if (reason != null) {
+            // The report goes to the blog's owner through the blog's contact form; the post is hidden here right away.
+            copy(nav.context, "Report: $reason\nComment by ${n.name}: ${n.url.ifBlank { n.postUrl }}\n\"${n.text.take(200)}\"")
+            BlogTalk.hide(n); reported = true
+        }
+    }
+    if (reported) AlertDialog(onDismissRequest = { reported = false; onRemoved() }, title = { Text("Thanks for reporting") },
+        text = { Text("We've hidden it for you. To tell the blog's owner, who removes posts that break the rules, paste the copied report into the contact form that opens next.") },
+        confirmButton = { Button(onClick = { reported = false; nav.web(com.randomthoughtsever.plainly.data.Blog.BASE + "/2021/06/contact-us.html"); onRemoved() }, shape = RoundedCornerShape(50)) {
+            Text("Open the contact form") } },
+        dismissButton = { TextButton(onClick = { reported = false; onRemoved() }) { Text("Just hide it") } })
     Surface(shape = RoundedCornerShape(24.dp), color = if (mine) MaterialTheme.colorScheme.primaryContainer.copy(alpha = .55f) else MaterialTheme.colorScheme.surface,
         shadowElevation = 1.dp, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp)
             .then(if (showGuide) Modifier.clickable { nav.talk(n.postId) } else Modifier)) {
@@ -256,6 +270,7 @@ fun NoteCard(n: BlogTalk.Note, nav: Nav, onReply: () -> Unit, onRemoved: () -> U
                     DropdownMenu(menu, { menu = false }) {
                         DropdownMenuItem(text = { Text("See it on the blog") }, onClick = { menu = false; nav.web(n.url.ifBlank { n.postUrl }) })
                         if (!mine) {
+                            DropdownMenuItem(text = { Text("Report") }, onClick = { menu = false; reporting = true })
                             DropdownMenuItem(text = { Text("Hide this") }, onClick = { menu = false; BlogTalk.hide(n); onRemoved() })
                             DropdownMenuItem(text = { Text("Block ${n.name}") }, onClick = { menu = false; BlogTalk.block(n); onRemoved() })
                         }
