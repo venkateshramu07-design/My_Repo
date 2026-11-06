@@ -10,7 +10,7 @@ import kotlin.random.Random
  *   [seriesGap] cards apart, and country guides of any kind at least [countryGap] apart.
  * - Each **topic** is spaced by its share of all guides (big topics up to 4 cards apart) when there's any other choice.
  * - Otherwise the order is random (seeded, so it's stable for a day and changes with Shuffle), with the reader's
- *   favourite topics and newer guides a little more likely to come early.
+ *   favourite topics a little more likely to come early. Publish date plays no part.
  */
 object Variety {
     private val COUNTRIES = listOf(
@@ -43,12 +43,10 @@ object Variety {
     fun order(list: List<Entry>, seed: Long, favourites: Set<String> = emptySet(), seriesGap: Int = 8, countryGap: Int = 4): List<Entry> {
         if (list.size < 3) return list
         val r = Random(seed)
-        val newest = list.maxOf { it.published }
-        // Random priority, nudged up for favourite topics and for guides from the last month.
+        // Random priority (publish date plays no part), nudged up only for the reader's favourite topics.
         val pool = list.map { e ->
-            val fresh = if (e.published >= minusDays(newest, 30)) .25 else 0.0
             val fav = if (e.label in favourites) .35 else 0.0
-            e to (r.nextDouble() + fresh + fav)
+            e to (r.nextDouble() + fav)   // random: newer guides get no head start
         }.sortedByDescending { it.second }.map { it.first }.toMutableList()
         val seriesOf = list.associate { it.id to series(it.title, it.id) }
         val country = list.filter { isCountryGuide(it.title) }.map { it.id }.toSet()
@@ -81,7 +79,6 @@ object Variety {
         return out
     }
 
-    private fun minusDays(iso: String, days: Long) = runCatching { java.time.LocalDate.parse(iso.take(10)).minusDays(days).toString() }.getOrDefault("")
 
     /**
      * Keeps a list's order (Today's newest-first feed) but moves lookalike series apart: a guide whose series appeared in
