@@ -101,6 +101,9 @@ object NewPosts {
             .setContentIntent(open)
             .setAutoCancel(true)
             .build()
-        runCatching { NotificationManagerCompat.from(c).notify(id.hashCode(), n) }
+        if (!canNotify(c)) return
+        @android.annotation.SuppressLint("MissingPermission") // checked just above (canNotify)
+        fun post() = NotificationManagerCompat.from(c).notify(id.hashCode(), n)
+        runCatching { post() }
     }
 }

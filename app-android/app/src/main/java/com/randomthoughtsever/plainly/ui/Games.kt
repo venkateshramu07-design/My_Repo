@@ -62,6 +62,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.contentDescription
@@ -141,7 +142,7 @@ fun GamesScreen(nav: Nav) {
                     val bob by androidx.compose.animation.core.rememberInfiniteTransition(label = "bob").animateFloat(-4f, 4f,
                         infiniteRepeatable(tween(900 + g.id.length * 90), RepeatMode.Reverse), label = "y")
                     Box(Modifier.size(64.dp).clip(RoundedCornerShape(20.dp)).background(Color.White.copy(alpha = .18f)), contentAlignment = Alignment.Center) {
-                        Text(g.emoji, fontSize = 34.sp, modifier = Modifier.offset(y = bob.dp))
+                        Text(g.emoji, fontSize = 34.sp, modifier = Modifier.offset { IntOffset(0, bob.dp.roundToPx()) })
                     }
                     Spacer(Modifier.width(16.dp))
                     Column(Modifier.weight(1f)) {
@@ -233,9 +234,9 @@ private fun RockPaperScissors(g: Game) {
         }
         Spacer(Modifier.height(24.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
-            Text(mine?.let { hands[it].first } ?: "✊", fontSize = 72.sp, modifier = Modifier.offset(y = shake.value.dp).graphicsLayer { scaleX = -1f })
+            Text(mine?.let { hands[it].first } ?: "✊", fontSize = 72.sp, modifier = Modifier.offset { IntOffset(0, shake.value.dp.roundToPx()) }.graphicsLayer { scaleX = -1f })
             Text("vs", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(theirs?.let { hands[it].first } ?: "✊", fontSize = 72.sp, modifier = Modifier.offset(y = shake.value.dp))
+            Text(theirs?.let { hands[it].first } ?: "✊", fontSize = 72.sp, modifier = Modifier.offset { IntOffset(0, shake.value.dp.roundToPx()) })
         }
         Spacer(Modifier.height(12.dp))
         AnimatedContent(line, transitionSpec = { (fadeIn() + scaleIn(initialScale = .8f)) togetherWith fadeOut() }, label = "line") { l ->

@@ -62,6 +62,8 @@ object Support {
 
     fun load(c: Context) {
         if (status == "loading" || status == "ready") return
+        // The JVM test environment has no Google Play app for the billing library to bind to (it would keep retrying).
+        if (android.os.Build.FINGERPRINT == "robolectric") { status = "unavailable"; return }
         status = "loading"
         val bc = client ?: BillingClient.newBuilder(c.applicationContext)
             .setListener { r, purchases -> onPurchases(c.applicationContext, r, purchases) }
@@ -82,6 +84,13 @@ object Support {
                 override fun onBillingServiceDisconnected() { if (status != "ready") status = "unavailable" }
             })
         }.onFailure { status = "unavailable" }
+    }
+
+    /** Closes the Google Play connection when the Support screen goes away (it's only needed there). */
+    fun end() {
+        runCatching { client?.endConnection() }
+        client = null
+        status = "idle"; tips = emptyList()
     }
 
     fun tip(activity: Activity, p: ProductDetails) {

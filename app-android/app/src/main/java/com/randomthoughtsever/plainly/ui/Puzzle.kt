@@ -180,7 +180,9 @@ fun PuzzleArchiveScreen(nav: Nav) {
 
 private fun untilMidnight(): String {
     val now = LocalDateTime.now(); val d = Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay())
-    return "%d:%02d:%02d".format(d.toHours(), d.toMinutesPart(), d.toSecondsPart())
+    // toMinutesPart/toSecondsPart need Android 12; plain arithmetic works on Android 10 and 11 too.
+    val s = d.seconds.coerceAtLeast(0)
+    return "%d:%02d:%02d".format(s / 3600, s % 3600 / 60, s % 60)
 }
 
 // ---------- Word Vault ----------

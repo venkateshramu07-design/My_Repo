@@ -43,7 +43,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.Handyman
 import androidx.compose.material.icons.rounded.LocalFireDepartment
-import androidx.compose.material.icons.rounded.MenuBook
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
@@ -110,7 +110,7 @@ fun YouScreen(nav: Nav) {
         item { StreakCard(streak, days) }
         item {
             Row(Modifier.padding(horizontal = 20.dp, vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Stat(Icons.Rounded.MenuBook, "${lib.reads()}", "guides read", Modifier.weight(1f))
+                Stat(Icons.AutoMirrored.Rounded.MenuBook, "${lib.reads()}", "guides read", Modifier.weight(1f))
                 Stat(Icons.Rounded.Bookmarks, "${lib.saved.size}", "saved", Modifier.weight(1f))
                 Stat(Icons.Rounded.Handyman, "${lib.toolUses()}", "files made", Modifier.weight(1f))
             }

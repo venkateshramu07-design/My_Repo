@@ -83,7 +83,7 @@ val WORLD = listOf("United States" to "US", "United Kingdom" to "GB", "India" to
     "Israel" to "IL", "Argentina" to "AR", "Chile" to "CL", "Colombia" to "CO", "Vietnam" to "VN", "Thailand" to "TH", "Sri Lanka" to "LK", "Nepal" to "NP")
 
 fun flagOf(iso: String): String = iso.uppercase().map { c -> String(Character.toChars(0x1F1E6 + (c - 'A'))) }.joinToString("")
-fun currencyOf(iso: String): String? = runCatching { Currency.getInstance(Locale("", iso)).currencyCode }.getOrNull()
+fun currencyOf(iso: String): String? = runCatching { Currency.getInstance(Locale.Builder().setRegion(iso).build()).currencyCode }.getOrNull()
 
 /** The reader's plan: up to three guides for their goals (one per goal first), newest first, articles only. */
 fun planFor(goals: Set<String>, index: List<Entry>): List<Entry> {

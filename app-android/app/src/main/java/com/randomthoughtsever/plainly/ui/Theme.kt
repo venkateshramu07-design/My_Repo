@@ -15,9 +15,9 @@ import androidx.compose.material.icons.rounded.Psychology
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.SelfImprovement
-import androidx.compose.material.icons.rounded.ShowChart
+import androidx.compose.material.icons.automirrored.rounded.ShowChart
 import androidx.compose.material.icons.rounded.Spa
-import androidx.compose.material.icons.rounded.TrendingUp
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.Work
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -99,8 +99,8 @@ data class Topic(val label: String, val title: String, val blurb: String, val ic
 
 val Topics = listOf(
     Topic("Personal Finance", "Personal Finance", "Budgets, debt, credit and saving", Icons.Rounded.AccountBalance, Color(0xFF1F4E79), Color(0xFF3B7BB8)),
-    Topic("Investing", "Investing", "Funds, gold, IPOs and risk", Icons.Rounded.ShowChart, Color(0xFF0F5F55), Color(0xFF22A08C)),
-    Topic("Economics", "Economics", "Inflation, rates and the news", Icons.Rounded.TrendingUp, Color(0xFF4B3A8C), Color(0xFF7B67D6)),
+    Topic("Investing", "Investing", "Funds, gold, IPOs and risk", Icons.AutoMirrored.Rounded.ShowChart, Color(0xFF0F5F55), Color(0xFF22A08C)),
+    Topic("Economics", "Economics", "Inflation, rates and the news", Icons.AutoMirrored.Rounded.TrendingUp, Color(0xFF4B3A8C), Color(0xFF7B67D6)),
     Topic("Career & Workplace", "Career", "Pay, interviews and burnout", Icons.Rounded.Work, Color(0xFF8A4B1E), Color(0xFFD08844)),
     Topic("Psychology", "Mind", "How the mind works", Icons.Rounded.Psychology, Color(0xFF7A2E55), Color(0xFFC25A8C)),
     Topic("Self Improvement", "Self Improvement", "Habits, focus and growth", Icons.Rounded.SelfImprovement, Color(0xFF2E5E2A), Color(0xFF5FA35A)),

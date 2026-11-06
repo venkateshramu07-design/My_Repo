@@ -79,6 +79,8 @@ object Translate {
                         SplitInstallSessionStatus.FAILED, SplitInstallSessionStatus.CANCELED, SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> {
                             m.unregisterListener(listener); if (c.isActive) c.resumeWithException(IllegalStateException("translator not installed (${s.status()})"))
                         }
+                        SplitInstallSessionStatus.DOWNLOADED, SplitInstallSessionStatus.INSTALLING -> status("Installing the translator…")
+                        else -> Unit
                     }
                 }
                 m.registerListener(listener)

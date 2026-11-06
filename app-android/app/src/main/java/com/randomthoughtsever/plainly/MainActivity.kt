@@ -104,5 +104,9 @@ class MainActivity : ComponentActivity() {
     }
 
     /** Only these in-app places can be opened from a link or notification. */
-    private fun safeRoute(r: String): String? = r.takeIf { Regex("^(run|puzzle|puzzles|sim|today|games|rewards|cards|calm/(breathe|focus|sleep)|recap/(week|month)|challenge/[a-z0-9]{2,20})$").matches(it) }
+    private fun safeRoute(r: String): String? = safeAppRoute(r)
 }
+
+/** Only these in-app places can be opened from a link or notification; anything else is ignored. */
+internal fun safeAppRoute(r: String): String? =
+    r.takeIf { Regex("^(run|puzzle|puzzles|sim|today|games|rewards|cards|calm/(breathe|focus|sleep)|recap/(week|month)|challenge/[a-z0-9]{2,20})$").matches(it) }

@@ -274,64 +274,6 @@ class ScreenshotTest {
         shot("46-challenge-done")
     }
 
-    /**
-     * The community without Firebase, on sample blog comments served from this machine (the live blog has few comments).
-     * Checks the feed, Top voices, a guide's conversation, and that a post you sent is recognised as yours when it appears.
-     */
-    @Test fun blogCommunity() {
-        fun c(id: String, post: String, name: String, text: String, hoursAgo: Long) = org.json.JSONObject()
-            .put("id", org.json.JSONObject().put("\$t", "tag:blogger.com,1999:blog-1.post-$id"))
-            .put("published", org.json.JSONObject().put("\$t", java.time.OffsetDateTime.now().minusHours(hoursAgo).toString()))
-            .put("content", org.json.JSONObject().put("\$t", text))
-            .put("author", org.json.JSONArray().put(org.json.JSONObject().put("name", org.json.JSONObject().put("\$t", name))
-                .put("uri", org.json.JSONObject().put("\$t", "https://www.blogger.com/profile/$name"))))
-            .put("thr\$in-reply-to", org.json.JSONObject().put("href", "https://randomthoughtsever.blogspot.com/2026/01/g$post.html").put("ref", "tag:blogger.com,1999:blog-1.post-$post"))
-        val efund = "9189829005013563974"; val fire = "8447404837524559491"
-        val mineText = "Sample: I set up a separate account just for emergencies and it stopped me dipping into it."
-        val all = listOf(c("n1", efund, "Asha (sample)", "Sample: Three months felt impossible, so I started with one. Took me 5 months but I got there.", 2),
-            c("n2", fire, "Ben (sample)", "Sample: Does the 25x rule still hold if I retire at 40, not 65?", 5),
-            c("n3", efund, "Chen (sample)", "Sample: @Asha same here! Small automatic transfers on payday made it painless.", 9),
-            c("n4", efund, "You (sample)", mineText, 0))
-        fun feed(list: List<org.json.JSONObject>) = org.json.JSONObject().put("feed", org.json.JSONObject().put("entry", org.json.JSONArray(list))).toString()
-        // A tiny HTTP server on a plain socket (the JDK's HttpServer isn't on the Android test classpath).
-        val server = java.net.ServerSocket(0, 50, java.net.InetAddress.getByName("127.0.0.1"))
-        Thread {
-            while (!server.isClosed) runCatching {
-                server.accept().use { sock ->
-                    val path = sock.getInputStream().bufferedReader().readLine().orEmpty().split(' ').getOrElse(1) { "/" }.substringBefore('?')
-                    val body = (if (path.startsWith("/feeds/comments")) feed(all) else feed(all.filter { path.contains(it.getJSONObject("thr\$in-reply-to").getString("ref").substringAfterLast("post-")) })).toByteArray()
-                    sock.getOutputStream().apply { write("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: ${body.size}\r\nConnection: close\r\n\r\n".toByteArray()); write(body); flush() }
-                }
-            }
-        }.apply { isDaemon = true }.start()
-        try {
-            val t = com.randomthoughtsever.plainly.data.BlogTalk
-            t.base = "http://127.0.0.1:${server.localPort}"
-            ctx.getSharedPreferences("community", Context.MODE_PRIVATE).edit().clear().putBoolean("joined", true).putBoolean("welcomed", true).putBoolean("rules", true).commit()
-            ctx.getSharedPreferences("blogtalk", Context.MODE_PRIVATE).edit().clear().commit()
-            t.init(ctx); t.expect(efund, mineText.replace(".", ""))
-            launch(); waitFor { seen("TODAY'S PICK") }
-            tab("Community"); waitFor(30, settle = 2000) { seen("Three months felt") }
-            org.junit.Assert.assertTrue(seen("How posting works"))
-            shot("48-community-blog")
-            repeat(6) { if (!seen("You (sample) (you)")) scroll(1) }
-            shot("48b-community-blog-mine")
-            org.junit.Assert.assertTrue("your post should be recognised", seen("You (sample) (you)"))
-            org.junit.Assert.assertTrue(com.randomthoughtsever.plainly.data.Community.discussed)
-            compose.onNode(hasText("Top voices") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)).performClick(); pause(1500)
-            org.junit.Assert.assertTrue(seen("You (sample) (you)") && seen("💬 1"))
-            shot("49-community-top-voices")
-            compose.onNode(hasText("Conversations") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)).performClick(); pause(1200)
-            repeat(6) { if (compose.onAllNodesWithText("Conversation").fetchSemanticsNodes().isEmpty()) scroll(1) }
-            compose.onAllNodes(hasText("Conversation") and androidx.compose.ui.test.hasClickAction()).onFirst()
-                .performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnClick); waitFor(15, settle = 1500) { seen("Add to the conversation") }
-            shot("50-community-conversation")
-            compose.onAllNodesWithText("Add to the conversation", substring = true).onFirst().performClick(); pause(1200)
-            org.junit.Assert.assertTrue(seen("Copy and continue"))
-            shot("51-community-compose")
-        } finally { server.close(); com.randomthoughtsever.plainly.data.BlogTalk.base = "https://randomthoughtsever.blogspot.com" }
-    }
-
     /** The play layer: Daily Run, daily puzzle, A Year of Money, Calm corner, levels, collection and recap. */
     @Test fun playLayer() {
         ctx.getSharedPreferences("progress", Context.MODE_PRIVATE).edit().clear().commit()

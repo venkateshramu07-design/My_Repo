@@ -109,7 +109,8 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
     fun blogLink(uri: Uri) {
         val path = uri.path ?: ""
         when {
-            Regex("^/\\d{4}/\\d{2}/.+\\.html$").matches(path) -> scope.launch {
+            // Look the guide up off the main thread, but always navigate on it (navigation isn't thread-safe).
+            Regex("^/\\d{4}/\\d{2}/.+\\.html$").matches(path) -> scope.launch(kotlinx.coroutines.Dispatchers.Main.immediate) {
                 val id = AppGraph.repo.idForPath(path)
                 if (id != null) article(id) else web(uri.toString())
             }

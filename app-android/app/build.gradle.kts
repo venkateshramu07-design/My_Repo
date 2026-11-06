@@ -135,6 +135,8 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
+    // Each test class gets a fresh JVM, so app-wide objects (billing, WorkManager, static state) can't leak between classes.
+    forkEvery = 1
     systemProperty("robolectric.dependency.repo.url", "https://maven-central.storage-download.googleapis.com/maven2")
     systemProperty("roborazzi.test.record", "true")
     systemProperty("roborazzi.record.filePathStrategy", "relativePathFromCurrentDirectory")

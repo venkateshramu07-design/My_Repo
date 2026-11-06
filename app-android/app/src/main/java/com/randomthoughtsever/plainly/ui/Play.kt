@@ -57,6 +57,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
@@ -279,7 +281,9 @@ fun RewardsScreen(nav: Nav) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
                         Surface(onClick = { if (open) pr.accent = r.key }, shape = CircleShape, color = Color.Transparent,
                             border = BorderStroke(if (on) 3.dp else 0.dp, MaterialTheme.colorScheme.onBackground)) {
-                            Box(Modifier.size(48.dp).background(Brush.linearGradient(listOf(c.first, c.second))), contentAlignment = Alignment.Center) {
+                            Box(Modifier.size(48.dp).semantics { contentDescription = r.title.substringBefore(" colour") + " colour theme" +
+                                when { !open -> ", unlocks at level ${r.level}"; on -> ", selected"; else -> "" } }
+                                .background(Brush.linearGradient(listOf(c.first, c.second))), contentAlignment = Alignment.Center) {
                                 if (!open) Icon(Icons.Rounded.Lock, null, tint = Color.White) else if (on) Icon(Icons.Rounded.Check, null, tint = Color.White)
                             }
                         }

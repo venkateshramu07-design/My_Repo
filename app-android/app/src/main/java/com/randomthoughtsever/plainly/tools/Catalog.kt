@@ -33,7 +33,7 @@ import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Medication
-import androidx.compose.material.icons.rounded.MergeType
+import androidx.compose.material.icons.automirrored.rounded.MergeType
 import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material.icons.rounded.MoneyOff
 import androidx.compose.material.icons.rounded.Password
@@ -146,7 +146,7 @@ object Catalog {
     }
 
     fun icon(name: String): ImageVector = when (name) {
-        "merge" -> Icons.Rounded.MergeType; "draw" -> Icons.Rounded.Draw; "pdf" -> Icons.Rounded.PictureAsPdf; "receipt" -> Icons.Rounded.Receipt
+        "merge" -> Icons.AutoMirrored.Rounded.MergeType; "draw" -> Icons.Rounded.Draw; "pdf" -> Icons.Rounded.PictureAsPdf; "receipt" -> Icons.Rounded.Receipt
         "badge" -> Icons.Rounded.Badge; "privacy" -> Icons.Rounded.PrivacyTip; "straighten" -> Icons.Rounded.Straighten; "image" -> Icons.Rounded.Image
         "portrait" -> Icons.Rounded.Portrait; "signature" -> Icons.Rounded.Gesture; "debt" -> Icons.Rounded.MoneyOff; "car" -> Icons.Rounded.DirectionsCar
         "home" -> Icons.Rounded.Home; "shield" -> Icons.Rounded.Shield; "policy" -> Icons.Rounded.Policy; "card" -> Icons.Rounded.CreditCard

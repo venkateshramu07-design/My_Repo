@@ -453,6 +453,32 @@ class LogicTest {
         ctx.getSharedPreferences("plainly", android.content.Context.MODE_PRIVATE).edit().remove("freezes").commit()
     }
 
+    /** Calendar edges: year change, Sunday/Monday weeks, short months, before the first puzzle, money formatting. */
+    @Test fun dateAndFormatEdgeCases() {
+        fun d(y: Int, mo: Int, day: Int): java.time.LocalDate = java.time.LocalDate.of(y, mo, day)
+        val m = com.randomthoughtsever.plainly.ui.recapRange("month", d(2027, 1, 3))
+        assertEquals(d(2026, 12, 1), m.from); assertEquals(31, m.days)                                  // early January recaps December
+        assertEquals(28, com.randomthoughtsever.plainly.ui.recapRange("month", d(2027, 3, 2)).days)       // February 2027
+        assertEquals(29, com.randomthoughtsever.plainly.ui.recapRange("month", d(2028, 3, 4)).days)       // leap February 2028
+        assertEquals(10, com.randomthoughtsever.plainly.ui.recapRange("month", d(2026, 11, 10)).days)     // this month so far
+        val S = com.randomthoughtsever.plainly.data.Seasons
+        assertEquals("review", S.current(d(2026, 12, 31))!!.key); assertEquals("newyear", S.current(d(2027, 1, 1))!!.key)
+        assertEquals("newyear", S.next(d(2026, 12, 31)).key)                                               // wraps to next year
+        val ctx = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        var today = d(2026, 11, 8)                                                                          // a Sunday
+        val pr = com.randomthoughtsever.plainly.data.Progress(ctx) { today }
+        assertEquals(d(2026, 11, 2), pr.weekStart()); today = d(2026, 11, 9); assertEquals(d(2026, 11, 9), pr.weekStart())
+        val P = com.randomthoughtsever.plainly.data.Puzzles
+        assertTrue(P.number(d(2026, 10, 1)) < 1); P.kind(d(2020, 1, 1)); P.word(d(2020, 1, 1))              // dates before launch don't crash
+        assertTrue(P.archive(d(2026, 11, 2)) == listOf(d(2026, 11, 1)))
+        val L = com.randomthoughtsever.plainly.data.Library
+        assertEquals(listOf(d(2026, 12, 31)), L.coverGap(setOf("2026-12-29", "2026-12-30"), 1, d(2027, 1, 1)).first) // across new year
+        val F = com.randomthoughtsever.plainly.data.LifeSim
+        F.symbol = "$"
+        assertEquals("$0", F.fmt(-0.4)); assertEquals("-$1,235", F.fmt(-1234.6)); assertEquals("$1,000,000", F.fmt(1_000_000.0))
+        assertEquals(100, com.randomthoughtsever.plainly.data.Puzzles.future(100, 0, 30))
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

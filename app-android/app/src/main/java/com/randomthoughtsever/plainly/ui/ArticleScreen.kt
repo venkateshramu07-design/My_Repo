@@ -129,7 +129,7 @@ fun ArticleScreen(id: String, nav: Nav) {
     var finished by remember(p.id) { mutableStateOf(false) }
     var reveal by remember { mutableStateOf<com.randomthoughtsever.plainly.data.Progress.Card?>(null) }
     val quiz = remember(p.id) { com.randomthoughtsever.plainly.data.QUIZZES.firstOrNull { it.post == p.id } }
-    var faqs by remember(p.id) { mutableStateOf(0) }
+    var faqs by remember(p.id) { androidx.compose.runtime.mutableIntStateOf(0) }
     /** Collects the guide's card once it's finished, or upgrades it after quick checks and the quiz. */
     fun collect() {
         if (!finished) return

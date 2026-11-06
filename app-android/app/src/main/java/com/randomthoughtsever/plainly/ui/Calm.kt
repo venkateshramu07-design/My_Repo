@@ -165,7 +165,7 @@ private fun Breathe() {
 private fun Focus() {
     var minutes by rememberSaveable { mutableIntStateOf(25) }
     var running by remember { mutableStateOf(false) }
-    var leftMs by remember { mutableStateOf(minutes * 60_000L) }
+    var leftMs by remember { androidx.compose.runtime.mutableLongStateOf(minutes * 60_000L) }
     var done by remember { mutableStateOf(false) }
     LaunchedEffect(minutes) { if (!running) leftMs = minutes * 60_000L }
     LaunchedEffect(running) {

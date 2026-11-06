@@ -348,7 +348,7 @@ private fun StoryViewer(label: String, posts: List<Post>, nav: Nav, onClose: () 
         if (index < items.lastIndex) index++ else onClose()
     }
     Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
-        BoxWithConstraints(Modifier.fillMaxSize().background(NavyDeep).pointerInput(items.size) {
+        Box(Modifier.fillMaxSize().background(NavyDeep).pointerInput(items.size) {
             detectTapGestures { o -> if (o.x < size.width / 3f) { if (index > 0) index-- } else if (index < items.lastIndex) index++ else onClose() }
         }) {
             AnimatedContent(index, transitionSpec = {

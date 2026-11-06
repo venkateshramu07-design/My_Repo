@@ -51,6 +51,7 @@ import com.randomthoughtsever.plainly.data.Support
 fun SupportScreen(nav: Nav) {
     val context = nav.context
     LaunchedEffect(Unit) { Support.load(context) }
+    androidx.compose.runtime.DisposableEffect(Unit) { onDispose { Support.end() } }
     val currency = AppGraph.profile.currency()
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()) {

@@ -48,6 +48,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -139,7 +141,8 @@ fun DailyRunScreen(nav: Nav) {
             IconButton(onClick = nav::back) { Icon(Icons.Rounded.Close, "Close") }
             Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 Progress.RUN_STEPS.forEachIndexed { i, k ->
-                    Box(Modifier.weight(1f).height(6.dp).clip(CircleShape).background(when { k in done -> Gold; i == step -> MaterialTheme.colorScheme.primary
+                    Box(Modifier.weight(1f).height(6.dp).semantics { contentDescription = "Step ${i + 1}, ${STEP_INFO[i].second.substringAfter(" ")}" +
+                        if (k in done) ", done" else "" }.clip(CircleShape).background(when { k in done -> Gold; i == step -> MaterialTheme.colorScheme.primary
                         else -> MaterialTheme.colorScheme.surfaceVariant }).clickableNoRipple { step = i })
                 }
             }

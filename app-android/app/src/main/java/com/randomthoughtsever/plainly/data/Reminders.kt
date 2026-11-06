@@ -66,8 +66,11 @@ object Reminders {
             if (nm.getNotificationChannel(CHANNEL) == null) nm.createNotificationChannel(NotificationChannel(CHANNEL, "Reminders", NotificationManager.IMPORTANCE_DEFAULT))
             val open = PendingIntent.getActivity(c, 7, Intent(c, MainActivity::class.java).putExtra(EXTRA_ROUTE, route).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            if (!NewPosts.canNotify(c)) return Result.success()
+            @android.annotation.SuppressLint("MissingPermission") // checked just above (canNotify)
+            fun post(n: android.app.Notification) = NotificationManagerCompat.from(c).notify(7, n)
             runCatching {
-                NotificationManagerCompat.from(c).notify(7, NotificationCompat.Builder(c, CHANNEL).setSmallIcon(R.drawable.ic_notification)
+                post( NotificationCompat.Builder(c, CHANNEL).setSmallIcon(R.drawable.ic_notification)
                     .setColor(0xFF1F4E79.toInt()).setContentTitle("Plainly").setContentText(text).setStyle(NotificationCompat.BigTextStyle().bigText(text))
                     .setContentIntent(open).setAutoCancel(true).build())
                 pr.lastNudge = today.toString()

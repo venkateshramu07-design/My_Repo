@@ -130,7 +130,7 @@ object LifeSim {
             Choice("Buy it on monthly payments", "Shiny, and a new monthly bill.") { it.copy(spend = it.spend + it.income * 0.03, wellbeing = wb(it, 3)) },
             Choice("Buy last year's model outright", "Half the price.") { it.pay(it.income * 0.17).copy(wellbeing = wb(it, 2)) },
             Choice("Fix the battery and keep it", "Cheap and fine.") { it.pay(it.income * 0.03) },
-        ), Regex("(?i)budget|spend")),
+        ), Regex("(?i)credit card|subscription|debt")),
         Event("tax", "🧾", "Tax time", { "You could claim credits you're owed if you check." }, listOf(
             Choice("Spend an evening checking", "You found a refund.") { it.copy(savings = it.savings + it.income * 0.15, wellbeing = wb(it, -1)) },
             Choice("Skip it", "Nothing gained.") { it },

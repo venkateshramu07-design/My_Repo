@@ -66,7 +66,7 @@ fun LifeSimScreen(nav: Nav) {
     val profile = AppGraph.profile
     val pr = AppGraph.progress
     LifeSim.symbol = symbolFor(profile.currency())
-    var seed by remember { mutableStateOf(System.currentTimeMillis()) }
+    var seed by remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }
     var phase by remember { mutableIntStateOf(0) } // 0 intro, 1 playing, 2 result
     val start = remember(seed) { LifeSim.start(profile.numbers) }
     var state by remember(seed) { mutableStateOf(start) }

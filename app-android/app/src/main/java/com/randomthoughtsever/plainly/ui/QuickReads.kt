@@ -49,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -143,7 +144,7 @@ private fun QuickCard(e: Entry, position: Int, hint: Boolean, nav: Nav) {
 @Composable
 private fun SwipeHint() {
     val y by rememberInfiniteTransition(label = "hint").animateFloat(0f, -6f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "y")
-    Row(Modifier.fillMaxWidth().padding(top = 10.dp).offset(y = y.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().padding(top = 10.dp).offset { IntOffset(0, y.dp.roundToPx()) }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Rounded.KeyboardArrowUp, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("Swipe up for the next one", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

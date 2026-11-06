@@ -80,6 +80,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -317,7 +319,7 @@ fun SettingsScreen(nav: Nav) {
                 ListItem(headlineContent = { Text("New guide notifications") }, supportingContent = { Text("A notification when a new guide is published") },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     trailingContent = {
-                        Switch(notify, { on ->
+                        Switch(notify, modifier = Modifier.semantics { contentDescription = "New guide notifications" }, onCheckedChange = { on ->
                             if (on && !NewPosts.canNotify(context) && android.os.Build.VERSION.SDK_INT >= 33) askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                             else { NewPosts.setEnabled(context, on); notify = on }
                         })
@@ -347,14 +349,14 @@ fun SettingsScreen(nav: Nav) {
                 var remind by remember { mutableStateOf(NewPosts.prefs(context).getBoolean("reminders", true)) }
                 ListItem(headlineContent = { Text("Daily reminder") }, supportingContent = { Text("At most one a day, at the time you usually open Plainly, and only when there's something to do (a streak, a challenge, today's puzzle)") },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    trailingContent = { Switch(remind, { on -> remind = on; NewPosts.prefs(context).edit().putBoolean("reminders", on).apply()
+                    trailingContent = { Switch(remind, modifier = Modifier.semantics { contentDescription = "Daily reminder" }, onCheckedChange = { on -> remind = on; NewPosts.prefs(context).edit().putBoolean("reminders", on).apply()
                         if (on) com.randomthoughtsever.plainly.data.Reminders.schedule(context) }) })
             }
             item {
                 var sounds by remember { mutableStateOf(NewPosts.prefs(context).getBoolean("sounds", false)) }
                 ListItem(headlineContent = { Text("Sounds") }, supportingContent = { Text("Little chimes for XP, levels and puzzles") },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    trailingContent = { Switch(sounds, { on -> sounds = on; NewPosts.prefs(context).edit().putBoolean("sounds", on).apply() }) })
+                    trailingContent = { Switch(sounds, modifier = Modifier.semantics { contentDescription = "Sounds" }, onCheckedChange = { on -> sounds = on; NewPosts.prefs(context).edit().putBoolean("sounds", on).apply() }) })
             }
             item { HorizontalDivider(Modifier.padding(vertical = 8.dp)) }
             item {
