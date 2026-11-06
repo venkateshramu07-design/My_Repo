@@ -70,6 +70,9 @@ android {
         }
     }
 
+    // The translation engine lives in an on-demand module so the app itself stays small.
+    dynamicFeatures += setOf(":translate")
+
     buildTypes {
         debug {
             buildConfigField("String", "ADMOB_BANNER", "\"$testBanner\"")
@@ -114,8 +117,8 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:3.2.0")
     implementation("androidx.webkit:webkit:1.14.0")
     implementation("androidx.work:work-runtime-ktx:2.10.1")
-    // On-device article translation (models download once per language, then work offline).
-    implementation("com.google.mlkit:translate:17.0.3")
+    // Play Feature Delivery: the translation engine (module :translate, ML Kit) is downloaded only when first used.
+    implementation("com.google.android.play:feature-delivery-ktx:2.1.0")
     // "Support Plainly" tips through Google Play.
     implementation("com.android.billingclient:billing-ktx:8.0.0")
 
@@ -142,13 +145,14 @@ tasks.withType<Test>().configureEach {
 // The .aab is what goes to Google Play, so it must never carry the sample ad IDs.
 tasks.matching { it.name == "bundleRelease" }.configureEach {
     doFirst {
-        if (admob.getProperty("appId") == null || admob.getProperty("banner") == null || admob.getProperty("interstitial") == null)
+        // -Ppreview=true builds a bundle only to make a test APK (bundletool universal); it is never uploaded.
+        if (project.findProperty("preview") != "true" && (admob.getProperty("appId") == null || admob.getProperty("banner") == null || admob.getProperty("interstitial") == null))
             throw GradleException("admob.properties with appId, banner and interstitial is required for the Play Store bundle.")
     }
 }
 
 // A Google Play upload must never carry outside payment links (Play Payments policy) or sample ads.
 gradle.taskGraph.whenReady {
-    if (allTasks.any { it.name == "bundleRelease" } && (project.findProperty("supportLinks") ?: "false") == "true")
+    if (allTasks.any { it.name == "bundleRelease" } && (project.findProperty("supportLinks") ?: "false") == "true" && project.findProperty("preview") != "true")
         throw GradleException("Don't build the Play bundle with -PsupportLinks=true: Google Play requires tips to go through Play Billing.")
 }

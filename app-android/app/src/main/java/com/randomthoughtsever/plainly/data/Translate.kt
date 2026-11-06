@@ -2,14 +2,10 @@ package com.randomthoughtsever.plainly.data
 
 import android.content.Context
 import androidx.compose.ui.text.AnnotatedString
-import com.google.android.gms.tasks.Task
-import com.google.mlkit.common.model.DownloadConditions
-import com.google.mlkit.common.model.RemoteModelManager
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.TranslateRemoteModel
-import com.google.mlkit.nl.translate.Translation
-import com.google.mlkit.nl.translate.Translator
-import com.google.mlkit.nl.translate.TranslatorOptions
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+import com.google.android.play.core.splitinstall.SplitInstallRequest
+import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener
+import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
 import com.randomthoughtsever.plainly.ui.Block
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Locale
@@ -17,28 +13,33 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+/** What the on-demand translation module provides (implemented by MlKitEngine in the :translate module). */
+interface TranslateEngine {
+    suspend fun isDownloaded(code: String): Boolean
+    suspend fun download(code: String)
+    suspend fun translate(code: String, text: String): String
+    suspend fun downloaded(): List<String>
+    suspend fun remove(code: String)
+}
+
 /**
- * Article translation on the phone (Google ML Kit). Each language's model downloads once (about 30 MB), then
- * translation works offline and nothing about what you read leaves the phone. Machine translation, so the app
- * always says so and offers the original.
+ * Article translation on the phone (Google ML Kit). The translation engine is a separate on-demand part of the app
+ * (the :translate module): Google Play downloads it only the first time someone taps Translate, so the app itself stays
+ * small. Each language then downloads once (about 30 MB) and works offline; nothing about what you read leaves the phone.
+ * Machine translation, so the app always says so and offers the original.
  */
 object Translate {
     data class Lang(val code: String, val native: String, val english: String, val rtl: Boolean = false)
 
+    /** ML Kit's language codes (BCP-47). */
     val LANGS = listOf(
-        Lang(TranslateLanguage.SPANISH, "Español", "Spanish"), Lang(TranslateLanguage.HINDI, "हिन्दी", "Hindi"),
-        Lang(TranslateLanguage.FRENCH, "Français", "French"), Lang(TranslateLanguage.GERMAN, "Deutsch", "German"),
-        Lang(TranslateLanguage.PORTUGUESE, "Português", "Portuguese"), Lang(TranslateLanguage.ARABIC, "العربية", "Arabic", rtl = true),
-        Lang(TranslateLanguage.CHINESE, "中文", "Chinese"), Lang(TranslateLanguage.JAPANESE, "日本語", "Japanese"),
-        Lang(TranslateLanguage.KOREAN, "한국어", "Korean"), Lang(TranslateLanguage.INDONESIAN, "Bahasa Indonesia", "Indonesian"),
-        Lang(TranslateLanguage.RUSSIAN, "Русский", "Russian"), Lang(TranslateLanguage.BENGALI, "বাংলা", "Bengali"),
-        Lang(TranslateLanguage.TAMIL, "தமிழ்", "Tamil"), Lang(TranslateLanguage.TELUGU, "తెలుగు", "Telugu"),
-        Lang(TranslateLanguage.MARATHI, "मराठी", "Marathi"), Lang(TranslateLanguage.GUJARATI, "ગુજરાતી", "Gujarati"),
-        Lang(TranslateLanguage.KANNADA, "ಕನ್ನಡ", "Kannada"), Lang(TranslateLanguage.URDU, "اردو", "Urdu", rtl = true),
-        Lang(TranslateLanguage.TURKISH, "Türkçe", "Turkish"), Lang(TranslateLanguage.ITALIAN, "Italiano", "Italian"),
-        Lang(TranslateLanguage.VIETNAMESE, "Tiếng Việt", "Vietnamese"), Lang(TranslateLanguage.THAI, "ไทย", "Thai"),
-        Lang(TranslateLanguage.POLISH, "Polski", "Polish"), Lang(TranslateLanguage.DUTCH, "Nederlands", "Dutch"),
-        Lang(TranslateLanguage.SWAHILI, "Kiswahili", "Swahili"), Lang(TranslateLanguage.PERSIAN, "فارسی", "Persian", rtl = true),
+        Lang("es", "Español", "Spanish"), Lang("hi", "हिन्दी", "Hindi"), Lang("fr", "Français", "French"), Lang("de", "Deutsch", "German"),
+        Lang("pt", "Português", "Portuguese"), Lang("ar", "العربية", "Arabic", rtl = true), Lang("zh", "中文", "Chinese"), Lang("ja", "日本語", "Japanese"),
+        Lang("ko", "한국어", "Korean"), Lang("id", "Bahasa Indonesia", "Indonesian"), Lang("ru", "Русский", "Russian"), Lang("bn", "বাংলা", "Bengali"),
+        Lang("ta", "தமிழ்", "Tamil"), Lang("te", "తెలుగు", "Telugu"), Lang("mr", "मराठी", "Marathi"), Lang("gu", "ગુજરાતી", "Gujarati"),
+        Lang("kn", "ಕನ್ನಡ", "Kannada"), Lang("ur", "اردو", "Urdu", rtl = true), Lang("tr", "Türkçe", "Turkish"), Lang("it", "Italiano", "Italian"),
+        Lang("vi", "Tiếng Việt", "Vietnamese"), Lang("th", "ไทย", "Thai"), Lang("pl", "Polski", "Polish"), Lang("nl", "Nederlands", "Dutch"),
+        Lang("sw", "Kiswahili", "Swahili"), Lang("fa", "فارسی", "Persian", rtl = true),
     )
     fun lang(code: String?) = LANGS.firstOrNull { it.code == code }
     /** The phone's own language, if it's one we offer (and not English): suggested at the top of articles. */
@@ -50,37 +51,59 @@ object Translate {
     fun suggestionDismissed(c: Context) = prefs(c).getBoolean("noSuggest", false)
     fun dismissSuggestion(c: Context) = prefs(c).edit().putBoolean("noSuggest", true).apply()
 
-    private val translators = ConcurrentHashMap<String, Translator>()
+    // ---------- the on-demand engine ----------
+
+    const val MODULE = "translate"
+    private const val ENGINE = "com.randomthoughtsever.plainly.translate.MlKitEngine"
+    @Volatile private var engine: TranslateEngine? = null
+
+    /** The engine if its module is on the phone (installed from Play, or built in, as in preview APKs). */
+    fun engineOrNull(): TranslateEngine? = engine ?: runCatching { Class.forName(ENGINE).getDeclaredConstructor().newInstance() as TranslateEngine }
+        .getOrNull()?.also { engine = it }
+
+    /** Gets the engine, asking Google Play for the translation module first if needed. [status] reports progress. */
+    suspend fun ensureEngine(context: Context, status: (String) -> Unit): TranslateEngine {
+        engineOrNull()?.let { return it }
+        val m = SplitInstallManagerFactory.create(context.applicationContext)
+        if (MODULE !in m.installedModules) {
+            status("Getting the translator (one time)…")
+            suspendCancellableCoroutine { c ->
+                var session = 0
+                lateinit var listener: SplitInstallStateUpdatedListener
+                listener = SplitInstallStateUpdatedListener { s ->
+                    if (s.sessionId() != session) return@SplitInstallStateUpdatedListener
+                    when (s.status()) {
+                        SplitInstallSessionStatus.DOWNLOADING -> if (s.totalBytesToDownload() > 0)
+                            status("Getting the translator (one time)… ${s.bytesDownloaded() * 100 / s.totalBytesToDownload()}%")
+                        SplitInstallSessionStatus.INSTALLED -> { m.unregisterListener(listener); if (c.isActive) c.resume(Unit) }
+                        SplitInstallSessionStatus.FAILED, SplitInstallSessionStatus.CANCELED, SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> {
+                            m.unregisterListener(listener); if (c.isActive) c.resumeWithException(IllegalStateException("translator not installed (${s.status()})"))
+                        }
+                    }
+                }
+                m.registerListener(listener)
+                m.startInstall(SplitInstallRequest.newBuilder().addModule(MODULE).build())
+                    .addOnSuccessListener { id -> session = id; if (id == 0 && c.isActive) { m.unregisterListener(listener); c.resume(Unit) } }
+                    .addOnFailureListener { e -> m.unregisterListener(listener); if (c.isActive) c.resumeWithException(e) }
+                c.invokeOnCancellation { m.unregisterListener(listener) }
+            }
+            com.google.android.play.core.splitcompat.SplitCompat.install(context.applicationContext)
+        }
+        return engineOrNull() ?: throw IllegalStateException("translator not available")
+    }
+
     private val cache = ConcurrentHashMap<String, String>()
 
-    private fun client(code: String) = translators.getOrPut(code) {
-        Translation.getClient(TranslatorOptions.Builder().setSourceLanguage(TranslateLanguage.ENGLISH).setTargetLanguage(code).build())
-    }
-
-    suspend fun isDownloaded(code: String): Boolean =
-        runCatching { RemoteModelManager.getInstance().isModelDownloaded(TranslateRemoteModel.Builder(code).build()).await() }.getOrDefault(false)
-
-    suspend fun download(code: String, wifiOnly: Boolean = false) {
-        val conditions = DownloadConditions.Builder().apply { if (wifiOnly) requireWifi() }.build()
-        client(code).downloadModelIfNeeded(conditions).await()
-    }
-
-    suspend fun text(code: String, s: String): String {
+    suspend fun text(e: TranslateEngine, code: String, s: String): String {
         if (s.isBlank()) return s
         val key = "$code\u0001$s"
         cache[key]?.let { return it }
-        return client(code).translate(s).await().also { if (cache.size < 4000) cache[key] = it }
+        return e.translate(code, s).also { if (cache.size < 4000) cache[key] = it }
     }
 
-    /** Downloaded languages other than English, for Settings. */
-    suspend fun downloaded(): List<Lang> = runCatching {
-        RemoteModelManager.getInstance().getDownloadedModels(TranslateRemoteModel::class.java).await().mapNotNull { lang(it.language) }
-    }.getOrDefault(emptyList())
-
-    suspend fun remove(code: String) {
-        runCatching { RemoteModelManager.getInstance().deleteDownloadedModel(TranslateRemoteModel.Builder(code).build()).await() }
-        translators.remove(code)?.close()
-    }
+    /** Downloaded languages, for Settings (empty if the translator isn't on the phone). */
+    suspend fun downloaded(): List<Lang> = runCatching { engineOrNull()?.downloaded().orEmpty().mapNotNull { lang(it) } }.getOrDefault(emptyList())
+    suspend fun remove(code: String) { runCatching { engineOrNull()?.remove(code) } }
 
     /**
      * Translates an article's blocks with [t] (one call per piece of text), keeping images, tables' shape and order.
@@ -102,11 +125,5 @@ object Translate {
                 Block.Divider -> b
             }
         }.also { progress(total, total) }
-    }
-
-    private suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { c ->
-        addOnSuccessListener { c.resume(it) }
-        addOnFailureListener { c.resumeWithException(it) }
-        addOnCanceledListener { c.cancel() }
     }
 }

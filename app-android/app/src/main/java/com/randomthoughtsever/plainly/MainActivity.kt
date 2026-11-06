@@ -65,6 +65,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(newBase)
+        com.google.android.play.core.splitcompat.SplitCompat.installActivity(this)
+    }
+
     override fun onResume() {
         super.onResume()
         AppGraph.progress.reload()

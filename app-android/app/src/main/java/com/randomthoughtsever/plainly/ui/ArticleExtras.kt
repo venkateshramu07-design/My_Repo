@@ -132,10 +132,11 @@ class ArticleTranslation {
         val T = com.randomthoughtsever.plainly.data.Translate
         val name = T.lang(code)?.native ?: code
         runCatching {
-            if (!T.isDownloaded(code)) { status = "Downloading $name for your phone (about 30 MB, only once)…"; T.download(code) }
+            val e = T.ensureEngine(AppGraph.appContext) { status = it }
+            if (!e.isDownloaded(code)) { status = "Downloading $name for your phone (about 30 MB, only once)…"; e.download(code) }
             status = "Translating to $name…"
-            val t = T.blocks(original, { T.text(code, it) }) { i, n -> status = "Translating to $name… ${if (n == 0) 0 else i * 100 / n}%" }
-            title = T.text(code, originalTitle); blocks = t; lang = code; status = null
+            val t = T.blocks(original, { T.text(e, code, it) }) { i, n -> status = "Translating to $name… ${if (n == 0) 0 else i * 100 / n}%" }
+            title = T.text(e, code, originalTitle); blocks = t; lang = code; status = null
             AppGraph.progress.award("translate:$code", 10, "Reading in $name")
         }.onFailure { status = null; failed = true; wanted = null }
     }

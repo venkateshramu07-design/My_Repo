@@ -24,8 +24,10 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   reader's usual hour, only for a streak at risk, a challenge, the Daily Run or a "did it work?". **Play widget**
   (`PlayWidget.kt`): answer today's quiz on the home screen. **Invites**: `https://randomthoughtsever.blogspot.com/?plainly=challenge/<key>`
   opens that challenge in the app (only an allowlist of places, see `MainActivity.safeRoute`).
-- **Translate** (`data/Translate.kt`, `ui/ArticleExtras.kt`): any article in 26 languages, translated on the phone with
-  Google ML Kit (each language model downloads once, ~30 MB, then works offline). Translate button on every article, a
+- **Translate** (`data/Translate.kt`, `ui/ArticleExtras.kt`, engine in the on-demand module `translate/`): any article in 26
+  languages, translated on the phone with Google ML Kit. The ML Kit engine (~17 MB installed, ~7 MB download) is a Play
+  Feature Delivery module fetched only the first time someone taps Translate, so the app itself is ~5 MB to download;
+  then each language model downloads once (~30 MB) and works offline. Translate button on every article, a
   one-tap suggestion in the phone's own language, a remembered choice, right-to-left layout for Arabic, Urdu and
   Persian, Listen in the translated language, and downloaded languages removable in Settings.
 - **Support Plainly** (`data/Support.kt`, `ui/Support.kt`): optional tips through Google Play Billing Library 8 (products
@@ -87,7 +89,10 @@ Store assets and listing text: `store/`. Publishing steps: `PLAY_STORE_GUIDE.md`
 
 1. Android SDK with `platforms;android-36` and `build-tools;36.0.0`; put `sdk.dir=/path/to/sdk` in `local.properties`.
 2. Signing: create `keystore.properties` (never commit it) with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`.
-3. `./gradlew bundleRelease assembleRelease` writes `app/build/outputs/bundle/release/app-release.aab` (upload this to
+3. Preview APK with everything in one file (translator included, PayPal/UPI shown, sample ads):
+   `./gradlew :app:packageReleaseUniversalApk -Ppreview=true -PsupportLinks=true -Pabis=arm64-v8a,armeabi-v7a`
+   writes `app/build/outputs/apk_from_bundle/release/app-release-universal.apk`. Never upload a `-Ppreview` bundle.
+4. `./gradlew bundleRelease assembleRelease` writes `app/build/outputs/bundle/release/app-release.aab` (upload this to
    Play) and `app/build/outputs/apk/release/app-release.apk` (for testing on a phone).
 4. `./gradlew testDebugUnitTest` runs:
    - `LogicTest`: calculator maths, PDF cross-reference table, Wi-Fi QR escaping, and the reader against sample HTML
