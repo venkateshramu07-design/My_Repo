@@ -6,7 +6,7 @@ Version under test: 1.1.0 (versionCode 2), branch `claude/google-keys-indexing-c
 
 | Area | Result |
 |---|---|
-| Automated tests (unit, screen, black-box QA) | **73 tests: 70 passed, 0 failed, 3 skipped** (the optional Firebase community, which needs its emulators) |
+| Automated tests (unit, screen, black-box QA) | **74 tests: 70 passed, 0 failed, 4 skipped** (3 for the optional Firebase community, which needs its emulators; 1 monkey run marked inconclusive: a test-sync timeout after 257 random taps, with no app error) |
 | Static analysis (Android Lint, release) | **0 errors** (was 5; all fixed). Remaining warnings are style hints (KTX helpers, dependency updates). |
 | Kotlin compiler warnings | **0** (deprecated icons and APIs replaced) |
 | Security and release-package audit | **Pass** (details below) |
@@ -30,7 +30,7 @@ Android Lint (AGP 8.11), apksigner, aapt2, dexdump.
 
 | Suite | Tests | What it covers |
 |---|---|---|
-| `LogicTest` | 28 | Calculators, PDF writer, QR escaping, article reader on every live post, search ranking, check-ups, quizzes and badges, games' rules (500 maths questions; unbeatable tic-tac-toe never loses), blog comments, XP/levels/leagues/Daily Run/cards/check-ins/"I tried this", daily puzzles (400 days each), money simulator (200 seeded years), reminders, seasons, question of the week, tips rules, translation keeps structure, new puzzles and archive, streak freezes, calendar and number-format edge cases |
+| `LogicTest` | 29 | Calculators, PDF writer, QR escaping, article reader on every live post, search ranking, check-ups, quizzes and badges, games' rules (500 maths questions; unbeatable tic-tac-toe never loses), blog comments, XP/levels/leagues/Daily Run/cards/check-ins/"I tried this", daily puzzles (400 days each), money simulator (200 seeded years), reminders, seasons, question of the week, tips rules, translation keeps structure, new puzzles and archive, streak freezes, calendar and number-format edge cases |
 | `ReleaseQaTest` | 8 | Every screen opens on Android 10 and on Android 15 (45 screens each); 300-tap seeded monkey; no internet; corrupted saved data; deep-link allowlist (8 allowed, 16 hostile inputs refused); screen-reader label audit on 13 screens; live content integrity |
 | `ScreenshotTest` + `BlogCommunityScreenTest` | 26 + 1 | The real app on a virtual phone: onboarding, Today, stories, articles, Explore, Reads, tools, games, community (blog comments and joining), challenges, the play layer (Daily Run, puzzle, simulator, levels, calm, recap), support, translation picker, first session, search while typing, small-phone tab bar, 160% text |
 | `CoverTest`, `SceneTest`, `WebToolPagesTest` | 8 | Cover images for new posts; every topic animation renders; all 64 website tools load without script errors |
