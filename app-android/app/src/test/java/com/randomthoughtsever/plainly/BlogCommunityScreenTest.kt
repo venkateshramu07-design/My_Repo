@@ -32,6 +32,9 @@ import java.util.concurrent.TimeUnit
 class BlogCommunityScreenTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val ctx: Context = ApplicationProvider.getApplicationContext()
+    private var scenario: ActivityScenario<MainActivity>? = null
+    /** Closes the app after each test, so one test's screens and timers can't keep running into the next. */
+    @org.junit.After fun closeApp() { runCatching { scenario?.close() }; scenario = null }
     private fun launch(): ActivityScenario<MainActivity> {
         ctx.getSharedPreferences("progress", Context.MODE_PRIVATE).edit().putBoolean("starterHidden", true).commit()
         ctx.getSharedPreferences("plainly", Context.MODE_PRIVATE).edit().putString("theme", "light").putString("currency", "USD")
@@ -39,6 +42,7 @@ class BlogCommunityScreenTest {
         ctx.getSharedPreferences("profile", Context.MODE_PRIVATE).edit().putBoolean("onboarded", true)
             .putStringSet("goals", setOf("debt", "save")).putString("country", "US").commit()
         val s = ActivityScenario.launch(MainActivity::class.java)
+        scenario = s
         compose.mainClock.autoAdvance = false
         return s
     }
@@ -128,5 +132,4 @@ class BlogCommunityScreenTest {
             shot("51-community-compose")
         } finally { server.close(); com.randomthoughtsever.plainly.data.BlogTalk.base = "https://randomthoughtsever.blogspot.com" }
     }
-
 }

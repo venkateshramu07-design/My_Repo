@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
@@ -66,26 +67,30 @@ private val GROUPS = linkedMapOf(
     "World" to setOf("Countries & Living Abroad"),
 )
 
-/** "For you": newest first, with topics you read most moved up, as if they were a month newer. */
-private fun forYou(list: List<Entry>): List<Entry> {
-    val fav = AppGraph.library.history.groupingBy { it.label }.eachCount().entries.sortedByDescending { it.value }.take(3).map { it.key }.toSet()
-    return list.sortedByDescending { e -> runCatching { LocalDate.parse(e.published).toEpochDay() }.getOrDefault(0) + if (e.label in fav) 30 else 0 }
-}
+/** The topics read most (for "For you"). */
+private fun favourites() = AppGraph.library.history.groupingBy { it.label }.eachCount().entries.sortedByDescending { it.value }.take(3).map { it.key }.toSet()
 
 /** Quick reads: one guide per screen, its quick answer up front. Swipe up for the next. */
 @Composable
 fun QuickReadsScreen(nav: Nav) {
     val index = rememberIndex()
     var group by rememberSaveable { mutableStateOf("For you") }
-    val list = remember(index, group) {
+    var shuffles by rememberSaveable { androidx.compose.runtime.mutableIntStateOf(0) }
+    // A varied order: lookalike series (e.g. minimum wage by country) spread far apart, topics mixed, new each day and on Shuffle.
+    val list = remember(index, group, shuffles) {
         val usable = index.orEmpty().filter { it.quick.length > 60 && isReadingTopic(it.label) && !it.isToolPage }
-        if (group == "For you") forYou(usable) else usable.filter { it.label in GROUPS[group]!! }
+        val picked = if (group == "For you") usable else usable.filter { it.label in GROUPS[group]!! }
+        com.randomthoughtsever.plainly.data.Variety.order(picked, LocalDate.now().toEpochDay() * 1_000 + shuffles * 7919L + group.hashCode(),
+            if (group == "For you") favourites() else emptySet())
     }
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.statusBarsPadding().padding(top = 12.dp)) {
             Row(Modifier.padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("Quick reads", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
                 if (list.isNotEmpty()) Text("${list.size} answers", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                androidx.compose.material3.IconButton(onClick = { shuffles++ }) {
+                    Icon(Icons.Rounded.Shuffle, "Shuffle: a new mix of guides", tint = MaterialTheme.colorScheme.primary)
+                }
             }
             LazyRow(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(GROUPS.keys.toList()) { g -> FilterChip(group == g, { group = g }, label = { Text(g) }, shape = RoundedCornerShape(50)) }
@@ -94,6 +99,7 @@ fun QuickReadsScreen(nav: Nav) {
         if (index == null) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         else {
             val pager = rememberPagerState { list.size }
+            androidx.compose.runtime.LaunchedEffect(shuffles, group) { pager.scrollToPage(0) }
             VerticalPager(pager, Modifier.weight(1f), key = { list[it].id }, contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 40.dp),
                 pageSpacing = 14.dp) { i ->
                 QuickCard(list[i], i, i == 0 && pager.currentPage == 0, nav)

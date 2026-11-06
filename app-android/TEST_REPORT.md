@@ -59,6 +59,12 @@ level-up dialog covering a tap; a final check that didn't allow for an open dial
   exact leftover wasn't pinned down; that test passes on its own every time (5 of 5), and each test class now runs in
   a fresh JVM (`forkEvery = 1`), which is how the app really starts. Worth watching in Play's pre-launch report.
 - A cover image once returned "not found" from Google's image server during a run; it loads normally (re-run passed).
+- Intermittent (about 2 of 10 full runs): with the comment box ("Join the discussion") open, the virtual phone's
+  "wait until the screen is still" check timed out. The app threw no error and never crashed, and opening the box
+  directly passes every time (5 of 5). Investigated: it happens when a conversation finishes loading while the box is
+  open; with the box open the main thread had nothing queued and the screens' redraw counters stayed constant (no redraw
+  loop), so it points to the test framework's idle detection rather than the app. Not proven on a real phone. The monkey test reports this case as *inconclusive (skipped)*, not as a pass, and it's
+  on the real-phone checklist (item 8).
 
 ## Security and release audit
 
@@ -97,7 +103,8 @@ phone and one Android 14–16 phone. Tick each:
 6. **Tools:** photo resize to a KB target, PDF compress, QR code; files save and share.
 7. **Games:** each of the five; A Year of Money to the end; Calm corner sounds play and stop when you leave.
 8. **Community:** join; open a conversation; "Copy and continue" opens the blog's comment box; post a comment and see it
-   appear marked "(you)"; Report opens the contact form.
+   appear marked "(you)"; Report opens the contact form. Also open a guide, scroll to Discussion, tap **Join in** right
+   after the "+20 XP" pop-up appears, and check the post box opens and you can type (see the note under Test-only problems).
 9. **Tips:** Support Plainly shows Google Play prices (after creating the 3 tip products); a test purchase with a licence
    tester account shows the thank-you.
 10. **Ads:** banners appear and are labelled; an interstitial appears only after finishing a tool task, at most every 4 minutes.

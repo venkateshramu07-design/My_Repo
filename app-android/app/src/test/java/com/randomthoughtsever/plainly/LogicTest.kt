@@ -479,6 +479,51 @@ class LogicTest {
         assertEquals(100, com.randomthoughtsever.plainly.data.Puzzles.future(100, 0, 30))
     }
 
+    /** Reads: lookalike series (minimum wage by country…) are spread out, topics alternate, and the mix changes. */
+    @Test fun readsAreVariedNotRepetitive() {
+        val V = com.randomthoughtsever.plainly.data.Variety
+        assertEquals("minimum wage", V.series("US Minimum Wage 2026: Tax, Mortgages, Pensions and Energy", "1"))
+        assertEquals("minimum wage", V.series("UK Minimum Wage 2026: Tax, Mortgages, Pensions and Energy", "2"))
+        assertEquals("minimum wage", V.series("South Africa Minimum Wage 2026 and Pensions", "3"))
+        assertEquals("income tax", V.series("Switzerland Income Tax 2026: Mortgages and Pensions", "4"))
+        assertEquals("id:5", V.series("How to Pay Off Credit Card Debt Fast", "5"))
+        assertTrue(V.isCountryGuide("New Zealand Minimum Wage 2026: Tax and Pensions") && !V.isCountryGuide("How Inflation Works"))
+        // The live blog, as the Reads tab sees it
+        val entries = mutableListOf<JSONObject>(); var start = 1
+        while (true) {   // every guide, page by page, as the app's index does
+            val body = runCatching { URL("https://randomthoughtsever.blogspot.com/feeds/posts/summary?alt=json&max-results=150&start-index=$start").readText() }.getOrNull()
+            assumeTrue(body != null || entries.isNotEmpty())
+            val a = JSONObject(body ?: break).getJSONObject("feed").optJSONArray("entry") ?: break
+            if (a.length() == 0) break
+            for (i in 0 until a.length()) entries += a.getJSONObject(i)
+            start += a.length()
+        }
+        val list = entries.map { e -> e.let { e ->
+            val labels = e.optJSONArray("category")?.let { c -> List(c.length()) { c.getJSONObject(it).getString("term") } }.orEmpty()
+            com.randomthoughtsever.plainly.data.Entry(e.getJSONObject("id").getString("\$t").substringAfterLast("post-"), e.getJSONObject("title").getString("\$t"),
+                "", "", labels, e.getJSONObject("published").getString("\$t").take(10), "q", null) } }.filterNot { it.isToolPage }
+        assertTrue(list.size > 150)
+        val firsts = mutableSetOf<String>()
+        for (seed in 1L..20L) {
+            val o = V.order(list, seed)
+            assertEquals(list.size, o.size); assertEquals(list.map { it.id }.toSet(), o.map { it.id }.toSet())   // nothing lost or repeated
+            val head = o.take((o.size * .8).toInt())                                                              // the part people actually swipe through
+            head.zipWithNext().forEach { (x, y) -> assertTrue("same series back to back: ${x.title} / ${y.title}",
+                V.series(x.title, x.id) != V.series(y.title, y.id)) }
+            head.zipWithNext().forEach { (x, y) -> assertTrue("country guides back to back: ${x.title} / ${y.title}", !(V.isCountryGuide(x.title) && V.isCountryGuide(y.title))) }
+            val sameTopic = head.zipWithNext().count { (x, y) -> x.label == y.label }
+            assertTrue("topics repeat back to back $sameTopic times", sameTopic <= head.size / 10)
+            firsts += o.first().id
+            if (seed == 1L) println("READS-ORDER\n" + o.take(16).joinToString("\n") { "  ${it.label} | ${it.title}" })
+        }
+        assertTrue("the first card should change between days/shuffles", firsts.size >= 10)
+        // Today's feed keeps newest-first but spreads series out too
+        val today = V.spread(com.randomthoughtsever.plainly.ui.mixTopics(list.sortedByDescending { it.published }))
+        assertEquals(list.size, today.size)
+        today.take((today.size * .8).toInt()).zipWithNext().forEach { (x, y) ->
+            assertTrue("Today: same series back to back: ${x.title} / ${y.title}", V.series(x.title, x.id) != V.series(y.title, y.id)) }
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

@@ -173,6 +173,7 @@ fun HomeScreen(nav: Nav) {
         (posts.map { it.toEntry() } + index.filterNot { it.isToolPage }).distinctBy { it.id }.sortedByDescending { it.published }
             .let { all -> if (posts.isEmpty()) all else all.filter { it.id != dailyPick(posts).id } }
             .let(::mixTopics)
+            .let { com.randomthoughtsever.plainly.data.Variety.spread(it) }   // no "minimum wage" after "minimum wage"
     }
     val context = LocalContext.current
     LaunchedEffect(more.size, shown) { Images.prefetch(context, more.take(shown + 20).drop((shown - 20).coerceAtLeast(0)).map { it.image }) }

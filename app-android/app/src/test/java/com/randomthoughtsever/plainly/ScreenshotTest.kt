@@ -49,6 +49,9 @@ import java.util.concurrent.TimeUnit
 class ScreenshotTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val ctx: Context = ApplicationProvider.getApplicationContext()
+    private var scenario: ActivityScenario<MainActivity>? = null
+    /** Closes the app after each test, so one test's screens and timers can't keep running into the next. */
+    @org.junit.After fun closeApp() { runCatching { scenario?.close() }; scenario = null }
 
     private fun launch(theme: String = "light", link: String? = null, onboarded: Boolean = true, autoDeck: Boolean = false, starter: Boolean = false): ActivityScenario<MainActivity> {
         ctx.getSharedPreferences("progress", Context.MODE_PRIVATE).edit().putBoolean("starterHidden", !starter).commit()
@@ -59,6 +62,7 @@ class ScreenshotTest {
         Coil.setImageLoader(ImageLoader.Builder(ctx).allowHardware(false).crossfade(false).components { add(LocalCovers()) }.build())
         val intent = Intent(ctx, MainActivity::class.java).apply { if (link != null) { action = Intent.ACTION_VIEW; data = Uri.parse(link) } }
         val s = ActivityScenario.launch<MainActivity>(intent)
+        scenario = s
         compose.mainClock.autoAdvance = false
         return s
     }
