@@ -115,7 +115,7 @@ private fun CheckResult(id: String, answers: List<Int>, nav: Nav, retake: () -> 
     val context = LocalContext.current
     val (score, areas) = remember(answers) { check.score(answers) }
     val weakest = remember(areas) { check.weakest(areas) }
-    LaunchedEffect(score) { AppGraph.profile.saveCheck(id, score, weakest) }
+    LaunchedEffect(score) { AppGraph.profile.saveCheck(id, score, weakest); AppGraph.progress.award("check:$id:${java.time.LocalDate.now()}", 25, "Check-up done", "checkups") }
     val ring = remember { Animatable(0f) }
     LaunchedEffect(score) { ring.animateTo(score / 100f, tween(1400)) }
     val index = rememberIndex()

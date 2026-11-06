@@ -213,6 +213,13 @@ These are already handled in the app; keep them that way:
 - **Store listing:** no "free", "best" or "#1" in the title or short description; every feature named exists in the app.
 - **Accurate declarations:** use the answers in Step 4 exactly; update them if you add features.
 
+## Store graphics and promo video
+
+- **Phone screenshots:** upload `store/screenshots/screenshot-1.png` … `-8.png` in that order (Daily Run, puzzle, simulator,
+  money score, translation, levels, tools, calm).
+- **Promo video:** Play only accepts a YouTube link. Upload `store/promo-video.mp4` (32 seconds, no sound) to YouTube as
+  *Unlisted* or *Public*, turn ads off for it, and paste the link in **Main store listing → Video**.
+
 ## Step 3: Create the app (5 minutes)
 
 In Play Console, click **Create app** and enter:

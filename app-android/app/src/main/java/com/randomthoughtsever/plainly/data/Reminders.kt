@@ -57,7 +57,8 @@ object Reminders {
             val today = LocalDate.now()
             if (pr.lastNudge == today.toString()) return Result.success()
             val opened = today.toString() in lib.openDays()
-            var streak = 0; var d = today.minusDays(1); while (d.toString() in lib.openDays()) { streak++; d = d.minusDays(1) }
+            val kept = lib.keptDays()
+            var streak = 0; var d = today.minusDays(1); while (d.toString() in kept) { streak++; d = d.minusDays(1) }
             val pending = profile.joined().filter { today.toString() !in it.days }.firstNotNullOfOrNull { j -> CHALLENGES.firstOrNull { it.key == j.key } }
             val (text, route) = message(opened, streak, pending, pr.runDone().containsAll(Progress.RUN_STEPS), pr.followUp()?.title,
                 "${Puzzles.kind().title} #${Puzzles.number()}") ?: return Result.success()

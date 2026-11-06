@@ -9,14 +9,14 @@ W, H = 1080, 1920
 NAVY, DEEP, GOLD, PAGE = (31, 78, 121), (10, 27, 47), (226, 178, 98), (246, 244, 240)
 
 SLIDES = [
-    ('01-today', 'Your day,\nmade for you', 'Check-ups, your plan, Daily 3 and stories.', 'dark'),
+    ('60-today-daily-run', 'Five minutes a day.\nThen you\'re done.', 'A story, a quiz, one small step, a puzzle.', 'dark'),
+    ('64-daily-puzzle', 'A new puzzle\nevery day', 'The same for everyone. Share your score.', 'light'),
+    ('66-sim-month', 'Live a whole year\nof money', 'Your choices, real lessons, a final score.', 'dark'),
     ('25-check-result', 'Your money score\nin 60 seconds', 'And the one thing to fix first.', 'light'),
-    ('21-onboarding-goals', 'Tell us your goal.\nGet a plan.', 'Debt, saving, a calmer mind, career or abroad.', 'dark'),
-    ('26-today-numbers', 'Your numbers,\nyour answers', 'FIRE number, safety net, debt-free date.', 'light'),
+    ('72-translate-picker', 'Read it in\nyour language', '26 languages, translated on your phone.', 'dark'),
+    ('68-rewards', 'Level up as\nyou learn', 'XP, streaks, guide cards and rewards.', 'light'),
     ('05-tools', '72 tools\nin your pocket', 'Photos, PDFs, money, work and travel.', 'dark'),
-    ('14-you', 'Streaks, badges\nand challenges', 'Small daily steps that add up.', 'light'),
-    ('02-article', 'The answer first.\nThen the detail.', 'Read it, or tap Listen.', 'dark'),
-    ('04-explore', 'Explore 295 guides\nyour way', 'Collections, 35 countries and every topic.', 'light'),
+    ('69-calm', 'Breathe. Focus.\nSleep.', 'A calm corner with soothing sounds.', 'light'),
 ]
 
 def font(name, size): return ImageFont.truetype(os.path.join(FONT, name), size)

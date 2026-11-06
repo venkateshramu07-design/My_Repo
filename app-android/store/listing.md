@@ -44,7 +44,7 @@ YOUR 5-MINUTE DAILY RUN
 A story, a quiz, one small action, the daily puzzle and a mood check-in, then you're done for the day. Earn XP, level up, unlock colour themes and collect a card for every guide you finish.
 
 PLAY AND UNWIND
-A new daily puzzle (the same for everyone; share your result), A Year of Money (live 12 months of money decisions in five minutes), a Calm corner with breathing, a focus timer and sleep sounds, plus Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe and Reaction Time. Offline.
+A new daily puzzle, including Spot the Scam (the same for everyone; share your result or replay the last 30 days), A Year of Money (live 12 months of money decisions in five minutes), a Calm corner with breathing, a focus timer and sleep sounds, plus Rock Paper Scissors, Money Match, Number Rush, Tic-Tac-Toe and Reaction Time. Offline.
 
 COMMUNITY
 Read what other readers say about every guide, join the conversation, and see the most active voices. Reading needs no account; you post with your Google account, like any comment on the blog.

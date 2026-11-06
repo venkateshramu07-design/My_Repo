@@ -414,6 +414,45 @@ class LogicTest {
         assertTrue(out.any { it is com.randomthoughtsever.plainly.ui.Block.Bullets && it.items.map { i -> i.second.text } == listOf("ONE", "TWO") })
     }
 
+    @Test fun newPuzzlesArchiveAndStreakFreezes() {
+        val P = com.randomthoughtsever.plainly.data.Puzzles
+        var d = java.time.LocalDate.of(2026, 11, 1)
+        assertEquals(5, (0L..4L).map { P.kind(d.plusDays(it)) }.toSet().size)               // all five kinds take turns
+        repeat(200) {
+            val s = P.scamRounds(d)
+            assertEquals(5, s.size); s.forEach { r -> assertEquals(3, r.options.size); assertEquals(1, r.options.count { it.scam }); assertTrue(r.options[r.answer].why.isNotBlank()) }
+            assertEquals(15, s.flatMap { it.options }.distinct().size)                       // no message repeats within a day
+            val q = P.dollarRounds(d)
+            assertEquals(5, q.size)
+            q.forEach { r -> assertEquals(P.future(100, r.rate, r.years), r.options[r.answer]); assertEquals(3, r.options.toSet().size) }
+            d = d.plusDays(1)
+        }
+        assertEquals(148, P.future(100, 4, 10))                                              // 100 × 1.04^10 = 148.02
+        assertEquals(30, P.archive(java.time.LocalDate.of(2027, 1, 1)).size)
+        assertTrue(P.archive(java.time.LocalDate.of(2026, 11, 1)).isEmpty())                 // nothing before the first puzzle
+        // Archive results never touch the daily streak
+        val ctx = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        ctx.getSharedPreferences("progress", android.content.Context.MODE_PRIVATE).edit().clear().commit()
+        val today = java.time.LocalDate.of(2026, 12, 10)
+        val pr = com.randomthoughtsever.plainly.data.Progress(ctx) { today }
+        pr.savePuzzleOn(today.minusDays(1), com.randomthoughtsever.plainly.data.Progress.PuzzleResult(true, 3, "x"))
+        assertEquals(0, pr.puzzleStreak()); assertTrue(pr.archived(today.minusDays(1))!!.solved)
+        pr.savePuzzleOn(today, com.randomthoughtsever.plainly.data.Progress.PuzzleResult(true, 2, "y"))
+        assertEquals(1, pr.puzzleStreak())
+        // Streak freezes: a missed day after a real streak is covered; a lone day or a long gap isn't
+        val L = com.randomthoughtsever.plainly.data.Library
+        val t = java.time.LocalDate.of(2026, 12, 10)
+        fun days(vararg ago: Long) = ago.map { t.minusDays(it).toString() }.toSet()
+        assertEquals(listOf(t.minusDays(1)), L.coverGap(days(2, 3, 4), 1, t).first)          // missed yesterday, 3-day streak before
+        assertEquals(2, L.coverGap(days(3, 4), 2, t).first.size)                              // two missed days, two freezes
+        assertTrue(L.coverGap(days(3, 4), 1, t).first.isEmpty())                              // not enough freezes
+        assertTrue(L.coverGap(days(2), 1, t).first.isEmpty())                                 // a 1-day streak isn't worth a freeze
+        assertTrue(L.coverGap(days(1, 2), 1, t).first.isEmpty())                              // nothing missed
+        assertTrue(L.coverGap(days(2, 3), 0, t).first.isEmpty())                              // no freezes
+        assertEquals(0, pr.freezes()); repeat(3) { pr.earnFreeze() }; assertEquals(2, pr.freezes()) // at most two held
+        ctx.getSharedPreferences("plainly", android.content.Context.MODE_PRIVATE).edit().remove("freezes").commit()
+    }
+
     @Test fun moreToReadMixesTopics() {
         fun e(id: String, label: String, date: String) = com.randomthoughtsever.plainly.data.Entry(id, id, "/$id", "", listOf(label), date, "", null)
         val feed = listOf(e("t1", "Tools", "2026-10-30"), e("t2", "Tools", "2026-10-30"), e("t3", "Tools", "2026-10-30"),

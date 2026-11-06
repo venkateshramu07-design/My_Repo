@@ -60,6 +60,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -227,6 +228,10 @@ private fun KnowledgeMap(nav: Nav) {
 @Composable
 private fun StreakCard(streak: Int, days: Set<String>) {
     val today = LocalDate.now()
+    val lib = AppGraph.library
+    AppGraph.progress.version
+    val frozen = remember { lib.frozenDays() }
+    val freezes = lib.freezes()
     Surface(shape = RoundedCornerShape(28.dp), color = Color.Transparent, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
         Column(Modifier.background(Brush.linearGradient(listOf(Navy, NavyDeep))).padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -234,19 +239,30 @@ private fun StreakCard(streak: Int, days: Set<String>) {
                     Icon(Icons.Rounded.LocalFireDepartment, null, tint = Gold, modifier = Modifier.size(30.dp))
                 }
                 Spacer(Modifier.width(14.dp))
-                Column {
+                Column(Modifier.weight(1f)) {
                     Text(if (streak <= 1) "Day 1" else "$streak-day streak", style = MaterialTheme.typography.headlineSmall, color = Color.White)
                     Text(if (streak <= 1) "Come back tomorrow to start a streak." else "Open Plainly tomorrow to keep it going.",
                         style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = .78f))
                 }
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.semantics(mergeDescendants = true) {}) {
+                    Text("🧊".repeat(freezes.coerceAtLeast(0)).ifBlank { "🧊" }, style = MaterialTheme.typography.titleLarge,
+                        color = if (freezes > 0) Color.Unspecified else Color.White.copy(alpha = .3f), modifier = Modifier.graphicsLayer { alpha = if (freezes > 0) 1f else .35f })
+                    Text("$freezes freeze${if (freezes == 1) "" else "s"}", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = .8f))
+                }
             }
+            Text(if (freezes > 0) "A streak freeze covers a missed day automatically. Earn one with every 5th Daily Run or level-up (hold up to 2)."
+                else "Earn a streak freeze with every 5th Daily Run or level-up. It covers a missed day so your streak survives.",
+                style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = .7f), modifier = Modifier.padding(top = 10.dp))
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 (6 downTo 0).map { today.minusDays(it.toLong()) }.forEach { d ->
                     val on = d.toString() in days
+                    val ice = d.toString() in frozen
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Box(Modifier.size(30.dp).clip(CircleShape).background(if (on) Gold else Color.White.copy(alpha = .12f)), contentAlignment = Alignment.Center) {
+                        Box(Modifier.size(30.dp).clip(CircleShape).background(when { on -> Gold; ice -> Color(0xFF8FD3F0); else -> Color.White.copy(alpha = .12f) }),
+                            contentAlignment = Alignment.Center) {
                             if (on) Icon(Icons.Rounded.LocalFireDepartment, null, tint = NavyDeep, modifier = Modifier.size(16.dp))
+                            else if (ice) Text("🧊", style = MaterialTheme.typography.labelSmall)
                         }
                         Spacer(Modifier.height(4.dp))
                         Text(d.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault()), style = MaterialTheme.typography.labelSmall,

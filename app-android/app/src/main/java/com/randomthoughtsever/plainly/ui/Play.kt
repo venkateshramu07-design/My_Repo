@@ -92,8 +92,8 @@ fun PlayOverlay(nav: Nav) {
             // A plain box (not a Surface) so taps go straight through to whatever is underneath.
             Box(Modifier.shadow(8.dp, RoundedCornerShape(50)).background(NavyDeep, RoundedCornerShape(50)).border(1.dp, Gold.copy(alpha = .6f), RoundedCornerShape(50))) {
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("+${a?.amount ?: 0} XP", color = Gold, fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.labelLarge)
-                    Spacer(Modifier.width(8.dp))
+                    if ((a?.amount ?: 0) > 0) { Text("+${a?.amount ?: 0} XP", color = Gold, fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.labelLarge)
+                        Spacer(Modifier.width(8.dp)) }
                     Text(a?.reason.orEmpty(), color = Color.White, style = MaterialTheme.typography.labelLarge)
                 }
             }
@@ -226,9 +226,10 @@ fun LevelCard(nav: Nav, modifier: Modifier = Modifier) {
             }
             Spacer(Modifier.height(12.dp))
             LinearProgressIndicator(progress = { pr.levelProgress() }, Modifier.fillMaxWidth().height(8.dp).clip(CircleShape), color = Gold, trackColor = Color.White.copy(alpha = .18f))
-            Row(Modifier.padding(top = 6.dp)) {
+            Row(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("${pr.need(l + 1) - pr.xp} XP to level ${l + 1}", color = Color.White.copy(alpha = .8f), style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))
-                Text(next?.let { "${it.from - week} XP to ${it.name}" } ?: "Top league this week!", color = Color.White.copy(alpha = .8f), style = MaterialTheme.typography.labelMedium)
+                Text(next?.let { "${it.from - week} XP to ${it.name}" } ?: "Top league this week!", color = Color.White.copy(alpha = .8f), style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.End, modifier = Modifier.weight(1f))
             }
         }
     }
@@ -347,13 +348,15 @@ fun WeeklyGoal() {
     val week = pr.weekXp(); val goal = pr.weeklyGoal
     Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
         Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Weekly goal", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            Text("Weekly goal", style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
+                Text("XP:", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 listOf(150, 300, 600, 1000).forEach { g ->
                     Text("$g", style = MaterialTheme.typography.labelLarge, fontWeight = if (g == goal) FontWeight.ExtraBold else FontWeight.Normal,
                         color = if (g == goal) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(if (g == goal) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
-                            .clickableNoRipple { pr.weeklyGoal = g }.padding(horizontal = 8.dp, vertical = 4.dp))
+                            .clickable(role = androidx.compose.ui.semantics.Role.RadioButton, onClickLabel = "Set weekly goal to $g XP") { pr.weeklyGoal = g }
+                            .padding(horizontal = 10.dp, vertical = 8.dp))
                 }
             }
             LinearProgressIndicator(progress = { (week / goal.toFloat()).coerceIn(0f, 1f) }, Modifier.fillMaxWidth().padding(vertical = 10.dp).height(10.dp).clip(CircleShape), color = Gold)

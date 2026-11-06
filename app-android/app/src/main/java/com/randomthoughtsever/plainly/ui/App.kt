@@ -65,6 +65,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -131,6 +133,8 @@ class Nav(private val c: NavHostController, val context: Context, private val sc
     fun run() = c.navigate("run")
     fun games() = tab("games")
     fun puzzle() = c.navigate("puzzle")
+    fun puzzle(date: java.time.LocalDate) = c.navigate("puzzle?date=$date")
+    fun puzzles() = c.navigate("puzzles")
     fun rewards() = c.navigate("rewards")
     fun sim() = c.navigate("sim")
     fun calm(mode: String = "breathe") = c.navigate("calm/$mode")
@@ -186,14 +190,16 @@ private fun FloatingBar(route: String?, onSelect: (String) -> Unit) {
                 val scale by animateFloatAsState(if (selected) 1.12f else 1f, spring(dampingRatio = .4f, stiffness = 600f), label = "icon")
                 val bg by animateColorAsState(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent, label = "bg")
                 val tint by animateColorAsState(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, label = "tint")
-                Column(Modifier.weight(if (t.label.length > 7) 1.3f else 1f).fillMaxHeight().selectable(selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() },
+                Column(Modifier.weight(if (t.label.length > 7) 1.3f else 1f).fillMaxHeight().semantics { contentDescription = t.label }.selectable(selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() },
                     indication = null) { if (!selected) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove); onSelect(t.route) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                     Box(Modifier.width(width).height(32.dp).clip(CircleShape).background(bg), contentAlignment = Alignment.Center) {
                         Icon(t.icon, null, tint = tint, modifier = Modifier.size(21.dp).graphicsLayer { scaleX = scale; scaleY = scale })
                     }
                     Spacer(Modifier.height(3.dp))
-                    Text(t.label, style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, letterSpacing = 0.sp), color = tint, maxLines = 1,
+                    // The bar's labels grow with the font setting only up to 115%, so seven tabs still fit; the icons carry the rest.
+                    val scale = androidx.compose.ui.platform.LocalDensity.current.fontScale
+                    Text(t.label, style = MaterialTheme.typography.labelSmall.copy(fontSize = (10f * minOf(scale, 1.15f) / scale).sp, letterSpacing = 0.sp), color = tint, maxLines = 1,
                         softWrap = false,
                         fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium)
                 }
@@ -238,7 +244,10 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
             composable("challenge/{key}") { ChallengeScreen(it.arguments?.getString("key") ?: "", nav) }
             composable("games") { GamesScreen(nav) }
             composable("run") { DailyRunScreen(nav) }
-            composable("puzzle") { PuzzleScreen(nav) }
+            composable("puzzle?date={date}", listOf(navArgument("date") { defaultValue = "" })) {
+                PuzzleScreen(nav, it.arguments?.getString("date")?.takeIf { d -> d.isNotBlank() }?.let { d -> runCatching { java.time.LocalDate.parse(d) }.getOrNull() } ?: java.time.LocalDate.now())
+            }
+            composable("puzzles") { PuzzleArchiveScreen(nav) }
             composable("rewards") { RewardsScreen(nav) }
             composable("sim") { LifeSimScreen(nav) }
             composable("calm/{mode}") { CalmScreen(it.arguments?.getString("mode") ?: "breathe", nav) }

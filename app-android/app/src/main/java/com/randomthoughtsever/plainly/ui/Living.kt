@@ -165,3 +165,22 @@ fun HotDiscussions(nav: Nav) {
     }
 }
 
+
+/** "A streak freeze saved your streak": shown on the day a freeze covered a missed day. */
+@Composable
+fun FreezeNote() {
+    val lib = AppGraph.library
+    var shown by remember { mutableStateOf(lib.freezeUsedOn() == LocalDate.now().toString()) }
+    if (!shown) return
+    Surface(onClick = { lib.clearFreezeNote(); shown = false }, shape = RoundedCornerShape(22.dp), color = Color(0xFFDDF2FB),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp)) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("🧊", fontSize = 28.sp); Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text("A streak freeze saved your ${lib.streak()}-day streak", style = MaterialTheme.typography.titleSmall, color = Color(0xFF0E3A4F))
+                Text("You missed a day, so one freeze covered it. ${lib.freezes()} left. Tap to close.", style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF0E3A4F).copy(alpha = .8f))
+            }
+        }
+    }
+}

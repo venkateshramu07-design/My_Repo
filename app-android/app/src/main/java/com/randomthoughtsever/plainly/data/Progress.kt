@@ -19,6 +19,14 @@ import java.time.temporal.TemporalAdjusters
  */
 class Progress(context: Context, private val today: () -> LocalDate = { LocalDate.now() }) {
     private val p: SharedPreferences = context.getSharedPreferences("progress", Context.MODE_PRIVATE)
+    private val shared: SharedPreferences = context.getSharedPreferences("plainly", Context.MODE_PRIVATE)
+
+    /** Streak freezes (kept with the streak in Library): earned with every 5th Daily Run and every level-up, at most 2 held. */
+    fun freezes() = shared.getInt("freezes", 0)
+    fun earnFreeze(): Boolean {
+        if (freezes() >= Library.MAX_FREEZES) return false
+        shared.edit().putInt("freezes", freezes() + 1).apply(); version++; return true
+    }
 
     /** Bumps on every change so screens redraw. */
     var version by mutableIntStateOf(0); private set
@@ -51,7 +59,7 @@ class Progress(context: Context, private val today: () -> LocalDate = { LocalDat
             .putString("dayXp", trim(days).toString()).apply()
         stat?.let { count(it) }
         lastAward = Award(gain, reason)
-        if (level() > before) levelUp = level()
+        if (level() > before) { levelUp = level(); earnFreeze() }
         version++
         return true
     }
@@ -118,6 +126,7 @@ class Progress(context: Context, private val today: () -> LocalDate = { LocalDat
         p.edit().putStringSet("run:${today()}", done).apply(); version++
         if (done.containsAll(RUN_STEPS) && award("run:${today()}", 50, "Daily Run complete", "runs")) {
             p.edit().putInt("runs", runs() + 1).apply()
+            if (runs() % 5 == 0 && earnFreeze()) lastAward = Award(0, "🧊 You earned a streak freeze")
         }
     }
     fun runs() = p.getInt("runs", 0)
@@ -196,6 +205,19 @@ class Progress(context: Context, private val today: () -> LocalDate = { LocalDat
         award("puzzle:${today()}", if (r.solved) 30 else 10, if (r.solved) "Daily puzzle solved" else "Daily puzzle played", "puzzles")
         runStep("puzzle")
     }
+    /** Past puzzles from the archive: kept apart from the daily ones so they never change the puzzle streak. */
+    fun archived(d: LocalDate): PuzzleResult? = p.getString("pza:$d", null)?.let {
+        runCatching { JSONObject(it).let { o -> PuzzleResult(o.getBoolean("solved"), o.getInt("score"), o.getString("grid")) } }.getOrNull()
+    }
+    fun saveArchived(d: LocalDate, r: PuzzleResult) {
+        if (archived(d) != null) return
+        p.edit().putString("pza:$d", JSONObject().put("solved", r.solved).put("score", r.score).put("grid", r.grid).toString()).apply()
+        award("pza:$d", if (r.solved) 10 else 3, if (r.solved) "Past puzzle solved" else "Past puzzle played", "archive")
+    }
+    /** Today's result, or a past one from the archive. */
+    fun puzzleOn(d: LocalDate): PuzzleResult? = if (d == today()) puzzle() else archived(d)
+    fun savePuzzleOn(d: LocalDate, r: PuzzleResult) = if (d == today()) savePuzzle(r) else saveArchived(d, r)
+
     fun puzzleStreak(): Int {
         var d = today(); if (puzzle(d)?.solved != true) d = d.minusDays(1)
         var n = 0; while (puzzle(d)?.solved == true) { n++; d = d.minusDays(1) }
@@ -225,6 +247,24 @@ class Progress(context: Context, private val today: () -> LocalDate = { LocalDat
     var lastNudge: String
         get() = p.getString("lastNudge", "")!!
         set(v) { p.edit().putString("lastNudge", v).apply() }
+
+    // ---------- the first session (starter path) ----------
+
+    var starterDone: Boolean
+        get() = p.getBoolean("starterDone", false)
+        set(v) { p.edit().putBoolean("starterDone", v).apply(); version++ }
+    var starterHidden: Boolean
+        get() = p.getBoolean("starterHidden", false)
+        set(v) { p.edit().putBoolean("starterHidden", v).apply(); version++ }
+    /** The starter path is for new readers: not finished or closed, and installed in the last two weeks. */
+    fun starterActive(firstOpen: Long, now: Long = System.currentTimeMillis()) = !starterDone && !starterHidden && now - firstOpen < 14 * 86_400_000L
+    /** Finishing all three steps: a bonus and a starter streak freeze. Returns true the first time. */
+    fun finishStarter(): Boolean {
+        if (starterDone) return false
+        starterDone = true; earnFreeze()
+        award("starter", 100, "You're all set!")
+        return true
+    }
 
     // ---------- calm ----------
 

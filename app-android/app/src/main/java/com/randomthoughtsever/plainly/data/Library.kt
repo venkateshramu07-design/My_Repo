@@ -62,9 +62,9 @@ class Library(context: Context) {
 
     // Counters for asking for a Play Store rating at a good moment.
     fun countToolUse() = prefs.edit().putInt("toolUses", prefs.getInt("toolUses", 0) + 1).apply()
-    /** Days in a row the app has been opened, ending today. */
+    /** Days in a row the app has been opened (or covered by a streak freeze), ending today. */
     fun streak(): Int {
-        val days = prefs.getString("days", "").orEmpty().split(',').filter { it.isNotBlank() }.toSet()
+        val days = keptDays()
         var d = java.time.LocalDate.now(); var n = 0
         while (d.toString() in days) { n++; d = d.minusDays(1) }
         return n
@@ -75,12 +75,33 @@ class Library(context: Context) {
         prefs.edit().putString("days", days.joinToString(",")).apply()
     }
     fun openDays(): Set<String> = prefs.getString("days", "").orEmpty().split(',').filter { it.isNotBlank() }.toSet()
+
+    // ---------- streak freezes ----------
+    /** Days missed but covered by a streak freeze. */
+    fun frozenDays(): Set<String> = prefs.getStringSet("frozen", emptySet())!!.toSet()
+    /** Days that count for the streak: opened, or frozen. */
+    fun keptDays(): Set<String> = openDays() + frozenDays()
+    fun freezes() = prefs.getInt("freezes", 0)
+    /** The day a freeze last saved the streak (for a one-time "your streak was saved" note). */
+    fun freezeUsedOn(): String? = prefs.getString("freezeUsed", null)
+    fun clearFreezeNote() = prefs.edit().remove("freezeUsed").apply()
+
+    /** On opening: if the reader missed a day or two and has freezes, they cover the gap so the streak survives. */
+    private fun useFreezes() {
+        val today = java.time.LocalDate.now()
+        val (fill, _) = coverGap(keptDays(), freezes(), today)
+        if (fill.isEmpty()) return
+        prefs.edit().putStringSet("frozen", frozenDays() + fill.map { it.toString() }).putInt("freezes", freezes() - fill.size)
+            .putString("freezeUsed", today.toString()).apply()
+    }
     /** Every guide ever opened (ids), for the knowledge map and plan progress. */
     fun readIds(): Set<String> = prefs.getStringSet("readIds", emptySet())!!.toSet()
     fun toolUses() = prefs.getInt("toolUses", 0)
+    fun firstOpen() = prefs.getLong("firstOpen", System.currentTimeMillis())
     fun reads() = prefs.getInt("reads", 0)
 
     fun countOpen() {
+        useFreezes()
         markToday()
         prefs.edit().putInt("opens", prefs.getInt("opens", 0) + 1)
             .apply { if (!prefs.contains("firstOpen")) putLong("firstOpen", System.currentTimeMillis()) }.apply()
@@ -99,4 +120,20 @@ class Library(context: Context) {
 
     private fun write(key: String, list: List<Ref>) =
         prefs.edit().putString(key, JSONArray().apply { list.forEach { put(it.toJson()) } }.toString()).apply()
+
+    companion object {
+        const val MAX_FREEZES = 2
+        /**
+         * Which missed days a freeze should cover when the reader opens the app on [today]: the gap since the last kept
+         * day, if it's no longer than the freezes they have and the streak before it was worth saving (2+ days). Pure.
+         */
+        fun coverGap(kept: Set<String>, freezes: Int, today: java.time.LocalDate): Pair<List<java.time.LocalDate>, Int> {
+            if (freezes <= 0 || today.toString() in kept || today.minusDays(1).toString() in kept) return emptyList<java.time.LocalDate>() to 0
+            val last = (2L..(freezes + 1L)).map { today.minusDays(it) }.firstOrNull { it.toString() in kept } ?: return emptyList<java.time.LocalDate>() to 0
+            var run = 0; var d = last; while (d.toString() in kept) { run++; d = d.minusDays(1) }
+            if (run < 2) return emptyList<java.time.LocalDate>() to 0
+            val gap = generateSequence(last.plusDays(1)) { it.plusDays(1) }.takeWhile { it.isBefore(today) }.toList()
+            return gap to run
+        }
+    }
 }

@@ -211,11 +211,15 @@ fun HomeScreen(nav: Nav) {
                     else -> {
                         val pick = dailyPick(posts)
                         item { Stories(posts) { story = it } }
-                        item { DailyRunCard(nav) }
+                        item { FreezeNote() }
+                        // New readers get one clear path first; the Daily Run and check-up cards wait until it's done.
+                        val starter = AppGraph.progress.version.let { AppGraph.progress.starterActive(AppGraph.library.firstOpen()) }
+                        item { StarterPath(nav) }
+                        if (!starter) item { DailyRunCard(nav) }
                         item { SeasonBanner(nav) }
                         item { TriedFollowUpCard() }
                         item { RecapCard(nav) }
-                        item { ChecksCard(nav) }
+                        if (!starter) item { ChecksCard(nav) }
                         if (profile.numbers.isSet) item { MyNumbersCard() }
                         item { PlanCard(index, nav) }
                         item { TodaysPick(pick, nav) }

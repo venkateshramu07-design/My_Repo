@@ -50,7 +50,8 @@ class ScreenshotTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val ctx: Context = ApplicationProvider.getApplicationContext()
 
-    private fun launch(theme: String = "light", link: String? = null, onboarded: Boolean = true, autoDeck: Boolean = false): ActivityScenario<MainActivity> {
+    private fun launch(theme: String = "light", link: String? = null, onboarded: Boolean = true, autoDeck: Boolean = false, starter: Boolean = false): ActivityScenario<MainActivity> {
+        ctx.getSharedPreferences("progress", Context.MODE_PRIVATE).edit().putBoolean("starterHidden", !starter).commit()
         ctx.getSharedPreferences("plainly", Context.MODE_PRIVATE).edit().putString("theme", theme).putString("currency", "USD")
             .putString("autoDeck", if (autoDeck) "" else java.time.LocalDate.now().toString()).commit()
         ctx.getSharedPreferences("profile", Context.MODE_PRIVATE).edit().putBoolean("onboarded", onboarded)
@@ -98,7 +99,13 @@ class ScreenshotTest {
     private fun tapText(t: String) = compose.onAllNodes(androidx.compose.ui.test.hasClickAction() and hasText(t, substring = true)).onFirst()
         .performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnClick)
     private fun seen(text: String) = compose.onAllNodesWithText(text, substring = true).fetchSemanticsNodes().isNotEmpty()
-    private fun shot(name: String) = compose.onRoot().captureRoboImage("build/shots/$name.png")
+    /** Takes a picture of the screen, without a "+XP" pop-up caught halfway through its animation. */
+    private fun shot(name: String) {
+        if (runCatching { com.randomthoughtsever.plainly.ui.AppGraph.progress.lastAward != null }.getOrDefault(false)) {
+            com.randomthoughtsever.plainly.ui.AppGraph.progress.lastAward = null; pause(900)
+        }
+        compose.onRoot().captureRoboImage("build/shots/$name.png")
+    }
     private fun tab(label: String) = compose.onNode(hasText(label) and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).performClick()
 
     /** Finds a tool with the Tools search box and opens it. */
@@ -377,9 +384,38 @@ class ScreenshotTest {
         val translate = androidx.compose.ui.test.hasContentDescription("Translate")
         waitFor(90, settle = 2500) { compose.onAllNodes(translate).fetchSemanticsNodes().isNotEmpty() }
         compose.onNode(translate).performClick(); pause(1500)
+        com.randomthoughtsever.plainly.ui.AppGraph.progress.lastAward = null; pause(900)
         com.github.takahirom.roborazzi.captureScreenRoboImage("build/shots/72-translate-picker.png")
         org.junit.Assert.assertTrue("picker", seen("Read articles in"))
         org.junit.Assert.assertTrue("languages", seen("Español"))
+    }
+
+    /** A brand-new reader's first session: the starter path leads, one step at a time, and Today stays light. */
+    @Test fun firstSession() {
+        launch(starter = true); waitFor { seen("TODAY'S PICK") }
+        waitFor(10, settle = 1500) { seen("YOUR FIRST 3 MINUTES") }
+        org.junit.Assert.assertTrue(seen("Get your money score") && seen("Play today's puzzle") && seen("collect its card"))
+        org.junit.Assert.assertTrue("no Daily Run card on day one", !seen("YOUR DAILY RUN"))
+        shot("73-first-session")
+        tapText("Get your money score"); pause(2000)
+        shot("74-first-step-check")
+    }
+
+    /** Large text (160%, as with Android's biggest font setting plus display size): key screens must still fit. */
+    @Test fun largeText() {
+        org.robolectric.RuntimeEnvironment.setFontScale(1.6f)
+        try {
+            launch(starter = true); waitFor { seen("TODAY'S PICK") }
+            waitFor(10, settle = 1500) { seen("YOUR FIRST 3 MINUTES") }
+            shot("80-large-today")
+            tapText("Play today's puzzle"); pause(2000)
+            shot("81-large-puzzle")
+            compose.onNode(androidx.compose.ui.test.hasContentDescription("Back")).performClick(); pause(1000)
+            tab("You"); pause(2000)
+            shot("82-large-you")
+            tab("Games"); pause(1500)
+            shot("83-large-games")
+        } finally { org.robolectric.RuntimeEnvironment.setFontScale(1f) }
     }
 
     @Test fun searchWhileTyping() {

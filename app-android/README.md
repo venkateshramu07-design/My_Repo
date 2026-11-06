@@ -35,6 +35,15 @@ JSON feed and presents it with its own design, plus on-device tools and calculat
   same as the blog, appear only in builds made with `-PsupportLinks=true` (preview APKs), because Google Play expects
   tips to the developer to go through Play Billing. Asked politely after real value (finished guide, Daily Run,
   simulated year), at most once a week, never in the first 3 days or for 30 days after a tip; always in You and Settings.
+- **First session** (`ui/Starter.kt`): new readers get "Your first 3 minutes" on Today (money score, today's puzzle, a guide
+  and its card), one step at a time, then a celebration, +100 XP and a streak freeze; the Daily Run and check-up cards wait
+  until it's done (or skipped). **Streak freezes** (`Library.coverGap`): earned with every 5th Daily Run and each level-up
+  (hold 2), they cover missed days automatically. **Puzzles**: five kinds in turn (Word Vault, Budget Balance, Growth
+  Order, Spot the Scam, Shrinking Dollar) and a 30-day archive that doesn't affect the streak.
+- **Accessibility**: screen-reader labels on games, puzzles and tabs; puzzle marks use shapes as well as colours
+  (✓ ↔ ✗); `ScreenshotTest.largeText` renders key screens at 160% text, and the tab bar caps its labels so seven tabs fit.
+- **Store assets** (`store/`): `make_screenshots.py` frames the eight Play screenshots from `app/build/shots`;
+  `make_promo.py` makes `promo-video.mp4` (1920x1080, ~32 s) with ffmpeg.
 - **Navigation**: floating animated bar with Today, Explore, Reads, Tools, You, Games and Community (`ui/App.kt`).
 - **Joining and challenges** (`ui/CommunityJoin.kt`): join landing, three-step join, welcome, first-steps checklist,
   and each challenge's page (today's task and check-in, daily tip, how it works, guides).

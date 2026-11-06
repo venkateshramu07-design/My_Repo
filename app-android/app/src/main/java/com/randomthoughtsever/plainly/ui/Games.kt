@@ -62,6 +62,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -123,6 +127,11 @@ fun GamesScreen(nav: Nav) {
             }
         }
         item { PuzzleCard(nav) }
+        item {
+            androidx.compose.material3.TextButton(onClick = { nav.puzzles() }, modifier = Modifier.padding(horizontal = 12.dp)) {
+                Text("🗓️  Past puzzles: catch up on the last 30 days")
+            }
+        }
         item { SimCard(nav) }
         items(GAMES, key = { it.id }) { g ->
             val best = remember { Scores.best(context, g.id) }
@@ -292,7 +301,8 @@ private fun MoneyMatch(g: Game) {
                     val density = LocalDensity.current.density
                     Box(Modifier.weight(1f).aspectRatio(.8f).graphicsLayer { rotationY = rot; cameraDistance = 12 * density }
                         .clip(RoundedCornerShape(16.dp)).background(if (rot > 90f) (if (i in found) Gold.copy(alpha = .35f) else MaterialTheme.colorScheme.surface)
-                        else g.from).clickable { flip(i) }, contentAlignment = Alignment.Center) {
+                        else g.from).clickable(onClickLabel = "Flip card") { flip(i) }
+                        .semantics { contentDescription = "Card ${i + 1}: " + if (i in found) "matched, $sym" else if (up) sym else "face down" }, contentAlignment = Alignment.Center) {
                         if (rot > 90f) Text(sym, fontSize = 34.sp, modifier = Modifier.graphicsLayer { rotationY = 180f })
                         else Text("P", color = Color.White.copy(alpha = .35f), style = MaterialTheme.typography.headlineMedium)
                     }
@@ -453,7 +463,10 @@ private fun TicTacToe(g: Game) {
                         val inLine = win?.second?.contains(i) == true
                         val pop by animateFloatAsState(if (board[i] == ' ') .5f else 1f, spring(dampingRatio = .4f), label = "pop$i")
                         Box(Modifier.weight(1f).fillMaxSize().clip(RoundedCornerShape(16.dp))
-                            .background(if (inLine) Gold.copy(alpha = .5f) else MaterialTheme.colorScheme.surface).clickable { tap(i) }, contentAlignment = Alignment.Center) {
+                            .background(if (inLine) Gold.copy(alpha = .5f) else MaterialTheme.colorScheme.surface)
+                            .clickable(onClickLabel = "Place your cross") { tap(i) }
+                            .semantics { contentDescription = "Row ${r + 1}, column ${c + 1}: " + when (board[i]) { 'X' -> "your cross"; 'O' -> "phone's circle"; else -> "empty" } },
+                            contentAlignment = Alignment.Center) {
                             if (board[i] != ' ') Text(if (board[i] == 'X') "✕" else "◯", fontSize = 52.sp, modifier = Modifier.scale(pop),
                                 color = if (board[i] == 'X') g.from else Color(0xFFC0602A), fontWeight = FontWeight.Bold)
                         }
@@ -497,7 +510,7 @@ private fun ReactionTime(g: Game) {
     val bg = when (phase) { 1 -> Color(0xFFC0392B); 2 -> Color(0xFF2E7D5B); 4 -> Color(0xFFB0472A); else -> g.from }
     Box(Modifier.fillMaxSize().padding(16.dp).clip(RoundedCornerShape(30.dp)).background(bg).pointerInput(Unit) {
         awaitPointerEventScope { while (true) { val e = awaitPointerEvent(); if (e.changes.any { it.pressed && !it.previousPressed }) tap() } }
-    }, contentAlignment = Alignment.Center) {
+    }.semantics(mergeDescendants = true) { role = androidx.compose.ui.semantics.Role.Button; onClick(label = "Tap") { tap(); true } }, contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
             val (big, small) = when (phase) {
                 0 -> "Tap to start" to "Five rounds. When the screen turns green, tap as fast as you can."
