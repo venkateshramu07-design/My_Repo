@@ -11,3 +11,4 @@ keystore.properties
 # Firebase emulator logs
 *-debug.log
 .kotlin/
+admob.properties
