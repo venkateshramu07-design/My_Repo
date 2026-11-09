@@ -96,6 +96,8 @@ Store assets and listing text: `store/`. Publishing steps: `PLAY_STORE_GUIDE.md`
 
 ## Build and test
 
+For every release, follow [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md).
+
 1. Android SDK with `platforms;android-36` and `build-tools;36.0.0`; put `sdk.dir=/path/to/sdk` in `local.properties`.
 2. Signing: create `keystore.properties` (never commit it) with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`.
 3. Preview APK with everything in one file (translator included, PayPal/UPI shown, sample ads):

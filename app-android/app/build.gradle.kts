@@ -1,4 +1,6 @@
 import java.util.Properties
+import java.util.zip.ZipFile
+import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
     id("com.android.application")
@@ -157,4 +159,39 @@ tasks.matching { it.name == "bundleRelease" }.configureEach {
 gradle.taskGraph.whenReady {
     if (allTasks.any { it.name == "bundleRelease" } && (project.findProperty("supportLinks") ?: "false") == "true" && project.findProperty("preview") != "true")
         throw GradleException("Don't build the Play bundle with -PsupportLinks=true: Google Play requires tips to go through Play Billing.")
+}
+
+// Every component the base app declares must have its class in the base app. A class that only ships in an on-demand
+// module (the translator) can't be created on a Google Play install before that module is downloaded, and Android stops
+// the app at launch (this happened in 1.1.0–1.1.2 with ML Kit's start-up provider). Activities, services and receivers
+// tagged with android:splitName are only created after their module is installed, so they're allowed; providers never are.
+tasks.matching { it.name == "bundleRelease" }.configureEach {
+    doLast {
+        val manifest = layout.buildDirectory.file("intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml").get().asFile
+        val aab = layout.buildDirectory.file("outputs/bundle/release/app-release.aab").get().asFile
+        val dex = ZipFile(aab).use { z ->
+            z.entries().asSequence().filter { it.name.startsWith("base/dex/") && it.name.endsWith(".dex") }
+                .map { e -> z.getInputStream(e).use { it.readBytes() }.toString(Charsets.ISO_8859_1) }.toList()
+        }
+        val ns = "http://schemas.android.com/apk/res/android"
+        val doc = DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }.newDocumentBuilder().parse(manifest)
+        val problems = listOf("activity", "service", "receiver", "provider").flatMap { tag ->
+            val nodes = doc.getElementsByTagName(tag)
+            (0 until nodes.length).mapNotNull { i ->
+                val el = nodes.item(i) as org.w3c.dom.Element
+                val name = el.getAttributeNS(ns, "name")
+                val split = el.getAttributeNS(ns, "splitName")
+                val inBase = dex.any { it.contains("L" + name.replace('.', '/') + ";") }
+                when {
+                    inBase -> null
+                    split.isNotEmpty() && tag != "provider" -> null
+                    else -> "$tag $name" + if (split.isNotEmpty()) " (from on-demand module '$split')" else ""
+                }
+            }
+        }
+        if (problems.isNotEmpty()) throw GradleException(
+            "The base app declares components whose classes aren't in the base app. A Google Play install would stop at launch:\n  " +
+                problems.joinToString("\n  ") + "\nRemove them from the merged manifest (tools:node=\"remove\") or move the code into the base app.")
+        logger.lifecycle("Base manifest check: every component the base app declares is in the base app.")
+    }
 }

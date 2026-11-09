@@ -116,3 +116,16 @@ phone and one Android 14–16 phone. Tick each:
 
 Then let **Play's pre-launch report** run (it tests the upload automatically on real devices in Google's lab, with
 crash, accessibility and security checks), and fix anything it flags before promoting to production.
+
+## Addendum (9 November 2026): launch failure on Google Play installs, found on a real phone
+
+- **Defect:** versions 1.1.0–1.1.2 closed immediately when installed from Google Play (Realme RMX3940). Direct installs worked.
+- **Cause:** ML Kit's start-up provider was declared in the base app, but its class shipped only in the on-demand
+  translator module. On a Play install the module isn't there until first use, so Android stopped the app at launch.
+- **Why the tests above missed it:** every test and preview APK had all modules built in. Play's split delivery was
+  listed under "Not covered", but it wasn't treated as a launch risk. A static check of the bundle would have found it.
+- **Fix (1.1.3, version code 5):** provider removed; ML Kit is started by the translator itself. Confirmed on the phone
+  from a Play install.
+- **Prevention:** `bundleRelease` now fails if the base app declares a component whose class isn't in the base app
+  (verified: it fails with the old provider and passes with the fix). Crashes are shown on the next start with a Copy
+  button. `RELEASE_CHECKLIST.md` makes a real Play install test mandatory for every release.
