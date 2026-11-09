@@ -16,6 +16,9 @@ import kotlin.coroutines.resumeWithException
 
 /** Google ML Kit translation, English to the chosen language, entirely on the phone once a language is downloaded. */
 class MlKitEngine : TranslateEngine {
+    // ML Kit's own start-up provider is removed from the manifest (its class isn't in the base app), so start it here.
+    init { com.google.mlkit.common.sdkinternal.MlKitContext.initializeIfNeeded(com.randomthoughtsever.plainly.ui.AppGraph.appContext) }
+
     private val clients = ConcurrentHashMap<String, Translator>()
     private fun client(code: String) = clients.getOrPut(code) {
         Translation.getClient(TranslatorOptions.Builder().setSourceLanguage(TranslateLanguage.ENGLISH)

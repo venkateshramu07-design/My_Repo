@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:dist="http://schemas.android.com/apk/distribution">
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Delivered by Google Play only when someone first taps Translate. Included in universal (preview) APKs. -->
     <dist:module dist:instant="false" dist:title="@string/title_translate">
@@ -9,4 +10,14 @@
         </dist:delivery>
         <dist:fusing dist:include="true" />
     </dist:module>
+
+    <application>
+        <!-- ML Kit's start-up provider would be declared in the base app, but its class only arrives with this on-demand
+             module. On a Google Play install (module not downloaded yet) Android can't create it, and the app is stopped
+             at launch. Removed here; MlKitEngine starts ML Kit itself when the translator is first used. -->
+        <provider
+            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
+            android:authorities="${applicationId}.mlkitinitprovider"
+            tools:node="remove" />
+    </application>
 </manifest>
