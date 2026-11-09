@@ -25,12 +25,25 @@ import com.randomthoughtsever.plainly.ui.PlainlyRoot
 import com.randomthoughtsever.plainly.ui.PlainlyTheme
 import kotlinx.coroutines.launch
 
+/** Tests switch the crash screen on explicitly; other tests share one app folder and must start normally. */
+internal object CrashReportTesting { @JvmField var enabled = false }
+
 class MainActivity : ComponentActivity() {
     /** An article to open because the app was started from a link to one. */
     private var startArticle by mutableStateOf<String?>(null)
+    /** False while the crash report screen is showing instead of the app. */
+    private var started = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        // If the last run crashed, show the saved error once (plain views, before anything else starts).
+        val crash = if (android.os.Build.FINGERPRINT == "robolectric" && !CrashReportTesting.enabled) null else CrashReport.pending(applicationContext)
+        if (crash != null) {
+            super.onCreate(savedInstanceState)
+            CrashReport.show(this, crash) { recreate() }
+            return
+        }
+        started = true
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         AppGraph.repo = Repository(applicationContext)
@@ -72,22 +85,22 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        AppGraph.progress.reload()
+        if (started) AppGraph.progress.reload()
     }
 
     override fun onPause() {
-        runCatching { PlayWidget.refresh(applicationContext) }
+        if (started) runCatching { PlayWidget.refresh(applicationContext) }
         super.onPause()
     }
 
     override fun onDestroy() {
-        Ads.clearBanners()
+        if (started) Ads.clearBanners()
         super.onDestroy()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handle(intent)
+        if (started) handle(intent)
     }
 
     /** Opens a blog link inside the app; anything else just opens the app. */
