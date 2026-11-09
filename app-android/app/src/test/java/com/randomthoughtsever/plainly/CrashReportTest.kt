@@ -20,6 +20,18 @@ class CrashReportTest {
 
     @After fun off() { CrashReportTesting.enabled = false; CrashReport.clear(c) }
 
+    @Test fun startThatNeverReachedTheScreenIsReported() {
+        val stages = java.io.File(c.filesDir, "start-stages.txt")
+        stages.writeText("start\nsplits\napp\nactivity")
+        CrashReport.beginRun(c)
+        val r = CrashReport.pending(c)!!
+        assertTrue(r, r.contains("Last start reached: start > splits > app > activity") && r.contains("Splits:"))
+        assertEquals("start", stages.readText())
+        // A start that reached the screen leaves no report.
+        CrashReport.clear(c); CrashReport.shown(c); CrashReport.beginRun(c)
+        assertNull(CrashReport.pending(c))
+    }
+
     @Test fun savedCrashIsShownThenCleared() {
         val report = CrashReport.describe(c, "main", IllegalStateException("boom at start"))
         assertTrue(report.contains("Plainly ${BuildConfig.VERSION_NAME}") && report.contains("IllegalStateException: boom at start"))

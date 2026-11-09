@@ -35,15 +35,19 @@ class MainActivity : ComponentActivity() {
     private var started = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
-        // If the last run crashed, show the saved error once (plain views, before anything else starts).
-        val crash = if (android.os.Build.FINGERPRINT == "robolectric" && !CrashReportTesting.enabled) null else CrashReport.pending(applicationContext)
+        val diagnostics = android.os.Build.FINGERPRINT != "robolectric" || CrashReportTesting.enabled
+        if (diagnostics) CrashReport.stage(applicationContext, "activity")
+        // If the last run crashed, show the saved error once (plain views, before anything else starts, even the splash).
+        val crash = if (diagnostics) CrashReport.pending(applicationContext) else null
         if (crash != null) {
+            setTheme(android.R.style.Theme_Material_Light_NoActionBar)
             super.onCreate(savedInstanceState)
             CrashReport.show(this, crash) { recreate() }
             return
         }
         started = true
+        installSplashScreen()
+        if (diagnostics) CrashReport.stage(applicationContext, "splash")
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         AppGraph.repo = Repository(applicationContext)
@@ -62,6 +66,7 @@ class MainActivity : ComponentActivity() {
         if (android.os.Build.FINGERPRINT != "robolectric") Images.install(applicationContext) // tests install their own
         NewPosts.schedule(applicationContext)
         if (savedInstanceState == null) { AppGraph.library.countOpen(); handle(intent) }
+        if (diagnostics) CrashReport.stage(applicationContext, "setup")
         Ads.start(this)
 
         setContent {
@@ -86,6 +91,9 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         if (started) AppGraph.progress.reload()
+        // Counts as a good start once the screen has been up for a moment (a start that dies right away doesn't get here).
+        if (started && (android.os.Build.FINGERPRINT != "robolectric" || CrashReportTesting.enabled))
+            window.decorView.postDelayed({ CrashReport.shown(applicationContext) }, 2_000)
     }
 
     override fun onPause() {
