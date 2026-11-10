@@ -43,5 +43,24 @@
    "Personal Finance",
    "Health & Wellness"
   ]
+ },
+ "heloc-rates": {
+  "title": "HELOC Rates 2026: Today's Average, Monthly Payments and How to Pay Less",
+  "labels": [
+   "Personal Finance"
+  ]
+ },
+ "auto-loan-rates": {
+  "title": "Auto Loan Rates 2026: Average Rates by Credit Score, New and Used",
+  "labels": [
+   "Personal Finance"
+  ]
+ },
+ "medicare-vs-medicaid": {
+  "title": "Medicare vs Medicaid: The Differences, Who Qualifies and How to Have Both",
+  "labels": [
+   "Health & Wellness",
+   "Personal Finance"
+  ]
  }
 }
