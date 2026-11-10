@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         AppGraph.repo = Repository(applicationContext)
+        if (android.os.Build.FINGERPRINT != "robolectric") AppGraph.repo.prewarmToday() // Today ready before the reader gets there
         AppGraph.library = Library(applicationContext)
         AppGraph.appContext = applicationContext
         AppGraph.profile = com.randomthoughtsever.plainly.data.Profile(applicationContext)

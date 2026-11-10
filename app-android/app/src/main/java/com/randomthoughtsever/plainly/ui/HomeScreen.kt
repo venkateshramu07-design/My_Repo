@@ -146,7 +146,7 @@ private object HomeCache { var posts: List<Post> = emptyList(); var loadedAt = 0
 fun HomeScreen(nav: Nav) {
     val repo = AppGraph.repo
     val scope = rememberCoroutineScope()
-    var posts by remember { mutableStateOf(HomeCache.posts) }
+    var posts by remember { mutableStateOf(HomeCache.posts.ifEmpty { repo.today.filterNot { it.isToolPage } }) }
     var loading by remember { mutableStateOf(posts.isEmpty()) }
     var refreshing by remember { mutableStateOf(false) }
     var fresh by remember { mutableStateOf<Post?>(null) }
@@ -178,18 +178,27 @@ fun HomeScreen(nav: Nav) {
     val context = LocalContext.current
     LaunchedEffect(more.size, shown) { Images.prefetch(context, more.take(shown + 20).drop((shown - 20).coerceAtLeast(0)).map { it.image }) }
 
-    suspend fun load() {
+    // Today shows articles only; tool pages are in the Tools tab (new ones appear there under "New").
+    fun show(all: List<Post>, live: Boolean) {
+        val p = all.filterNot { it.isToolPage }
+        if (p.isEmpty()) return
         val before = posts.firstOrNull()?.id
-        // Today shows articles only; tool pages are in the Tools tab (new ones appear there under "New").
-        runCatching { repo.latest(1, 50) }.onSuccess { all ->
-            val p = all.filterNot { it.isToolPage }
-            if (p.isEmpty()) return@onSuccess
-            HomeCache.newestId = all.first().id
-            posts = p; HomeCache.posts = p; HomeCache.loadedAt = System.currentTimeMillis()
-            if (before != null && p.first().id != before) fresh = p.first()
-        }
+        posts = p; HomeCache.posts = p; repo.rememberToday(all); loading = false
+        if (live) { HomeCache.newestId = all.first().id; HomeCache.loadedAt = System.currentTimeMillis() }
+        if (live && before != null && p.first().id != before) fresh = p.first()
     }
-    LaunchedEffect(Unit) { if (posts.isEmpty() || System.currentTimeMillis() - HomeCache.loadedAt > 30_000) load(); loading = false }
+    suspend fun load() {
+        // Nothing on screen yet (a first-ever open): a small request first so the page fills in about a second,
+        // then the full set. Otherwise the full set refreshes quietly behind what's already shown.
+        if (posts.isEmpty()) runCatching { repo.latest(1, com.randomthoughtsever.plainly.data.TODAY_FIRST) }.onSuccess { show(it, live = true) }
+        runCatching { repo.latest(1, com.randomthoughtsever.plainly.data.TODAY_COUNT) }.onSuccess { show(it, live = true) }
+    }
+    LaunchedEffect(Unit) {
+        // Instant: the copy saved last time (read off the main thread), then the network behind it.
+        if (posts.isEmpty()) repo.cachedLatest()?.let { show(it, live = false) }
+        if (posts.isEmpty() || System.currentTimeMillis() - HomeCache.loadedAt > 30_000) load()
+        loading = false
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         if (HomeCache.loadedAt != 0L && System.currentTimeMillis() - HomeCache.loadedAt > 30_000) scope.launch { load() }
     }

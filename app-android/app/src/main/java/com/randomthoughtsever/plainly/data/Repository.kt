@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.text.Html
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
@@ -39,6 +40,10 @@ fun bloggerCover(url: String): String {
         else -> url
     }
 }
+
+/** Today shows the newest 50 posts; the very first request asks for 12 so the screen fills quickly. */
+const val TODAY_COUNT = 50
+const val TODAY_FIRST = 12
 
 object Blog {
     const val HOST = "randomthoughtsever.blogspot.com"
@@ -123,10 +128,35 @@ class Repository(private val context: Context) {
     }
     @Volatile private var pathIndex: Map<String, String>? = null
 
+    private val background = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + Dispatchers.IO)
+    private fun latestUrl(start: Int, count: Int) = "${Blog.BASE}/feeds/posts/default?alt=json&orderby=published&max-results=$count&start-index=$start"
+
+    /** Newest posts from the network. The cover list is refreshed alongside, never in front of it. */
     suspend fun latest(start: Int = 1, count: Int = 20): List<Post> {
-        if (start == 1) runCatching { kotlinx.coroutines.withTimeoutOrNull(5000) { refreshCovers() } }
-        return list("${Blog.BASE}/feeds/posts/default?alt=json&orderby=published&max-results=$count&start-index=$start")
+        if (start == 1) background.launch { runCatching { refreshCovers() } }
+        return list(latestUrl(start, count))
     }
+
+    /** The last saved copy of Today's feed, read and parsed off the main thread; null if there is none yet. */
+    suspend fun cachedLatest(count: Int = TODAY_COUNT): List<Post>? = withContext(Dispatchers.IO) {
+        val file = File(cacheDir, sha(latestUrl(1, count)))
+        if (!file.exists()) null else runCatching { parseList(file.readText()) }.getOrNull()?.takeIf { it.isNotEmpty() }
+    }
+
+    /** Today's posts as soon as they're known (saved copy or the quick first request), shared with the Today screen. */
+    @Volatile var today: List<Post> = emptyList(); private set
+
+    /**
+     * Started when the app opens, so Today has something to show by the time the reader gets there (straight away for
+     * returning readers, during onboarding for new ones): the saved copy first, then a small first request.
+     */
+    fun prewarmToday() = background.launch {
+        if (today.isEmpty()) cachedLatest()?.let { today = it }
+        if (today.isEmpty()) runCatching { latest(1, TODAY_FIRST) }.onSuccess { if (today.isEmpty()) today = it }
+        // Then the full set, so a new reader who is still on the welcome screens arrives at a complete Today.
+        runCatching { latest(1, TODAY_COUNT) }.onSuccess { if (it.isNotEmpty()) today = it }
+    }
+    fun rememberToday(posts: List<Post>) { if (posts.isNotEmpty()) today = posts }
 
     suspend fun topic(label: String, start: Int = 1, count: Int = 20): List<Post> =
         list("${Blog.BASE}/feeds/posts/default/-/${Uri.encode(label)}?alt=json&max-results=$count&start-index=$start")
@@ -174,10 +204,12 @@ class Repository(private val context: Context) {
         return map
     }
 
-    private suspend fun list(url: String): List<Post> {
-        val body = get(url)
-        val entries = JSONObject(body).getJSONObject("feed").optJSONArray("entry") ?: return emptyList()
-        return List(entries.length()) { parse(entries.getJSONObject(it)) }
+    private suspend fun list(url: String): List<Post> = parseList(get(url))
+
+    /** Parsing a feed of full posts is heavy (about 2 MB of text for 50 posts), so it never runs on the main thread. */
+    private suspend fun parseList(body: String): List<Post> = withContext(Dispatchers.Default) {
+        val entries = JSONObject(body).getJSONObject("feed").optJSONArray("entry") ?: return@withContext emptyList()
+        List(entries.length()) { parse(entries.getJSONObject(it)) }
             .filterNot { it.labels.isEmpty() && it.path.startsWith("/2021/06/") } // legal pages
             .onEach { memory[it.id] = it }
     }

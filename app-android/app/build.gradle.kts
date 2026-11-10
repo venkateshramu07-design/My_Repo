@@ -41,8 +41,8 @@ android {
         applicationId = "com.randomthoughtsever.plainly"
         minSdk = 29
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.1.5"
+        versionCode = 8
+        versionName = "1.1.6"
         buildConfigField("String", "COMMUNITY_PROJECT", "\"${community.getProperty("projectId", "")}\"")
         buildConfigField("String", "COMMUNITY_KEY", "\"${community.getProperty("apiKey", "")}\"")
         // Optional: the id of a blog post or page whose comments are the community's general board (without Firebase).
