@@ -36,7 +36,10 @@ object CrashReport {
         runCatching {
             val log = stages(c)
             val previous = if (log.exists()) log.readText().trim() else null
-            if (previous != null && !previous.endsWith(SHOWN) && !file(c).exists()) {
+            // Only a start the reader saw (it reached the activity) that then failed. Background starts (reminders,
+            // widgets) never open the screen and are later closed by Android as idle: that is normal, not a failure.
+            if (previous != null && !previous.endsWith(SHOWN) && previous.lines().contains("activity") &&
+                lastExitFailed(c) && !file(c).exists()) {
                 file(c).writeText(buildString {
                     appendLine("Plainly ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
                     appendLine(environment(c))
@@ -62,6 +65,16 @@ object CrashReport {
             else @Suppress("DEPRECATION") c.packageManager.getInstallerPackageName(c.packageName)
         }.getOrNull()
         append("\nInstalled by: ${installer ?: "unknown"}")
+    }
+
+    /** Android 11+: did the app's main process last end in a crash, native crash, freeze or start-up failure? */
+    private fun lastExitFailed(c: Context): Boolean {
+        if (Build.VERSION.SDK_INT < 30) return true
+        return runCatching {
+            val am = c.getSystemService(android.app.ActivityManager::class.java)
+            val e = am.getHistoricalProcessExitReasons(c.packageName, 0, 5).firstOrNull { it.processName == c.packageName }
+            e != null && e.reason in setOf(4, 5, 6, 7)
+        }.getOrDefault(false)
     }
 
     private fun exitReason(c: Context): String {

@@ -32,6 +32,13 @@ class CrashReportTest {
         assertNull(CrashReport.pending(c))
     }
 
+    @Test fun backgroundStartIsNotReported() {
+        // A reminder or widget start never opens the screen; Android later closes the idle process. Not a failure.
+        java.io.File(c.filesDir, "start-stages.txt").writeText("start\nsplits\napp")
+        CrashReport.beginRun(c)
+        assertNull(CrashReport.pending(c))
+    }
+
     @Test fun savedCrashIsShownThenCleared() {
         val report = CrashReport.describe(c, "main", IllegalStateException("boom at start"))
         assertTrue(report.contains("Plainly ${BuildConfig.VERSION_NAME}") && report.contains("IllegalStateException: boom at start"))
