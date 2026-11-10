@@ -4,7 +4,7 @@ Goal: get the blog's pages into Google's index. Baseline on 10 Nov: 6 of 305 ind
 1 URL crawled in the previous week. Bing: 244 indexed. Evidence is in `index-status/DIAGNOSIS_2026-11-10.md`.
 
 Everything in this plan is done by Claude through the Blogger, Search Console and Bing APIs. Nothing in it is a
-task for the owner. Steps that would need the owner's own login, name, mailbox or money are left out (listed once at the end).
+task for the owner; the only owner input is a yes or no to the phase 3 proposal in December. Steps that would need the owner's own login, name, mailbox or money are left out (listed once at the end).
 
 ## Phase 1: clean and stable for Google's re-crawl (10 Nov - early Dec)
 
@@ -32,12 +32,12 @@ indexed, `crawl_boost.py` adds the one-time "More guides" link box to them, poin
 
 Decided at the weekly check on **7 December** (or earlier if Search Console's validation has clearly finished):
 
-- **Homepage indexed, or 30+ pages indexed:** start publishing 2 researched guides a week (never batches), each
-  fact-checked against primary sources, and keep the weekly watch.
-- **Still under 10 pages:** announce in that report, then carry out on **14 December** unless the owner objects:
-  fold the 35 country pages into the existing by-country hubs, keeping the countries that earned impressions; the
-  rest go back to draft (same address if republished later; backups kept). The PDF/photo size pages stay, because
-  the Android app's tools load them. Re-measure on 11 January.
+- **Homepage indexed, or 30+ pages indexed:** propose starting 2 researched guides a week (never batches), each
+  fact-checked against primary sources; start on the owner's "yes". Keep the weekly watch.
+- **Still under 10 pages:** propose folding the 35 country pages into the existing by-country hubs, keeping the
+  countries that earned impressions; the rest would go back to draft (same address if republished later; backups
+  kept). Pages come down only on the owner's "yes". The PDF/photo size pages stay, because the Android app's tools
+  load them. Re-measure four weeks after.
 - **Between 10 and 29 pages:** keep the freeze and re-decide four weeks later.
 
 ## Not doing
