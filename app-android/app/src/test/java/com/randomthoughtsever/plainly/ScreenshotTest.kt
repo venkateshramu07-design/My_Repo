@@ -56,7 +56,8 @@ class ScreenshotTest {
     private fun launch(theme: String = "light", link: String? = null, onboarded: Boolean = true, autoDeck: Boolean = false, starter: Boolean = false): ActivityScenario<MainActivity> {
         ctx.getSharedPreferences("progress", Context.MODE_PRIVATE).edit().putBoolean("starterHidden", !starter).commit()
         ctx.getSharedPreferences("plainly", Context.MODE_PRIVATE).edit().putString("theme", theme).putString("currency", "USD")
-            .putString("autoDeck", if (autoDeck) "" else java.time.LocalDate.now().toString()).commit()
+            .putString("autoDeck", if (autoDeck) "" else java.time.LocalDate.now().toString())
+            .putInt("notifyPromptShown", 3).commit() // the notification invitation has its own test (NotificationAskTest)
         ctx.getSharedPreferences("profile", Context.MODE_PRIVATE).edit().putBoolean("onboarded", onboarded)
             .putStringSet("goals", setOf("debt", "save")).putString("country", "US").commit()
         Coil.setImageLoader(ImageLoader.Builder(ctx).allowHardware(false).crossfade(false).components { add(LocalCovers()) }.build())
