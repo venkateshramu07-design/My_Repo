@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
         com.randomthoughtsever.plainly.data.Community.publishStats(AppGraph.profile.name, AppGraph.profile.avatar, AppGraph.library.streak(), AppGraph.library.reads())
         if (android.os.Build.FINGERPRINT != "robolectric") Images.install(applicationContext) // tests install their own
         NewPosts.schedule(applicationContext)
+        com.randomthoughtsever.plainly.data.ArticlePicks.schedule(applicationContext)
         if (savedInstanceState == null) { AppGraph.library.countOpen(); handle(intent) }
         if (diagnostics) CrashReport.stage(applicationContext, "setup")
         Ads.start(this)

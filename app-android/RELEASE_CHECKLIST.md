@@ -18,7 +18,7 @@ These are in `.gitignore`. Never commit them, and never commit `.aab` or `.apk` 
 ## 2. Version number (required every time)
 
 In `app-android/app/build.gradle.kts`:
-- `versionCode` must be **higher than any code ever uploaded**, including drafts and discarded releases. Last used: **5** (1.1.3). Next: **6**.
+- `versionCode` must be **higher than any code ever uploaded**, including drafts and discarded releases. Last used: **7** (1.1.5). Next: **8**.
 - `versionName`: 1.1.4 for fixes, 1.2.0 for new features.
 
 Play rejects a reused version code ("Version code X has already been used").

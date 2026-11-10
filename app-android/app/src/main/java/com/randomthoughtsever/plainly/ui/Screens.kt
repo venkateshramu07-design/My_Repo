@@ -346,6 +346,14 @@ fun SettingsScreen(nav: Nav) {
                     modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { com.randomthoughtsever.plainly.data.BlogTalk.unblockAll(); shown = true })
             }
             item {
+                var picks by remember { mutableStateOf(com.randomthoughtsever.plainly.data.ArticlePicks.enabled(context)) }
+                ListItem(headlineContent = { Text("Worth a read") }, supportingContent = { Text("A guide from the blog every 2 hours, never between 10 pm and 8 am") },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    trailingContent = { Switch(picks, modifier = Modifier.semantics { contentDescription = "Worth a read notifications" }, onCheckedChange = { on ->
+                        if (on && !NewPosts.canNotify(context) && android.os.Build.VERSION.SDK_INT >= 33) askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                        picks = on; com.randomthoughtsever.plainly.data.ArticlePicks.setEnabled(context, on) }) })
+            }
+            item {
                 var remind by remember { mutableStateOf(NewPosts.prefs(context).getBoolean("reminders", true)) }
                 ListItem(headlineContent = { Text("Daily reminder") }, supportingContent = { Text("At most one a day, at the time you usually open Plainly, and only when there's something to do (a streak, a challenge, today's puzzle)") },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
