@@ -224,6 +224,25 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
         if (r in TABS.map { it.route }) nav.tab(r) else controller.navigate(r)
     }
 
+    // Android 13+: ask for notification permission with the system pop-up once the reader is set up (straight after
+    // onboarding for new readers; on the first open after this update for existing ones). Asked once; the Today card
+    // and the Settings switches offer it again later.
+    val askNotify = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            com.randomthoughtsever.plainly.data.NewPosts.setEnabled(context, true)
+            com.randomthoughtsever.plainly.data.ArticlePicks.schedule(context)
+            com.randomthoughtsever.plainly.data.Reminders.schedule(context)
+        }
+    }
+    val onboarded = AppGraph.profile.onboarded
+    LaunchedEffect(onboarded, route) {
+        if (!shouldAskNotifications(context, onboarded, route)) return@LaunchedEffect
+        kotlinx.coroutines.delay(400)
+        com.randomthoughtsever.plainly.data.NewPosts.prefs(context).edit().putBoolean("notifyAsked", true).apply()
+        runCatching { askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS) }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { if (route in TABS.map { it.route }) FloatingBar(route) { nav.tab(it) } },
@@ -288,3 +307,10 @@ fun PlainlyRoot(context: Context, startArticle: String?, onStartHandled: () -> U
       }
     }
 }
+
+
+/** Whether to show Android's notification permission pop-up now: Android 13+, set up, on Today, not granted, never asked. */
+internal fun shouldAskNotifications(context: Context, onboarded: Boolean, route: String?): Boolean =
+    android.os.Build.VERSION.SDK_INT >= 33 && onboarded && route == "today" &&
+        !com.randomthoughtsever.plainly.data.NewPosts.canNotify(context) &&
+        !com.randomthoughtsever.plainly.data.NewPosts.prefs(context).getBoolean("notifyAsked", false)

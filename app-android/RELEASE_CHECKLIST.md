@@ -18,7 +18,7 @@ These are in `.gitignore`. Never commit them, and never commit `.aab` or `.apk` 
 ## 2. Version number (required every time)
 
 In `app-android/app/build.gradle.kts`:
-- `versionCode` must be **higher than any code ever uploaded**, including drafts and discarded releases. Last used: **8** (1.1.6). Next: **9**.
+- `versionCode` must be **higher than any code ever uploaded**, including drafts and discarded releases. Last used: **9** (1.1.7). Next: **10**.
 - `versionName`: 1.1.4 for fixes, 1.2.0 for new features.
 
 Play rejects a reused version code ("Version code X has already been used").
@@ -62,6 +62,7 @@ A direct-install APK is **not** the same as a Play install. Play splits the app 
    - The app **opens** from the home-screen icon.
    - **Translate** works the first time: article → 文A → a language → "Getting the translator" → translated text.
    - Today, an article, the puzzle, one tool and Settings all open.
+   - On a fresh install (Android 13+): after the welcome screens, Android's "Allow notifications?" pop-up appears; tap Allow, then check a notification arrives.
    - If anything new was added, test it.
 5. If the app closes, open it again. The **"Plainly closed unexpectedly"** screen shows the error with a **Copy** button. Send that text.
 6. Check **Pre-launch report** and **Android vitals → Crashes and ANRs** in Play Console for the new version.
