@@ -62,7 +62,7 @@ A direct-install APK is **not** the same as a Play install. Play splits the app 
    - The app **opens** from the home-screen icon.
    - **Translate** works the first time: article → 文A → a language → "Getting the translator" → translated text.
    - Today, an article, the puzzle, one tool and Settings all open.
-   - On a fresh install (Android 13+): after the welcome screens, Android's "Allow notifications?" pop-up appears; tap Allow, then check a notification arrives.
+   - On a fresh install (Android 13+): after the welcome screens, Plainly's "Be the first to know" invitation appears on Today; tap "Yes, keep me posted", then Android's Allow box, then check a notification arrives and +50 XP is added.
    - If anything new was added, test it.
 5. If the app closes, open it again. The **"Plainly closed unexpectedly"** screen shows the error with a **Copy** button. Send that text.
 6. Check **Pre-launch report** and **Android vitals → Crashes and ANRs** in Play Console for the new version.

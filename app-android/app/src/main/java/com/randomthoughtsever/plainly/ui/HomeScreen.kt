@@ -162,7 +162,8 @@ fun HomeScreen(nav: Nav) {
     val prefs = remember { NewPosts.prefs(nav.context) }
     LaunchedEffect(posts.isNotEmpty()) {
         val today = LocalDate.now().toString()
-        if (posts.isNotEmpty() && profile.onboarded && prefs.getString("autoDeck", "") != today) {
+        if (posts.isNotEmpty() && profile.onboarded && prefs.getString("autoDeck", "") != today &&
+            !NotifyPrompt.shouldShow(nav.context, true, "today")) { // the notification invitation goes first
             prefs.edit().putString("autoDeck", today).apply(); delay(700); story = "new"
         }
     }
