@@ -118,6 +118,7 @@ body = f"""
  ("BLS Employment Projections 2025-35", "https://www.bls.gov/emp/"),
 ])}
 
+<p>New to the role? Read <a href="__POST:nurse-practitioner__">what a nurse practitioner is and how to become one</a>.</p>
 {related([L["raise"], L["salary2027"], L["student"], L["ai_jobs"]])}
 <p><em>Pay figures are BLS estimates for May 2025, the latest available in November 2026, before tax. This article is for information and isn't career or financial advice.</em></p>
 """

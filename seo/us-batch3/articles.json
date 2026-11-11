@@ -30,5 +30,47 @@
   "labels": [
    "Career & Workplace"
   ]
+ },
+ "nurse-practitioner": {
+  "title": "What Is a Nurse Practitioner? Role, Training and NP vs Doctor vs PA",
+  "labels": [
+   "Career & Workplace",
+   "Health & Wellness"
+  ]
+ },
+ "adn-degree": {
+  "title": "ADN Degree: Cost, Length, NCLEX Pass Rates and ADN vs BSN",
+  "labels": [
+   "Education",
+   "Career & Workplace"
+  ]
+ },
+ "doctor-of-nursing-practice": {
+  "title": "Doctor of Nursing Practice (DNP): Programs, Cost and Is It Worth It",
+  "labels": [
+   "Education",
+   "Career & Workplace"
+  ]
+ },
+ "marine-biologist": {
+  "title": "How to Become a Marine Biologist: Degrees, Jobs and Real Pay",
+  "labels": [
+   "Career & Workplace",
+   "Education"
+  ]
+ },
+ "criminologist": {
+  "title": "How to Become a Criminologist: Degree, Salary and Where They Work",
+  "labels": [
+   "Career & Workplace",
+   "Education"
+  ]
+ },
+ "crime-scene-investigator": {
+  "title": "How to Become a Crime Scene Investigator: Training, Pay and the Real Job",
+  "labels": [
+   "Career & Workplace",
+   "Education"
+  ]
  }
 }
