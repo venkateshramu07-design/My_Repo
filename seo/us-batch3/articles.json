@@ -65,6 +65,11 @@
   "labels": [
    "Education",
    "Career & Workplace"
+  ],
+  "id": "4094239842484872579",
+  "status": "DRAFT",
+  "links_pending": [
+   "pell-grant-2026-27"
   ]
  },
  "doctor-of-nursing-practice": {
@@ -72,6 +77,12 @@
   "labels": [
    "Education",
    "Career & Workplace"
+  ],
+  "id": "673441809992318249",
+  "status": "DRAFT",
+  "links_pending": [
+   "nurse-practitioner",
+   "nurse-practitioner-salary"
   ]
  },
  "marine-biologist": {
@@ -79,13 +90,21 @@
   "labels": [
    "Career & Workplace",
    "Education"
-  ]
+  ],
+  "id": "1994402633739225673",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "criminologist": {
   "title": "How to Become a Criminologist: Degree, Salary and Where They Work",
   "labels": [
    "Career & Workplace",
    "Education"
+  ],
+  "id": "3159672723381800203",
+  "status": "DRAFT",
+  "links_pending": [
+   "crime-scene-investigator"
   ]
  },
  "crime-scene-investigator": {
@@ -93,6 +112,11 @@
   "labels": [
    "Career & Workplace",
    "Education"
+  ],
+  "id": "1111143559079976698",
+  "status": "DRAFT",
+  "links_pending": [
+   "criminologist"
   ]
  },
  "tm-symbol": {
@@ -100,13 +124,21 @@
   "labels": [
    "Technology & AI",
    "Career & Workplace"
-  ]
+  ],
+  "id": "7551510882901136468",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "contract-law": {
   "title": "Contract Law Basics: What Makes an Agreement Legally Binding",
   "labels": [
    "Career & Workplace",
    "Personal Finance"
+  ],
+  "id": "2694176290760961542",
+  "status": "DRAFT",
+  "links_pending": [
+   "tort-law"
   ]
  },
  "tort-law": {
@@ -114,6 +146,11 @@
   "labels": [
    "Career & Workplace",
    "Personal Finance"
+  ],
+  "id": "6572827092919692955",
+  "status": "DRAFT",
+  "links_pending": [
+   "contract-law"
   ]
  },
  "employer-sponsored-health-insurance": {
@@ -121,31 +158,48 @@
   "labels": [
    "Personal Finance",
    "Health & Wellness"
-  ]
+  ],
+  "id": "3475080112097749423",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "military-car-insurance": {
   "title": "Military Car Insurance: Discounts, Deployment Storage and PCS Moves",
   "labels": [
    "Personal Finance"
-  ]
+  ],
+  "id": "6515405167675751220",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "dscr-loan": {
   "title": "DSCR Loans in 2026: How Investors Qualify on Rent, Not Income",
   "labels": [
    "Personal Finance",
    "Investing"
-  ]
+  ],
+  "id": "1776744814182920590",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "unsecured-personal-loans": {
   "title": "Unsecured Personal Loans: How Approval, Rates and Fees Really Work",
   "labels": [
    "Personal Finance"
-  ]
+  ],
+  "id": "4327485962221945488",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "no-foreign-transaction-fee-credit-cards": {
   "title": "No Foreign Transaction Fee Credit Cards: What to Check Before You Travel",
   "labels": [
    "Personal Finance"
+  ],
+  "id": "7541871743968319004",
+  "status": "DRAFT",
+  "links_pending": [
+   "premium-travel-credit-cards"
   ]
  },
  "premium-travel-credit-cards": {
