@@ -93,5 +93,43 @@
    "Career & Workplace",
    "Personal Finance"
   ]
+ },
+ "employer-sponsored-health-insurance": {
+  "title": "Employer-Sponsored Health Insurance: What It Really Costs You in 2026",
+  "labels": [
+   "Personal Finance",
+   "Health & Wellness"
+  ]
+ },
+ "military-car-insurance": {
+  "title": "Military Car Insurance: Discounts, Deployment Storage and PCS Moves",
+  "labels": [
+   "Personal Finance"
+  ]
+ },
+ "dscr-loan": {
+  "title": "DSCR Loans in 2026: How Investors Qualify on Rent, Not Income",
+  "labels": [
+   "Personal Finance",
+   "Investing"
+  ]
+ },
+ "unsecured-personal-loans": {
+  "title": "Unsecured Personal Loans: How Approval, Rates and Fees Really Work",
+  "labels": [
+   "Personal Finance"
+  ]
+ },
+ "no-foreign-transaction-fee-credit-cards": {
+  "title": "No Foreign Transaction Fee Credit Cards: What to Check Before You Travel",
+  "labels": [
+   "Personal Finance"
+  ]
+ },
+ "premium-travel-credit-cards": {
+  "title": "Premium Travel Credit Cards: When a High Annual Fee Pays for Itself",
+  "labels": [
+   "Personal Finance"
+  ]
  }
 }
