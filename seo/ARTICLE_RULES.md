@@ -3,7 +3,8 @@
 ## Picking the topic
 1. Low keyword difficulty (under 30 of 100).
 2. High search volume. For the November batch 2: at least 60,000 US searches a month.
-3. High CPC.
+3. Very high CPC: at least $15 (US, DataForSEO). A topic under $15 is dropped however good it is otherwise
+   (owner's rule, 11 November 2026).
 4. Attractive and specific, never general ("what is finance" is out).
 5. Validated before it is proposed: Google's live top 10 must already contain smaller or weaker sites
    (local businesses, small firm blogs, forums, video). Topics owned by the big publishers, banks or agencies are dropped.
