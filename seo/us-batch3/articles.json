@@ -4,12 +4,20 @@
   "labels": [
    "Education",
    "Personal Finance"
-  ]
+  ],
+  "id": "580996648062287608",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "nurse-practitioner-salary": {
   "title": "Nurse Practitioner Salary 2026: Pay by State, Setting and Experience",
   "labels": [
    "Career & Workplace"
+  ],
+  "id": "2600763557669565402",
+  "status": "DRAFT",
+  "links_pending": [
+   "nurse-practitioner"
   ]
  },
  "parent-plus-loans": {
@@ -17,25 +25,39 @@
   "labels": [
    "Personal Finance",
    "Education"
-  ]
+  ],
+  "id": "4579421652326687520",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "occupational-therapist-salary": {
   "title": "Occupational Therapist Salary 2026: Pay by State and Work Setting",
   "labels": [
    "Career & Workplace"
-  ]
+  ],
+  "id": "7406714804152812353",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "respiratory-therapist-salary": {
   "title": "Respiratory Therapist Salary 2026: Pay by State, Hourly and Annual",
   "labels": [
    "Career & Workplace"
-  ]
+  ],
+  "id": "3151590551896773016",
+  "status": "DRAFT",
+  "links_pending": []
  },
  "nurse-practitioner": {
   "title": "What Is a Nurse Practitioner? Role, Training and NP vs Doctor vs PA",
   "labels": [
    "Career & Workplace",
    "Health & Wellness"
+  ],
+  "id": "3415575066592460483",
+  "status": "DRAFT",
+  "links_pending": [
+   "nurse-practitioner-salary"
   ]
  },
  "adn-degree": {

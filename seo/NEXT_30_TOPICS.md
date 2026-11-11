@@ -70,3 +70,39 @@ CD, Roth IRA, GPA, square-footage, take-home-pay and military-pay calculators; F
 - Home: AC and furnace maintenance.
 
 **Too general (rule 4):** "vocational", "jurisdiction", "what is an IT".
+
+## Written as drafts (11 November 2026)
+
+All 29 written in `us-batch3/` (generators `a_*.py`, HTML in `html/`, sources in `FACTS.md`), covers in `covers/us3/`. Final titles:
+
+- Pell Grant 2026-27: Maximum Award, Eligibility and How to Get It
+- Nurse Practitioner Salary 2026: Pay by State, Setting and Experience
+- Parent PLUS Loans 2026-27: Limits, Rates, Fees and the New Borrowing Cap
+- Occupational Therapist Salary 2026: Pay by State and Work Setting
+- Respiratory Therapist Salary 2026: Pay by State, Hourly and Annual
+- What Is a Nurse Practitioner? Role, Training and NP vs Doctor vs PA
+- ADN Degree: Cost, Length, NCLEX Pass Rates and ADN vs BSN
+- Doctor of Nursing Practice (DNP): Programs, Cost and Is It Worth It
+- How to Become a Marine Biologist: Degrees, Jobs and Real Pay
+- How to Become a Criminologist: Degree, Salary and Where They Work
+- How to Become a Crime Scene Investigator: Training, Pay and the Real Job
+- TM vs ® Symbol: When You Can Use Each and How to Type Them
+- Contract Law Basics: What Makes an Agreement Legally Binding
+- Tort Law Explained: Negligence, Intentional Torts and Strict Liability
+- Employer-Sponsored Health Insurance: What It Really Costs You in 2026
+- Military Car Insurance: Discounts, Deployment Storage and PCS Moves
+- DSCR Loans in 2026: How Investors Qualify on Rent, Not Income
+- Unsecured Personal Loans: How Approval, Rates and Fees Really Work
+- No Foreign Transaction Fee Credit Cards: What to Check Before You Travel
+- Premium Travel Credit Cards: When a High Annual Fee Pays for Itself
+- Surety Bonds Explained: Types, Costs and How to Get Bonded
+- Shoulder Dystocia: Causes, Risks, Outcomes and When It Is a Birth Injury
+- Semaglutide vs Tirzepatide: Weight Loss, Side Effects and Cost Compared
+- Compounded Tirzepatide in 2026: Legal Status, Safety and Cost
+- ADHD Therapy for Adults: Options Beyond Medication
+- Dental Implant Cost 2026: Single Tooth, Full Arch and Insurance
+- Trauma-Informed Therapy: What It Means and How to Find It
+- Anger Management Therapy: Which Approaches Actually Work
+- Breakup Therapy: What It Is, How It Works and What It Costs
+
+Title changes from the list above: NP salary is now 'Pay by State, Setting and Experience', because the BLS publishes no pay by specialty. RT salary is now 'Hourly and Annual'. Premium travel cards now says 'a High Annual Fee'. ADN now adds 'NCLEX Pass Rates'. The dental implant title is shortened.
