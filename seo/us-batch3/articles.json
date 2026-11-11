@@ -72,5 +72,26 @@
    "Career & Workplace",
    "Education"
   ]
+ },
+ "tm-symbol": {
+  "title": "TM vs \u00ae Symbol: When You Can Use Each and How to Type Them",
+  "labels": [
+   "Technology & AI",
+   "Career & Workplace"
+  ]
+ },
+ "contract-law": {
+  "title": "Contract Law Basics: What Makes an Agreement Legally Binding",
+  "labels": [
+   "Career & Workplace",
+   "Personal Finance"
+  ]
+ },
+ "tort-law": {
+  "title": "Tort Law Explained: Negligence, Intentional Torts and Strict Liability",
+  "labels": [
+   "Career & Workplace",
+   "Personal Finance"
+  ]
  }
 }
