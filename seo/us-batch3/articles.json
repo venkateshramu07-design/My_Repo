@@ -6,8 +6,9 @@
    "Personal Finance"
   ],
   "id": "580996648062287608",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-20T08:00:00-05:00"
  },
  "nurse-practitioner-salary": {
   "title": "Nurse Practitioner Salary 2026: Pay by State, Setting and Experience",
@@ -15,10 +16,11 @@
    "Career & Workplace"
   ],
   "id": "2600763557669565402",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "nurse-practitioner"
-  ]
+  ],
+  "scheduled": "2026-11-15T08:00:00-05:00"
  },
  "parent-plus-loans": {
   "title": "Parent PLUS Loans 2026-27: Limits, Rates, Fees and the New Borrowing Cap",
@@ -27,8 +29,9 @@
    "Education"
   ],
   "id": "4579421652326687520",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-16T08:00:00-05:00"
  },
  "occupational-therapist-salary": {
   "title": "Occupational Therapist Salary 2026: Pay by State and Work Setting",
@@ -36,8 +39,9 @@
    "Career & Workplace"
   ],
   "id": "7406714804152812353",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-21T08:00:00-05:00"
  },
  "respiratory-therapist-salary": {
   "title": "Respiratory Therapist Salary 2026: Pay by State, Hourly and Annual",
@@ -45,8 +49,9 @@
    "Career & Workplace"
   ],
   "id": "3151590551896773016",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-24T08:00:00-05:00"
  },
  "nurse-practitioner": {
   "title": "What Is a Nurse Practitioner? Role, Training and NP vs Doctor vs PA",
@@ -55,10 +60,11 @@
    "Health & Wellness"
   ],
   "id": "3415575066592460483",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "nurse-practitioner-salary"
-  ]
+  ],
+  "scheduled": "2026-11-14T08:00:00-05:00"
  },
  "adn-degree": {
   "title": "ADN Degree: Cost, Length, NCLEX Pass Rates and ADN vs BSN",
@@ -67,10 +73,11 @@
    "Career & Workplace"
   ],
   "id": "4094239842484872579",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "pell-grant-2026-27"
-  ]
+  ],
+  "scheduled": "2026-11-26T20:00:00-05:00"
  },
  "doctor-of-nursing-practice": {
   "title": "Doctor of Nursing Practice (DNP): Programs, Cost and Is It Worth It",
@@ -79,11 +86,12 @@
    "Career & Workplace"
   ],
   "id": "673441809992318249",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "nurse-practitioner",
    "nurse-practitioner-salary"
-  ]
+  ],
+  "scheduled": "2026-11-28T20:00:00-05:00"
  },
  "marine-biologist": {
   "title": "How to Become a Marine Biologist: Degrees, Jobs and Real Pay",
@@ -92,8 +100,9 @@
    "Education"
   ],
   "id": "1994402633739225673",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-18T20:00:00-05:00"
  },
  "criminologist": {
   "title": "How to Become a Criminologist: Degree, Salary and Where They Work",
@@ -102,10 +111,11 @@
    "Education"
   ],
   "id": "3159672723381800203",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "crime-scene-investigator"
-  ]
+  ],
+  "scheduled": "2026-11-21T20:00:00-05:00"
  },
  "crime-scene-investigator": {
   "title": "How to Become a Crime Scene Investigator: Training, Pay and the Real Job",
@@ -114,10 +124,11 @@
    "Education"
   ],
   "id": "1111143559079976698",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "criminologist"
-  ]
+  ],
+  "scheduled": "2026-11-22T20:00:00-05:00"
  },
  "tm-symbol": {
   "title": "TM vs \u00ae Symbol: When You Can Use Each and How to Type Them",
@@ -126,8 +137,9 @@
    "Career & Workplace"
   ],
   "id": "7551510882901136468",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-24T20:00:00-05:00"
  },
  "contract-law": {
   "title": "Contract Law Basics: What Makes an Agreement Legally Binding",
@@ -136,10 +148,11 @@
    "Personal Finance"
   ],
   "id": "2694176290760961542",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "tort-law"
-  ]
+  ],
+  "scheduled": "2026-11-13T20:00:00-05:00"
  },
  "tort-law": {
   "title": "Tort Law Explained: Negligence, Intentional Torts and Strict Liability",
@@ -148,10 +161,11 @@
    "Personal Finance"
   ],
   "id": "6572827092919692955",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "contract-law"
-  ]
+  ],
+  "scheduled": "2026-11-14T20:00:00-05:00"
  },
  "employer-sponsored-health-insurance": {
   "title": "Employer-Sponsored Health Insurance: What It Really Costs You in 2026",
@@ -160,8 +174,9 @@
    "Health & Wellness"
   ],
   "id": "3475080112097749423",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-23T08:00:00-05:00"
  },
  "military-car-insurance": {
   "title": "Military Car Insurance: Discounts, Deployment Storage and PCS Moves",
@@ -169,8 +184,9 @@
    "Personal Finance"
   ],
   "id": "6515405167675751220",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-30T08:00:00-05:00"
  },
  "dscr-loan": {
   "title": "DSCR Loans in 2026: How Investors Qualify on Rent, Not Income",
@@ -179,8 +195,9 @@
    "Investing"
   ],
   "id": "1776744814182920590",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-28T08:00:00-05:00"
  },
  "unsecured-personal-loans": {
   "title": "Unsecured Personal Loans: How Approval, Rates and Fees Really Work",
@@ -188,8 +205,9 @@
    "Personal Finance"
   ],
   "id": "4327485962221945488",
-  "status": "DRAFT",
-  "links_pending": []
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-25T08:00:00-05:00"
  },
  "no-foreign-transaction-fee-credit-cards": {
   "title": "No Foreign Transaction Fee Credit Cards: What to Check Before You Travel",
@@ -197,76 +215,123 @@
    "Personal Finance"
   ],
   "id": "7541871743968319004",
-  "status": "DRAFT",
+  "status": "SCHEDULED",
   "links_pending": [
    "premium-travel-credit-cards"
-  ]
+  ],
+  "scheduled": "2026-11-18T08:00:00-05:00"
  },
  "premium-travel-credit-cards": {
   "title": "Premium Travel Credit Cards: When a High Annual Fee Pays for Itself",
   "labels": [
    "Personal Finance"
-  ]
+  ],
+  "id": "64266800217745531",
+  "status": "SCHEDULED",
+  "links_pending": [
+   "no-foreign-transaction-fee-credit-cards"
+  ],
+  "scheduled": "2026-11-19T08:00:00-05:00"
  },
  "surety-bonds": {
   "title": "Surety Bonds Explained: Types, Costs and How to Get Bonded",
   "labels": [
    "Personal Finance",
    "Career & Workplace"
-  ]
+  ],
+  "id": "2741811374595156420",
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-30T20:00:00-05:00"
  },
  "shoulder-dystocia": {
   "title": "Shoulder Dystocia: Causes, Risks, Outcomes and When It Is a Birth Injury",
   "labels": [
    "Health & Wellness",
    "Parenting & Family"
-  ]
+  ],
+  "id": "367144477454509995",
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-27T20:00:00-05:00"
  },
  "semaglutide-vs-tirzepatide": {
   "title": "Semaglutide vs Tirzepatide: Weight Loss, Side Effects and Cost Compared",
   "labels": [
    "Health & Wellness"
-  ]
+  ],
+  "id": "7699593096384821697",
+  "status": "SCHEDULED",
+  "links_pending": [
+   "compounded-tirzepatide"
+  ],
+  "scheduled": "2026-11-15T20:00:00-05:00"
  },
  "compounded-tirzepatide": {
   "title": "Compounded Tirzepatide in 2026: Legal Status, Safety and Cost",
   "labels": [
    "Health & Wellness"
-  ]
+  ],
+  "id": "8708075764837349349",
+  "status": "SCHEDULED",
+  "links_pending": [
+   "semaglutide-vs-tirzepatide"
+  ],
+  "scheduled": "2026-11-16T20:00:00-05:00"
  },
  "adhd-therapy-adults": {
   "title": "ADHD Therapy for Adults: Options Beyond Medication",
   "labels": [
    "Psychology",
    "Health & Wellness"
-  ]
+  ],
+  "id": "2712492285680541776",
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-17T20:00:00-05:00"
  },
  "dental-implant-cost": {
   "title": "Dental Implant Cost 2026: Single Tooth, Full Arch and Insurance",
   "labels": [
    "Health & Wellness",
    "Personal Finance"
-  ]
+  ],
+  "id": "3428986529491246059",
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-23T20:00:00-05:00"
  },
  "trauma-informed-therapy": {
   "title": "Trauma-Informed Therapy: What It Means and How to Find It",
   "labels": [
    "Psychology",
    "Health & Wellness"
-  ]
+  ],
+  "id": "7974117886305230495",
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-20T20:00:00-05:00"
  },
  "anger-management-therapy": {
   "title": "Anger Management Therapy: Which Approaches Actually Work",
   "labels": [
    "Psychology",
    "Self Improvement"
-  ]
+  ],
+  "id": "6212450922977251597",
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-29T20:00:00-05:00"
  },
  "breakup-therapy": {
   "title": "Breakup Therapy: What It Is, How It Works and What It Costs",
   "labels": [
    "Love & Relationships",
    "Psychology"
-  ]
+  ],
+  "id": "1148093690501443515",
+  "status": "SCHEDULED",
+  "links_pending": [],
+  "scheduled": "2026-11-25T20:00:00-05:00"
  }
 }
