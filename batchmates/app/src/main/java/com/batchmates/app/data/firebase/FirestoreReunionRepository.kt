@@ -63,8 +63,7 @@ class FirestoreReunionRepository : ReunionRepository {
     override suspend fun customSchools(region: Region): List<School> = runCatching {
         schools.whereEqualTo("countryCode", region.countryCode)
             .whereEqualTo("state", region.state)
-            .whereEqualTo("district", region.district)
-            .limit(400)
+            .limit(500)
             .get().await().documents.mapNotNull { it.toSchool() }
     }.getOrDefault(emptyList())
 

@@ -106,7 +106,7 @@ Build again – the app now uses real accounts and a shared database.
 | Invite landing page | Firebase Hosting | 10 GB storage, 360 MB/day transfer |
 | Map | OpenStreetMap tiles via osmdroid | Free (fair use, with attribution) |
 | Districts | Bundled for all of India (800, from Wikidata, CC0); other countries via OpenStreetMap Overpass | Offline / free |
-| Schools & towns | Photon **reverse** lookup: one ~1 s request returns the nearest schools (or a district's towns); Overpass completes the list in the background | Free (fair use); cached on the phone, so repeat visits load in milliseconds |
+| Schools & towns | **Our own directory** (`data/`, built by `tools/build_directory.py` from Overture Maps) served by the free jsDelivr CDN; one ~10-100 KB file per 55 km area. Public geocoders (Photon, Overpass) only top up in the background and cover countries without a directory yet | $0; cached on the phone, so repeat visits load in milliseconds |
 | School search / address lookup | Nominatim | Free, max 1 request/second (the app enforces this) |
 | Countries + states | Bundled file (countries-states-cities-database, ODbL) | Offline, 77 KB |
 | APK builds | GitHub Actions | Free for public repos, 2,000 min/month for private ones |
@@ -126,14 +126,28 @@ small Overpass/Nominatim cache server later if you need one.
 
 ## Speed budget
 
-Measured on the live services with an empty cache (first-time user), Thanjavur → Kumbakonam:
+Measured through the app's code on the live CDN, empty cache (first-time user):
 
 | Step | Time |
 |---|---|
-| District list | instant (bundled) |
-| Towns of the district | ~1.3 s first time, ~2 ms afterwards |
-| Schools near the town | ~1.1 s first time, ~20 ms afterwards; top towns are prefetched while you read the list |
-| School name search | ~0.2 s |
+| Town search ("kumb" → Kumbakonam, Thanjavur, Tamil Nadu) | instant; the 340 KB town index downloads at app start |
+| Towns of a district | ~10 ms |
+| Schools near Kumbakonam (100 schools & colleges) | ~0.8 s first time, ~30 ms afterwards |
+| Schools near Chennai (2,000+) | ~0.9 s first time |
+
+## The school directory (`data/`)
+
+The free public geocoders were often overloaded (10+ s waits, timeouts), so BatchMates ships its own directory:
+
+* **Source:** [Overture Maps](https://overturemaps.org) Places + Divisions (CDLA-Permissive-2.0 / ODbL), which list
+  far more schools than OpenStreetMap alone (Kumbakonam: 100 vs 15) and give every town its official state/district.
+* **India:** 245,505 schools & colleges in 1,184 tiles (7.8 MB total) + 18,116 towns (343 KB).
+* **Build / refresh:** `tools/build_directory.py` (see its header for the 1-minute DuckDB extract). Commit `data/`,
+  then set `batchmates.dataRevision` in `gradle.properties` to that commit.
+* **Add a country:** extract it the same way and add its code to `SchoolDirectory.COUNTRIES`. Other countries keep
+  working through the public geocoders meanwhile.
+* **Hosting:** jsDelivr + GitHub raw (free) today. For an SLA, upload `data/` to Cloudflare R2 (free egress) or
+  Firebase Hosting and set `batchmates.dataMirrors`.
 
 Slow sources never block the screen: the complete OpenStreetMap list merges in when it arrives (max 15 s), shown as "finding more".
 Re-run with `./gradlew testDebugUnitTest --tests '*LiveSchoolsCheck*' -Dlive=true -i`.

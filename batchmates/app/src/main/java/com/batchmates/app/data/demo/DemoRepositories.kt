@@ -74,7 +74,7 @@ class DemoReunionRepository : ReunionRepository {
         mine.map { ids -> ids.mapNotNull { groups.value[it] } }
 
     override suspend fun customSchools(region: Region) = customSchools.value.filter {
-        it.region.countryCode == region.countryCode && it.region.state == region.state && it.region.district == region.district
+        it.region.countryCode == region.countryCode && it.region.state == region.state
     }
 
     override suspend fun createSchool(

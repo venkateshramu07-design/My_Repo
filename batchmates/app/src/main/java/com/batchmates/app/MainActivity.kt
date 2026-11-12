@@ -49,6 +49,9 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) readInvite(intent)
         val container = (application as BatchMatesApp).container
 
+        // Warm the town index while the user looks at the first screen.
+        lifecycleScope.launch { container.geo.warmUp() }
+
         setContent {
             BatchMatesTheme {
                 val user by container.auth.currentUser.collectAsState()

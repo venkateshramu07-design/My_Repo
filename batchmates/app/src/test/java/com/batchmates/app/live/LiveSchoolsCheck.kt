@@ -41,4 +41,29 @@ class LiveSchoolsCheck {
             println("LIVE named=${named.map { it.name }}")
         }
     }
+
+    @Test fun directorySpeed() {
+        assumeTrue(System.getProperty("live") == "true")
+        java.io.File("geo").deleteRecursively()
+        val geo = GeoRepository(paparazzi.context)
+        runBlocking {
+            val found = timed("type 'kumb' (first time: downloads town index)") { geo.searchPlacesLocal("kumb", null, "", "IN") }
+            println("LIVE quick=${found.take(5).map { it.name + " / " + it.state + " / " + it.area }}")
+            timed("type 'kumba' (index cached)") { geo.searchPlacesLocal("kumba", null, "", "IN") }
+            val kb = found.first { it.name == "Kumbakonam" }
+            val district = timed("district for Kumbakonam") { geo.districtFor(kb) }
+            println("LIVE district=$district")
+            val region = Region("IN", "India", kb.state, district, kb.name)
+            val schools = timed("schools near Kumbakonam (first time)") { geo.schoolsFast(kb.lat to kb.lon, 12.0, region, null) }
+            println("LIVE schools=${schools.size} first=${schools.take(6).map { it.name + " " + "%.1f".format(it.distanceKm) + "km [" + it.kind + "]" }}")
+            println("LIVE vallalar=${schools.filter { "allalar" in it.name }.map { it.name + " " + "%.1f".format(it.distanceKm) }}")
+            println("LIVE colleges=${schools.count { it.kind.name == "COLLEGE" }} schools=${schools.count { it.kind.name == "SCHOOL" }}")
+            timed("schools near Kumbakonam (cached)") { geo.schoolsFast(kb.lat to kb.lon, 12.0, region, null) }
+            val chennai = timed("type 'chen'") { geo.searchPlacesLocal("chen", null, "", "IN") }.first()
+            val cs = timed("schools near ${chennai.name} (first time, dense city)") { geo.schoolsFast(chennai.lat to chennai.lon, 12.0, region.copy(town = chennai.name), null) }
+            println("LIVE chennai=${cs.size}")
+            val towns = timed("towns of Thanjavur district") { geo.townsNear(geo.districtCenter(Region("IN", "India", "Tamil Nadu", "Thanjavur"))!!, "Tamil Nadu", "IN") }
+            println("LIVE towns=${towns.take(12).map { it.name }}")
+        }
+    }
 }

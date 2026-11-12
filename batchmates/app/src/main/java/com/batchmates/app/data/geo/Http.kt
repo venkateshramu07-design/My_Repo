@@ -24,6 +24,38 @@ class Http(context: Context) {
     suspend fun postForm(url: String, field: String, value: String, ttlMs: Long = WEEK, readTimeoutMs: Int = 30_000): String =
         cached(url + "\n" + value, ttlMs) { request(url, "$field=" + URLEncoder.encode(value, "UTF-8"), readTimeoutMs) }
 
+    /**
+     * Downloads a gzipped JSON file from the first mirror that answers, cached on disk.
+     * A 404 means "no data here" (e.g. an empty map cell) and is cached as an empty string.
+     */
+    suspend fun getGzipJson(mirrors: List<String>, ttlMs: Long): String = cached("gz:" + mirrors.first(), ttlMs) {
+        var last: Exception? = null
+        for (url in mirrors) {
+            try {
+                val conn = URL(url).openConnection() as HttpURLConnection
+                try {
+                    conn.connectTimeout = 6_000
+                    conn.readTimeout = 10_000
+                    conn.setRequestProperty("User-Agent", userAgent)
+                    when (val code = conn.responseCode) {
+                        404 -> return@cached ""
+                        !in 200..299 -> error("HTTP $code")
+                    }
+                    val bytes = conn.inputStream.use { it.readBytes() }
+                    // Some CDNs already decompress (Content-Encoding: gzip); only gunzip real gzip data.
+                    val gz = bytes.size > 2 && bytes[0] == 0x1f.toByte() && bytes[1] == 0x8b.toByte()
+                    return@cached if (gz) java.util.zip.GZIPInputStream(bytes.inputStream()).bufferedReader().use { it.readText() }
+                    else String(bytes)
+                } finally {
+                    conn.disconnect()
+                }
+            } catch (e: Exception) {
+                last = e
+            }
+        }
+        throw last ?: IllegalStateException("No mirror answered")
+    }
+
     private suspend fun cached(key: String, ttlMs: Long, fetch: () -> String): String = withContext(Dispatchers.IO) {
         val file = File(cacheDir, sha1(key))
         if (file.exists() && System.currentTimeMillis() - file.lastModified() < ttlMs) return@withContext file.readText()

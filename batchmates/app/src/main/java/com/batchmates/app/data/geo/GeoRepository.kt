@@ -31,6 +31,7 @@ import java.net.URLEncoder
 class GeoRepository(private val context: Context) {
 
     private val http = Http(context)
+    private val directory = SchoolDirectory(http)
     private val nominatimLock = Mutex()
     private var lastNominatimCall = 0L
 
@@ -103,11 +104,88 @@ class GeoRepository(private val context: Context) {
             .distinct().sorted()
     }
 
+    // ================================================================== own directory first
+
     /**
-     * FIRST answer for a school list, in one request (~1 s): nearest schools around a town or district centre,
-     * or a name search inside that area. Returns schools with region/distance filled in, nearest first.
+     * FIRST answer for a school list. Our own directory (static CDN files) when the country is covered:
+     * ~100-300 ms the first time, instant afterwards. Otherwise the public geocoder.
      */
     suspend fun schoolsFast(center: Pair<Double, Double>?, radiusKm: Double, region: Region, nameFilter: String?): List<School> {
+        if (center != null && directory.covers(region.countryCode)) {
+            val list = runCatching { directory.schoolsNear(region.countryCode, center.first, center.second, radiusKm, region) }
+            list.getOrNull()?.let { all ->
+                return all.filter { nameFilter.isNullOrBlank() || SchoolNames.matches(nameFilter, it) }.map { it.reclassified() }
+            }
+        }
+        return schoolsFastPhoton(center, radiusKm, region, nameFilter)
+    }
+
+    /** Towns of a district: our town index when covered (instant), else the public geocoder. */
+    suspend fun townsNear(center: Pair<Double, Double>, state: String, countryCode: String = "", radiusKm: Int = 45): List<Place> {
+        if (directory.covers(countryCode)) {
+            runCatching { directory.townsNear(countryCode, center.first, center.second, radiusKm.toDouble()) }.getOrNull()
+                ?.takeIf { it.isNotEmpty() }
+                ?.let { list -> return list.take(24).map { it.toPlace(countryCode, state) } }
+        }
+        return townsNearPhoton(center, state, radiusKm)
+    }
+
+    /** Fetch the town index in the background at app start, so the first search is already instant. */
+    suspend fun warmUp() {
+        SchoolDirectory.COUNTRIES.forEach { cc -> runCatching { directory.towns(cc) } }
+    }
+
+    /** Town search from our own index: instant once the ~100 KB index is on the phone. */
+    suspend fun searchPlacesLocal(text: String, near: Pair<Double, Double>?, state: String, countryCode: String = ""): List<Place> {
+        // Quick search (no area yet) looks in every country we have a directory for, whatever the phone's locale.
+        val codes = if (near == null) (SchoolDirectory.COUNTRIES + countryCode.uppercase()) else setOf(countryCode.uppercase())
+        return codes.filter(directory::covers).flatMap { cc ->
+            runCatching {
+                directory.searchTowns(cc, text, limit = 15)
+                    .filter { near == null || SchoolNames.km(near.first, near.second, it.lat, it.lon) <= 80 }
+                    .map { it.toPlace(cc, if (near != null) state else "") }
+            }.getOrDefault(emptyList())
+        }
+    }
+
+    /** Extra places (small villages) from the public geocoder, time-limited. Merge after the local answer. */
+    suspend fun searchPlacesRemote(text: String, near: Pair<Double, Double>?, state: String, bias: Pair<Double, Double>? = null): List<Place> =
+        withTimeoutOrNull(6_000) { runCatching { searchPlacesPhoton(text, near, state, bias) }.getOrNull() }.orEmpty()
+
+    fun mergePlaces(local: List<Place>, remote: List<Place>): List<Place> =
+        local + remote.filter { r -> local.none { SchoolNames.km(it.lat, it.lon, r.lat, r.lon) < 3 && it.name.equals(r.name, true) } }
+
+    /** Directory town → Place with state and district worked out from bundled district centres. */
+    private suspend fun SchoolDirectory.DirTown.toPlace(countryCode: String, knownState: String): Place {
+        // Official state/district from the index; nearest bundled district centre only as a fallback.
+        val guess = if (this.state.isBlank() || this.district.isBlank()) nearestDistrict(countryCode, lat, lon) else null
+        val state = this.state.ifBlank { guess?.first ?: knownState }
+        val district = canonicalDistrict(countryCode, state, this.district.ifBlank { guess?.second.orEmpty() })
+        val country = countries().firstOrNull { it.code == countryCode.uppercase() }?.name.orEmpty()
+        return Place(name, if (schools >= 40) "city" else "town", district.ifBlank { "$schools schools" }, lat, lon,
+            state = knownState.ifBlank { state }, countryCode = countryCode.uppercase(), country = country)
+    }
+
+    /** Use the bundled spelling of a district when it's the same one ("Kanchipuram" vs "Kancheepuram"). */
+    private suspend fun canonicalDistrict(countryCode: String, state: String, district: String): String {
+        if (district.isBlank()) return district
+        val known = bundledState(countryCode, state)?.map { it.name }.orEmpty()
+        return known.firstOrNull { it.equals(district, true) }
+            ?: known.firstOrNull { SchoolNames.similar(it, district) }
+            ?: district
+    }
+
+    /** Nearest bundled district centre in a country: (state, district). */
+    private suspend fun nearestDistrict(countryCode: String, lat: Double, lon: Double): Pair<String, String>? =
+        bundled()[countryCode.uppercase()]?.flatMap { (st, ds) -> ds.filter { it.lat != null }.map { st to it } }
+            ?.minByOrNull { (_, d) -> SchoolNames.km(lat, lon, d.lat!!, d.lon!!) }
+            ?.let { (st, d) -> st to d.name }
+
+    /**
+     * Public-geocoder version, in one request (~1 s when the service is healthy): nearest schools around a town or district centre,
+     * or a name search inside that area. Returns schools with region/distance filled in, nearest first.
+     */
+    private suspend fun schoolsFastPhoton(center: Pair<Double, Double>?, radiusKm: Double, region: Region, nameFilter: String?): List<School> {
         val name = nameFilter?.trim()?.takeIf { it.length >= 2 }
         val raw = when {
             center == null && name == null -> emptyList()
@@ -198,7 +276,7 @@ class GeoRepository(private val context: Context) {
     }
 
     /** Towns of a district in ONE ~0.7 s request: cities and towns around its centre, biggest first. */
-    suspend fun townsNear(center: Pair<Double, Double>, state: String, radiusKm: Int = 45): List<Place> {
+    private suspend fun townsNearPhoton(center: Pair<Double, Double>, state: String, radiusKm: Int = 45): List<Place> {
         fun url(tags: String) = PHOTON_REVERSE + "?lat=%.4f&lon=%.4f&radius=%d&limit=50".format(java.util.Locale.US, center.first, center.second, radiusKm) + tags
         var places = parsePlaces(http.get(url("&osm_tag=place:city&osm_tag=place:town&osm_tag=place:municipality"), ttlMs = 60 * Http.DAY, readTimeoutMs = 10_000), state)
         if (places.size < 6) { // rural districts: add villages
@@ -234,7 +312,7 @@ class GeoRepository(private val context: Context) {
     }
 
     /** Towns / villages / areas matching what the user types, near the chosen district. */
-    suspend fun searchPlaces(text: String, near: Pair<Double, Double>?, state: String, bias: Pair<Double, Double>? = null): List<Place> {
+    private suspend fun searchPlacesPhoton(text: String, near: Pair<Double, Double>?, state: String, bias: Pair<Double, Double>? = null): List<Place> {
         if (text.trim().length < 2) return emptyList()
         val url = buildString {
             append(PHOTON).append("?limit=15&osm_tag=place&q=").append(URLEncoder.encode(text.trim(), "UTF-8"))
@@ -265,6 +343,8 @@ class GeoRepository(private val context: Context) {
      * otherwise the map's county / district name.
      */
     suspend fun districtFor(place: Place): String {
+        // Places from our own town index already carry the official district.
+        if (place.area.isNotBlank() && bundledState(place.countryCode, place.state)?.any { it.name.equals(place.area, true) } == true) return place.area
         bundledState(place.countryCode, place.state)
             ?.filter { it.lat != null && it.lon != null }
             ?.minByOrNull { SchoolNames.km(place.lat, place.lon, it.lat!!, it.lon!!) }

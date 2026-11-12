@@ -153,11 +153,16 @@ class FinderViewModel(
             delay(300)
             _s.update { it.copy(anywhereResults = Load.Loading) }
             val home = _s.value.suggestedCountry
-            val r = runCatching {
-                geo.searchPlaces(text, null, "", bias = home?.let { geo.countryBias(it) })
-                    .sortedByDescending { it.countryCode == home } // your own country first
+            // 1) Instant answer from our own town index.
+            val local = geo.searchPlacesLocal(text, null, "", home.orEmpty())
+            if (local.isNotEmpty()) _s.update { it.copy(anywhereResults = Load.Ready(local)) }
+            // 2) Only if that's thin (small villages, uncovered countries), ask the public geocoder — time-limited.
+            if (local.size < 4) {
+                val remote = geo.searchPlacesRemote(text, null, "", bias = home?.let { geo.countryBias(it) })
+                    .sortedByDescending { it.countryCode == home }
+                val all = geo.mergePlaces(local, remote)
+                _s.update { it.copy(anywhereResults = if (all.isEmpty() && remote.isEmpty() && local.isEmpty()) Load.Ready(emptyList()) else Load.Ready(all)) }
             }
-            _s.update { it.copy(anywhereResults = r.fold({ l -> Load.Ready(l) }, { e -> Load.Failed(e.message ?: "Search failed") })) }
         }
     }
 
@@ -220,7 +225,7 @@ class FinderViewModel(
             _s.update { it.copy(districtCenter = c) }
             launch { remember(repo.customSchools(region)) } // for the duplicate guard, off the critical path
             // One ~0.7 s request for the district's towns (cached on the phone afterwards).
-            val chips = c?.let { runCatching { geo.townsNear(it, region.state) }.getOrDefault(emptyList()) }.orEmpty().take(16)
+            val chips = c?.let { runCatching { geo.townsNear(it, region.state, region.countryCode) }.getOrDefault(emptyList()) }.orEmpty().take(16)
             if (_s.value.district != region.district) return@launch
             _s.update { it.copy(townChips = chips, townsLoaded = true) }
             // Warm the cache for the likeliest towns while the user reads the list, so tapping one is instant.
@@ -238,8 +243,13 @@ class FinderViewModel(
             delay(350)
             _s.update { it.copy(townResults = Load.Loading) }
             val s = _s.value
-            val r = runCatching { geo.searchPlaces(text, s.districtCenter, s.state.orEmpty()) }
-            _s.update { it.copy(townResults = r.fold({ l -> Load.Ready(l) }, { e -> Load.Failed(e.message ?: "Search failed") })) }
+            val cc = s.country?.code.orEmpty()
+            val local = geo.searchPlacesLocal(text, s.districtCenter, s.state.orEmpty(), cc)
+            if (local.isNotEmpty()) _s.update { it.copy(townResults = Load.Ready(local)) }
+            if (local.size < 4) {
+                val remote = geo.searchPlacesRemote(text, s.districtCenter, s.state.orEmpty())
+                _s.update { it.copy(townResults = Load.Ready(geo.mergePlaces(local, remote))) }
+            }
         }
     }
 
@@ -273,9 +283,12 @@ class FinderViewModel(
                 val d = if (center != null && c.lat != null && c.lon != null) SchoolNames.km(center.first, center.second, c.lat, c.lon) else null
                 c.copy(distanceKm = d)
             }.filter { c ->
-                (town == null || c.region.town.equals(town.name, true) || c.locality.equals(town.name, true) ||
-                    (c.distanceKm != null && c.distanceKm <= radius * 1.3)) &&
-                    (nameFilter.isNullOrBlank() || SchoolNames.matches(nameFilter, c))
+                val near = when {
+                    town != null && (c.region.town.equals(town.name, true) || c.locality.equals(town.name, true)) -> true
+                    c.distanceKm != null -> c.distanceKm <= radius * 1.3
+                    else -> c.region.district.equals(region.district, true) // no coordinates: fall back to the district name
+                }
+                near && (nameFilter.isNullOrBlank() || SchoolNames.matches(nameFilter, c))
             }
 
             fun publish(custom: List<School>, osm: List<School>, refining: Boolean, error: Throwable?) {

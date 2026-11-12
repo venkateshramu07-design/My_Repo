@@ -12,6 +12,16 @@ if (hasFirebaseConfig) {
     apply(plugin = libs.plugins.google.services.get().pluginId)
 }
 
+// Where the school directory files (tools/build_directory.py) are served from, first mirror first.
+// Default: free jsDelivr CDN + GitHub raw, straight from this public repository, pinned to the commit that
+// holds the data so every phone gets one consistent version (and the CDN can cache it forever).
+// After rebuilding the data, update batchmates.dataRevision. Move to Cloudflare R2 / Firebase Hosting later
+// by setting batchmates.dataMirrors.
+val dataRevision: String = (project.findProperty("batchmates.dataRevision") as String?) ?: "2b11cdb7175d1e408cbc91df97bd11c1539d08a6"
+val dataMirrors: String = (project.findProperty("batchmates.dataMirrors") as String?)
+    ?: "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@$dataRevision/batchmates/data," +
+        "https://raw.githubusercontent.com/venkateshramu07-design/My_Repo/$dataRevision/batchmates/data"
+
 val inviteHost: String = (project.findProperty("batchmates.inviteHost") as String?) ?: "batchmates-app.web.app"
 
 android {
@@ -22,10 +32,11 @@ android {
         applicationId = "com.batchmates.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "2.0.0"
+        versionCode = 9
+        versionName = "2.1.0"
         manifestPlaceholders["inviteHost"] = inviteHost
         buildConfigField("String", "INVITE_HOST", "\"$inviteHost\"")
+        buildConfigField("String", "DATA_MIRRORS", "\"$dataMirrors\"")
         vectorDrawables { useSupportLibrary = true }
     }
 
