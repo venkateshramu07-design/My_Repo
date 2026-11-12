@@ -9,8 +9,8 @@ import com.batchmates.app.data.Country
 import com.batchmates.app.data.CollegeType
 import com.batchmates.app.data.InstitutionKind
 import com.batchmates.app.data.Level
-import com.batchmates.app.data.Programme
-import com.batchmates.app.data.Programmes
+import com.batchmates.app.data.Degrees
+import com.batchmates.app.data.Field
 import com.batchmates.app.data.Track
 import com.batchmates.app.data.Place
 import com.batchmates.app.data.Region
@@ -56,8 +56,9 @@ data class FinderState(
     val track: Track? = null,
     /** Schools or Colleges tab on the results list. */
     val tab: InstitutionKind = InstitutionKind.SCHOOL,
-    /** College programme picked but waiting for a specialisation (e.g. B.E. → which branch?). */
-    val programme: Programme? = null,
+    /** College: chosen level (Bachelor's…) and field (Engineering…) while picking a discipline. */
+    val level: Level? = null,
+    val field: Field? = null,
     val showAllProgrammes: Boolean = false,
     val showAllStandards: Boolean = false,
     val year: Int? = null,
@@ -242,10 +243,10 @@ class FinderViewModel(
     fun pickSchool(school: School) {
         // Schools from a list already know their region; map / search picks may need it filled in.
         val fixed = if (school.region.state.isBlank() && _s.value.state != null) school.copy(region = _s.value.region) else school
-        val firstTrack = if (fixed.kind == InstitutionKind.SCHOOL) fixed.schoolType.tracks.first() else null
+        val firstTrack = if (fixed.kind == InstitutionKind.SCHOOL) fixed.schoolProfile.tracks.firstOrNull() else null
         _s.update {
-            it.copy(school = fixed, stats = emptyList(), year = null, track = firstTrack, programme = null,
-                showAllProgrammes = false, showAllStandards = false)
+            it.copy(school = fixed, stats = emptyList(), year = null, track = firstTrack, field = null,
+                level = defaultLevel(fixed.collegeType), showAllProgrammes = false, showAllStandards = false)
         }
         go(if (fixed.kind == InstitutionKind.COLLEGE) Step.COURSE else Step.BATCH)
         viewModelScope.launch {
@@ -357,10 +358,36 @@ class FinderViewModel(
     fun showAllStandards() = _s.update { it.copy(showAllStandards = true) }
     fun showAllProgrammes() = _s.update { it.copy(showAllProgrammes = true) }
 
-    /** Programmes this college can have; "Show all" lifts the filter for unusual cases. */
-    fun programmesForCollege(): List<Programme> {
+    private fun defaultLevel(type: CollegeType?): Level {
+        val allowed = type?.levels ?: Level.entries.toSet()
+        return if (Level.BACHELOR in allowed) Level.BACHELOR else Level.entries.first { it in allowed }
+    }
+
+    /** Levels this college awards ("Show all" lifts every filter for unusual cases). */
+    fun levelsForCollege(): List<Level> {
         val s = _s.value
-        return if (s.showAllProgrammes) Programmes.all else Programmes.forType(s.school?.collegeType)
+        val type = s.school?.collegeType
+        return if (s.showAllProgrammes || type == null) Level.entries else Level.entries.filter { it in type.levels }
+    }
+
+    /** Fields this college teaches: an engineering institute never shows Arts or Medicine. */
+    fun fieldsForCollege(): List<Field> {
+        val s = _s.value
+        val type = s.school?.collegeType
+        return if (s.showAllProgrammes || type == null) Field.entries else Field.entries.filter { type.allows(it, s.level) }
+    }
+
+    fun disciplinesFor(field: Field): List<String> {
+        val s = _s.value
+        val type = s.school?.collegeType
+        return if (s.showAllProgrammes || type == null || !type.allows(field)) field.disciplines else type.disciplines(field)
+    }
+
+    /** Local degree name hint for the institution's country (B.E./B.Tech, BA/BS, BSc (Hons), Licence…). */
+    fun degreeHint(field: Field): String? {
+        val s = _s.value
+        val level = s.level ?: return null
+        return Degrees.localName(s.school?.region?.countryCode.orEmpty(), level, field)
     }
 
     /** Batches that already exist at this institution, biggest first — the fastest path for most people. */
@@ -370,20 +397,24 @@ class FinderViewModel(
         .filter { (t, _) -> t.isCollege == (_s.value.school?.kind == InstitutionKind.COLLEGE) }
         .sortedByDescending { it.second }
 
-    fun pickProgramme(p: Programme) {
-        if (p.specialisations.isEmpty() || p.code == "PHD") pickCourse(Track.of(p, null))
-        else _s.update { it.copy(programme = p) }
+    fun pickLevel(l: Level) = _s.update { it.copy(level = l) }
+
+    fun pickField(f: Field) {
+        val disciplines = disciplinesFor(f)
+        if (disciplines.size == 1) pickDiscipline(disciplines.first()) else _s.update { it.copy(field = f) }
     }
 
-    fun clearProgramme() = _s.update { it.copy(programme = null) }
+    fun clearField() = _s.update { it.copy(field = null) }
 
-    fun pickSpecialisation(spec: String?) {
-        val p = _s.value.programme ?: return
-        pickCourse(Track.of(p, spec?.takeIf { it.isNotBlank() && it != "General" }))
+    /** "CSE", "Computer Science and Engineering" and "computer science" all become one batch. */
+    fun pickDiscipline(text: String) {
+        val level = _s.value.level ?: return
+        if (text.isBlank()) return
+        pickCourse(Track.college(level, Degrees.canonical(text)))
     }
 
     fun pickCourse(t: Track) {
-        _s.update { it.copy(track = t, programme = null) }
+        _s.update { it.copy(track = t, field = null) }
         go(Step.BATCH)
     }
 
@@ -394,8 +425,8 @@ class FinderViewModel(
         viewModelScope.launch { repo.setInstitutionType(school, fixed.kind, fixed.collegeType) }
         _s.update {
             it.copy(
-                school = fixed, programme = null, showAllProgrammes = false,
-                track = if (kind == InstitutionKind.SCHOOL) fixed.schoolType.tracks.first() else null,
+                school = fixed, field = null, showAllProgrammes = false, level = defaultLevel(fixed.collegeType),
+                track = if (kind == InstitutionKind.SCHOOL) fixed.schoolProfile.tracks.firstOrNull() else null,
                 step = if (kind == InstitutionKind.COLLEGE) Step.COURSE else Step.BATCH,
             )
         }

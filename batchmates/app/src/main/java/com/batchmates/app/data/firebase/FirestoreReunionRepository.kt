@@ -256,8 +256,8 @@ class FirestoreReunionRepository : ReunionRepository {
 
     private fun DocumentSnapshot.readTrack(): Track {
         val code = getString("track") ?: getLong("grade")?.toString() ?: "10"
-        if ('.' !in code) return Track.school(code)
-        return Track(code, getString("trackLabel") ?: code, getString("trackShort") ?: getString("trackLabel") ?: code)
+        val label = getString("trackLabel") ?: return Track.school(code)
+        return Track(code, label, getString("trackShort") ?: label)
     }
 
     private fun DocumentSnapshot.toSchool(): School? {
@@ -276,7 +276,7 @@ class FirestoreReunionRepository : ReunionRepository {
             locality = getString("locality") ?: getString("town").orEmpty(),
             aliases = (get("aliases") as? List<*>)?.filterIsInstance<String>().orEmpty(),
             kind = getString("kind")?.let { k -> runCatching { InstitutionKind.valueOf(k) }.getOrNull() }
-                ?: com.batchmates.app.data.Classifier.kind(getString("name").orEmpty()),
+                ?: com.batchmates.app.data.Classifier.kind(getString("name").orEmpty(), null, getString("countryCode").orEmpty()),
             collegeType = getString("collegeType")?.let { t -> runCatching { CollegeType.valueOf(t) }.getOrNull() },
         )
     }

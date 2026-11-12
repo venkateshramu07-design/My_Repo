@@ -138,7 +138,7 @@ class GeoRepository(private val context: Context) {
         val results = photon + listOfNotNull(fromOverpass)
         val schools = results.mapNotNull { it.getOrNull() }.flatten()
             .distinctBy { it.id }
-            .map { it.copy(region = region) }
+            .map { it.copy(region = region).reclassified() }
             .sortedBy { it.name.lowercase() }
         if (schools.isEmpty() && results.all { it.isFailure }) {
             throw IllegalStateException("Couldn't reach the school directory. Check your internet and retry.")
@@ -217,7 +217,7 @@ class GeoRepository(private val context: Context) {
             .distinctBy { it.id }
             .map { s ->
                 val d = if (s.lat != null && s.lon != null) SchoolNames.km(center.first, center.second, s.lat, s.lon) else null
-                s.copy(region = region, distanceKm = d, locality = s.locality.ifBlank { if (d != null && d < 3) place.name else "" })
+                s.copy(region = region, distanceKm = d, locality = s.locality.ifBlank { if (d != null && d < 3) place.name else "" }).reclassified()
             }
             .filter { (it.distanceKm ?: 0.0) <= radiusKm * 1.3 }
             .sortedBy { it.distanceKm ?: Double.MAX_VALUE }
@@ -334,9 +334,13 @@ class GeoRepository(private val context: Context) {
     }
 
     private fun School.classified(mapTag: String?): School {
-        val kind = Classifier.kind(name, mapTag)
-        return copy(kind = kind, collegeType = if (kind == InstitutionKind.COLLEGE) Classifier.collegeType(name, mapTag) else null)
+        val cc = region.countryCode
+        val kind = Classifier.kind(name, mapTag, cc)
+        return copy(kind = kind, collegeType = if (kind == InstitutionKind.COLLEGE) Classifier.collegeType(name, mapTag, cc) else null, mapTag = mapTag)
     }
+
+    /** Re-classify once the real country is known (list results get the user's chosen region). */
+    private fun School.reclassified(): School = if (source == SchoolSource.CUSTOM) this else classified(mapTag)
 
     /** Escapes text for an Overpass regex inside double quotes. */
     private fun regex(s: String) = buildString {

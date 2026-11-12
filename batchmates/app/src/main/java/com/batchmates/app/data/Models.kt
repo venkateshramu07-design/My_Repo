@@ -48,8 +48,11 @@ data class School(
     val kind: InstitutionKind = InstitutionKind.SCHOOL,
     /** For colleges: engineering / arts & science / medical …, decides which programmes appear. */
     val collegeType: CollegeType? = null,
+    /** Raw map tag (school / college / university), kept to re-classify once the country is known. */
+    val mapTag: String? = null,
 ) {
-    val schoolType: SchoolType get() = Classifier.schoolType(name)
+    /** Which school stages it can have, in its country's own terms (GCSE, Abitur, 12th grade…). */
+    val schoolProfile: SchoolProfile get() = Classifier.schoolProfile(name, region.countryCode)
 }
 
 /** One reunion group = institution + what they studied + pass-out year + section. */

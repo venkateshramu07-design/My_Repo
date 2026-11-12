@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -83,6 +84,7 @@ import com.batchmates.app.data.Classifier
 import com.batchmates.app.data.CollegeType
 import com.batchmates.app.data.InstitutionKind
 import com.batchmates.app.data.Track
+import com.batchmates.app.data.Level
 import com.batchmates.app.data.WHOLE_BATCH
 import java.util.Calendar
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -182,7 +184,7 @@ private fun stepTitle(step: Step) = when (step) {
     Step.MAP -> "Pick on map"
     Step.CREATE -> "Add it in 10 seconds"
     Step.BATCH -> "When did you pass out?"
-    Step.SECTION -> "Which section?"
+    Step.SECTION -> "Which class?"
 }
 
 // ------------------------------------------------------------------ steps
@@ -400,7 +402,7 @@ private fun SchoolRow(school: School, onClick: () -> Unit) {
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(school.name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                val kindLabel = if (school.kind == InstitutionKind.COLLEGE) school.collegeType?.label else school.schoolType.label
+                val kindLabel = if (school.kind == InstitutionKind.COLLEGE) school.collegeType?.label else school.schoolProfile.label
                 val where = listOfNotNull(
                     kindLabel,
                     school.locality.ifBlank { school.region.town }.ifBlank { null },
@@ -443,8 +445,9 @@ private fun CreateStep(s: FinderState, vm: FinderViewModel) {
     // Kind and college type follow the name until the user picks one themselves.
     var kindPicked by rememberSaveable { mutableStateOf<InstitutionKind?>(null) }
     var typePicked by rememberSaveable { mutableStateOf<CollegeType?>(null) }
-    val kind = kindPicked ?: if (name.isBlank()) s.tab else Classifier.kind(name)
-    val type = typePicked ?: Classifier.collegeType(name)
+    val cc = s.countries.firstOrNull { it.name.equals(country.trim(), true) }?.code ?: start.countryCode
+    val kind = kindPicked ?: if (name.isBlank()) s.tab else Classifier.kind(name, null, cc)
+    val type = typePicked ?: Classifier.collegeType(name, null, cc)
     fun region() = Region(
         s.countries.firstOrNull { it.name.equals(country.trim(), true) }?.code ?: start.countryCode,
         country.trim(), state.trim(), district.trim(), town.trim(),
@@ -473,7 +476,7 @@ private fun CreateStep(s: FinderState, vm: FinderViewModel) {
         if (kind == InstitutionKind.SCHOOL) {
             item {
                 Text(
-                    "${Classifier.schoolType(name).label}: batches for " + Classifier.schoolType(name).tracks.joinToString(" & ") { it.short },
+                    Classifier.schoolProfile(name, cc).let { p -> "${p.label} (${p.system.name}): batches for " + p.tracks.joinToString(" & ") { it.short } },
                     color = Brand.TextDim, fontSize = 13.sp,
                 )
             }
@@ -530,14 +533,13 @@ private fun CollegeTypeChips(selected: CollegeType?, onPick: (CollegeType) -> Un
     }
 }
 
-/** College: which programme and branch? Only what this kind of college teaches. */
+/** College: level → field → discipline, showing only what this kind of institution teaches. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CourseStep(s: FinderState, vm: FinderViewModel) {
     val school = s.school ?: return
     var fixing by remember { mutableStateOf(false) }
-    var other by rememberSaveable { mutableStateOf("") }
-    val programme = s.programme
+    val field = s.field
     LazyColumn(
         Modifier.fillMaxSize().imePadding(),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 40.dp),
@@ -548,14 +550,14 @@ private fun CourseStep(s: FinderState, vm: FinderViewModel) {
                 Text(school.name, style = MaterialTheme.typography.titleLarge)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        school.collegeType?.let { "${it.emoji} ${it.label}" } ?: "🏛️ College",
+                        school.collegeType?.let { "${it.emoji} ${it.label}" } ?: "🏛️ College / University",
                         color = Brand.TextDim, modifier = Modifier.weight(1f),
                     )
                     TextButton({ fixing = true }) { Text("Wrong type?") }
                 }
             }
         }
-        if (programme == null) {
+        if (field == null) {
             val existing = vm.existingTracks()
             if (existing.isNotEmpty()) {
                 item { Text("🔥 Batches already here", style = MaterialTheme.typography.titleMedium) }
@@ -564,41 +566,59 @@ private fun CourseStep(s: FinderState, vm: FinderViewModel) {
                 }
                 item { Spacer(Modifier.height(4.dp)); Text("Or pick your course", style = MaterialTheme.typography.titleMedium) }
             }
-            vm.programmesForCollege().groupBy { it.level }.toSortedMap().forEach { (level, list) ->
-                item(key = "lvl" + level.code) {
-                    Text("${level.emoji}  ${level.label}", style = Eyebrow, modifier = Modifier.padding(top = 8.dp))
-                }
-                items(list, key = { "p" + it.level.code + it.code }) { p ->
-                    Row1(
-                        leading = level.emoji, title = p.name,
-                        subtitle = if (p.specialisations.isNotEmpty()) "${p.specialisations.size} branches" else null,
-                    ) { vm.pickProgramme(p) }
+            item {
+                Text("Level", style = Eyebrow)
+                Spacer(Modifier.height(6.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    vm.levelsForCollege().forEach { l ->
+                        val on = l == s.level
+                        Text(
+                            "${l.emoji} ${l.short}",
+                            Modifier.clip(RoundedCornerShape(50))
+                                .background(if (on) Brand.Primary else Brush.linearGradient(listOf(Color(0x1FFFFFFF), Color(0x12FFFFFF))))
+                                .clickable { vm.pickLevel(l) }
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            fontWeight = if (on) FontWeight.Bold else FontWeight.Medium,
+                        )
+                    }
                 }
             }
+            item { Text("Field of study", style = Eyebrow, modifier = Modifier.padding(top = 6.dp)) }
+            items(vm.fieldsForCollege(), key = { "f" + it.name }) { f ->
+                val disciplines = vm.disciplinesFor(f)
+                Row1(
+                    leading = f.emoji, title = f.label,
+                    subtitle = vm.degreeHint(f) ?: disciplines.take(3).joinToString(", ") + if (disciplines.size > 3) "…" else "",
+                ) { vm.pickField(f) }
+            }
             if (!s.showAllProgrammes && school.collegeType != null && school.collegeType != CollegeType.UNIVERSITY) item {
-                TextButton(vm::showAllProgrammes, Modifier.fillMaxWidth()) { Text("My course isn't here — show all programmes") }
+                TextButton(vm::showAllProgrammes, Modifier.fillMaxWidth()) { Text("My course isn't here — show every field") }
             }
         } else {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${programme.name} — which branch?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-                    TextButton(vm::clearProgramme) { Text("Change") }
+                    Column(Modifier.weight(1f)) {
+                        Text("${s.level?.short ?: ""} · ${field.label}".uppercase(), style = Eyebrow)
+                        Text("Which subject / branch?", style = MaterialTheme.typography.titleLarge)
+                        vm.degreeHint(field)?.let { Text(it, color = Brand.TextDim, fontSize = 13.sp) }
+                    }
+                    TextButton(vm::clearField) { Text("Change") }
                 }
             }
             item {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    (programme.specialisations + "General").forEach { spec ->
+                    vm.disciplinesFor(field).forEach { d ->
                         Text(
-                            spec,
+                            d,
                             Modifier.clip(RoundedCornerShape(50)).background(Color(0x1FFFFFFF))
-                                .clickable { vm.pickSpecialisation(spec) }
+                                .clickable { vm.pickDiscipline(d) }
                                 .padding(horizontal = 14.dp, vertical = 10.dp),
                             fontWeight = FontWeight.SemiBold,
                         )
                     }
                 }
             }
-            item { ManualEntry("Not listed? Type your branch (e.g. CSE, Food Tech)", other) { vm.pickSpecialisation(it) } }
+            item { ManualEntry("Not listed? Type it (e.g. CSE, Marine Biology, MBA Finance)", "") { vm.pickDiscipline(it) } }
         }
     }
     if (fixing) InstitutionFixDialog(school, onDismiss = { fixing = false }) { k, t -> fixing = false; vm.correctInstitution(k, t) }
@@ -659,20 +679,22 @@ private fun BatchStep(s: FinderState, vm: FinderViewModel) {
                         }
                     }
                 } else {
-                    val tracks = if (s.showAllStandards) Track.schoolTracks.reversed() else school?.schoolType?.tracks.orEmpty()
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    val profile = school?.schoolProfile
+                    val tracks = if (s.showAllStandards) profile?.allTracks.orEmpty() else profile?.tracks.orEmpty()
+                    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         tracks.forEach { t ->
                             val selected = s.track?.code == t.code
                             Box(
-                                Modifier.weight(1f).height(64.dp).clip(RoundedCornerShape(18.dp))
+                                Modifier.widthIn(min = if (tracks.size <= 2) 150.dp else 104.dp).height(64.dp).clip(RoundedCornerShape(18.dp))
                                     .background(if (selected) Brand.Primary else Brush.linearGradient(listOf(Color(0x1AFFFFFF), Color(0x10FFFFFF))))
                                     .border(1.dp, if (selected) Color.Transparent else Color(0x22FFFFFF), RoundedCornerShape(18.dp))
                                     .clickable { vm.pickTrack(t) },
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(t.short, fontWeight = FontWeight.Black, fontSize = 20.sp)
-                                    Text(t.label.substringAfter("· "), fontSize = 11.sp, color = Brand.TextDim, maxLines = 1)
+                                Column(Modifier.padding(horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(t.short, fontWeight = FontWeight.Black, fontSize = 18.sp, maxLines = 1)
+                                    Text(t.label.substringBefore(" · ").takeIf { it != t.short } ?: t.label.substringAfter("· "),
+                                        fontSize = 11.sp, color = Brand.TextDim, maxLines = 1)
                                 }
                             }
                         }
@@ -735,13 +757,14 @@ private fun YearTile(year: Int, count: Int, selected: Boolean, onClick: () -> Un
 @Composable
 private fun SectionStep(s: FinderState, vm: FinderViewModel) {
     val isCollege = s.school?.kind == InstitutionKind.COLLEGE
+    val word = if (isCollege) "Section" else s.school?.schoolProfile?.system?.sectionWord ?: "Section"
     var picked by rememberSaveable { mutableStateOf<String?>(if (isCollege) WHOLE_BATCH else null) }
     var custom by rememberSaveable { mutableStateOf("") }
     val sections = (if (isCollege) listOf(WHOLE_BATCH) else emptyList()) + listOf("A", "B", "C", "D", "E", "F", "G", "H").take(if (isCollege) 7 else 8)
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal = 20.dp)) {
         Text(
             if (isCollege) "Most college batches stay together as one group. Had sections? Pick yours."
-            else "Pick your section. Don't remember? Choose the one most friends were in — you can join more later.",
+            else "Pick your ${word.lowercase()}. Don't remember? Choose the one most friends were in — you can join more later.",
             color = Brand.TextDim,
         )
         Spacer(Modifier.height(16.dp))
@@ -780,16 +803,16 @@ private fun SectionStep(s: FinderState, vm: FinderViewModel) {
         OutlinedTextField(
             custom, { custom = it.take(20); if (it.isNotBlank()) picked = null },
             Modifier.fillMaxWidth(), singleLine = true, shape = RoundedCornerShape(16.dp),
-            label = { Text(if (isCollege) "Other section (e.g. Batch 2, Morning shift)" else "Other section / stream (e.g. Bio-Maths, Commerce)") },
+            label = { Text(if (isCollege) "Other section (e.g. Batch 2, Evening)" else "Other ${word.lowercase()} / stream (e.g. 11B, Science, Commerce)") },
         )
         s.error?.let { Spacer(Modifier.height(8.dp)); Text(it, color = MaterialTheme.colorScheme.error) }
         Spacer(Modifier.weight(1f))
         val choice = picked ?: custom.trim().takeIf { it.isNotEmpty() }
         GradientButton(
             when {
-                choice == null -> "Choose a section"
+                choice == null -> "Choose a ${word.lowercase()}"
                 choice == WHOLE_BATCH -> "Join my batch 🎉"
-                else -> "Join Section ${choice.uppercase()} 🎉"
+                else -> "Join $word ${choice.uppercase()} 🎉"
             },
             { choice?.let(vm::join) },
             Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 12.dp),

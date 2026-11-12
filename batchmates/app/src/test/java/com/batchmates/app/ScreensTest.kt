@@ -130,11 +130,29 @@ class ScreensTest {
         val vm = FinderViewModel(GeoRepository(paparazzi.context), DemoReunionRepository(), me, startOnMap = false)
         val name = "K. S. K. College of Engineering & Technology"
         val college = School("osm_w9", name, Region("IN", "India", "Tamil Nadu", "Thanjavur", "Kumbakonam"),
-            kind = Classifier.kind(name), collegeType = Classifier.collegeType(name))
+            kind = Classifier.kind(name, null, "IN"), collegeType = Classifier.collegeType(name, null, "IN"))
         vm.pickSchool(college)
-        val codes = vm.programmesForCollege().map { it.code }
-        assertTrue("BE" in codes && "ME" in codes)
-        assertTrue("no arts/medicine at an engineering college", codes.none { it in setOf("BA", "BSC", "MBBS", "BCOM") })
+        val fields = vm.fieldsForCollege()
+        assertTrue(com.batchmates.app.data.Field.ENGINEERING in fields)
+        assertTrue("no arts/medicine at an engineering college",
+            fields.none { it in setOf(com.batchmates.app.data.Field.ARTS, com.batchmates.app.data.Field.HEALTH, com.batchmates.app.data.Field.LAW) })
+        paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
+    }
+
+    @Test fun britishSchoolSpeaksGcse() {
+        val vm = FinderViewModel(GeoRepository(paparazzi.context), DemoReunionRepository(), me, startOnMap = false)
+        val name = "Manchester Grammar School"
+        vm.pickSchool(School("osm_n77", name, Region("GB", "United Kingdom", "England", "Greater Manchester", "Manchester"),
+            kind = Classifier.kind(name, "school", "GB")))
+        paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
+    }
+
+    @Test fun universityCourseStep() {
+        val vm = FinderViewModel(GeoRepository(paparazzi.context), DemoReunionRepository(), me, startOnMap = false)
+        val name = "University of Lagos"
+        vm.pickSchool(School("osm_r5", name, Region("NG", "Nigeria", "Lagos", "Lagos", "Akoka"),
+            kind = Classifier.kind(name, "university", "NG"), collegeType = Classifier.collegeType(name, "university", "NG")))
+        vm.pickField(com.batchmates.app.data.Field.ENGINEERING)
         paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
     }
 }
