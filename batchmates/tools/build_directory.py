@@ -9,12 +9,16 @@ cached on the phone afterwards, at zero running cost.
 Output (all gzip-compressed JSON):
   data/schools/<CC>/<latCell>_<lonCell>.json.gz   one file per 0.5° x 0.5° cell (~55 km)
       {"v":1,"s":[[id, name, lat, lon, kind, locality], ...]}      kind: s=school, c=college/university, v=vocational
-  data/towns/<CC>.json.gz                          every town that has schools
-      {"v":1,"t":[[name, lat, lon, schools, region], ...]}
+  data/towns/<CC>.json.gz                          towns & villages that have schools (or are big)
+      {"v":1,"t":[[name, lat, lon, schools, state, district], ...]}    state/district: official hierarchy
+
+Inputs: <CC>.parquet (places, see extract) and optionally <CC>_div.parquet (Overture divisions: locality name,
+lat, lon, population, state, district). With divisions, every school is linked to its nearest locality, so towns
+carry the official state & district (e.g. Kumbakonam -> Thanjavur, Tamil Nadu).
 
 Usage:
   1) Extract a country from Overture into parquet (see extract() below, needs `pip install duckdb`).
-  2) python3 tools/build_directory.py IN /path/IN.parquet data/
+  2) python3 tools/build_directory.py IN /path/IN.parquet data/ [/path/IN_div.parquet]
 """
 import gzip, json, math, os, re, sys
 from collections import defaultdict
@@ -68,7 +72,31 @@ def kind(cat, name):
         return "c"
     return "s"
 
-def build(cc, parquet, out):
+def load_localities(div_parquet):
+    import duckdb
+    rows = duckdb.sql(f"SELECT name, lat, lon, coalesce(population, 0), coalesce(state, ''), coalesce(district, '') "
+                      f"FROM '{div_parquet}' WHERE subtype = 'locality' AND name IS NOT NULL").fetchall()
+    grid = defaultdict(list)
+    for r in rows:
+        if re.search(r"\bdistrict$", r[0], re.I):
+            continue
+        grid[(math.floor(r[1] / 0.05), math.floor(r[2] / 0.05))].append(r)
+    return grid
+
+def nearest_locality(grid, lat, lon, max_km=4.0):
+    a, b = math.floor(lat / 0.05), math.floor(lon / 0.05)
+    best, bd = None, max_km
+    for da in (-1, 0, 1):
+        for db in (-1, 0, 1):
+            for r in grid.get((a + da, b + db), ()):
+                d = km(lat, lon, r[1], r[2])
+                # Big places pull a little harder, so a school on a town's edge belongs to the town, not a hamlet.
+                d_eff = d / (1.6 if r[3] >= 50000 else 1.25 if r[3] >= 10000 else 1.0)
+                if d_eff < bd:
+                    best, bd = r, d_eff
+    return best
+
+def build(cc, parquet, out, div_parquet=None):
     import duckdb
     rows = duckdb.sql(f"SELECT id, name, cat, lon, lat, locality, region, confidence FROM '{parquet}'").fetchall()
     kept = []
@@ -92,10 +120,10 @@ def build(cc, parquet, out):
     for r in kept:
         key = (round(r["lat"], 2), round(r["lon"], 2))
         dup = False
-        for dy in (-0.01, 0, 0.01):
-            for dx in (-0.01, 0, 0.01):
+        for dy in (-0.01, 0, 0.01, -0.02, 0.02):
+            for dx in (-0.01, 0, 0.01, -0.02, 0.02):
                 for o in grid[(round(key[0] + dy, 2), round(key[1] + dx, 2))]:
-                    if norm(o["name"]) == norm(r["name"]) and km(o["lat"], o["lon"], r["lat"], r["lon"]) < 0.4:
+                    if norm(o["name"]) == norm(r["name"]) and km(o["lat"], o["lon"], r["lat"], r["lon"]) < 1.0:
                         dup = True
         if not dup:
             grid[key].append(r)
@@ -113,22 +141,46 @@ def build(cc, parquet, out):
         blob = gzip.compress(json.dumps({"v": 1, "s": lst}, ensure_ascii=False, separators=(",", ":")).encode(), 9)
         total += len(blob)
         open(os.path.join(sdir, f"{a}_{b}.json.gz"), "wb").write(blob)
-    # Town index: where schools are, weighted by how many.
-    towns = defaultdict(list)
-    for r in final:
-        if r["town"]:
-            towns[(norm(r["town"]), r["region"])].append(r)
-    entries = []
-    for (_, region), lst in towns.items():
-        if len(lst) < 2:
-            continue
-        lat = sorted(x["lat"] for x in lst)[len(lst) // 2]   # median: robust to mis-geocoded outliers
-        lon = sorted(x["lon"] for x in lst)[len(lst) // 2]
-        entries.append([lst[0]["town"], round(lat, 4), round(lon, 4), len(lst), region])
+    # Town index.
+    if div_parquet:
+        grid = load_localities(div_parquet)
+        counts = defaultdict(int)
+        info = {}
+        for r in final:
+            loc = nearest_locality(grid, r["lat"], r["lon"])
+            if loc:
+                key = (loc[0], loc[1], loc[2])
+                counts[key] += 1
+                info[key] = loc
+        for cell in grid.values():          # big towns always appear, even with few mapped schools
+            for loc in cell:
+                if loc[3] >= 20000:
+                    info.setdefault((loc[0], loc[1], loc[2]), loc)
+        entries = []
+        for key, loc in info.items():
+            n = counts.get(key, 0)
+            if n >= 2 or loc[3] >= 20000:
+                entries.append([loc[0], round(loc[1], 4), round(loc[2], 4), n, loc[4], loc[5]])
+    else:
+        towns = defaultdict(list)
+        for r in final:
+            if r["town"]:
+                towns[(norm(r["town"]), r["region"])].append(r)
+        entries = []
+        for (_, region), lst in towns.items():
+            if len(lst) < 2:
+                continue
+            lat = sorted(x["lat"] for x in lst)[len(lst) // 2]
+            lon = sorted(x["lon"] for x in lst)[len(lst) // 2]
+            entries.append([lst[0]["town"], round(lat, 4), round(lon, 4), len(lst), region, ""])
+    entries = [e for e in entries if not re.search(r"\bdistrict$", e[0], re.I)]
     entries.sort(key=lambda e: -e[3])
     merged = []
-    for e in entries:  # same town name twice nearby (different region spellings) -> keep the bigger
-        if not any(norm(m[0]) == norm(e[0]) and km(m[1], m[2], e[1], e[2]) < 15 for m in merged):
+    seen = defaultdict(list)
+    for e in entries:  # same town name twice nearby -> keep the bigger
+        k = norm(e[0])
+        if not any(km(m[1], m[2], e[1], e[2]) < 15 for m in seen[k]):
+            seen[k].append(e)
             merged.append(e)
     tdir = os.path.join(out, "towns")
     os.makedirs(tdir, exist_ok=True)
@@ -138,4 +190,4 @@ def build(cc, parquet, out):
           f"({total / 1e6:.1f} MB), {len(merged)} towns ({len(tblob) / 1e3:.0f} KB)")
 
 if __name__ == "__main__":
-    build(sys.argv[1], sys.argv[2], sys.argv[3])
+    build(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else None)
