@@ -129,13 +129,20 @@ fun MapStep(s: FinderState, vm: FinderViewModel, onBack: () -> Unit) {
                 return false
             }
         })
+        map.addOnFirstLayoutListener { _, _, _, _, _ ->
+            val b = map.boundingBox
+            vm.onMapMoved(b.latSouth, b.lonWest, b.latNorth, b.lonEast, map.zoomLevelDouble)
+        }
         onDispose { lifecycle.removeObserver(obs); myLocation.disableMyLocation(); map.onDetach() }
     }
 
     // Start near what the user already chose, else on their location if permitted.
     LaunchedEffect(Unit) {
         val firstSchool = (s.schools as? Load.Ready)?.value?.firstOrNull { it.lat != null }
-        if (firstSchool != null) {
+        val dc = s.districtCenter
+        if (dc != null) {
+            map.controller.setZoom(13.0); map.controller.setCenter(GeoPoint(dc.first, dc.second))
+        } else if (firstSchool != null) {
             map.controller.setZoom(14.0); map.controller.setCenter(GeoPoint(firstSchool.lat!!, firstSchool.lon!!))
         } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             enableMyLocation(map, myLocation)

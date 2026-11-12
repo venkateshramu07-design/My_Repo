@@ -6,6 +6,11 @@ import com.batchmates.app.data.Region
 import com.batchmates.app.data.School
 import com.batchmates.app.data.SchoolSource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -22,6 +27,7 @@ import java.net.URLEncoder
 class GeoRepository(private val context: Context) {
 
     private val http = Http(context)
+    private val background = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val nominatimLock = Mutex()
     private var lastNominatimCall = 0L
 
@@ -37,25 +43,47 @@ class GeoRepository(private val context: Context) {
         }.also { countriesCache = it }
     }
 
-    @Volatile private var bundledDistricts: Map<String, Map<String, List<String>>>? = null
+    /** A district name plus its centre point (when known). */
+    private data class BundledDistrict(val name: String, val lat: Double?, val lon: Double?)
+
+    @Volatile private var bundledDistricts: Map<String, Map<String, List<BundledDistrict>>>? = null
 
     /** Districts bundled in the app (all of India today), so the most common path never waits on a server. */
-    private suspend fun bundled(): Map<String, Map<String, List<String>>> = bundledDistricts ?: withContext(Dispatchers.IO) {
+    private suspend fun bundled(): Map<String, Map<String, List<BundledDistrict>>> = bundledDistricts ?: withContext(Dispatchers.IO) {
         val root = JSONObject(context.assets.open("districts.json").bufferedReader().use { it.readText() })
         root.keys().asSequence().associateWith { cc ->
             val states = root.getJSONObject(cc)
             states.keys().asSequence().associateWith { st ->
                 val arr = states.getJSONArray(st)
-                List(arr.length()) { arr.getString(it) }
+                List(arr.length()) {
+                    val d = arr.getJSONArray(it)
+                    BundledDistrict(d.getString(0), d.optDouble(1).takeIf { v -> !v.isNaN() }, d.optDouble(2).takeIf { v -> !v.isNaN() })
+                }
             }
         }.also { bundledDistricts = it }
     }
 
+    private suspend fun bundledState(countryCode: String, state: String): List<BundledDistrict>? =
+        bundled()[countryCode.uppercase()]?.entries?.firstOrNull { it.key.equals(state.trim(), ignoreCase = true) }?.value
+
+    /** Centre of a district: bundled, else looked up once with Photon. */
+    suspend fun districtCenter(region: Region): Pair<Double, Double>? {
+        if (region.district.isBlank()) return null
+        bundledState(region.countryCode, region.state)
+            ?.firstOrNull { it.name.equals(region.district, ignoreCase = true) && it.lat != null }
+            ?.let { return it.lat!! to it.lon!! }
+        val q = listOf(region.district, region.state, region.country).filter { it.isNotBlank() }.joinToString(", ")
+        return runCatching {
+            val f = JSONObject(http.get(PHOTON + "?limit=1&q=" + URLEncoder.encode(q, "UTF-8"), ttlMs = 90 * Http.DAY))
+                .getJSONArray("features").getJSONObject(0)
+            val c = f.getJSONObject("geometry").getJSONArray("coordinates")
+            c.getDouble(1) to c.getDouble(0)
+        }.getOrNull()
+    }
+
     /** Districts inside a state: bundled list first, else OpenStreetMap (admin level 5, else 6). */
     suspend fun districts(countryCode: String, state: String): List<String> {
-        bundled()[countryCode.uppercase()]?.entries
-            ?.firstOrNull { it.key.equals(state.trim(), ignoreCase = true) }
-            ?.let { return it.value }
+        bundledState(countryCode, state)?.let { list -> return list.map { it.name } }
         val q = """
             [out:json][timeout:25];
             ${stateArea(countryCode, state)}
@@ -72,49 +100,96 @@ class GeoRepository(private val context: Context) {
             .distinct().sorted()
     }
 
-    /** Schools inside a district (or a whole state when a name filter is given). */
-    suspend fun schoolsIn(region: Region, nameFilter: String? = null): List<School> {
-        val filter = nameFilter?.trim()?.takeIf { it.length >= 2 }?.let { "[\"name\"~\"${regex(it)}\",i]" }.orEmpty()
-        val area = if (region.district.isNotBlank()) {
-            """
-            ${stateArea(region.countryCode, region.state)}
-            (rel(area.sa)["boundary"="administrative"]["name"~"^${regex(region.district)}( District)?$",i];
-             rel(area.sa)["boundary"="administrative"]["name:en"~"^${regex(region.district)}( District)?$",i];)->.d;
-            .d map_to_area->.a;
-            """
-        } else {
-            if (filter.isEmpty()) return emptyList() // a whole state is too big without a name
-            stateArea(region.countryCode, region.state) + "\n.sa->.a;"
+    /**
+     * Schools in a district. Asks two independent free services at once and merges the answers:
+     * Photon (fast OpenStreetMap search) and Overpass (complete but often busy).
+     * Without a district, a school name is required and the whole state is searched.
+     */
+    suspend fun schoolsIn(region: Region, nameFilter: String? = null): List<School> = coroutineScope {
+        val name = nameFilter?.trim()?.takeIf { it.length >= 2 }
+        val center = districtCenter(region)
+        if (center == null && name == null) return@coroutineScope emptyList()
+
+        // Overpass is complete but often slow; run it detached so a slow server never blocks the screen.
+        val overpass = if (center == null) null else background.async {
+            val filter = name?.let { "[\"name\"~\"${regex(it)}\",i]" }.orEmpty()
+            val q = """
+                [out:json][timeout:25];
+                nwr["amenity"~"^(school|college)$"]["name"]$filter(around:30000,${center.first},${center.second});
+                out center tags 1500;
+            """.trimIndent()
+            runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), null) }
         }
-        val q = """
-            [out:json][timeout:25];
-            $area
-            nwr(area.a)["amenity"~"^(school|college)$"]["name"]$filter;
-            out center tags 1500;
-        """.trimIndent()
-        val fromOverpass = runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), region) }
-        fromOverpass.getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it }
-        // Overpass is busy or found nothing: fall back to Nominatim's search, a separate free service.
-        val place = listOf(region.district, region.state, region.country).filter { it.isNotBlank() }.joinToString(", ")
-        val text = nameFilter?.trim()?.takeIf { it.isNotEmpty() }?.let { "$it, $place" } ?: "schools in $place"
-        val fallback = runCatching { searchSchools(text, region.countryCode).map { it.copy(region = region) } }
-        return fallback.getOrNull()?.takeIf { it.isNotEmpty() }
-            ?: fromOverpass.getOrNull()
-            ?: throw (fromOverpass.exceptionOrNull() ?: IllegalStateException("Map service unavailable"))
+        // Photon answers in about a second; ask one word at a time (it throttles bursts).
+        val photon = if (center != null) {
+            val box = bbox(center, 0.4)
+            (if (name != null) listOf(name) else PHOTON_SCHOOL_WORDS).map { w -> runCatching { photonSchools(w, box = box) } }
+        } else {
+            listOf(runCatching { photonSchools(name!!, stateFilter = region.state) })
+        }
+        val photonFound = photon.any { (it.getOrNull()?.size ?: 0) > 0 }
+        val fromOverpass = overpass?.let { job ->
+            if (photonFound) withTimeoutOrNull(5_000) { job.await() } else job.await()
+        }
+        val results = photon + listOfNotNull(fromOverpass)
+        val schools = results.mapNotNull { it.getOrNull() }.flatten()
+            .distinctBy { it.id }
+            .map { it.copy(region = region) }
+            .sortedBy { it.name.lowercase() }
+        if (schools.isEmpty() && results.all { it.isFailure }) {
+            throw IllegalStateException("Couldn't reach the school directory. Check your internet and retry.")
+        }
+        schools
     }
+
+    private suspend fun photonSchools(q: String, box: String? = null, stateFilter: String? = null): List<School> {
+        val url = buildString {
+            append(PHOTON).append("?limit=50&osm_tag=amenity:school&osm_tag=amenity:college&q=").append(URLEncoder.encode(q, "UTF-8"))
+            if (box != null) append("&bbox=").append(box)
+        }
+        val features = JSONObject(http.get(url, ttlMs = 14 * Http.DAY, readTimeoutMs = 15_000)).optJSONArray("features") ?: JSONArray()
+        return (0 until features.length()).mapNotNull { i ->
+            val f = features.getJSONObject(i)
+            val p = f.optJSONObject("properties") ?: return@mapNotNull null
+            val name = p.optString("name").ifBlank { return@mapNotNull null }
+            if (stateFilter != null && !p.optString("state").equals(stateFilter, ignoreCase = true)) return@mapNotNull null
+            val c = f.optJSONObject("geometry")?.optJSONArray("coordinates")
+            School(
+                id = "osm_" + p.optString("osm_type").take(1).lowercase() + p.optLong("osm_id"),
+                name = name,
+                region = Region(
+                    p.optString("countrycode").uppercase(), p.optString("country"), p.optString("state"),
+                    p.optString("county").ifBlank { p.optString("city") },
+                ),
+                lat = c?.optDouble(1), lon = c?.optDouble(0),
+            )
+        }
+    }
+
+    private fun bbox(c: Pair<Double, Double>, d: Double) =
+        "%.4f,%.4f,%.4f,%.4f".format(java.util.Locale.US, c.second - d, c.first - d, c.second + d, c.first + d)
 
     /** Schools visible in a map viewport. */
     suspend fun schoolsInBox(south: Double, west: Double, north: Double, east: Double): List<School> {
         val q = """
             [out:json][timeout:25];
-            nwr["amenity"~"^(school|college)$"]["name"](${"%.4f".format(south)},${"%.4f".format(west)},${"%.4f".format(north)},${"%.4f".format(east)});
+            nwr["amenity"~"^(school|college)$"]["name"](${"%.4f".format(java.util.Locale.US, south)},${"%.4f".format(java.util.Locale.US, west)},${"%.4f".format(java.util.Locale.US, north)},${"%.4f".format(java.util.Locale.US, east)});
             out center tags 400;
         """.trimIndent()
-        return parseSchools(overpass(q, ttlMs = 14 * Http.DAY), null)
+        val fromOverpass = runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), null) }
+        fromOverpass.getOrNull()?.let { return it }
+        val box = "%.4f,%.4f,%.4f,%.4f".format(java.util.Locale.US, west, south, east, north)
+        return coroutineScope {
+            PHOTON_SCHOOL_WORDS.map { w -> runCatching { photonSchools(w, box = box) }.getOrDefault(emptyList()) }
+                .flatten().distinctBy { it.id }
+        }
     }
 
     /** Free-text search, e.g. "St. Joseph's Higher Secondary School Trichy". */
     suspend fun searchSchools(query: String, countryCode: String?): List<School> {
+        runCatching { photonSchools(query) }.getOrNull()
+            ?.filter { countryCode.isNullOrBlank() || it.region.countryCode.equals(countryCode, true) }
+            ?.takeIf { it.isNotEmpty() }?.let { return it }
         val url = buildString {
             append("https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=40&q=")
             append(URLEncoder.encode(query, "UTF-8"))
@@ -127,7 +202,7 @@ class GeoRepository(private val context: Context) {
             val name = o.optString("name").ifBlank { o.optString("display_name").substringBefore(',') }
             if (name.isBlank()) return@mapNotNull null
             School(
-                id = "osm_" + o.optString("osm_type").take(1) + o.optLong("osm_id"),
+                id = "osm_" + o.optString("osm_type").take(1).lowercase() + o.optLong("osm_id"),
                 name = name,
                 region = addr.toRegion(),
                 lat = o.optString("lat").toDoubleOrNull(),
@@ -206,10 +281,12 @@ class GeoRepository(private val context: Context) {
     }
 
     companion object {
+        private const val PHOTON = "https://photon.komoot.io/api/"
+        /** Photon is a text search, so we ask for the words Indian school names usually contain. */
+        private val PHOTON_SCHOOL_WORDS = listOf("school", "higher secondary", "matriculation", "vidyalaya", "college")
         private val OVERPASS_ENDPOINTS = listOf(
             "https://overpass-api.de/api/interpreter",
             "https://overpass.kumi.systems/api/interpreter",
-            "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
         )
     }
 }

@@ -56,6 +56,9 @@ data class FinderState(
     val searchResults: Load<List<School>> = Load.Idle,
     val pinned: Pair<Double, Double>? = null,
     val createRegion: Region? = null,
+    val createName: String = "",
+    val districtCenter: Pair<Double, Double>? = null,
+    val lastQuery: String = "",
 ) {
     val region: Region
         get() = Region(country?.code.orEmpty(), country?.name.orEmpty(), state.orEmpty(), district.orEmpty())
@@ -127,9 +130,15 @@ class FinderViewModel(
 
     /** Pass blank to skip the district and search the whole state by name. */
     fun pickDistrict(district: String) {
-        _s.update { it.copy(district = district.trim(), schools = Load.Idle) }
+        _s.update { it.copy(district = district.trim(), schools = Load.Idle, districtCenter = null, lastQuery = "") }
         go(Step.SCHOOL)
-        if (district.isNotBlank()) loadSchools(null)
+        if (district.isNotBlank()) {
+            loadSchools(null)
+            viewModelScope.launch {
+                val c = geo.districtCenter(_s.value.region)
+                _s.update { it.copy(districtCenter = c) }
+            }
+        }
     }
 
     fun loadSchools(nameFilter: String?) {
@@ -137,15 +146,17 @@ class FinderViewModel(
         if (region.district.isBlank() && nameFilter.isNullOrBlank()) {
             _s.update { it.copy(schools = Load.Ready(emptyList())) }; return
         }
-        _s.update { it.copy(schools = Load.Loading) }
+        _s.update { it.copy(schools = Load.Loading, lastQuery = nameFilter?.trim().orEmpty()) }
         viewModelScope.launch {
-            val custom = repo.customSchools(region)
+            val custom = repo.customSchools(region).filter { s ->
+                nameFilter.isNullOrBlank() || s.name.contains(nameFilter.trim(), ignoreCase = true)
+            }
             val osm = runCatching { geo.schoolsIn(region, nameFilter) }
             _s.update {
                 it.copy(
                     schools = osm.fold(
                         { list -> Load.Ready(custom + list) },
-                        { e -> if (custom.isNotEmpty()) Load.Ready(custom) else Load.Failed(e.message ?: "Couldn't load schools") },
+                        { e -> if (custom.isNotEmpty()) Load.Ready(custom) else Load.Failed(e.message ?: "Couldn't load schools. Check your internet and retry.") },
                     ),
                 )
             }
@@ -168,8 +179,10 @@ class FinderViewModel(
 
     fun openMap() = go(Step.MAP)
 
-    fun openCreate(lat: Double? = null, lon: Double? = null) {
-        _s.update { it.copy(pinned = if (lat != null && lon != null) lat to lon else null, createRegion = it.region) }
+    fun openCreate(lat: Double? = null, lon: Double? = null, name: String = "") {
+        _s.update {
+            it.copy(pinned = if (lat != null && lon != null) lat to lon else null, createRegion = it.region, createName = name.trim())
+        }
         go(Step.CREATE)
         if (lat != null && lon != null) viewModelScope.launch {
             runCatching { geo.reverse(lat, lon) }.getOrNull()?.let { r -> _s.update { it.copy(createRegion = r) } }

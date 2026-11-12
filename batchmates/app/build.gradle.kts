@@ -22,8 +22,8 @@ android {
         applicationId = "com.batchmates.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
         manifestPlaceholders["inviteHost"] = inviteHost
         buildConfigField("String", "INVITE_HOST", "\"$inviteHost\"")
         vectorDrawables { useSupportLibrary = true }
@@ -62,6 +62,9 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    testOptions {
+        unitTests.all { it.systemProperty("live", System.getProperty("live") ?: "false") }
     }
     packaging {
         resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }

@@ -241,36 +241,62 @@ private fun SkipDistrict(onPick: (String) -> Unit) {
 private fun SchoolStep(s: FinderState, vm: FinderViewModel) {
     var q by rememberSaveable { mutableStateOf("") }
     val wholeState = s.district.isNullOrBlank()
+    val place = s.district?.ifBlank { null } ?: s.state.orEmpty()
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(horizontal = 20.dp)) {
             SearchField(
                 q, { q = it },
-                if (wholeState) "Type your school name and hit search" else "Filter schools by name",
+                if (wholeState) "Type your school name and hit search" else "Type part of your school's name",
                 onSearch = { vm.loadSchools(q) },
             )
             Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(vm::openMap, Modifier.weight(1f)) { Icon(Icons.Rounded.Map, null, Modifier.size(18.dp)); Text("  See on map") }
-                OutlinedButton({ vm.openCreate() }, Modifier.weight(1f)) { Icon(Icons.Rounded.AddLocationAlt, null, Modifier.size(18.dp)); Text("  Add school") }
+                OutlinedButton({ vm.openCreate(name = q) }, Modifier.weight(1f)) { Icon(Icons.Rounded.AddLocationAlt, null, Modifier.size(18.dp)); Text("  Add school") }
             }
         }
         when (val l = s.schools) {
-            Load.Loading -> Shimmer("Looking for schools near ${s.district?.ifBlank { s.state } ?: s.state}…")
-            is Load.Failed -> Column(Modifier.padding(20.dp)) {
-                EmptyState("📡", "Map service is busy", l.message)
-                OutlinedButton({ vm.loadSchools(q) }, Modifier.align(Alignment.CenterHorizontally)) { Text("Retry") }
+            Load.Loading -> Shimmer("Looking for schools in $place…")
+            is Load.Failed -> LazyColumn(contentPadding = PaddingValues(20.dp), modifier = Modifier.imePadding()) {
+                item { EmptyState("📡", "School directory unreachable", l.message) }
+                item {
+                    OutlinedButton({ vm.loadSchools(q) }, Modifier.fillMaxWidth()) { Icon(Icons.Rounded.Refresh, null); Text("  Retry") }
+                }
+                item { CantFind(vm, q) }
             }
-            Load.Idle -> EmptyState("🔎", "Search your school", "Type part of the name — e.g. \"St. Joseph\" or \"Government Higher Secondary\".")
+            Load.Idle -> LazyColumn(contentPadding = PaddingValues(20.dp), modifier = Modifier.imePadding()) {
+                item { EmptyState("🔎", "Search your school", "Type part of the name — e.g. \"St. Joseph\" or \"Government Higher Secondary\" — and press search.") }
+                item { CantFind(vm, q) }
+            }
             is Load.Ready -> {
-                val list = remember(q, l.value) { l.value.filter { q.isBlank() || it.name.contains(q, true) } }
+                val list = remember(q, l.value) { l.value.filter { q.isBlank() || it.name.contains(q.trim(), true) } }
+                // Typed a name that isn't in the loaded list yet? Offer a server search for it.
+                val canSearchServer = q.trim().length >= 2 && !q.trim().equals(s.lastQuery, ignoreCase = true)
                 LazyColumn(
                     contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 40.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.imePadding(),
                 ) {
-                    item { Text("${list.size} schools found", color = Brand.TextDim, fontSize = 13.sp) }
+                    if (list.isEmpty()) {
+                        item {
+                            EmptyState(
+                                "🏫",
+                                if (q.isBlank()) "No schools found yet" else "No match for \"${q.trim()}\"",
+                                "Many schools, especially older and smaller ones, aren't on public maps yet. " +
+                                    "Add yours below — it takes 10 seconds and your classmates will find it here.",
+                            )
+                        }
+                    } else {
+                        item { Text("${list.size} schools in $place", color = Brand.TextDim, fontSize = 13.sp) }
+                    }
+                    if (canSearchServer) item {
+                        OutlinedButton({ vm.loadSchools(q) }, Modifier.fillMaxWidth()) {
+                            Icon(Icons.Rounded.Refresh, null, Modifier.size(18.dp)); Text("  Search \"${q.trim()}\" in $place")
+                        }
+                    }
+                    if (list.isEmpty()) item { CantFind(vm, q) }
                     items(list, key = { it.id }) { school -> SchoolRow(school) { vm.pickSchool(school) } }
-                    item { CantFind(vm) }
+                    if (list.isNotEmpty()) item { CantFind(vm, q) }
                 }
             }
         }
@@ -296,20 +322,24 @@ private fun SchoolRow(school: School, onClick: () -> Unit) {
 }
 
 @Composable
-private fun CantFind(vm: FinderViewModel) {
+private fun CantFind(vm: FinderViewModel, typed: String) {
+    val name = typed.trim()
     GlassCard(Modifier.fillMaxWidth().padding(top = 8.dp)) {
         Text("Can't find your school?", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(4.dp))
-        Text("Small and old schools are often missing from maps. Create its group in 10 seconds — your classmates will find it here.", color = Brand.TextDim)
+        Text("Create its group in 10 seconds — your classmates will find it here.", color = Brand.TextDim)
         Spacer(Modifier.height(12.dp))
-        GradientButton("Create my school's group", { vm.openCreate() }, Modifier.fillMaxWidth(), brush = Brand.Warm)
+        GradientButton(
+            if (name.length >= 2) "Add \"${name.take(28)}\" as a new school" else "Create my school's group",
+            { vm.openCreate(name = name) }, Modifier.fillMaxWidth(), brush = Brand.Warm,
+        )
     }
 }
 
 @Composable
 private fun CreateStep(s: FinderState, vm: FinderViewModel) {
     val start = s.createRegion ?: s.region
-    var name by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable(s.createName) { mutableStateOf(s.createName) }
     var country by rememberSaveable(start.country) { mutableStateOf(start.country) }
     var state by rememberSaveable(start.state) { mutableStateOf(start.state) }
     var district by rememberSaveable(start.district) { mutableStateOf(start.district) }

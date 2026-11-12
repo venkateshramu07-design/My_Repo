@@ -85,7 +85,7 @@ Build again – the app now uses real accounts and a shared database.
 | Invite landing page | Firebase Hosting | 10 GB storage, 360 MB/day transfer |
 | Map | OpenStreetMap tiles via osmdroid | Free (fair use, with attribution) |
 | Districts | Bundled for all of India (800, from Wikidata, CC0); other countries via OpenStreetMap Overpass | Offline / free |
-| Schools | OpenStreetMap Overpass, falling back to Nominatim search when busy | Free (fair use); cached on the phone for 2 weeks |
+| Schools | Photon (fast OpenStreetMap search) + Overpass, merged; searched around the district centre | Free (fair use); cached on the phone for 2 weeks |
 | School search / address lookup | Nominatim | Free, max 1 request/second (the app enforces this) |
 | Countries + states | Bundled file (countries-states-cities-database, ODbL) | Offline, 77 KB |
 | APK builds | GitHub Actions | Free for public repos, 2,000 min/month for private ones |
@@ -139,4 +139,4 @@ firebase/                     Firestore rules, hosting landing page for invite l
 * Teachers directory and "Where are they now" profiles.
 * More grades (8th, college batches) – just add values to `Grade`.
 
-Map data © OpenStreetMap contributors (ODbL). Indian district list from Wikidata (CC0). Country/state list © countries-states-cities-database (ODbL).
+Map data © OpenStreetMap contributors (ODbL). Indian district list and centre points from Wikidata (CC0). School search by Photon (komoot). Country/state list © countries-states-cities-database (ODbL).
