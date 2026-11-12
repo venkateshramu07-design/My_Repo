@@ -37,10 +37,27 @@ class GeoRepository(private val context: Context) {
         }.also { countriesCache = it }
     }
 
-    /** Districts (admin level 5, else 6) inside a state, from OpenStreetMap. */
+    @Volatile private var bundledDistricts: Map<String, Map<String, List<String>>>? = null
+
+    /** Districts bundled in the app (all of India today), so the most common path never waits on a server. */
+    private suspend fun bundled(): Map<String, Map<String, List<String>>> = bundledDistricts ?: withContext(Dispatchers.IO) {
+        val root = JSONObject(context.assets.open("districts.json").bufferedReader().use { it.readText() })
+        root.keys().asSequence().associateWith { cc ->
+            val states = root.getJSONObject(cc)
+            states.keys().asSequence().associateWith { st ->
+                val arr = states.getJSONArray(st)
+                List(arr.length()) { arr.getString(it) }
+            }
+        }.also { bundledDistricts = it }
+    }
+
+    /** Districts inside a state: bundled list first, else OpenStreetMap (admin level 5, else 6). */
     suspend fun districts(countryCode: String, state: String): List<String> {
+        bundled()[countryCode.uppercase()]?.entries
+            ?.firstOrNull { it.key.equals(state.trim(), ignoreCase = true) }
+            ?.let { return it.value }
         val q = """
-            [out:json][timeout:60];
+            [out:json][timeout:25];
             ${stateArea(countryCode, state)}
             rel(area.sa)["boundary"="administrative"]["admin_level"~"^(5|6)$"];
             out tags;
@@ -51,7 +68,7 @@ class GeoRepository(private val context: Context) {
         val best = byLevel["5"]?.takeIf { it.size >= 2 } ?: byLevel["6"] ?: byLevel["5"].orEmpty()
         return best.map { it.optString("name:en").ifBlank { it.optString("name") } }
             .filter { it.isNotBlank() }
-            .map { it.removeSuffix(" District").removeSuffix(" district") }
+            .map { it.replace(Regex("\\s+district$", RegexOption.IGNORE_CASE), "") }
             .distinct().sorted()
     }
 
@@ -70,18 +87,26 @@ class GeoRepository(private val context: Context) {
             stateArea(region.countryCode, region.state) + "\n.sa->.a;"
         }
         val q = """
-            [out:json][timeout:60];
+            [out:json][timeout:25];
             $area
             nwr(area.a)["amenity"~"^(school|college)$"]["name"]$filter;
             out center tags 1500;
         """.trimIndent()
-        return parseSchools(overpass(q, ttlMs = 14 * Http.DAY), region)
+        val fromOverpass = runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), region) }
+        fromOverpass.getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it }
+        // Overpass is busy or found nothing: fall back to Nominatim's search, a separate free service.
+        val place = listOf(region.district, region.state, region.country).filter { it.isNotBlank() }.joinToString(", ")
+        val text = nameFilter?.trim()?.takeIf { it.isNotEmpty() }?.let { "$it, $place" } ?: "schools in $place"
+        val fallback = runCatching { searchSchools(text, region.countryCode).map { it.copy(region = region) } }
+        return fallback.getOrNull()?.takeIf { it.isNotEmpty() }
+            ?: fromOverpass.getOrNull()
+            ?: throw (fromOverpass.exceptionOrNull() ?: IllegalStateException("Map service unavailable"))
     }
 
     /** Schools visible in a map viewport. */
     suspend fun schoolsInBox(south: Double, west: Double, north: Double, east: Double): List<School> {
         val q = """
-            [out:json][timeout:40];
+            [out:json][timeout:25];
             nwr["amenity"~"^(school|college)$"]["name"](${"%.4f".format(south)},${"%.4f".format(west)},${"%.4f".format(north)},${"%.4f".format(east)});
             out center tags 400;
         """.trimIndent()
@@ -91,7 +116,7 @@ class GeoRepository(private val context: Context) {
     /** Free-text search, e.g. "St. Joseph's Higher Secondary School Trichy". */
     suspend fun searchSchools(query: String, countryCode: String?): List<School> {
         val url = buildString {
-            append("https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=20&q=")
+            append("https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=40&q=")
             append(URLEncoder.encode(query, "UTF-8"))
             if (!countryCode.isNullOrBlank()) append("&countrycodes=").append(countryCode.lowercase())
         }
@@ -167,7 +192,7 @@ class GeoRepository(private val context: Context) {
         val cc = optString("country_code").uppercase()
         val district = listOf("state_district", "county", "city", "town", "suburb").firstNotNullOfOrNull { k ->
             optString(k).takeIf { it.isNotBlank() }
-        }.orEmpty().removeSuffix(" District").removeSuffix(" district")
+        }.orEmpty().replace(Regex("\\s+district$", RegexOption.IGNORE_CASE), "")
         return Region(cc, optString("country"), optString("state"), district)
     }
 

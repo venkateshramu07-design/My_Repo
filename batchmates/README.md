@@ -7,7 +7,7 @@ in through WhatsApp, Instagram and Facebook invites.
 **Running cost: ₹0 / $0.** All services used are free tiers or open data (details below).
 
 <p>
-  <img src="docs/welcome.png" width="240"> <img src="docs/home.png" width="240"> <img src="docs/group.png" width="240">
+  <img src="docs/welcome.png" width="240"> <img src="docs/home.png" width="240"> <img src="docs/group.png" width="240"> <img src="docs/districts.png" width="240">
 </p>
 
 *(Rendered from the real Compose screens with `./gradlew recordPaparazziDebug`.)*
@@ -84,7 +84,8 @@ Build again – the app now uses real accounts and a shared database.
 | Database + live updates | Cloud Firestore (Spark) | 50k reads, 20k writes per day, 1 GB stored |
 | Invite landing page | Firebase Hosting | 10 GB storage, 360 MB/day transfer |
 | Map | OpenStreetMap tiles via osmdroid | Free (fair use, with attribution) |
-| Districts + schools | OpenStreetMap Overpass API | Free (fair use); results cached on the phone for 2–4 weeks |
+| Districts | Bundled for all of India (800, from Wikidata, CC0); other countries via OpenStreetMap Overpass | Offline / free |
+| Schools | OpenStreetMap Overpass, falling back to Nominatim search when busy | Free (fair use); cached on the phone for 2 weeks |
 | School search / address lookup | Nominatim | Free, max 1 request/second (the app enforces this) |
 | Countries + states | Bundled file (countries-states-cities-database, ODbL) | Offline, 77 KB |
 | APK builds | GitHub Actions | Free for public repos, 2,000 min/month for private ones |
@@ -138,4 +139,4 @@ firebase/                     Firestore rules, hosting landing page for invite l
 * Teachers directory and "Where are they now" profiles.
 * More grades (8th, college batches) – just add values to `Grade`.
 
-Map data © OpenStreetMap contributors (ODbL). Country/state list © countries-states-cities-database (ODbL).
+Map data © OpenStreetMap contributors (ODbL). Indian district list from Wikidata (CC0). Country/state list © countries-states-cities-database (ODbL).

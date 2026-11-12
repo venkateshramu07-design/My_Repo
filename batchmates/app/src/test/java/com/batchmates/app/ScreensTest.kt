@@ -18,11 +18,28 @@ import com.batchmates.app.ui.home.HomeViewModel
 import com.batchmates.app.ui.group.GroupScreen
 import com.batchmates.app.ui.group.GroupViewModel
 import kotlinx.coroutines.runBlocking
+import com.batchmates.app.data.geo.GeoRepository
+import com.batchmates.app.ui.finder.FinderScreen
+import com.batchmates.app.ui.finder.FinderViewModel
+import com.batchmates.app.ui.finder.Load
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
+import org.junit.After
+import org.junit.Before
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.Test
 
 /** Renders real screens on the JVM (no emulator) – run `./gradlew recordPaparazziDebug`. */
+@OptIn(ExperimentalCoroutinesApi::class)
 class ScreensTest {
+    @Before fun mainDispatcher() = Dispatchers.setMain(UnconfinedTestDispatcher())
+    @After fun reset() = Dispatchers.resetMain()
+
     @get:Rule
     val paparazzi = Paparazzi(deviceConfig = DeviceConfig.PIXEL_6, maxPercentDifference = 0.1)
 
@@ -60,5 +77,28 @@ class ScreensTest {
         paparazzi.snapshot {
             BatchMatesTheme { GroupScreen(GroupViewModel(repo, me, "osm_n1_12_2008_B"), celebrate = false) {} }
         }
+    }
+
+    @Test fun districtsAreBundledForIndia() {
+        val geo = GeoRepository(paparazzi.context)
+        runBlocking {
+            val tn = geo.districts("IN", "Tamil Nadu")
+            assertEquals(38, tn.size)
+            assertTrue("Tiruchirappalli" in tn)
+            val india = geo.countries().first { it.code == "IN" }
+            india.states.forEach { st -> assertTrue("no districts for $st", geo.districts("IN", st).isNotEmpty()) }
+        }
+    }
+
+    @Test fun districtStep() {
+        val vm = FinderViewModel(GeoRepository(paparazzi.context), DemoReunionRepository(), me, startOnMap = false)
+        runBlocking {
+            val india = GeoRepository(paparazzi.context).countries().first { it.code == "IN" }
+            vm.pickCountry(india)
+            vm.pickState("Tamil Nadu")
+            repeat(100) { if (vm.state.value.districts is Load.Ready) return@repeat; Thread.sleep(50) }
+        }
+        assertTrue(vm.state.value.districts is Load.Ready)
+        paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
     }
 }

@@ -18,10 +18,11 @@ class Http(context: Context) {
     private val cacheDir = File(context.cacheDir, "geo").apply { mkdirs() }
     private val userAgent = "BatchMates/${BuildConfig.VERSION_NAME} (Android school-reunion app)"
 
-    suspend fun get(url: String, ttlMs: Long = WEEK): String = cached(url, ttlMs) { request(url, null) }
+    suspend fun get(url: String, ttlMs: Long = WEEK, readTimeoutMs: Int = 20_000): String =
+        cached(url, ttlMs) { request(url, null, readTimeoutMs) }
 
-    suspend fun postForm(url: String, field: String, value: String, ttlMs: Long = WEEK): String =
-        cached(url + "\n" + value, ttlMs) { request(url, "$field=" + URLEncoder.encode(value, "UTF-8")) }
+    suspend fun postForm(url: String, field: String, value: String, ttlMs: Long = WEEK, readTimeoutMs: Int = 30_000): String =
+        cached(url + "\n" + value, ttlMs) { request(url, "$field=" + URLEncoder.encode(value, "UTF-8"), readTimeoutMs) }
 
     private suspend fun cached(key: String, ttlMs: Long, fetch: () -> String): String = withContext(Dispatchers.IO) {
         val file = File(cacheDir, sha1(key))
@@ -33,11 +34,11 @@ class Http(context: Context) {
         }
     }
 
-    private fun request(url: String, form: String?): String {
+    private fun request(url: String, form: String?, readTimeoutMs: Int): String {
         val conn = URL(url).openConnection() as HttpURLConnection
         try {
-            conn.connectTimeout = 15_000
-            conn.readTimeout = 60_000
+            conn.connectTimeout = 10_000
+            conn.readTimeout = readTimeoutMs
             conn.setRequestProperty("User-Agent", userAgent)
             conn.setRequestProperty("Accept-Language", "en")
             if (form != null) {
