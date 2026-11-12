@@ -28,7 +28,14 @@ service cloud.firestore {
     match /schools/{schoolId} {
       allow read: if signedIn();
       allow create: if signedIn() && shortString(request.resource.data.name, 200);
-      allow update: if signedIn() && onlyCounterStep('memberCount');
+      // Counters move by one; anyone signed in may add another name ("alias") alumni know the school by.
+      allow update: if signedIn() && (
+        onlyCounterStep('memberCount')
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['aliases'])
+            && request.resource.data.aliases is list
+            && request.resource.data.aliases.size() <= 30
+            && request.resource.data.aliases.hasAll(resource.data.get('aliases', [])))
+      );
     }
 
     match /codes/{code} {

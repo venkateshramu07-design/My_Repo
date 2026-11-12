@@ -139,7 +139,7 @@ fun MapStep(s: FinderState, vm: FinderViewModel, onBack: () -> Unit) {
     // Start near what the user already chose, else on their location if permitted.
     LaunchedEffect(Unit) {
         val firstSchool = (s.schools as? Load.Ready)?.value?.firstOrNull { it.lat != null }
-        val dc = s.districtCenter
+        val dc = s.town?.let { it.lat to it.lon } ?: s.districtCenter
         if (dc != null) {
             map.controller.setZoom(13.0); map.controller.setCenter(GeoPoint(dc.first, dc.second))
         } else if (firstSchool != null) {

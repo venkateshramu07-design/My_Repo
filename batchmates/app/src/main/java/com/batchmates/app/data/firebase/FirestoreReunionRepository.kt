@@ -58,8 +58,7 @@ class FirestoreReunionRepository : ReunionRepository {
         schools.whereEqualTo("countryCode", region.countryCode)
             .whereEqualTo("state", region.state)
             .whereEqualTo("district", region.district)
-            .whereEqualTo("source", "custom")
-            .limit(200)
+            .limit(400)
             .get().await().documents.mapNotNull { it.toSchool() }
     }.getOrDefault(emptyList())
 
@@ -67,9 +66,23 @@ class FirestoreReunionRepository : ReunionRepository {
         name: String, region: Region, lat: Double?, lon: Double?, user: AppUser,
     ): Result<School> = runCatching {
         val ref = schools.document()
-        val school = School(ref.id, name.trim(), region, lat, lon, SchoolSource.CUSTOM)
+        val school = School(ref.id, name.trim(), region, lat, lon, SchoolSource.CUSTOM, locality = region.town)
         ref.set(school.toMap() + ("createdBy" to user.uid) + ("createdAt" to FieldValue.serverTimestamp())).await()
         school
+    }
+
+    override suspend fun addAlias(school: School, alias: String): Result<Unit> = runCatching {
+        val clean = alias.trim().take(120)
+        if (clean.isBlank() || clean.equals(school.name, ignoreCase = true)) return@runCatching
+        val ref = schools.document(school.id)
+        db.runTransaction { tx ->
+            if (tx.get(ref).exists()) {
+                tx.update(ref, "aliases", FieldValue.arrayUnion(clean))
+            } else {
+                tx.set(ref, school.toMap() + ("aliases" to listOf(clean)) + ("memberCount" to 0L) + ("createdAt" to FieldValue.serverTimestamp()))
+            }
+        }.await()
+        Unit
     }
 
     override suspend fun batchStats(schoolId: String): List<BatchStat> = runCatching {
@@ -215,6 +228,8 @@ class FirestoreReunionRepository : ReunionRepository {
         "country" to region.country,
         "state" to region.state,
         "district" to region.district,
+        "town" to region.town,
+        "locality" to locality,
         "lat" to lat,
         "lon" to lon,
         "source" to if (source == SchoolSource.CUSTOM) "custom" else "osm",
@@ -227,12 +242,14 @@ class FirestoreReunionRepository : ReunionRepository {
             name = getString("name") ?: return null,
             region = Region(
                 getString("countryCode").orEmpty(), getString("country").orEmpty(),
-                getString("state").orEmpty(), getString("district").orEmpty(),
+                getString("state").orEmpty(), getString("district").orEmpty(), getString("town").orEmpty(),
             ),
             lat = getDouble("lat"),
             lon = getDouble("lon"),
             source = if (getString("source") == "custom") SchoolSource.CUSTOM else SchoolSource.OSM,
             memberCount = getLong("memberCount")?.toInt() ?: 0,
+            locality = getString("locality") ?: getString("town").orEmpty(),
+            aliases = (get("aliases") as? List<*>)?.filterIsInstance<String>().orEmpty(),
         )
     }
 

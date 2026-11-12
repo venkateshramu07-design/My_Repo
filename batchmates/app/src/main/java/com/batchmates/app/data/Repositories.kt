@@ -22,6 +22,9 @@ interface ReunionRepository {
     suspend fun customSchools(region: Region): List<School>
     suspend fun createSchool(name: String, region: Region, lat: Double?, lon: Double?, user: AppUser): Result<School>
 
+    /** Remembers another name for an existing school so the next person searching it finds it. */
+    suspend fun addAlias(school: School, alias: String): Result<Unit>
+
     /** Existing groups at a school so we can show "12 classmates already here". */
     suspend fun batchStats(schoolId: String): List<BatchStat>
 

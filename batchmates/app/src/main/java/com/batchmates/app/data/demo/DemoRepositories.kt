@@ -67,9 +67,21 @@ class DemoReunionRepository : ReunionRepository {
     }
 
     override suspend fun createSchool(name: String, region: Region, lat: Double?, lon: Double?, user: AppUser): Result<School> {
-        val s = School(UUID.randomUUID().toString().take(12), name.trim(), region, lat, lon, SchoolSource.CUSTOM)
+        val s = School(UUID.randomUUID().toString().take(12), name.trim(), region, lat, lon, SchoolSource.CUSTOM, locality = region.town)
         customSchools.value = customSchools.value + s
         return Result.success(s)
+    }
+
+    override suspend fun addAlias(school: School, alias: String): Result<Unit> {
+        val clean = alias.trim()
+        if (clean.isBlank() || clean.equals(school.name, true)) return Result.success(Unit)
+        val existing = customSchools.value.firstOrNull { it.id == school.id }
+        customSchools.value = if (existing != null) {
+            customSchools.value.map { if (it.id == school.id) it.copy(aliases = (it.aliases + clean).distinct()) else it }
+        } else {
+            customSchools.value + school.copy(aliases = (school.aliases + clean).distinct(), distanceKm = null)
+        }
+        return Result.success(Unit)
     }
 
     /** Pretend a few classmates are already waiting, so the demo feels alive. */

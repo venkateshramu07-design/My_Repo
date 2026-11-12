@@ -2,9 +2,11 @@ package com.batchmates.app.data.geo
 
 import android.content.Context
 import com.batchmates.app.data.Country
+import com.batchmates.app.data.Place
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.School
 import com.batchmates.app.data.SchoolSource
+import com.batchmates.app.util.SchoolNames
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -162,8 +164,65 @@ class GeoRepository(private val context: Context) {
                     p.optString("county").ifBlank { p.optString("city") },
                 ),
                 lat = c?.optDouble(1), lon = c?.optDouble(0),
+                locality = p.optString("city").ifBlank { p.optString("county") },
             )
         }
+    }
+
+    /** Towns / villages / areas matching what the user types, near the chosen district. */
+    suspend fun searchPlaces(text: String, near: Pair<Double, Double>?, state: String): List<Place> {
+        if (text.trim().length < 2) return emptyList()
+        val url = buildString {
+            append(PHOTON).append("?limit=12&osm_tag=place&q=").append(URLEncoder.encode(text.trim(), "UTF-8"))
+            if (near != null) append("&bbox=").append(bbox(near, 0.75))
+        }
+        val features = JSONObject(http.get(url, ttlMs = 30 * Http.DAY, readTimeoutMs = 12_000)).optJSONArray("features") ?: JSONArray()
+        return (0 until features.length()).mapNotNull { i ->
+            val f = features.getJSONObject(i)
+            val p = f.optJSONObject("properties") ?: return@mapNotNull null
+            val kind = p.optString("osm_value")
+            if (kind !in PLACE_KINDS) return@mapNotNull null
+            if (state.isNotBlank() && p.optString("state").isNotBlank() && !p.optString("state").equals(state, true)) return@mapNotNull null
+            val c = f.optJSONObject("geometry")?.optJSONArray("coordinates") ?: return@mapNotNull null
+            Place(
+                name = p.optString("name").ifBlank { return@mapNotNull null },
+                kind = kind,
+                area = listOf(p.optString("county"), p.optString("district")).firstOrNull { it.isNotBlank() }.orEmpty(),
+                lat = c.getDouble(1), lon = c.getDouble(0),
+            )
+        }.distinctBy { it.name.lowercase() + it.kind }
+    }
+
+    /** Schools around a town, nearest first. Towns are small, so ~10 km covers everything people mean by "in Kumbakonam". */
+    suspend fun schoolsNear(place: Place, region: Region, nameFilter: String? = null, radiusKm: Double = 10.0): List<School> {
+        val center = place.lat to place.lon
+        val name = nameFilter?.trim()?.takeIf { it.length >= 2 }
+        val overpass = background.async {
+            val filter = name?.let { "[\"name\"~\"${regex(it)}\",i]" }.orEmpty()
+            val q = """
+                [out:json][timeout:25];
+                nwr["amenity"~"^(school|college)$"]["name"]$filter(around:${(radiusKm * 1000).toInt()},${center.first},${center.second});
+                out center tags 800;
+            """.trimIndent()
+            runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), null) }
+        }
+        val box = bbox(center, radiusKm / 111.0)
+        val photon = (if (name != null) listOf(name) else PHOTON_SCHOOL_WORDS).map { w -> runCatching { photonSchools(w, box = box) } }
+        val found = photon.any { (it.getOrNull()?.size ?: 0) > 0 }
+        val fromOverpass = if (found) withTimeoutOrNull(5_000) { overpass.await() } else overpass.await()
+        val results = photon + listOfNotNull(fromOverpass)
+        val schools = results.mapNotNull { it.getOrNull() }.flatten()
+            .distinctBy { it.id }
+            .map { s ->
+                val d = if (s.lat != null && s.lon != null) SchoolNames.km(center.first, center.second, s.lat, s.lon) else null
+                s.copy(region = region, distanceKm = d, locality = s.locality.ifBlank { if (d != null && d < 3) place.name else "" })
+            }
+            .filter { (it.distanceKm ?: 0.0) <= radiusKm * 1.3 }
+            .sortedBy { it.distanceKm ?: Double.MAX_VALUE }
+        if (schools.isEmpty() && results.all { it.isFailure }) {
+            throw IllegalStateException("Couldn't reach the school directory. Check your internet and retry.")
+        }
+        return schools
     }
 
     private fun bbox(c: Pair<Double, Double>, d: Double) =
@@ -260,6 +319,7 @@ class GeoRepository(private val context: Context) {
                 ),
                 lat = center?.optDouble("lat") ?: e.optDouble("lat").takeIf { !it.isNaN() },
                 lon = center?.optDouble("lon") ?: e.optDouble("lon").takeIf { !it.isNaN() },
+                locality = tags.optString("addr:city").ifBlank { tags.optString("addr:place") },
             )
         }.distinctBy { it.id }.sortedBy { it.name.lowercase() }
 
@@ -282,6 +342,7 @@ class GeoRepository(private val context: Context) {
 
     companion object {
         private const val PHOTON = "https://photon.komoot.io/api/"
+        private val PLACE_KINDS = setOf("city", "town", "village", "suburb", "hamlet", "neighbourhood", "quarter", "locality", "municipality")
         /** Photon is a text search, so we ask for the words Indian school names usually contain. */
         private val PHOTON_SCHOOL_WORDS = listOf("school", "higher secondary", "matriculation", "vidyalaya", "college")
         private val OVERPASS_ENDPOINTS = listOf(

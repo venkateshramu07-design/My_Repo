@@ -22,6 +22,11 @@ class LiveSchoolsCheck {
             println("LIVE all=${all.size} in ${System.currentTimeMillis() - t0}ms sample=${all.take(8).map { it.name }}")
             val named = geo.schoolsIn(r, "stella")
             println("LIVE named=${named.map { it.name }}")
+            val places = geo.searchPlaces("kumb", geo.districtCenter(r), "Tamil Nadu")
+            println("LIVE places=${places.map { it.name + "/" + it.kind }}")
+            val kb = places.first { it.name == "Kumbakonam" }
+            val near = geo.schoolsNear(kb, r.copy(town = "Kumbakonam"))
+            println("LIVE near=${near.size} first=${near.take(6).map { it.name + " @" + it.locality + " " + "%.1f".format(it.distanceKm) }}")
         }
     }
 }

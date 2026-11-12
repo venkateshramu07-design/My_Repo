@@ -11,15 +11,21 @@ data class AppUser(
 /** A country from the bundled region catalogue. */
 data class Country(val code: String, val name: String, val flag: String, val states: List<String>)
 
-/** Where a school sits: World → Country → State → District. */
+/** Where a school sits: World → Country → State → District → Town. */
 data class Region(
     val countryCode: String,
     val country: String,
     val state: String,
     val district: String,
+    val town: String = "",
 ) {
-    val label: String get() = listOf(district, state, country).filter { it.isNotBlank() }.joinToString(", ")
+    val label: String
+        get() = listOf(town, district.takeIf { !it.equals(town, true) }.orEmpty(), state, country)
+            .filter { it.isNotBlank() }.joinToString(", ")
 }
+
+/** A town / village / area the user picks to narrow the school search. */
+data class Place(val name: String, val kind: String, val area: String, val lat: Double, val lon: Double)
 
 enum class SchoolSource { OSM, CUSTOM }
 
@@ -32,6 +38,12 @@ data class School(
     val lon: Double? = null,
     val source: SchoolSource = SchoolSource.OSM,
     val memberCount: Int = 0,
+    /** The school's own town/area from map data, e.g. "Kumbakonam". */
+    val locality: String = "",
+    /** Other names alumni know it by ("Vallalar HSS", "Vallalar school"). */
+    val aliases: List<String> = emptyList(),
+    /** Distance from the chosen town, for sorting and display. */
+    val distanceKm: Double? = null,
 )
 
 /** 10th or 12th standard pass-outs (more can be enabled later). */

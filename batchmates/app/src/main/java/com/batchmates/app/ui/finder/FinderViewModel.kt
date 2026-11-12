@@ -7,10 +7,12 @@ import com.batchmates.app.data.BatchKey
 import com.batchmates.app.data.BatchStat
 import com.batchmates.app.data.Country
 import com.batchmates.app.data.Grade
+import com.batchmates.app.data.Place
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.ReunionRepository
 import com.batchmates.app.data.School
 import com.batchmates.app.data.geo.GeoRepository
+import com.batchmates.app.util.SchoolNames
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -23,7 +25,7 @@ import java.util.Calendar
 import java.util.Locale
 
 enum class Step(val title: String) {
-    COUNTRY("Country"), STATE("State"), DISTRICT("District"), SCHOOL("School"),
+    COUNTRY("Country"), STATE("State"), DISTRICT("District"), TOWN("Town"), SCHOOL("School"),
     MAP("Map"), CREATE("New school"), BATCH("Batch"), SECTION("Section"),
 }
 
@@ -59,9 +61,17 @@ data class FinderState(
     val createName: String = "",
     val districtCenter: Pair<Double, Double>? = null,
     val lastQuery: String = "",
+    // town
+    val town: Place? = null,
+    val townResults: Load<List<Place>> = Load.Idle,
+    /** Towns where the district's mapped schools are, most schools first. */
+    val townChips: List<Place> = emptyList(),
+    // duplicate guard
+    val duplicates: List<School> = emptyList(),
+    val confirmCreate: Boolean = false,
 ) {
     val region: Region
-        get() = Region(country?.code.orEmpty(), country?.name.orEmpty(), state.orEmpty(), district.orEmpty())
+        get() = Region(country?.code.orEmpty(), country?.name.orEmpty(), state.orEmpty(), district.orEmpty(), town?.name.orEmpty())
 }
 
 class FinderViewModel(
@@ -77,6 +87,9 @@ class FinderViewModel(
     private val _joined = Channel<String>(Channel.BUFFERED)
     val joined = _joined.receiveAsFlow()
     private var mapJob: Job? = null
+    private var townJob: Job? = null
+    /** Every school we've seen in this district (map data + alumni-added); used to stop duplicates. */
+    private var known: List<School> = emptyList()
 
     val years: List<Int> = (Calendar.getInstance().get(Calendar.YEAR) downTo 1960).toList()
 
@@ -130,37 +143,88 @@ class FinderViewModel(
 
     /** Pass blank to skip the district and search the whole state by name. */
     fun pickDistrict(district: String) {
-        _s.update { it.copy(district = district.trim(), schools = Load.Idle, districtCenter = null, lastQuery = "") }
-        go(Step.SCHOOL)
-        if (district.isNotBlank()) {
-            loadSchools(null)
-            viewModelScope.launch {
-                val c = geo.districtCenter(_s.value.region)
-                _s.update { it.copy(districtCenter = c) }
-            }
+        _s.update {
+            it.copy(
+                district = district.trim(), town = null, schools = Load.Idle, districtCenter = null, lastQuery = "",
+                townResults = Load.Idle, townChips = emptyList(),
+            )
+        }
+        known = emptyList()
+        if (district.isBlank()) { go(Step.SCHOOL); return }
+        go(Step.TOWN)
+        val region = _s.value.region
+        viewModelScope.launch {
+            val c = geo.districtCenter(region)
+            _s.update { it.copy(districtCenter = c) }
+            // Learn the district's towns from where its schools are, to offer one-tap chips.
+            val all = runCatching { geo.schoolsIn(region) }.getOrDefault(emptyList())
+            remember(all + repo.customSchools(region))
+            val chips = all.filter { it.locality.isNotBlank() && it.lat != null && it.lon != null }
+                .groupBy { it.locality.trim() }
+                .entries.sortedByDescending { it.value.size }
+                .take(12)
+                .map { (name, list) -> Place(name, "town", "${list.size} schools", list.map { it.lat!! }.average(), list.map { it.lon!! }.average()) }
+            if (_s.value.district == region.district) _s.update { it.copy(townChips = chips) }
         }
     }
 
+    fun searchTowns(text: String) {
+        townJob?.cancel()
+        if (text.trim().length < 2) { _s.update { it.copy(townResults = Load.Idle) }; return }
+        townJob = viewModelScope.launch {
+            delay(350)
+            _s.update { it.copy(townResults = Load.Loading) }
+            val s = _s.value
+            val r = runCatching { geo.searchPlaces(text, s.districtCenter, s.state.orEmpty()) }
+            _s.update { it.copy(townResults = r.fold({ l -> Load.Ready(l) }, { e -> Load.Failed(e.message ?: "Search failed") })) }
+        }
+    }
+
+    fun pickTown(place: Place?) {
+        _s.update { it.copy(town = place, schools = Load.Idle, lastQuery = "") }
+        go(Step.SCHOOL)
+        loadSchools(null)
+    }
+
     fun loadSchools(nameFilter: String?) {
-        val region = _s.value.region
+        val s0 = _s.value
+        val region = s0.region
+        val town = s0.town
         if (region.district.isBlank() && nameFilter.isNullOrBlank()) {
             _s.update { it.copy(schools = Load.Ready(emptyList())) }; return
         }
         _s.update { it.copy(schools = Load.Loading, lastQuery = nameFilter?.trim().orEmpty()) }
         viewModelScope.launch {
-            val custom = repo.customSchools(region).filter { s ->
-                nameFilter.isNullOrBlank() || s.name.contains(nameFilter.trim(), ignoreCase = true)
+            // Schools alumni added or named; near the chosen town when there is one.
+            val custom = repo.customSchools(region).map { c ->
+                val d = if (town != null && c.lat != null && c.lon != null) SchoolNames.km(town.lat, town.lon, c.lat, c.lon) else null
+                c.copy(distanceKm = d)
+            }.filter { c ->
+                town == null || c.region.town.equals(town.name, true) || c.locality.equals(town.name, true) ||
+                    (c.distanceKm != null && c.distanceKm <= 15)
             }
-            val osm = runCatching { geo.schoolsIn(region, nameFilter) }
+            val osm = runCatching {
+                if (town != null) geo.schoolsNear(town, region, nameFilter) else geo.schoolsIn(region, nameFilter)
+            }
+            remember(custom + osm.getOrDefault(emptyList()))
+            // A map school that alumni already renamed/aliased lives in Firestore under the same id: prefer that copy.
+            val byId = custom.associateBy { it.id }
+            val merged = custom + osm.getOrDefault(emptyList()).filter { it.id !in byId }
+            val filtered = merged.filter { nameFilter.isNullOrBlank() || SchoolNames.matches(nameFilter, it) || it.id !in byId }
             _s.update {
                 it.copy(
-                    schools = osm.fold(
-                        { list -> Load.Ready(custom + list) },
-                        { e -> if (custom.isNotEmpty()) Load.Ready(custom) else Load.Failed(e.message ?: "Couldn't load schools. Check your internet and retry.") },
-                    ),
+                    schools = if (osm.isFailure && custom.isEmpty()) {
+                        Load.Failed(osm.exceptionOrNull()?.message ?: "Couldn't load schools. Check your internet and retry.")
+                    } else {
+                        Load.Ready(filtered.sortedWith(compareBy<School> { s -> s.distanceKm ?: 999.0 }.thenBy { s -> s.name.lowercase() }))
+                    },
                 )
             }
         }
+    }
+
+    private fun remember(list: List<School>) {
+        known = (known + list).distinctBy { it.id }
     }
 
     fun pickSchool(school: School) {
@@ -180,23 +244,52 @@ class FinderViewModel(
     fun openMap() = go(Step.MAP)
 
     fun openCreate(lat: Double? = null, lon: Double? = null, name: String = "") {
+        val t = _s.value.town
         _s.update {
-            it.copy(pinned = if (lat != null && lon != null) lat to lon else null, createRegion = it.region, createName = name.trim())
+            it.copy(
+                pinned = if (lat != null && lon != null) lat to lon else null,
+                createRegion = it.region, createName = name.trim(), duplicates = emptyList(), confirmCreate = false,
+            )
         }
         go(Step.CREATE)
+        onCreateNameChanged(name)
         if (lat != null && lon != null) viewModelScope.launch {
-            runCatching { geo.reverse(lat, lon) }.getOrNull()?.let { r -> _s.update { it.copy(createRegion = r) } }
+            runCatching { geo.reverse(lat, lon) }.getOrNull()?.let { r ->
+                _s.update { it.copy(createRegion = r.copy(town = t?.name ?: r.district)) }
+            }
         }
     }
 
-    fun createSchool(name: String, region: Region) {
+    /** Live duplicate check while the user types a new school's name. */
+    fun onCreateNameChanged(name: String) {
+        val pin = _s.value.pinned
+        val dups = if (name.trim().length < 3) emptyList() else {
+            val t = _s.value.town
+            SchoolNames.duplicates(name, pin?.first, pin?.second, known)
+                .sortedBy { s -> if (t != null && s.lat != null && s.lon != null) SchoolNames.km(t.lat, t.lon, s.lat, s.lon) else 999.0 }
+                .take(5)
+        }
+        _s.update { it.copy(duplicates = dups, confirmCreate = false) }
+    }
+
+    /** "Yes, that's my school": use it, and remember the name the user typed as an alias. */
+    fun useExisting(school: School, typedName: String) {
+        viewModelScope.launch { repo.addAlias(school, typedName) }
+        pickSchool(school)
+    }
+
+    fun dismissConfirm() = _s.update { it.copy(confirmCreate = false) }
+
+    fun createSchool(name: String, region: Region, force: Boolean = false) {
         if (name.trim().length < 3) { _s.update { it.copy(error = "Please enter the full school name") }; return }
         if (region.country.isBlank()) { _s.update { it.copy(error = "Please add at least the country") }; return }
-        _s.update { it.copy(joining = true, error = null) }
+        if (region.town.isBlank()) { _s.update { it.copy(error = "Add the town or village so classmates can find it") }; return }
+        if (!force && _s.value.duplicates.isNotEmpty()) { _s.update { it.copy(confirmCreate = true) }; return }
+        _s.update { it.copy(joining = true, error = null, confirmCreate = false) }
         viewModelScope.launch {
-            val pin = _s.value.pinned
+            val pin = _s.value.pinned ?: _s.value.town?.let { it.lat to it.lon }
             repo.createSchool(name, region, pin?.first, pin?.second, user)
-                .onSuccess { school -> _s.update { it.copy(joining = false) }; pickSchool(school) }
+                .onSuccess { school -> remember(listOf(school)); _s.update { it.copy(joining = false) }; pickSchool(school) }
                 .onFailure { e -> _s.update { it.copy(joining = false, error = e.message) } }
         }
     }

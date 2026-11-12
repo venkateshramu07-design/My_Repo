@@ -101,4 +101,26 @@ class ScreensTest {
         assertTrue(vm.state.value.districts is Load.Ready)
         paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
     }
+
+    @Test fun duplicateSchoolIsCaught() {
+        val vm = FinderViewModel(GeoRepository(paparazzi.context), DemoReunionRepository(), me, startOnMap = false)
+        val kumbakonam = com.batchmates.app.data.Place("Kumbakonam", "city", "", 10.9604, 79.3821)
+        runBlocking {
+            val india = GeoRepository(paparazzi.context).countries().first { it.code == "IN" }
+            vm.pickCountry(india); vm.pickState("Tamil Nadu"); vm.pickDistrict("Thanjavur")
+            vm.pickTown(kumbakonam)
+            vm.openCreate(name = "vallalar")
+            vm.createSchool("vallalar", vm.state.value.region)
+            repeat(100) { if (vm.state.value.school != null) return@repeat; Thread.sleep(50) }
+            assertEquals("vallalar", vm.state.value.school?.name)
+            assertEquals("Kumbakonam", vm.state.value.school?.region?.town)
+            // Second person types a longer name for the same school.
+            vm.back()
+            vm.openCreate(name = "Vallalar Higher Secondary School")
+            assertTrue("duplicate not detected", vm.state.value.duplicates.any { it.name == "vallalar" })
+            vm.createSchool("Vallalar Higher Secondary School", vm.state.value.region)
+            assertTrue("must ask before creating a duplicate", vm.state.value.confirmCreate)
+        }
+        paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
+    }
 }

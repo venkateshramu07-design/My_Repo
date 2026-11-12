@@ -50,6 +50,7 @@ import androidx.compose.material.icons.rounded.AddLocationAlt
 import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.School
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -90,6 +91,7 @@ import com.batchmates.app.ui.components.Pill
 import com.batchmates.app.ui.components.SearchField
 import com.batchmates.app.ui.theme.Brand
 import com.batchmates.app.ui.theme.Eyebrow
+import com.batchmates.app.util.SchoolNames
 import kotlinx.coroutines.launch
 
 @Composable
@@ -115,6 +117,7 @@ fun FinderScreen(vm: FinderViewModel, onExit: () -> Unit, onJoined: (String) -> 
                     Step.COUNTRY -> CountryStep(s, vm::pickCountry)
                     Step.STATE -> StateStep(s, vm::pickState)
                     Step.DISTRICT -> DistrictStep(s, vm::pickDistrict, vm::loadDistricts)
+                    Step.TOWN -> TownStep(s, vm)
                     Step.SCHOOL -> SchoolStep(s, vm)
                     Step.MAP -> MapStep(s, vm, onBack = { if (!vm.back()) onExit() })
                     Step.CREATE -> CreateStep(s, vm)
@@ -138,7 +141,7 @@ private fun TopBar(s: FinderState, onBack: () -> Unit) {
         }
         val crumbs = listOfNotNull(
             s.country?.let { "${it.flag} ${it.name}" },
-            s.state, s.district?.takeIf { it.isNotBlank() },
+            s.state, s.district?.takeIf { it.isNotBlank() }, s.town?.name?.takeIf { s.step.ordinal > Step.TOWN.ordinal },
             s.school?.name?.takeIf { s.step.ordinal >= Step.BATCH.ordinal },
             s.year?.takeIf { s.step == Step.SECTION }?.let { "${s.grade.label} · $it" },
         )
@@ -152,17 +155,19 @@ private fun TopBar(s: FinderState, onBack: () -> Unit) {
 }
 
 private fun stepEyebrow(step: Step) = when (step) {
-    Step.COUNTRY -> "STEP 1 OF 5 · WORLD"
-    Step.STATE -> "STEP 2 OF 5"
-    Step.DISTRICT -> "STEP 3 OF 5"
-    Step.SCHOOL, Step.CREATE, Step.MAP -> "STEP 4 OF 5"
-    Step.BATCH, Step.SECTION -> "STEP 5 OF 5 · ALMOST THERE"
+    Step.COUNTRY -> "STEP 1 OF 6 · WORLD"
+    Step.STATE -> "STEP 2 OF 6"
+    Step.DISTRICT -> "STEP 3 OF 6"
+    Step.TOWN -> "STEP 4 OF 6"
+    Step.SCHOOL, Step.CREATE, Step.MAP -> "STEP 5 OF 6"
+    Step.BATCH, Step.SECTION -> "STEP 6 OF 6 · ALMOST THERE"
 }
 
 private fun stepTitle(step: Step) = when (step) {
     Step.COUNTRY -> "Which country?"
     Step.STATE -> "Which state?"
     Step.DISTRICT -> "Which district?"
+    Step.TOWN -> "Which town or village?"
     Step.SCHOOL -> "Find your school"
     Step.MAP -> "Pick on map"
     Step.CREATE -> "Add your school"
@@ -238,10 +243,51 @@ private fun SkipDistrict(onPick: (String) -> Unit) {
 }
 
 @Composable
+private fun TownStep(s: FinderState, vm: FinderViewModel) {
+    var q by rememberSaveable { mutableStateOf("") }
+    Column(Modifier.fillMaxSize()) {
+        SearchField(q, { q = it; vm.searchTowns(it) }, "Type your school's town, e.g. Kumbakonam", Modifier.padding(horizontal = 20.dp))
+        LazyColumn(
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 40.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.imePadding(),
+        ) {
+            when (val r = s.townResults) {
+                Load.Loading -> item { Text("Searching places in ${s.district}…", color = Brand.TextDim) }
+                is Load.Failed -> item { Text("Couldn't search places right now. Pick a town below or skip.", color = Brand.TextDim) }
+                is Load.Ready -> {
+                    if (r.value.isEmpty()) item { Text("No place called \"${q.trim()}\" near ${s.district}. Try another spelling.", color = Brand.TextDim) }
+                    items(r.value, key = { it.name + it.lat }) { p ->
+                        Row1(
+                            leading = if (p.kind in setOf("city", "town", "municipality")) "🏙️" else "🏡",
+                            title = p.name,
+                            subtitle = listOf(p.kind.replaceFirstChar { it.uppercase() }, p.area).filter { it.isNotBlank() }.joinToString(" · "),
+                        ) { vm.pickTown(p) }
+                    }
+                }
+                Load.Idle -> Unit
+            }
+            if (q.isBlank()) {
+                item {
+                    Text(
+                        if (s.townChips.isEmpty()) "Finding towns in ${s.district}…" else "Towns in ${s.district} with schools",
+                        style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
+                    )
+                }
+                items(s.townChips, key = { "chip" + it.name }) { p -> Row1(leading = "📍", title = p.name, subtitle = p.area) { vm.pickTown(p) } }
+            }
+            item {
+                TextButton({ vm.pickTown(null) }, Modifier.fillMaxWidth()) { Text("Skip — show all schools in ${s.district}") }
+            }
+        }
+    }
+}
+
+@Composable
 private fun SchoolStep(s: FinderState, vm: FinderViewModel) {
     var q by rememberSaveable { mutableStateOf("") }
     val wholeState = s.district.isNullOrBlank()
-    val place = s.district?.ifBlank { null } ?: s.state.orEmpty()
+    val place = s.town?.name ?: s.district?.ifBlank { null } ?: s.state.orEmpty()
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(horizontal = 20.dp)) {
             SearchField(
@@ -269,7 +315,7 @@ private fun SchoolStep(s: FinderState, vm: FinderViewModel) {
                 item { CantFind(vm, q) }
             }
             is Load.Ready -> {
-                val list = remember(q, l.value) { l.value.filter { q.isBlank() || it.name.contains(q.trim(), true) } }
+                val list = remember(q, l.value) { l.value.filter { q.isBlank() || SchoolNames.matches(q, it) } }
                 // Typed a name that isn't in the loaded list yet? Offer a server search for it.
                 val canSearchServer = q.trim().length >= 2 && !q.trim().equals(s.lastQuery, ignoreCase = true)
                 LazyColumn(
@@ -287,7 +333,12 @@ private fun SchoolStep(s: FinderState, vm: FinderViewModel) {
                             )
                         }
                     } else {
-                        item { Text("${list.size} schools in $place", color = Brand.TextDim, fontSize = 13.sp) }
+                        item {
+                            Text(
+                                if (s.town != null) "${list.size} schools in and around $place · nearest first" else "${list.size} schools in $place",
+                                color = Brand.TextDim, fontSize = 13.sp,
+                            )
+                        }
                     }
                     if (canSearchServer) item {
                         OutlinedButton({ vm.loadSchools(q) }, Modifier.fillMaxWidth()) {
@@ -314,7 +365,14 @@ private fun SchoolRow(school: School, onClick: () -> Unit) {
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(school.name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                if (school.region.label.isNotBlank()) Text(school.region.label, color = Brand.TextDim, fontSize = 12.sp, maxLines = 1)
+                val where = listOfNotNull(
+                    school.locality.ifBlank { school.region.town }.ifBlank { null },
+                    school.distanceKm?.let { if (it < 1) "${(it * 1000).toInt()} m away" else "%.1f km away".format(it) },
+                ).joinToString(" · ").ifBlank { school.region.label }
+                if (where.isNotBlank()) Text(where, color = Brand.TextDim, fontSize = 12.sp, maxLines = 1)
+                if (school.aliases.isNotEmpty()) {
+                    Text("Also known as " + school.aliases.take(2).joinToString(", "), color = Brand.Sun, fontSize = 12.sp, maxLines = 1)
+                }
             }
             if (school.source == SchoolSource.CUSTOM) Pill("ADDED BY ALUMNI", Brand.Mint)
         }
@@ -343,21 +401,54 @@ private fun CreateStep(s: FinderState, vm: FinderViewModel) {
     var country by rememberSaveable(start.country) { mutableStateOf(start.country) }
     var state by rememberSaveable(start.state) { mutableStateOf(start.state) }
     var district by rememberSaveable(start.district) { mutableStateOf(start.district) }
-    Column(Modifier.fillMaxSize().imePadding().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Give it the name everyone remembers. You can add the area so batchmates find it easily.", color = Brand.TextDim)
-        Field("School name", name) { name = it }
-        Field("Country", country) { country = it }
-        Field("State / province", state) { state = it }
-        Field("District / city", district) { district = it }
-        if (s.pinned != null) Pill("📍 Pinned on map", Brand.Mint)
-        s.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        Spacer(Modifier.weight(1f))
-        GradientButton(
-            "Create & continue", {
-                val code = s.countries.firstOrNull { it.name.equals(country.trim(), true) }?.code ?: start.countryCode
-                vm.createSchool(name, Region(code, country.trim(), state.trim(), district.trim()))
+    var town by rememberSaveable(start.town) { mutableStateOf(start.town) }
+    fun region() = Region(
+        s.countries.firstOrNull { it.name.equals(country.trim(), true) }?.code ?: start.countryCode,
+        country.trim(), state.trim(), district.trim(), town.trim(),
+    )
+    LazyColumn(
+        Modifier.fillMaxSize().imePadding(),
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        item { Text("Use the full name everyone remembers. We'll check it isn't already here.", color = Brand.TextDim) }
+        item { Field("School name", name) { name = it; vm.onCreateNameChanged(it) } }
+        if (s.duplicates.isNotEmpty()) {
+            item {
+                GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
+                    Text("✋ Is it one of these?", style = MaterialTheme.typography.titleMedium, color = Brand.Sun)
+                    Text("These look like the same school. Tap yours — we'll remember \"${name.trim()}\" as another name for it.", color = Brand.TextDim, fontSize = 13.sp)
+                }
+            }
+            items(s.duplicates, key = { "dup" + it.id }) { d -> SchoolRow(d) { vm.useExisting(d, name) } }
+        }
+        item { Field("Town / village", town) { town = it } }
+        item { Field("District", district) { district = it } }
+        item { Field("State / province", state) { state = it } }
+        item { Field("Country", country) { country = it } }
+        if (s.pinned != null) item { Pill("📍 Pinned on map", Brand.Mint) }
+        s.error?.let { item { Text(it, color = MaterialTheme.colorScheme.error) } }
+        item {
+            GradientButton(
+                if (s.duplicates.isEmpty()) "Create & continue" else "Mine isn't listed — create it",
+                { vm.createSchool(name, region()) },
+                Modifier.fillMaxWidth().navigationBarsPadding(), loading = s.joining,
+                brush = if (s.duplicates.isEmpty()) Brand.Primary else Brush.linearGradient(listOf(Color(0x33FFFFFF), Color(0x22FFFFFF))),
+            )
+        }
+    }
+    if (s.confirmCreate) {
+        AlertDialog(
+            onDismissRequest = vm::dismissConfirm,
+            title = { Text("Create a separate school?") },
+            text = {
+                Text(
+                    "\"${s.duplicates.first().name}\" looks like the same school. Two groups for one school splits your classmates. " +
+                        "Create a new one only if it's really a different school.",
+                )
             },
-            Modifier.fillMaxWidth().navigationBarsPadding(), loading = s.joining,
+            confirmButton = { TextButton({ vm.createSchool(name, region(), force = true) }) { Text("It's different — create") } },
+            dismissButton = { TextButton({ vm.useExisting(s.duplicates.first(), name) }) { Text("Use existing") } },
         )
     }
 }
