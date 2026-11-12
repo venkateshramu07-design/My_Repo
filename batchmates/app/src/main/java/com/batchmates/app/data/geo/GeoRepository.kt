@@ -31,7 +31,7 @@ import java.net.URLEncoder
 class GeoRepository(private val context: Context) {
 
     private val http = Http(context)
-    private val directory = SchoolDirectory(http)
+    private val directory = SchoolDirectory(context, http)
     private val nominatimLock = Mutex()
     private var lastNominatimCall = 0L
 

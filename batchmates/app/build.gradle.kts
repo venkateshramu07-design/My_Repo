@@ -19,8 +19,13 @@ if (hasFirebaseConfig) {
 // by setting batchmates.dataMirrors.
 val dataRevision: String = (project.findProperty("batchmates.dataRevision") as String?) ?: "2b11cdb7175d1e408cbc91df97bd11c1539d08a6"
 val dataMirrors: String = (project.findProperty("batchmates.dataMirrors") as String?)
-    ?: "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@$dataRevision/batchmates/data," +
-        "https://raw.githubusercontent.com/venkateshramu07-design/My_Repo/$dataRevision/batchmates/data"
+    ?: listOf(
+        // Same files, several networks: some ISPs block one CDN hostname or another.
+        "https://cdn.jsdelivr.net/gh/venkateshramu07-design/My_Repo@$dataRevision/batchmates/data",
+        "https://fastly.jsdelivr.net/gh/venkateshramu07-design/My_Repo@$dataRevision/batchmates/data",
+        "https://gcore.jsdelivr.net/gh/venkateshramu07-design/My_Repo@$dataRevision/batchmates/data",
+        "https://raw.githubusercontent.com/venkateshramu07-design/My_Repo/$dataRevision/batchmates/data",
+    ).joinToString(",")
 
 val inviteHost: String = (project.findProperty("batchmates.inviteHost") as String?) ?: "batchmates-app.web.app"
 

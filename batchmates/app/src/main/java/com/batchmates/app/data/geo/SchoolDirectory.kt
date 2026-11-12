@@ -6,7 +6,9 @@ import com.batchmates.app.data.Region
 import com.batchmates.app.data.School
 import com.batchmates.app.data.SchoolSource
 import com.batchmates.app.util.SchoolNames
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
@@ -21,10 +23,26 @@ import kotlin.math.floor
  * schools around a town is a ~100-300 ms download the first time and instant after that.
  * The free public geocoders are only used as a background top-up, never on the critical path.
  */
-class SchoolDirectory(private val http: Http) {
+class SchoolDirectory(private val context: android.content.Context, private val http: Http) {
+
+    /** Countries whose directory is bundled inside the APK (read from assets, no network at all). */
+    private val bundled: Set<String> by lazy {
+        runCatching { context.assets.list("schools")?.toSet().orEmpty() }.getOrDefault(emptySet())
+    }
+
+    private fun bundledText(path: String): String? = try {
+        context.assets.open(path).use { java.util.zip.GZIPInputStream(it).bufferedReader().readText() }
+    } catch (_: java.io.FileNotFoundException) {
+        null
+    }
+
+    /** Bundled file if this country ships with the app (missing file = empty cell), else the CDN. */
+    private suspend fun load(cc: String, path: String): String =
+        if (cc.uppercase() in bundled) withContext(Dispatchers.IO) { bundledText(path).orEmpty() }
+        else http.getGzipJson(urls(path), ttlMs = 30 * Http.DAY)
 
     /** Countries the directory covers. Elsewhere the app falls back to the public map services. */
-    fun covers(countryCode: String) = countryCode.uppercase() in COUNTRIES
+    fun covers(countryCode: String) = countryCode.uppercase() in COUNTRIES || countryCode.uppercase() in bundled
 
     private val mirrors: List<String> = BuildConfig.DATA_MIRRORS.split(',').map { it.trim().trimEnd('/') }.filter { it.isNotEmpty() }
 
@@ -43,7 +61,7 @@ class SchoolDirectory(private val http: Http) {
     }
 
     /** Every school/college within [radiusKm] of a point, nearest first. */
-    suspend fun schoolsNear(countryCode: String, lat: Double, lon: Double, radiusKm: Double, region: Region): List<School> = coroutineScope {
+    suspend fun schoolsNear(countryCode: String, lat: Double, lon: Double, radiusKm: Double, region: Region): List<School> = withContext(Dispatchers.Default) {
         val dLat = radiusKm / 111.0
         val dLon = radiusKm / (111.0 * cos(Math.toRadians(lat)).coerceAtLeast(0.2))
         val cells = buildSet {
@@ -64,7 +82,7 @@ class SchoolDirectory(private val http: Http) {
     }
 
     private suspend fun tile(cc: String, a: Int, b: Int): List<School> {
-        val json = http.getGzipJson(urls("schools/${cc.uppercase()}/${a}_$b.json.gz"), ttlMs = 30 * Http.DAY)
+        val json = load(cc, "schools/${cc.uppercase()}/${a}_$b.json.gz")
         if (json.isBlank()) return emptyList()
         val arr = JSONObject(json).getJSONArray("s")
         return List(arr.length()) { i ->
@@ -83,7 +101,7 @@ class SchoolDirectory(private val http: Http) {
     suspend fun towns(countryCode: String): List<DirTown> = townLock.withLock {
         val cc = countryCode.uppercase()
         towns[cc]?.let { return it }
-        val json = http.getGzipJson(urls("towns/$cc.json.gz"), ttlMs = 30 * Http.DAY)
+        val json = load(cc, "towns/$cc.json.gz")
         val list = if (json.isBlank()) emptyList() else {
             val arr = JSONObject(json).getJSONArray("t")
             List(arr.length()) { i ->
@@ -95,15 +113,15 @@ class SchoolDirectory(private val http: Http) {
     }
 
     /** Instant, offline town search: prefix matches first, then contains, biggest towns first. */
-    suspend fun searchTowns(countryCode: String, text: String, limit: Int = 12): List<DirTown> {
+    suspend fun searchTowns(countryCode: String, text: String, limit: Int = 12): List<DirTown> = withContext(Dispatchers.Default) {
         val q = text.trim().lowercase()
-        if (q.length < 2) return emptyList()
+        if (q.length < 2) return@withContext emptyList()
         val all = towns(countryCode)
         val starts = all.filter { it.name.lowercase().startsWith(q) }
         val words = all.filter { t -> t !in starts && t.name.lowercase().split(' ', '-').any { it.startsWith(q) } }
         val fuzzy = if (starts.size + words.size >= limit || q.length < 5) emptyList()
         else all.filter { t -> t !in starts && t !in words && SchoolNames.similar(t.name, text) }
-        return (starts + words + fuzzy).take(limit)
+        (starts + words + fuzzy).take(limit)
     }
 
     /** Towns around a point (a district's towns), biggest first. */
