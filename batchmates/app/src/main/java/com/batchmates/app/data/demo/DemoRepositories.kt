@@ -5,7 +5,9 @@ import com.batchmates.app.data.AppUser
 import com.batchmates.app.data.AuthRepository
 import com.batchmates.app.data.BatchKey
 import com.batchmates.app.data.BatchStat
-import com.batchmates.app.data.Grade
+import com.batchmates.app.data.CollegeType
+import com.batchmates.app.data.InstitutionKind
+import com.batchmates.app.data.Track
 import com.batchmates.app.data.Group
 import com.batchmates.app.data.Member
 import com.batchmates.app.data.Message
@@ -66,10 +68,19 @@ class DemoReunionRepository : ReunionRepository {
         it.region.countryCode == region.countryCode && it.region.state == region.state && it.region.district == region.district
     }
 
-    override suspend fun createSchool(name: String, region: Region, lat: Double?, lon: Double?, user: AppUser): Result<School> {
-        val s = School(UUID.randomUUID().toString().take(12), name.trim(), region, lat, lon, SchoolSource.CUSTOM, locality = region.town)
+    override suspend fun createSchool(
+        name: String, region: Region, lat: Double?, lon: Double?, user: AppUser,
+        kind: InstitutionKind, collegeType: CollegeType?,
+    ): Result<School> {
+        val s = School(UUID.randomUUID().toString().take(12), name.trim(), region, lat, lon, SchoolSource.CUSTOM, locality = region.town, kind = kind, collegeType = collegeType)
         customSchools.value = customSchools.value + s
         return Result.success(s)
+    }
+
+    override suspend fun setInstitutionType(school: School, kind: InstitutionKind, collegeType: CollegeType?): Result<Unit> {
+        val updated = school.copy(kind = kind, collegeType = collegeType, distanceKm = null)
+        customSchools.value = customSchools.value.filter { it.id != school.id } + updated
+        return Result.success(Unit)
     }
 
     override suspend fun addAlias(school: School, alias: String): Result<Unit> {
@@ -89,22 +100,22 @@ class DemoReunionRepository : ReunionRepository {
         delay(250)
         val seed = schoolId.hashCode()
         val real = groups.value.values.filter { it.schoolId == schoolId }
-            .map { BatchStat(it.grade, it.year, it.section, it.memberCount) }
+            .map { BatchStat(it.track, it.year, it.section, it.memberCount) }
         val fake = (0 until 6).map { i ->
             val r = (seed xor (i * 7919)).let { if (it < 0) -it else it }
-            BatchStat(if (i % 2 == 0) Grade.TENTH else Grade.TWELFTH, 2000 + r % 25, "ABCD"[r % 4].toString(), 2 + r % 30)
+            BatchStat(if (i % 2 == 0) Track.TENTH else Track.TWELFTH, 2000 + r % 25, "ABCD"[r % 4].toString(), 2 + r % 30)
         }
-        return real + fake.filter { f -> real.none { it.grade == f.grade && it.year == f.year && it.section == f.section } }
+        return real + fake.filter { f -> real.none { it.track == f.track && it.year == f.year && it.section == f.section } }
     }
 
     override suspend fun joinBatch(school: School, key: BatchKey, user: AppUser): Result<Group> {
         delay(700)
         val existing = groups.value[key.groupId]
-        val stat = batchStats(school.id).firstOrNull { it.grade == key.grade && it.year == key.year && it.section == key.section }
+        val stat = batchStats(school.id).firstOrNull { it.track.code == key.track.code && it.year == key.year && it.section == key.section }
         val seeded = stat?.members ?: 0
         val group = existing ?: Group(
             id = key.groupId, schoolId = school.id, schoolName = school.name, regionLabel = school.region.label,
-            grade = key.grade, year = key.year, section = key.section, inviteCode = InviteCodes.generate(),
+            track = key.track, year = key.year, section = key.section, inviteCode = InviteCodes.generate(),
             memberCount = seeded + 1, createdBy = user.uid,
         ).also { g ->
             codes[g.inviteCode] = g.id

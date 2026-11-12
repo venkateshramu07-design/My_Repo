@@ -3,7 +3,9 @@ package com.batchmates.app.data.firebase
 import com.batchmates.app.data.AppUser
 import com.batchmates.app.data.BatchKey
 import com.batchmates.app.data.BatchStat
-import com.batchmates.app.data.Grade
+import com.batchmates.app.data.CollegeType
+import com.batchmates.app.data.InstitutionKind
+import com.batchmates.app.data.Track
 import com.batchmates.app.data.Group
 import com.batchmates.app.data.Member
 import com.batchmates.app.data.Message
@@ -31,7 +33,7 @@ import kotlinx.coroutines.tasks.await
 /**
  * Firestore layout (all on the free Spark plan):
  *  schools/{schoolId}
- *  groups/{groupId}                      groupId = schoolId_grade_year_section
+ *  groups/{groupId}                      groupId = schoolId_track_year_section
  *  groups/{groupId}/members/{uid}
  *  groups/{groupId}/messages/{auto}
  *  codes/{inviteCode} -> { groupId }
@@ -64,9 +66,10 @@ class FirestoreReunionRepository : ReunionRepository {
 
     override suspend fun createSchool(
         name: String, region: Region, lat: Double?, lon: Double?, user: AppUser,
+        kind: InstitutionKind, collegeType: CollegeType?,
     ): Result<School> = runCatching {
         val ref = schools.document()
-        val school = School(ref.id, name.trim(), region, lat, lon, SchoolSource.CUSTOM, locality = region.town)
+        val school = School(ref.id, name.trim(), region, lat, lon, SchoolSource.CUSTOM, locality = region.town, kind = kind, collegeType = collegeType)
         ref.set(school.toMap() + ("createdBy" to user.uid) + ("createdAt" to FieldValue.serverTimestamp())).await()
         school
     }
@@ -85,10 +88,20 @@ class FirestoreReunionRepository : ReunionRepository {
         Unit
     }
 
+    override suspend fun setInstitutionType(school: School, kind: InstitutionKind, collegeType: CollegeType?): Result<Unit> = runCatching {
+        val ref = schools.document(school.id)
+        val fields = mapOf("kind" to kind.name, "collegeType" to collegeType?.name)
+        db.runTransaction { tx ->
+            if (tx.get(ref).exists()) tx.update(ref, fields)
+            else tx.set(ref, school.toMap() + fields + ("memberCount" to 0L) + ("createdAt" to FieldValue.serverTimestamp()))
+        }.await()
+        Unit
+    }
+
     override suspend fun batchStats(schoolId: String): List<BatchStat> = runCatching {
         groups.whereEqualTo("schoolId", schoolId).limit(300).get().await().documents.map {
             BatchStat(
-                Grade.of(it.getLong("grade")?.toInt() ?: 10),
+                it.readTrack(),
                 it.getLong("year")?.toInt() ?: 0,
                 it.getString("section").orEmpty(),
                 it.getLong("memberCount")?.toInt() ?: 0,
@@ -122,7 +135,11 @@ class FirestoreReunionRepository : ReunionRepository {
                         "schoolId" to school.id,
                         "schoolName" to school.name,
                         "regionLabel" to school.region.label,
-                        "grade" to key.grade.value,
+                        "track" to key.track.code,
+                        "trackLabel" to key.track.label,
+                        "trackShort" to key.track.short,
+                        "kind" to school.kind.name,
+                        "grade" to key.track.code.toIntOrNull(), // legacy field for school batches
                         "year" to key.year,
                         "section" to key.section.uppercase(),
                         "inviteCode" to code,
@@ -233,7 +250,15 @@ class FirestoreReunionRepository : ReunionRepository {
         "lat" to lat,
         "lon" to lon,
         "source" to if (source == SchoolSource.CUSTOM) "custom" else "osm",
+        "kind" to kind.name,
+        "collegeType" to collegeType?.name,
     )
+
+    private fun DocumentSnapshot.readTrack(): Track {
+        val code = getString("track") ?: getLong("grade")?.toString() ?: "10"
+        if ('.' !in code) return Track.school(code)
+        return Track(code, getString("trackLabel") ?: code, getString("trackShort") ?: getString("trackLabel") ?: code)
+    }
 
     private fun DocumentSnapshot.toSchool(): School? {
         if (!exists()) return null
@@ -250,6 +275,9 @@ class FirestoreReunionRepository : ReunionRepository {
             memberCount = getLong("memberCount")?.toInt() ?: 0,
             locality = getString("locality") ?: getString("town").orEmpty(),
             aliases = (get("aliases") as? List<*>)?.filterIsInstance<String>().orEmpty(),
+            kind = getString("kind")?.let { k -> runCatching { InstitutionKind.valueOf(k) }.getOrNull() }
+                ?: com.batchmates.app.data.Classifier.kind(getString("name").orEmpty()),
+            collegeType = getString("collegeType")?.let { t -> runCatching { CollegeType.valueOf(t) }.getOrNull() },
         )
     }
 
@@ -260,7 +288,7 @@ class FirestoreReunionRepository : ReunionRepository {
             schoolId = getString("schoolId").orEmpty(),
             schoolName = getString("schoolName").orEmpty(),
             regionLabel = getString("regionLabel").orEmpty(),
-            grade = Grade.of(getLong("grade")?.toInt() ?: 10),
+            track = readTrack(),
             year = getLong("year")?.toInt() ?: 0,
             section = getString("section").orEmpty(),
             inviteCode = getString("inviteCode").orEmpty(),

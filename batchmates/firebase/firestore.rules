@@ -35,6 +35,9 @@ service cloud.firestore {
             && request.resource.data.aliases is list
             && request.resource.data.aliases.size() <= 30
             && request.resource.data.aliases.hasAll(resource.data.get('aliases', [])))
+        // Alumni correct what the institution is (school vs college, engineering vs arts…).
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['kind', 'collegeType'])
+            && request.resource.data.kind in ['SCHOOL', 'COLLEGE'])
       );
     }
 

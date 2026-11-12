@@ -20,10 +20,16 @@ interface ReunionRepository {
 
     /** Schools people created by hand in a region (shown next to map results). */
     suspend fun customSchools(region: Region): List<School>
-    suspend fun createSchool(name: String, region: Region, lat: Double?, lon: Double?, user: AppUser): Result<School>
+    suspend fun createSchool(
+        name: String, region: Region, lat: Double?, lon: Double?, user: AppUser,
+        kind: InstitutionKind = InstitutionKind.SCHOOL, collegeType: CollegeType? = null,
+    ): Result<School>
 
     /** Remembers another name for an existing school so the next person searching it finds it. */
     suspend fun addAlias(school: School, alias: String): Result<Unit>
+
+    /** Alumni correct what kind of institution it is (e.g. "this is an Arts & Science college"). */
+    suspend fun setInstitutionType(school: School, kind: InstitutionKind, collegeType: CollegeType?): Result<Unit>
 
     /** Existing groups at a school so we can show "12 classmates already here". */
     suspend fun batchStats(schoolId: String): List<BatchStat>

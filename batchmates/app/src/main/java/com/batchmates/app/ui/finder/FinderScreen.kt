@@ -79,7 +79,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.batchmates.app.data.Country
-import com.batchmates.app.data.Grade
+import com.batchmates.app.data.Classifier
+import com.batchmates.app.data.CollegeType
+import com.batchmates.app.data.InstitutionKind
+import com.batchmates.app.data.Track
+import com.batchmates.app.data.WHOLE_BATCH
+import java.util.Calendar
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.verticalScroll
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.School
 import com.batchmates.app.data.SchoolSource
@@ -121,6 +129,7 @@ fun FinderScreen(vm: FinderViewModel, onExit: () -> Unit, onJoined: (String) -> 
                     Step.SCHOOL -> SchoolStep(s, vm)
                     Step.MAP -> MapStep(s, vm, onBack = { if (!vm.back()) onExit() })
                     Step.CREATE -> CreateStep(s, vm)
+                    Step.COURSE -> CourseStep(s, vm)
                     Step.BATCH -> BatchStep(s, vm)
                     Step.SECTION -> SectionStep(s, vm)
                 }
@@ -143,7 +152,7 @@ private fun TopBar(s: FinderState, onBack: () -> Unit) {
             s.country?.let { "${it.flag} ${it.name}" },
             s.state, s.district?.takeIf { it.isNotBlank() }, s.town?.name?.takeIf { s.step.ordinal > Step.TOWN.ordinal },
             s.school?.name?.takeIf { s.step.ordinal >= Step.BATCH.ordinal },
-            s.year?.takeIf { s.step == Step.SECTION }?.let { "${s.grade.label} · $it" },
+            s.track?.takeIf { s.step == Step.SECTION || (s.step == Step.BATCH && it.isCollege) }?.let { t -> listOfNotNull(t.short, s.year?.toString()).joinToString(" · ") },
         )
         if (crumbs.isNotEmpty() && s.step != Step.COUNTRY) {
             Row(
@@ -160,7 +169,7 @@ private fun stepEyebrow(step: Step) = when (step) {
     Step.DISTRICT -> "STEP 3 OF 6"
     Step.TOWN -> "STEP 4 OF 6"
     Step.SCHOOL, Step.CREATE, Step.MAP -> "STEP 5 OF 6"
-    Step.BATCH, Step.SECTION -> "STEP 6 OF 6 · ALMOST THERE"
+    Step.COURSE, Step.BATCH, Step.SECTION -> "STEP 6 OF 6 · ALMOST THERE"
 }
 
 private fun stepTitle(step: Step) = when (step) {
@@ -168,9 +177,10 @@ private fun stepTitle(step: Step) = when (step) {
     Step.STATE -> "Which state?"
     Step.DISTRICT -> "Which district?"
     Step.TOWN -> "Which town or village?"
-    Step.SCHOOL -> "Find your school"
+    Step.SCHOOL -> "Find your school or college"
+    Step.COURSE -> "What did you study?"
     Step.MAP -> "Pick on map"
-    Step.CREATE -> "Add your school"
+    Step.CREATE -> "Add it in 10 seconds"
     Step.BATCH -> "When did you pass out?"
     Step.SECTION -> "Which section?"
 }
@@ -288,54 +298,59 @@ private fun SchoolStep(s: FinderState, vm: FinderViewModel) {
     var q by rememberSaveable { mutableStateOf("") }
     val wholeState = s.district.isNullOrBlank()
     val place = s.town?.name ?: s.district?.ifBlank { null } ?: s.state.orEmpty()
+    val noun = if (s.tab == InstitutionKind.COLLEGE) "college" else "school"
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(horizontal = 20.dp)) {
             SearchField(
                 q, { q = it },
-                if (wholeState) "Type your school name and hit search" else "Type part of your school's name",
+                if (wholeState) "Type the name and hit search" else "Type part of the name",
                 onSearch = { vm.loadSchools(q) },
             )
             Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(vm::openMap, Modifier.weight(1f)) { Icon(Icons.Rounded.Map, null, Modifier.size(18.dp)); Text("  See on map") }
-                OutlinedButton({ vm.openCreate(name = q) }, Modifier.weight(1f)) { Icon(Icons.Rounded.AddLocationAlt, null, Modifier.size(18.dp)); Text("  Add school") }
+                OutlinedButton({ vm.openCreate(name = q) }, Modifier.weight(1f)) { Icon(Icons.Rounded.AddLocationAlt, null, Modifier.size(18.dp)); Text("  Add $noun") }
             }
         }
         when (val l = s.schools) {
-            Load.Loading -> Shimmer("Looking for schools in $place…")
+            Load.Loading -> Shimmer("Looking for schools and colleges in $place…")
             is Load.Failed -> LazyColumn(contentPadding = PaddingValues(20.dp), modifier = Modifier.imePadding()) {
-                item { EmptyState("📡", "School directory unreachable", l.message) }
+                item { EmptyState("📡", "Directory unreachable", l.message) }
                 item {
                     OutlinedButton({ vm.loadSchools(q) }, Modifier.fillMaxWidth()) { Icon(Icons.Rounded.Refresh, null); Text("  Retry") }
                 }
-                item { CantFind(vm, q) }
+                item { CantFind(vm, q, s.tab) }
             }
             Load.Idle -> LazyColumn(contentPadding = PaddingValues(20.dp), modifier = Modifier.imePadding()) {
-                item { EmptyState("🔎", "Search your school", "Type part of the name — e.g. \"St. Joseph\" or \"Government Higher Secondary\" — and press search.") }
-                item { CantFind(vm, q) }
+                item { EmptyState("🔎", "Search by name", "Type part of the name — e.g. \"St. Joseph\" or \"Government Higher Secondary\" — and press search.") }
+                item { CantFind(vm, q, s.tab) }
             }
             is Load.Ready -> {
-                val list = remember(q, l.value) { l.value.filter { q.isBlank() || SchoolNames.matches(q, it) } }
-                // Typed a name that isn't in the loaded list yet? Offer a server search for it.
+                val matching = remember(q, l.value) { l.value.filter { q.isBlank() || SchoolNames.matches(q, it) } }
+                val schools = matching.filter { it.kind == InstitutionKind.SCHOOL }
+                val colleges = matching.filter { it.kind == InstitutionKind.COLLEGE }
+                val list = if (s.tab == InstitutionKind.COLLEGE) colleges else schools
+                val other = if (s.tab == InstitutionKind.COLLEGE) schools.size else colleges.size
                 val canSearchServer = q.trim().length >= 2 && !q.trim().equals(s.lastQuery, ignoreCase = true)
+                KindTabs(s.tab, schools.size, colleges.size, vm::setTab)
                 LazyColumn(
-                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 40.dp),
+                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 40.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.imePadding(),
                 ) {
                     if (list.isEmpty()) {
                         item {
                             EmptyState(
-                                "🏫",
-                                if (q.isBlank()) "No schools found yet" else "No match for \"${q.trim()}\"",
-                                "Many schools, especially older and smaller ones, aren't on public maps yet. " +
-                                    "Add yours below — it takes 10 seconds and your classmates will find it here.",
+                                if (s.tab == InstitutionKind.COLLEGE) "🏛️" else "🏫",
+                                if (q.isBlank()) "No ${noun}s found here yet" else "No $noun matches \"${q.trim()}\"",
+                                (if (other > 0) "There ${if (other == 1) "is 1 match" else "are $other matches"} in the other tab. " else "") +
+                                    "Older and smaller ${noun}s often aren't on public maps — add yours below and classmates will find it.",
                             )
                         }
                     } else {
                         item {
                             Text(
-                                if (s.town != null) "${list.size} schools in and around $place · nearest first" else "${list.size} schools in $place",
+                                if (s.town != null) "${list.size} ${noun}s in and around $place · nearest first" else "${list.size} ${noun}s in $place",
                                 color = Brand.TextDim, fontSize = 13.sp,
                             )
                         }
@@ -345,11 +360,28 @@ private fun SchoolStep(s: FinderState, vm: FinderViewModel) {
                             Icon(Icons.Rounded.Refresh, null, Modifier.size(18.dp)); Text("  Search \"${q.trim()}\" in $place")
                         }
                     }
-                    if (list.isEmpty()) item { CantFind(vm, q) }
+                    if (list.isEmpty()) item { CantFind(vm, q, s.tab) }
                     items(list, key = { it.id }) { school -> SchoolRow(school) { vm.pickSchool(school) } }
-                    if (list.isNotEmpty()) item { CantFind(vm, q) }
+                    if (list.isNotEmpty()) item { CantFind(vm, q, s.tab) }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun KindTabs(selected: InstitutionKind, schools: Int, colleges: Int, onSelect: (InstitutionKind) -> Unit) {
+    Row(
+        Modifier.padding(horizontal = 20.dp, vertical = 10.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color(0x14FFFFFF)).padding(4.dp),
+    ) {
+        listOf(InstitutionKind.SCHOOL to "🏫 Schools · $schools", InstitutionKind.COLLEGE to "🏛️ Colleges · $colleges").forEach { (k, label) ->
+            val on = k == selected
+            Box(
+                Modifier.weight(1f).height(44.dp).clip(RoundedCornerShape(12.dp))
+                    .background(if (on) Brand.Primary else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent)))
+                    .clickable { onSelect(k) },
+                contentAlignment = Alignment.Center,
+            ) { Text(label, fontWeight = if (on) FontWeight.Bold else FontWeight.Medium, color = if (on) Color.White else Brand.TextDim) }
         }
     }
 }
@@ -361,15 +393,20 @@ private fun SchoolRow(school: School, onClick: () -> Unit) {
             Box(
                 Modifier.size(42.dp).clip(RoundedCornerShape(12.dp)).background(Brush.linearGradient(Brand.pair(school.name))),
                 contentAlignment = Alignment.Center,
-            ) { Icon(Icons.Rounded.School, null, tint = Color.White) }
+            ) {
+                if (school.kind == InstitutionKind.COLLEGE) Text(school.collegeType?.emoji ?: "🏛️", fontSize = 20.sp)
+                else Icon(Icons.Rounded.School, null, tint = Color.White)
+            }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(school.name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                val kindLabel = if (school.kind == InstitutionKind.COLLEGE) school.collegeType?.label else school.schoolType.label
                 val where = listOfNotNull(
+                    kindLabel,
                     school.locality.ifBlank { school.region.town }.ifBlank { null },
-                    school.distanceKm?.let { if (it < 1) "${(it * 1000).toInt()} m away" else "%.1f km away".format(it) },
-                ).joinToString(" · ").ifBlank { school.region.label }
-                if (where.isNotBlank()) Text(where, color = Brand.TextDim, fontSize = 12.sp, maxLines = 1)
+                    school.distanceKm?.let { if (it < 1) "${(it * 1000).toInt()} m" else "%.1f km".format(it) },
+                ).joinToString(" · ")
+                if (where.isNotBlank()) Text(where, color = Brand.TextDim, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (school.aliases.isNotEmpty()) {
                     Text("Also known as " + school.aliases.take(2).joinToString(", "), color = Brand.Sun, fontSize = 12.sp, maxLines = 1)
                 }
@@ -380,15 +417,16 @@ private fun SchoolRow(school: School, onClick: () -> Unit) {
 }
 
 @Composable
-private fun CantFind(vm: FinderViewModel, typed: String) {
+private fun CantFind(vm: FinderViewModel, typed: String, kind: InstitutionKind) {
     val name = typed.trim()
+    val noun = if (kind == InstitutionKind.COLLEGE) "college" else "school"
     GlassCard(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-        Text("Can't find your school?", style = MaterialTheme.typography.titleMedium)
+        Text("Can't find your $noun?", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(4.dp))
-        Text("Create its group in 10 seconds — your classmates will find it here.", color = Brand.TextDim)
+        Text("Create its group in 10 seconds — your batchmates will find it here.", color = Brand.TextDim)
         Spacer(Modifier.height(12.dp))
         GradientButton(
-            if (name.length >= 2) "Add \"${name.take(28)}\" as a new school" else "Create my school's group",
+            if (name.length >= 2) "Add \"${name.take(28)}\"" else "Add my $noun",
             { vm.openCreate(name = name) }, Modifier.fillMaxWidth(), brush = Brand.Warm,
         )
     }
@@ -402,6 +440,11 @@ private fun CreateStep(s: FinderState, vm: FinderViewModel) {
     var state by rememberSaveable(start.state) { mutableStateOf(start.state) }
     var district by rememberSaveable(start.district) { mutableStateOf(start.district) }
     var town by rememberSaveable(start.town) { mutableStateOf(start.town) }
+    // Kind and college type follow the name until the user picks one themselves.
+    var kindPicked by rememberSaveable { mutableStateOf<InstitutionKind?>(null) }
+    var typePicked by rememberSaveable { mutableStateOf<CollegeType?>(null) }
+    val kind = kindPicked ?: if (name.isBlank()) s.tab else Classifier.kind(name)
+    val type = typePicked ?: Classifier.collegeType(name)
     fun region() = Region(
         s.countries.firstOrNull { it.name.equals(country.trim(), true) }?.code ?: start.countryCode,
         country.trim(), state.trim(), district.trim(), town.trim(),
@@ -412,15 +455,31 @@ private fun CreateStep(s: FinderState, vm: FinderViewModel) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { Text("Use the full name everyone remembers. We'll check it isn't already here.", color = Brand.TextDim) }
-        item { Field("School name", name) { name = it; vm.onCreateNameChanged(it) } }
+        item { Field("Full name", name) { name = it; vm.onCreateNameChanged(it) } }
         if (s.duplicates.isNotEmpty()) {
             item {
                 GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
                     Text("✋ Is it one of these?", style = MaterialTheme.typography.titleMedium, color = Brand.Sun)
-                    Text("These look like the same school. Tap yours — we'll remember \"${name.trim()}\" as another name for it.", color = Brand.TextDim, fontSize = 13.sp)
+                    Text("These look like the same place. Tap yours — we'll remember \"${name.trim()}\" as another name for it.", color = Brand.TextDim, fontSize = 13.sp)
                 }
             }
             items(s.duplicates, key = { "dup" + it.id }) { d -> SchoolRow(d) { vm.useExisting(d, name) } }
+        }
+        item {
+            Text("It's a…", style = MaterialTheme.typography.titleSmall)
+            Spacer(Modifier.height(6.dp))
+            KindTabs(kind, 0, 0) { kindPicked = it }
+        }
+        if (kind == InstitutionKind.SCHOOL) {
+            item {
+                Text(
+                    "${Classifier.schoolType(name).label}: batches for " + Classifier.schoolType(name).tracks.joinToString(" & ") { it.short },
+                    color = Brand.TextDim, fontSize = 13.sp,
+                )
+            }
+        } else {
+            item { Text("What kind of college? This decides which courses appear.", style = MaterialTheme.typography.titleSmall) }
+            item { CollegeTypeChips(type) { typePicked = it } }
         }
         item { Field("Town / village", town) { town = it } }
         item { Field("District", district) { district = it } }
@@ -431,7 +490,7 @@ private fun CreateStep(s: FinderState, vm: FinderViewModel) {
         item {
             GradientButton(
                 if (s.duplicates.isEmpty()) "Create & continue" else "Mine isn't listed — create it",
-                { vm.createSchool(name, region()) },
+                { vm.createSchool(name, region(), kind, type) },
                 Modifier.fillMaxWidth().navigationBarsPadding(), loading = s.joining,
                 brush = if (s.duplicates.isEmpty()) Brand.Primary else Brush.linearGradient(listOf(Color(0x33FFFFFF), Color(0x22FFFFFF))),
             )
@@ -440,17 +499,129 @@ private fun CreateStep(s: FinderState, vm: FinderViewModel) {
     if (s.confirmCreate) {
         AlertDialog(
             onDismissRequest = vm::dismissConfirm,
-            title = { Text("Create a separate school?") },
+            title = { Text("Create a separate one?") },
             text = {
                 Text(
-                    "\"${s.duplicates.first().name}\" looks like the same school. Two groups for one school splits your classmates. " +
-                        "Create a new one only if it's really a different school.",
+                    "\"${s.duplicates.first().name}\" looks like the same place. Two groups for one institution split your batchmates. " +
+                        "Create a new one only if it's really different.",
                 )
             },
-            confirmButton = { TextButton({ vm.createSchool(name, region(), force = true) }) { Text("It's different — create") } },
+            confirmButton = { TextButton({ vm.createSchool(name, region(), kind, type, force = true) }) { Text("It's different — create") } },
             dismissButton = { TextButton({ vm.useExisting(s.duplicates.first(), name) }) { Text("Use existing") } },
         )
     }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun CollegeTypeChips(selected: CollegeType?, onPick: (CollegeType) -> Unit) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        CollegeType.entries.forEach { t ->
+            val on = t == selected
+            Text(
+                "${t.emoji} ${t.label}",
+                Modifier.clip(RoundedCornerShape(50))
+                    .background(if (on) Brand.Primary else Brush.linearGradient(listOf(Color(0x1AFFFFFF), Color(0x10FFFFFF))))
+                    .clickable { onPick(t) }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                fontSize = 13.sp, fontWeight = if (on) FontWeight.Bold else FontWeight.Normal,
+            )
+        }
+    }
+}
+
+/** College: which programme and branch? Only what this kind of college teaches. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun CourseStep(s: FinderState, vm: FinderViewModel) {
+    val school = s.school ?: return
+    var fixing by remember { mutableStateOf(false) }
+    var other by rememberSaveable { mutableStateOf("") }
+    val programme = s.programme
+    LazyColumn(
+        Modifier.fillMaxSize().imePadding(),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 40.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        item {
+            GlassCard(Modifier.fillMaxWidth(), corner = 20.dp, padding = PaddingValues(16.dp)) {
+                Text(school.name, style = MaterialTheme.typography.titleLarge)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        school.collegeType?.let { "${it.emoji} ${it.label}" } ?: "🏛️ College",
+                        color = Brand.TextDim, modifier = Modifier.weight(1f),
+                    )
+                    TextButton({ fixing = true }) { Text("Wrong type?") }
+                }
+            }
+        }
+        if (programme == null) {
+            val existing = vm.existingTracks()
+            if (existing.isNotEmpty()) {
+                item { Text("🔥 Batches already here", style = MaterialTheme.typography.titleMedium) }
+                items(existing, key = { "ex" + it.first.code }) { (t, n) ->
+                    Row1(leading = "👥", title = t.label, subtitle = "$n alumni joined") { vm.pickCourse(t) }
+                }
+                item { Spacer(Modifier.height(4.dp)); Text("Or pick your course", style = MaterialTheme.typography.titleMedium) }
+            }
+            vm.programmesForCollege().groupBy { it.level }.toSortedMap().forEach { (level, list) ->
+                item(key = "lvl" + level.code) {
+                    Text("${level.emoji}  ${level.label}", style = Eyebrow, modifier = Modifier.padding(top = 8.dp))
+                }
+                items(list, key = { "p" + it.level.code + it.code }) { p ->
+                    Row1(
+                        leading = level.emoji, title = p.name,
+                        subtitle = if (p.specialisations.isNotEmpty()) "${p.specialisations.size} branches" else null,
+                    ) { vm.pickProgramme(p) }
+                }
+            }
+            if (!s.showAllProgrammes && school.collegeType != null && school.collegeType != CollegeType.UNIVERSITY) item {
+                TextButton(vm::showAllProgrammes, Modifier.fillMaxWidth()) { Text("My course isn't here — show all programmes") }
+            }
+        } else {
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${programme.name} — which branch?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+                    TextButton(vm::clearProgramme) { Text("Change") }
+                }
+            }
+            item {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    (programme.specialisations + "General").forEach { spec ->
+                        Text(
+                            spec,
+                            Modifier.clip(RoundedCornerShape(50)).background(Color(0x1FFFFFFF))
+                                .clickable { vm.pickSpecialisation(spec) }
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+            item { ManualEntry("Not listed? Type your branch (e.g. CSE, Food Tech)", other) { vm.pickSpecialisation(it) } }
+        }
+    }
+    if (fixing) InstitutionFixDialog(school, onDismiss = { fixing = false }) { k, t -> fixing = false; vm.correctInstitution(k, t) }
+}
+
+@Composable
+private fun InstitutionFixDialog(school: School, onDismiss: () -> Unit, onSave: (InstitutionKind, CollegeType?) -> Unit) {
+    var kind by remember { mutableStateOf(school.kind) }
+    var type by remember { mutableStateOf(school.collegeType) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("What is ${school.name.take(40)}?") },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                Text("Your fix is saved for every alumnus who comes after you.", color = Brand.TextDim, fontSize = 13.sp)
+                Spacer(Modifier.height(10.dp))
+                KindTabs(kind, 0, 0) { kind = it }
+                if (kind == InstitutionKind.COLLEGE) CollegeTypeChips(type) { type = it }
+            }
+        },
+        confirmButton = { TextButton({ onSave(kind, type) }) { Text("Save") } },
+        dismissButton = { TextButton(onDismiss) { Text("Cancel") } },
+    )
 }
 
 @Composable
@@ -458,6 +629,9 @@ private fun BatchStep(s: FinderState, vm: FinderViewModel) {
     val grid = rememberLazyGridState()
     val scope = rememberCoroutineScope()
     val decades = remember(vm.years) { vm.years.map { it / 10 * 10 }.distinct() }
+    val school = s.school
+    val isCollege = school?.kind == InstitutionKind.COLLEGE
+    var fixing by remember { mutableStateOf(false) }
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
         state = grid,
@@ -468,33 +642,50 @@ private fun BatchStep(s: FinderState, vm: FinderViewModel) {
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             Column {
-                s.school?.let { school ->
+                school?.let { sc ->
                     GlassCard(Modifier.fillMaxWidth(), corner = 20.dp, padding = PaddingValues(16.dp)) {
-                        Text(school.name, style = MaterialTheme.typography.titleLarge)
-                        if (school.region.label.isNotBlank()) Text(school.region.label, color = Brand.TextDim)
+                        Text(sc.name, style = MaterialTheme.typography.titleLarge)
+                        if (sc.region.label.isNotBlank()) Text(sc.region.label, color = Brand.TextDim)
                         val total = s.stats.sumOf { it.members }
                         if (total > 0) { Spacer(Modifier.height(8.dp)); Pill("🔥 $total alumni already joined", Brand.Sun) }
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Grade.entries.forEach { g ->
-                        val selected = s.grade == g
-                        Box(
-                            Modifier.weight(1f).height(64.dp).clip(RoundedCornerShape(18.dp))
-                                .background(if (selected) Brand.Primary else Brush.linearGradient(listOf(Color(0x1AFFFFFF), Color(0x10FFFFFF))))
-                                .border(1.dp, if (selected) Color.Transparent else Color(0x22FFFFFF), RoundedCornerShape(18.dp))
-                                .clickable { vm.pickGrade(g) },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(if (g == Grade.TENTH) "10th" else "12th", fontWeight = FontWeight.Black, fontSize = 20.sp)
-                                Text(if (g == Grade.TENTH) "SSLC / Secondary" else "HSC / Senior Secondary", fontSize = 11.sp, color = Brand.TextDim)
+                if (isCollege) {
+                    s.track?.let { t ->
+                        GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
+                            Text("YOUR COURSE", style = Eyebrow)
+                            Text(t.label, style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
+                } else {
+                    val tracks = if (s.showAllStandards) Track.schoolTracks.reversed() else school?.schoolType?.tracks.orEmpty()
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        tracks.forEach { t ->
+                            val selected = s.track?.code == t.code
+                            Box(
+                                Modifier.weight(1f).height(64.dp).clip(RoundedCornerShape(18.dp))
+                                    .background(if (selected) Brand.Primary else Brush.linearGradient(listOf(Color(0x1AFFFFFF), Color(0x10FFFFFF))))
+                                    .border(1.dp, if (selected) Color.Transparent else Color(0x22FFFFFF), RoundedCornerShape(18.dp))
+                                    .clickable { vm.pickTrack(t) },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(t.short, fontWeight = FontWeight.Black, fontSize = 20.sp)
+                                    Text(t.label.substringAfter("· "), fontSize = 11.sp, color = Brand.TextDim, maxLines = 1)
+                                }
                             }
                         }
                     }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (!s.showAllStandards) TextButton(vm::showAllStandards) { Text("Other class") }
+                        Spacer(Modifier.weight(1f))
+                        TextButton({ fixing = true }) { Text("It's a college?") }
+                    }
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(8.dp))
+                Text(if (isCollege) "Year you graduated" else "Year you passed out", style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(decades) { d ->
                         Pill("${d}s", Brand.Sky, Modifier.clickable {
@@ -507,14 +698,17 @@ private fun BatchStep(s: FinderState, vm: FinderViewModel) {
             }
         }
         items(vm.years, key = { it }) { y ->
-            val count = vm.membersFor(s.grade, y)
+            val count = vm.membersFor(s.track, y)
             YearTile(y, count, y == s.year) { vm.pickYear(y) }
         }
     }
+    if (fixing && school != null) InstitutionFixDialog(school, onDismiss = { fixing = false }) { k, t -> fixing = false; vm.correctInstitution(k, t) }
 }
 
 @Composable
 private fun YearTile(year: Int, count: Int, selected: Boolean, onClick: () -> Unit) {
+    val ago = Calendar.getInstance().get(Calendar.YEAR) - year
+    val milestone = ago >= 5 && ago % 5 == 0
     Box(
         Modifier.aspectRatio(1f).clip(RoundedCornerShape(16.dp))
             .background(
@@ -524,30 +718,39 @@ private fun YearTile(year: Int, count: Int, selected: Boolean, onClick: () -> Un
                     else -> Brush.linearGradient(listOf(Color(0x18FFFFFF), Color(0x0CFFFFFF)))
                 },
             )
+            .border(1.dp, if (milestone) Brand.Sun.copy(alpha = 0.5f) else Color.Transparent, RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("$year", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            if (count > 0) Text("👥 $count", fontSize = 11.sp, color = Brand.Sun)
+            when {
+                count > 0 -> Text("👥 $count", fontSize = 11.sp, color = Brand.Sun)
+                milestone -> Text("🎉 $ago yrs", fontSize = 10.sp, color = Brand.Sun)
+            }
         }
     }
 }
 
 @Composable
 private fun SectionStep(s: FinderState, vm: FinderViewModel) {
-    var picked by rememberSaveable { mutableStateOf<String?>(null) }
+    val isCollege = s.school?.kind == InstitutionKind.COLLEGE
+    var picked by rememberSaveable { mutableStateOf<String?>(if (isCollege) WHOLE_BATCH else null) }
     var custom by rememberSaveable { mutableStateOf("") }
-    val sections = listOf("A", "B", "C", "D", "E", "F", "G", "H")
+    val sections = (if (isCollege) listOf(WHOLE_BATCH) else emptyList()) + listOf("A", "B", "C", "D", "E", "F", "G", "H").take(if (isCollege) 7 else 8)
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal = 20.dp)) {
-        Text("Pick your section. Don't remember? Choose the one most friends were in — you can join more later.", color = Brand.TextDim)
+        Text(
+            if (isCollege) "Most college batches stay together as one group. Had sections? Pick yours."
+            else "Pick your section. Don't remember? Choose the one most friends were in — you can join more later.",
+            color = Brand.TextDim,
+        )
         Spacer(Modifier.height(16.dp))
         LazyVerticalGrid(
             GridCells.Fixed(4),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(sections) { sec ->
+            items(sections, span = { if (it == WHOLE_BATCH) GridItemSpan(maxLineSpan) else GridItemSpan(1) }) { sec ->
                 val count = vm.membersFor(sec)
                 val selected = picked == sec
                 val pulse = rememberInfiniteTransition(label = "p").animateFloat(
@@ -555,7 +758,8 @@ private fun SectionStep(s: FinderState, vm: FinderViewModel) {
                     infiniteRepeatable(tween(900), RepeatMode.Reverse), label = "s",
                 )
                 Box(
-                    Modifier.aspectRatio(1f).graphicsLayer { scaleX = pulse.value; scaleY = pulse.value }
+                    Modifier.then(if (sec == WHOLE_BATCH) Modifier.height(76.dp) else Modifier.aspectRatio(1f))
+                        .graphicsLayer { scaleX = pulse.value; scaleY = pulse.value }
                         .clip(RoundedCornerShape(20.dp))
                         .background(
                             if (selected) Brand.Primary
@@ -566,7 +770,7 @@ private fun SectionStep(s: FinderState, vm: FinderViewModel) {
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(sec, fontSize = 30.sp, fontWeight = FontWeight.Black)
+                        Text(if (sec == WHOLE_BATCH) "👥 Whole batch" else sec, fontSize = if (sec == WHOLE_BATCH) 20.sp else 30.sp, fontWeight = FontWeight.Black)
                         Text(if (count > 0) "$count here" else "be first", fontSize = 11.sp, color = if (count > 0) Brand.Sun else Brand.TextDim)
                     }
                 }
@@ -576,13 +780,17 @@ private fun SectionStep(s: FinderState, vm: FinderViewModel) {
         OutlinedTextField(
             custom, { custom = it.take(20); if (it.isNotBlank()) picked = null },
             Modifier.fillMaxWidth(), singleLine = true, shape = RoundedCornerShape(16.dp),
-            label = { Text("Other section / stream (e.g. Bio-Maths, Commerce)") },
+            label = { Text(if (isCollege) "Other section (e.g. Batch 2, Morning shift)" else "Other section / stream (e.g. Bio-Maths, Commerce)") },
         )
         s.error?.let { Spacer(Modifier.height(8.dp)); Text(it, color = MaterialTheme.colorScheme.error) }
         Spacer(Modifier.weight(1f))
         val choice = picked ?: custom.trim().takeIf { it.isNotEmpty() }
         GradientButton(
-            if (choice != null) "Join Section ${choice.uppercase()} 🎉" else "Choose a section",
+            when {
+                choice == null -> "Choose a section"
+                choice == WHOLE_BATCH -> "Join my batch 🎉"
+                else -> "Join Section ${choice.uppercase()} 🎉"
+            },
             { choice?.let(vm::join) },
             Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 12.dp),
             enabled = choice != null, loading = s.joining,

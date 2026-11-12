@@ -220,7 +220,15 @@ private fun Header(g: Group, faces: List<Pair<String, String?>>) {
             if (g.regionLabel.isNotBlank()) Text(g.regionLabel, color = Color.White.copy(alpha = 0.8f), fontSize = 13.sp)
             Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Pill(g.grade.label, Color.White); Pill("Section ${g.section}", Color.White)
+                Pill(g.track.short, Color.White); Pill(g.sectionLabel, Color.White)
+            }
+            g.milestone(java.util.Calendar.getInstance().get(java.util.Calendar.YEAR))?.let { years ->
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    "🎉 ${java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)} is your $years-year reunion! Get everyone in.",
+                    Modifier.clip(RoundedCornerShape(12.dp)).background(Color(0x33000000)).padding(horizontal = 12.dp, vertical = 8.dp),
+                    color = Brand.Sun, fontWeight = FontWeight.Bold, fontSize = 13.sp,
+                )
             }
             Spacer(Modifier.height(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -6,7 +6,12 @@ import com.batchmates.app.data.AppUser
 import com.batchmates.app.data.BatchKey
 import com.batchmates.app.data.BatchStat
 import com.batchmates.app.data.Country
-import com.batchmates.app.data.Grade
+import com.batchmates.app.data.CollegeType
+import com.batchmates.app.data.InstitutionKind
+import com.batchmates.app.data.Level
+import com.batchmates.app.data.Programme
+import com.batchmates.app.data.Programmes
+import com.batchmates.app.data.Track
 import com.batchmates.app.data.Place
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.ReunionRepository
@@ -26,7 +31,7 @@ import java.util.Locale
 
 enum class Step(val title: String) {
     COUNTRY("Country"), STATE("State"), DISTRICT("District"), TOWN("Town"), SCHOOL("School"),
-    MAP("Map"), CREATE("New school"), BATCH("Batch"), SECTION("Section"),
+    MAP("Map"), CREATE("New school"), COURSE("Course"), BATCH("Batch"), SECTION("Section"),
 }
 
 sealed interface Load<out T> {
@@ -47,7 +52,14 @@ data class FinderState(
     val schools: Load<List<School>> = Load.Idle,
     val school: School? = null,
     val stats: List<BatchStat> = emptyList(),
-    val grade: Grade = Grade.TENTH,
+    /** What the batch studied: a school standard or a college course. */
+    val track: Track? = null,
+    /** Schools or Colleges tab on the results list. */
+    val tab: InstitutionKind = InstitutionKind.SCHOOL,
+    /** College programme picked but waiting for a specialisation (e.g. B.E. → which branch?). */
+    val programme: Programme? = null,
+    val showAllProgrammes: Boolean = false,
+    val showAllStandards: Boolean = false,
     val year: Int? = null,
     val joining: Boolean = false,
     val error: String? = null,
@@ -230,8 +242,12 @@ class FinderViewModel(
     fun pickSchool(school: School) {
         // Schools from a list already know their region; map / search picks may need it filled in.
         val fixed = if (school.region.state.isBlank() && _s.value.state != null) school.copy(region = _s.value.region) else school
-        _s.update { it.copy(school = fixed, stats = emptyList(), year = null) }
-        go(Step.BATCH)
+        val firstTrack = if (fixed.kind == InstitutionKind.SCHOOL) fixed.schoolType.tracks.first() else null
+        _s.update {
+            it.copy(school = fixed, stats = emptyList(), year = null, track = firstTrack, programme = null,
+                showAllProgrammes = false, showAllStandards = false)
+        }
+        go(if (fixed.kind == InstitutionKind.COLLEGE) Step.COURSE else Step.BATCH)
         viewModelScope.launch {
             val withRegion = if (fixed.region.countryCode.isBlank() && fixed.lat != null && fixed.lon != null) {
                 runCatching { geo.reverse(fixed.lat, fixed.lon) }.getOrNull()?.let { fixed.copy(region = it) } ?: fixed
@@ -280,7 +296,11 @@ class FinderViewModel(
 
     fun dismissConfirm() = _s.update { it.copy(confirmCreate = false) }
 
-    fun createSchool(name: String, region: Region, force: Boolean = false) {
+    fun setTab(kind: InstitutionKind) = _s.update { it.copy(tab = kind) }
+
+    fun createSchool(
+        name: String, region: Region, kind: InstitutionKind, collegeType: CollegeType?, force: Boolean = false,
+    ) {
         if (name.trim().length < 3) { _s.update { it.copy(error = "Please enter the full school name") }; return }
         if (region.country.isBlank()) { _s.update { it.copy(error = "Please add at least the country") }; return }
         if (region.town.isBlank()) { _s.update { it.copy(error = "Add the town or village so classmates can find it") }; return }
@@ -288,7 +308,7 @@ class FinderViewModel(
         _s.update { it.copy(joining = true, error = null, confirmCreate = false) }
         viewModelScope.launch {
             val pin = _s.value.pinned ?: _s.value.town?.let { it.lat to it.lon }
-            repo.createSchool(name, region, pin?.first, pin?.second, user)
+            repo.createSchool(name, region, pin?.first, pin?.second, user, kind, if (kind == InstitutionKind.COLLEGE) collegeType else null)
                 .onSuccess { school -> remember(listOf(school)); _s.update { it.copy(joining = false) }; pickSchool(school) }
                 .onFailure { e -> _s.update { it.copy(joining = false, error = e.message) } }
         }
@@ -333,7 +353,53 @@ class FinderViewModel(
 
     // ---------- batch + section ----------
 
-    fun pickGrade(g: Grade) = _s.update { it.copy(grade = g) }
+    fun pickTrack(t: Track) = _s.update { it.copy(track = t) }
+    fun showAllStandards() = _s.update { it.copy(showAllStandards = true) }
+    fun showAllProgrammes() = _s.update { it.copy(showAllProgrammes = true) }
+
+    /** Programmes this college can have; "Show all" lifts the filter for unusual cases. */
+    fun programmesForCollege(): List<Programme> {
+        val s = _s.value
+        return if (s.showAllProgrammes) Programmes.all else Programmes.forType(s.school?.collegeType)
+    }
+
+    /** Batches that already exist at this institution, biggest first — the fastest path for most people. */
+    fun existingTracks(): List<Pair<Track, Int>> = _s.value.stats
+        .groupBy { it.track.code }
+        .map { (_, list) -> list.first().track to list.sumOf { it.members } }
+        .filter { (t, _) -> t.isCollege == (_s.value.school?.kind == InstitutionKind.COLLEGE) }
+        .sortedByDescending { it.second }
+
+    fun pickProgramme(p: Programme) {
+        if (p.specialisations.isEmpty() || p.code == "PHD") pickCourse(Track.of(p, null))
+        else _s.update { it.copy(programme = p) }
+    }
+
+    fun clearProgramme() = _s.update { it.copy(programme = null) }
+
+    fun pickSpecialisation(spec: String?) {
+        val p = _s.value.programme ?: return
+        pickCourse(Track.of(p, spec?.takeIf { it.isNotBlank() && it != "General" }))
+    }
+
+    fun pickCourse(t: Track) {
+        _s.update { it.copy(track = t, programme = null) }
+        go(Step.BATCH)
+    }
+
+    /** Alumni fix a wrong guess ("this is an Arts college, not Engineering"); saved for everyone. */
+    fun correctInstitution(kind: InstitutionKind, collegeType: CollegeType?) {
+        val school = _s.value.school ?: return
+        val fixed = school.copy(kind = kind, collegeType = if (kind == InstitutionKind.COLLEGE) collegeType else null)
+        viewModelScope.launch { repo.setInstitutionType(school, fixed.kind, fixed.collegeType) }
+        _s.update {
+            it.copy(
+                school = fixed, programme = null, showAllProgrammes = false,
+                track = if (kind == InstitutionKind.SCHOOL) fixed.schoolType.tracks.first() else null,
+                step = if (kind == InstitutionKind.COLLEGE) Step.COURSE else Step.BATCH,
+            )
+        }
+    }
 
     fun pickYear(y: Int) {
         _s.update { it.copy(year = y) }
@@ -348,15 +414,18 @@ class FinderViewModel(
         if (sec.isBlank()) return
         _s.update { it.copy(joining = true, error = null) }
         viewModelScope.launch {
-            repo.joinBatch(school, BatchKey(school.id, s.grade, year, sec), user)
+            val track = s.track ?: return@launch
+            repo.joinBatch(school, BatchKey(school.id, track, year, sec), user)
                 .onSuccess { g -> _joined.send(g.id) }
                 .onFailure { e -> _s.update { it.copy(joining = false, error = e.message ?: "Couldn't join. Try again.") } }
         }
     }
 
-    fun membersFor(grade: Grade, year: Int): Int = _s.value.stats.filter { it.grade == grade && it.year == year }.sumOf { it.members }
+    fun membersFor(track: Track?, year: Int): Int =
+        _s.value.stats.filter { it.track.code == track?.code && it.year == year }.sumOf { it.members }
+
     fun membersFor(section: String): Int {
         val s = _s.value
-        return s.stats.firstOrNull { it.grade == s.grade && it.year == s.year && it.section.equals(section, true) }?.members ?: 0
+        return s.stats.firstOrNull { it.track.code == s.track?.code && it.year == s.year && it.section.equals(section, true) }?.members ?: 0
     }
 }

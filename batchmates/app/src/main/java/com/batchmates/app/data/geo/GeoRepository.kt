@@ -1,7 +1,9 @@
 package com.batchmates.app.data.geo
 
 import android.content.Context
+import com.batchmates.app.data.Classifier
 import com.batchmates.app.data.Country
+import com.batchmates.app.data.InstitutionKind
 import com.batchmates.app.data.Place
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.School
@@ -117,7 +119,7 @@ class GeoRepository(private val context: Context) {
             val filter = name?.let { "[\"name\"~\"${regex(it)}\",i]" }.orEmpty()
             val q = """
                 [out:json][timeout:25];
-                nwr["amenity"~"^(school|college)$"]["name"]$filter(around:30000,${center.first},${center.second});
+                nwr["amenity"~"^(school|college|university)$"]["name"]$filter(around:30000,${center.first},${center.second});
                 out center tags 1500;
             """.trimIndent()
             runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), null) }
@@ -146,7 +148,7 @@ class GeoRepository(private val context: Context) {
 
     private suspend fun photonSchools(q: String, box: String? = null, stateFilter: String? = null): List<School> {
         val url = buildString {
-            append(PHOTON).append("?limit=50&osm_tag=amenity:school&osm_tag=amenity:college&q=").append(URLEncoder.encode(q, "UTF-8"))
+            append(PHOTON).append("?limit=50&osm_tag=amenity:school&osm_tag=amenity:college&osm_tag=amenity:university&q=").append(URLEncoder.encode(q, "UTF-8"))
             if (box != null) append("&bbox=").append(box)
         }
         val features = JSONObject(http.get(url, ttlMs = 14 * Http.DAY, readTimeoutMs = 15_000)).optJSONArray("features") ?: JSONArray()
@@ -165,7 +167,7 @@ class GeoRepository(private val context: Context) {
                 ),
                 lat = c?.optDouble(1), lon = c?.optDouble(0),
                 locality = p.optString("city").ifBlank { p.optString("county") },
-            )
+            ).classified(p.optString("osm_value"))
         }
     }
 
@@ -201,7 +203,7 @@ class GeoRepository(private val context: Context) {
             val filter = name?.let { "[\"name\"~\"${regex(it)}\",i]" }.orEmpty()
             val q = """
                 [out:json][timeout:25];
-                nwr["amenity"~"^(school|college)$"]["name"]$filter(around:${(radiusKm * 1000).toInt()},${center.first},${center.second});
+                nwr["amenity"~"^(school|college|university)$"]["name"]$filter(around:${(radiusKm * 1000).toInt()},${center.first},${center.second});
                 out center tags 800;
             """.trimIndent()
             runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), null) }
@@ -232,7 +234,7 @@ class GeoRepository(private val context: Context) {
     suspend fun schoolsInBox(south: Double, west: Double, north: Double, east: Double): List<School> {
         val q = """
             [out:json][timeout:25];
-            nwr["amenity"~"^(school|college)$"]["name"](${"%.4f".format(java.util.Locale.US, south)},${"%.4f".format(java.util.Locale.US, west)},${"%.4f".format(java.util.Locale.US, north)},${"%.4f".format(java.util.Locale.US, east)});
+            nwr["amenity"~"^(school|college|university)$"]["name"](${"%.4f".format(java.util.Locale.US, south)},${"%.4f".format(java.util.Locale.US, west)},${"%.4f".format(java.util.Locale.US, north)},${"%.4f".format(java.util.Locale.US, east)});
             out center tags 400;
         """.trimIndent()
         val fromOverpass = runCatching { parseSchools(overpass(q, ttlMs = 14 * Http.DAY), null) }
@@ -267,7 +269,7 @@ class GeoRepository(private val context: Context) {
                 lat = o.optString("lat").toDoubleOrNull(),
                 lon = o.optString("lon").toDoubleOrNull(),
                 source = SchoolSource.OSM,
-            )
+            ).classified(o.optString("type"))
         }
     }
 
@@ -320,7 +322,7 @@ class GeoRepository(private val context: Context) {
                 lat = center?.optDouble("lat") ?: e.optDouble("lat").takeIf { !it.isNaN() },
                 lon = center?.optDouble("lon") ?: e.optDouble("lon").takeIf { !it.isNaN() },
                 locality = tags.optString("addr:city").ifBlank { tags.optString("addr:place") },
-            )
+            ).classified(tags.optString("amenity"))
         }.distinctBy { it.id }.sortedBy { it.name.lowercase() }
 
     private fun JSONObject.toRegion(): Region {
@@ -329,6 +331,11 @@ class GeoRepository(private val context: Context) {
             optString(k).takeIf { it.isNotBlank() }
         }.orEmpty().replace(Regex("\\s+district$", RegexOption.IGNORE_CASE), "")
         return Region(cc, optString("country"), optString("state"), district)
+    }
+
+    private fun School.classified(mapTag: String?): School {
+        val kind = Classifier.kind(name, mapTag)
+        return copy(kind = kind, collegeType = if (kind == InstitutionKind.COLLEGE) Classifier.collegeType(name, mapTag) else null)
     }
 
     /** Escapes text for an Overpass regex inside double quotes. */
@@ -344,7 +351,7 @@ class GeoRepository(private val context: Context) {
         private const val PHOTON = "https://photon.komoot.io/api/"
         private val PLACE_KINDS = setOf("city", "town", "village", "suburb", "hamlet", "neighbourhood", "quarter", "locality", "municipality")
         /** Photon is a text search, so we ask for the words Indian school names usually contain. */
-        private val PHOTON_SCHOOL_WORDS = listOf("school", "higher secondary", "matriculation", "vidyalaya", "college")
+        private val PHOTON_SCHOOL_WORDS = listOf("school", "higher secondary", "matriculation", "vidyalaya", "college", "polytechnic", "university", "institute")
         private val OVERPASS_ENDPOINTS = listOf(
             "https://overpass-api.de/api/interpreter",
             "https://overpass.kumi.systems/api/interpreter",

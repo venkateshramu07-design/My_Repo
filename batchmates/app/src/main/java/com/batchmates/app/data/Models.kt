@@ -44,29 +44,28 @@ data class School(
     val aliases: List<String> = emptyList(),
     /** Distance from the chosen town, for sorting and display. */
     val distanceKm: Double? = null,
-)
-
-/** 10th or 12th standard pass-outs (more can be enabled later). */
-enum class Grade(val value: Int, val label: String) {
-    TENTH(10, "10th Grade"),
-    TWELFTH(12, "12th Grade");
-
-    companion object {
-        fun of(value: Int) = entries.firstOrNull { it.value == value } ?: TENTH
-    }
+    /** School or college (from the map tag and the name; alumni can correct it). */
+    val kind: InstitutionKind = InstitutionKind.SCHOOL,
+    /** For colleges: engineering / arts & science / medical …, decides which programmes appear. */
+    val collegeType: CollegeType? = null,
+) {
+    val schoolType: SchoolType get() = Classifier.schoolType(name)
 }
 
-/** One reunion group = school + grade + pass-out year + section. */
-data class BatchKey(val schoolId: String, val grade: Grade, val year: Int, val section: String) {
-    val groupId: String get() = "${schoolId}_${grade.value}_${year}_${section.uppercase()}"
+/** One reunion group = institution + what they studied + pass-out year + section. */
+data class BatchKey(val schoolId: String, val track: Track, val year: Int, val section: String) {
+    val groupId: String get() = "${schoolId}_${track.code}_${year}_${section.uppercase()}"
 }
+
+/** Colleges often have no sections; this value means "the whole batch". */
+const val WHOLE_BATCH = "ALL"
 
 data class Group(
     val id: String,
     val schoolId: String,
     val schoolName: String,
     val regionLabel: String,
-    val grade: Grade,
+    val track: Track,
     val year: Int,
     val section: String,
     val inviteCode: String,
@@ -74,7 +73,11 @@ data class Group(
     val whatsappLink: String? = null,
     val createdBy: String = "",
 ) {
-    val title: String get() = "${grade.label} · Class of $year · Section $section"
+    val sectionLabel: String get() = if (section == WHOLE_BATCH) "Whole batch" else "Section $section"
+    val title: String get() = "${track.short} · Class of $year · $sectionLabel"
+
+    /** 5/10/15/20… years since passing out: the perfect excuse for a reunion. */
+    fun milestone(currentYear: Int): Int? = (currentYear - year).takeIf { it >= 5 && it % 5 == 0 }
 }
 
 data class Member(val uid: String, val name: String, val photoUrl: String?, val joinedAt: Long)
@@ -89,4 +92,4 @@ data class Message(
 )
 
 /** How many classmates already joined a (grade, year, section) at a school. Used to lure people in. */
-data class BatchStat(val grade: Grade, val year: Int, val section: String, val members: Int)
+data class BatchStat(val track: Track, val year: Int, val section: String, val members: Int)

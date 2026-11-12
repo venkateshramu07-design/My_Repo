@@ -5,7 +5,9 @@ import app.cash.paparazzi.Paparazzi
 import com.batchmates.app.data.AppUser
 import com.batchmates.app.data.BatchKey
 import com.batchmates.app.data.Country
-import com.batchmates.app.data.Grade
+import com.batchmates.app.data.Track
+import com.batchmates.app.data.InstitutionKind
+import com.batchmates.app.data.Classifier
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.School
 import com.batchmates.app.data.demo.DemoAuthRepository
@@ -51,10 +53,10 @@ class ScreensTest {
 
     private fun seeded() = DemoReunionRepository().also { repo ->
         runBlocking {
-            repo.joinBatch(school, BatchKey(school.id, Grade.TWELFTH, 2008, "B"), me)
+            repo.joinBatch(school, BatchKey(school.id, Track.TWELFTH, 2006, "B"), me)
             repo.joinBatch(
                 school.copy(id = "osm_n2", name = "Government Boys Hr. Sec. School"),
-                BatchKey("osm_n2", Grade.TENTH, 2006, "A"), me,
+                BatchKey("osm_n2", Track.TENTH, 2004, "A"), me,
             )
         }
     }
@@ -75,7 +77,7 @@ class ScreensTest {
     @Test fun group() {
         val repo = seeded()
         paparazzi.snapshot {
-            BatchMatesTheme { GroupScreen(GroupViewModel(repo, me, "osm_n1_12_2008_B"), celebrate = false) {} }
+            BatchMatesTheme { GroupScreen(GroupViewModel(repo, me, "osm_n1_12_2006_B"), celebrate = false) {} }
         }
     }
 
@@ -110,7 +112,7 @@ class ScreensTest {
             vm.pickCountry(india); vm.pickState("Tamil Nadu"); vm.pickDistrict("Thanjavur")
             vm.pickTown(kumbakonam)
             vm.openCreate(name = "vallalar")
-            vm.createSchool("vallalar", vm.state.value.region)
+            vm.createSchool("vallalar", vm.state.value.region, InstitutionKind.SCHOOL, null)
             repeat(100) { if (vm.state.value.school != null) return@repeat; Thread.sleep(50) }
             assertEquals("vallalar", vm.state.value.school?.name)
             assertEquals("Kumbakonam", vm.state.value.school?.region?.town)
@@ -118,9 +120,21 @@ class ScreensTest {
             vm.back()
             vm.openCreate(name = "Vallalar Higher Secondary School")
             assertTrue("duplicate not detected", vm.state.value.duplicates.any { it.name == "vallalar" })
-            vm.createSchool("Vallalar Higher Secondary School", vm.state.value.region)
+            vm.createSchool("Vallalar Higher Secondary School", vm.state.value.region, InstitutionKind.SCHOOL, null)
             assertTrue("must ask before creating a duplicate", vm.state.value.confirmCreate)
         }
+        paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
+    }
+
+    @Test fun engineeringCollegeShowsOnlyEngineeringCourses() {
+        val vm = FinderViewModel(GeoRepository(paparazzi.context), DemoReunionRepository(), me, startOnMap = false)
+        val name = "K. S. K. College of Engineering & Technology"
+        val college = School("osm_w9", name, Region("IN", "India", "Tamil Nadu", "Thanjavur", "Kumbakonam"),
+            kind = Classifier.kind(name), collegeType = Classifier.collegeType(name))
+        vm.pickSchool(college)
+        val codes = vm.programmesForCollege().map { it.code }
+        assertTrue("BE" in codes && "ME" in codes)
+        assertTrue("no arts/medicine at an engineering college", codes.none { it in setOf("BA", "BSC", "MBBS", "BCOM") })
         paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
     }
 }

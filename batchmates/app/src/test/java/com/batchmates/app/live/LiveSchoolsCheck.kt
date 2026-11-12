@@ -26,6 +26,7 @@ class LiveSchoolsCheck {
             println("LIVE places=${places.map { it.name + "/" + it.kind }}")
             val kb = places.first { it.name == "Kumbakonam" }
             val near = geo.schoolsNear(kb, r.copy(town = "Kumbakonam"))
+            println("LIVE kinds=" + near.groupBy { it.kind }.mapValues { (_, v) -> v.take(4).map { it.name + " [" + (it.collegeType?.label ?: it.schoolType.label) + "]" } })
             println("LIVE near=${near.size} first=${near.take(6).map { it.name + " @" + it.locality + " " + "%.1f".format(it.distanceKm) }}")
         }
     }

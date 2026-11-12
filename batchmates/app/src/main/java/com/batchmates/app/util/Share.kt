@@ -22,7 +22,9 @@ object Invites {
     fun message(group: Group): String =
         "🎓 Remember us? I just found our batch on BatchMates!\n\n" +
             "🏫 ${group.schoolName}\n" +
-            "📚 ${group.grade.label} · Class of ${group.year} · Section ${group.section}\n" +
+            "📚 ${group.track.label} · Class of ${group.year} · ${group.sectionLabel}\n" +
+            (group.milestone(java.util.Calendar.getInstance().get(java.util.Calendar.YEAR))
+                ?.let { "🎉 It's our $it-year reunion year!\n" } ?: "") +
             "👥 ${group.memberCount} classmate${if (group.memberCount == 1) "" else "s"} already in\n\n" +
             "Join our reunion 👉 ${link(group.inviteCode)}\n" +
             "or open BatchMates and enter code ${group.inviteCode}"
