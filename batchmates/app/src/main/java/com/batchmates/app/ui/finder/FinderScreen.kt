@@ -52,6 +52,7 @@ import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -282,17 +283,35 @@ private fun TownStep(s: FinderState, vm: FinderViewModel) {
             if (q.isBlank()) {
                 item {
                     Text(
-                        if (s.townChips.isEmpty()) "Finding towns in ${s.district}…" else "Towns in ${s.district} with schools",
+                        when {
+                            !s.townsLoaded -> "Finding towns in ${s.district}…"
+                            s.townChips.isEmpty() -> "Type your town above"
+                            else -> "Towns in and around ${s.district}"
+                        },
                         style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
                     )
                 }
-                items(s.townChips, key = { "chip" + it.name }) { p -> Row1(leading = "📍", title = p.name, subtitle = p.area) { vm.pickTown(p) } }
+                if (!s.townsLoaded) items(4) { TownSkeleton() }
+                items(s.townChips, key = { "chip" + it.name + it.lat }) { p ->
+                    Row1(
+                        leading = if (p.kind == "city") "🏙️" else "📍", title = p.name,
+                        subtitle = listOf(p.kind.replaceFirstChar { it.uppercase() }, p.area.takeIf { a -> !a.equals(p.name, true) }.orEmpty())
+                            .filter { it.isNotBlank() }.joinToString(" · "),
+                    ) { vm.pickTown(p) }
+                }
             }
             item {
                 TextButton({ vm.pickTown(null) }, Modifier.fillMaxWidth()) { Text("Skip — show all schools in ${s.district}") }
             }
         }
     }
+}
+
+@Composable
+private fun TownSkeleton() {
+    val t = rememberInfiniteTransition(label = "ts")
+    val a by t.animateFloat(0.05f, 0.14f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "a")
+    Box(Modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(16.dp)).background(Color.White.copy(alpha = a)))
 }
 
 @Composable
@@ -351,10 +370,16 @@ private fun SchoolStep(s: FinderState, vm: FinderViewModel) {
                         }
                     } else {
                         item {
-                            Text(
-                                if (s.town != null) "${list.size} ${noun}s in and around $place · nearest first" else "${list.size} ${noun}s in $place",
-                                color = Brand.TextDim, fontSize = 13.sp,
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    if (s.town != null) "${list.size} ${noun}s in and around $place · nearest first" else "${list.size} ${noun}s in $place",
+                                    color = Brand.TextDim, fontSize = 13.sp, modifier = Modifier.weight(1f),
+                                )
+                                if (s.refining) {
+                                    CircularProgressIndicator(Modifier.size(12.dp), strokeWidth = 1.5.dp, color = Brand.Sun)
+                                    Text("  finding more", color = Brand.Sun, fontSize = 12.sp)
+                                }
+                            }
                         }
                     }
                     if (canSearchServer) item {

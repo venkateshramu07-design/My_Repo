@@ -88,7 +88,7 @@ Build again – the app now uses real accounts and a shared database.
 | Invite landing page | Firebase Hosting | 10 GB storage, 360 MB/day transfer |
 | Map | OpenStreetMap tiles via osmdroid | Free (fair use, with attribution) |
 | Districts | Bundled for all of India (800, from Wikidata, CC0); other countries via OpenStreetMap Overpass | Offline / free |
-| Schools | Photon (fast OpenStreetMap search) + Overpass, merged; searched around the district centre | Free (fair use); cached on the phone for 2 weeks |
+| Schools & towns | Photon **reverse** lookup: one ~1 s request returns the nearest schools (or a district's towns); Overpass completes the list in the background | Free (fair use); cached on the phone, so repeat visits load in milliseconds |
 | School search / address lookup | Nominatim | Free, max 1 request/second (the app enforces this) |
 | Countries + states | Bundled file (countries-states-cities-database, ODbL) | Offline, 77 KB |
 | APK builds | GitHub Actions | Free for public repos, 2,000 min/month for private ones |
@@ -105,6 +105,20 @@ pay-as-you-go at a few cents per 100k reads – costs stay tiny, and you can add
 small Overpass/Nominatim cache server later if you need one.
 
 ---
+
+## Speed budget
+
+Measured on the live services with an empty cache (first-time user), Thanjavur → Kumbakonam:
+
+| Step | Time |
+|---|---|
+| District list | instant (bundled) |
+| Towns of the district | ~1.3 s first time, ~2 ms afterwards |
+| Schools near the town | ~1.1 s first time, ~20 ms afterwards; top towns are prefetched while you read the list |
+| School name search | ~0.2 s |
+
+Slow sources never block the screen: the complete OpenStreetMap list merges in when it arrives (max 15 s), shown as "finding more".
+Re-run with `./gradlew testDebugUnitTest --tests '*LiveSchoolsCheck*' -Dlive=true -i`.
 
 ## Architecture (for developers)
 

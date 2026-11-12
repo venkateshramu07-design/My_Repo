@@ -19,6 +19,8 @@ import com.batchmates.app.data.School
 import com.batchmates.app.data.geo.GeoRepository
 import com.batchmates.app.util.SchoolNames
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
+
+private const val TOWN_RADIUS_KM = 12.0
+private const val DISTRICT_RADIUS_KM = 40.0
 
 enum class Step(val title: String) {
     COUNTRY("Country"), STATE("State"), DISTRICT("District"), TOWN("Town"), SCHOOL("School"),
@@ -79,6 +84,9 @@ data class FinderState(
     val townResults: Load<List<Place>> = Load.Idle,
     /** Towns where the district's mapped schools are, most schools first. */
     val townChips: List<Place> = emptyList(),
+    val townsLoaded: Boolean = false,
+    /** The fast list is showing; the complete one is still arriving. */
+    val refining: Boolean = false,
     // duplicate guard
     val duplicates: List<School> = emptyList(),
     val confirmCreate: Boolean = false,
@@ -101,6 +109,8 @@ class FinderViewModel(
     val joined = _joined.receiveAsFlow()
     private var mapJob: Job? = null
     private var townJob: Job? = null
+    private var loadJob: Job? = null
+    private var prefetchJob: Job? = null
     /** Every school we've seen in this district (map data + alumni-added); used to stop duplicates. */
     private var known: List<School> = emptyList()
 
@@ -159,7 +169,7 @@ class FinderViewModel(
         _s.update {
             it.copy(
                 district = district.trim(), town = null, schools = Load.Idle, districtCenter = null, lastQuery = "",
-                townResults = Load.Idle, townChips = emptyList(),
+                townResults = Load.Idle, townChips = emptyList(), townsLoaded = false,
             )
         }
         known = emptyList()
@@ -169,15 +179,16 @@ class FinderViewModel(
         viewModelScope.launch {
             val c = geo.districtCenter(region)
             _s.update { it.copy(districtCenter = c) }
-            // Learn the district's towns from where its schools are, to offer one-tap chips.
-            val all = runCatching { geo.schoolsIn(region) }.getOrDefault(emptyList())
-            remember(all + repo.customSchools(region))
-            val chips = all.filter { it.locality.isNotBlank() && it.lat != null && it.lon != null }
-                .groupBy { it.locality.trim() }
-                .entries.sortedByDescending { it.value.size }
-                .take(12)
-                .map { (name, list) -> Place(name, "town", "${list.size} schools", list.map { it.lat!! }.average(), list.map { it.lon!! }.average()) }
-            if (_s.value.district == region.district) _s.update { it.copy(townChips = chips) }
+            launch { remember(repo.customSchools(region)) } // for the duplicate guard, off the critical path
+            // One ~0.7 s request for the district's towns (cached on the phone afterwards).
+            val chips = c?.let { runCatching { geo.townsNear(it, region.state) }.getOrDefault(emptyList()) }.orEmpty().take(16)
+            if (_s.value.district != region.district) return@launch
+            _s.update { it.copy(townChips = chips, townsLoaded = true) }
+            // Warm the cache for the likeliest towns while the user reads the list, so tapping one is instant.
+            prefetchJob?.cancel()
+            prefetchJob = viewModelScope.launch {
+                chips.take(4).forEach { p -> runCatching { geo.schoolsFast(p.lat to p.lon, TOWN_RADIUS_KM, region, null) } }
+            }
         }
     }
 
@@ -199,40 +210,58 @@ class FinderViewModel(
         loadSchools(null)
     }
 
+    /**
+     * Two-stage load: the fast answer (one request, ~1 s, often instant from cache) is shown at once;
+     * the complete answer (Overpass, slow) merges in later without blocking anything.
+     */
     fun loadSchools(nameFilter: String?) {
         val s0 = _s.value
         val region = s0.region
         val town = s0.town
         if (region.district.isBlank() && nameFilter.isNullOrBlank()) {
-            _s.update { it.copy(schools = Load.Ready(emptyList())) }; return
+            _s.update { it.copy(schools = Load.Ready(emptyList()), refining = false) }; return
         }
-        _s.update { it.copy(schools = Load.Loading, lastQuery = nameFilter?.trim().orEmpty()) }
-        viewModelScope.launch {
-            // Schools alumni added or named; near the chosen town when there is one.
-            val custom = repo.customSchools(region).map { c ->
-                val d = if (town != null && c.lat != null && c.lon != null) SchoolNames.km(town.lat, town.lon, c.lat, c.lon) else null
+        loadJob?.cancel()
+        _s.update { it.copy(schools = Load.Loading, lastQuery = nameFilter?.trim().orEmpty(), refining = false) }
+        loadJob = viewModelScope.launch {
+            val center = town?.let { it.lat to it.lon } ?: s0.districtCenter ?: geo.districtCenter(region)
+            val radius = if (town != null) TOWN_RADIUS_KM else DISTRICT_RADIUS_KM
+            val customJob = async { runCatching { repo.customSchools(region) }.getOrDefault(emptyList()) }
+            val fullJob = async { runCatching { geo.schoolsFull(center, radius, region, nameFilter) } }
+            val fast = runCatching { geo.schoolsFast(center, radius, region, nameFilter) }
+
+            fun nearby(custom: List<School>) = custom.map { c ->
+                val d = if (center != null && c.lat != null && c.lon != null) SchoolNames.km(center.first, center.second, c.lat, c.lon) else null
                 c.copy(distanceKm = d)
             }.filter { c ->
-                town == null || c.region.town.equals(town.name, true) || c.locality.equals(town.name, true) ||
-                    (c.distanceKm != null && c.distanceKm <= 15)
+                (town == null || c.region.town.equals(town.name, true) || c.locality.equals(town.name, true) ||
+                    (c.distanceKm != null && c.distanceKm <= radius * 1.3)) &&
+                    (nameFilter.isNullOrBlank() || SchoolNames.matches(nameFilter, c))
             }
-            val osm = runCatching {
-                if (town != null) geo.schoolsNear(town, region, nameFilter) else geo.schoolsIn(region, nameFilter)
+
+            fun publish(custom: List<School>, osm: List<School>, refining: Boolean, error: Throwable?) {
+                remember(custom + osm)
+                // Alumni-edited copies (aliases, corrected type) share the map id and win.
+                val byId = custom.associateBy { it.id }
+                val merged = geo.merge(custom, osm.filter { it.id !in byId })
+                _s.update {
+                    it.copy(
+                        refining = refining,
+                        schools = if (merged.isEmpty() && error != null && !refining) {
+                            Load.Failed(error.message ?: "Couldn't load schools. Check your internet and retry.")
+                        } else if (merged.isEmpty() && refining) {
+                            it.schools.takeIf { l -> l is Load.Ready } ?: Load.Loading
+                        } else Load.Ready(merged),
+                    )
+                }
             }
-            remember(custom + osm.getOrDefault(emptyList()))
-            // A map school that alumni already renamed/aliased lives in Firestore under the same id: prefer that copy.
-            val byId = custom.associateBy { it.id }
-            val merged = custom + osm.getOrDefault(emptyList()).filter { it.id !in byId }
-            val filtered = merged.filter { nameFilter.isNullOrBlank() || SchoolNames.matches(nameFilter, it) || it.id !in byId }
-            _s.update {
-                it.copy(
-                    schools = if (osm.isFailure && custom.isEmpty()) {
-                        Load.Failed(osm.exceptionOrNull()?.message ?: "Couldn't load schools. Check your internet and retry.")
-                    } else {
-                        Load.Ready(filtered.sortedWith(compareBy<School> { s -> s.distanceKm ?: 999.0 }.thenBy { s -> s.name.lowercase() }))
-                    },
-                )
-            }
+
+            val custom = nearby(customJob.await())
+            publish(custom, fast.getOrDefault(emptyList()), refining = true, error = fast.exceptionOrNull())
+            // Never keep people waiting on the slow source: give it 15 s, then settle on what we have.
+            val full = withTimeoutOrNull(15_000) { fullJob.await() } ?: Result.failure(IllegalStateException("timeout"))
+            publish(custom, geo.merge(fast.getOrDefault(emptyList()), full.getOrDefault(emptyList())), refining = false,
+                error = if (fast.isFailure && full.isFailure) fast.exceptionOrNull() else null)
         }
     }
 
@@ -324,16 +353,20 @@ class FinderViewModel(
             return
         }
         mapJob = viewModelScope.launch {
-            delay(450) // wait until the user stops panning
+            delay(300) // wait until the user stops panning
             _s.update { it.copy(mapLoading = true, mapHint = null) }
-            val list = runCatching { geo.schoolsInBox(south, west, north, east) }
+            val fullJob = async { runCatching { geo.schoolsInBoxFull(south, west, north, east) } }
+            val fast = runCatching { geo.schoolsInBoxFast(south, west, north, east) }
+            fast.getOrNull()?.let { pins -> _s.update { it.copy(mapSchools = pins) } } // pins appear in ~1 s
+            val full = withTimeoutOrNull(15_000) { fullJob.await() } ?: Result.failure(IllegalStateException("timeout"))
+            val all = geo.merge(fast.getOrDefault(emptyList()), full.getOrDefault(emptyList()))
             _s.update {
                 it.copy(
                     mapLoading = false,
-                    mapSchools = list.getOrNull() ?: it.mapSchools,
+                    mapSchools = all.ifEmpty { it.mapSchools },
                     mapHint = when {
-                        list.isFailure -> "Map service is busy, try again shortly"
-                        list.getOrNull().isNullOrEmpty() -> "No schools mapped here yet — long-press to add yours"
+                        fast.isFailure && full.isFailure -> "Map service is busy, try again shortly"
+                        all.isEmpty() -> "No schools mapped here yet — long-press to add yours"
                         else -> null
                     },
                 )
