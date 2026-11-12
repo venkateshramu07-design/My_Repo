@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.BatchMates" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/brand_night</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+    <style name="Theme.BatchMates.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/brand_night</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.BatchMates</item>
+    </style>
+</resources>

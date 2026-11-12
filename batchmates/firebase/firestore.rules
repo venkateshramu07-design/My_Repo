@@ -1,0 +1,68 @@
+rules_version = '2';
+// BatchMates security rules: signed-in users can browse schools and batches,
+// but only members can read/post a batch's wall and nobody can edit other people's data.
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function isMember(groupId) {
+      return exists(/databases/$(db)/documents/groups/$(groupId)/members/$(request.auth.uid));
+    }
+    // Only allow a counter to move by exactly +1 / -1 and nothing else to change.
+    function onlyCounterStep(field) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([field])
+        && (request.resource.data[field] == resource.data[field] + 1
+            || request.resource.data[field] == resource.data[field] - 1);
+    }
+    function shortString(v, max) { return v is string && v.size() > 0 && v.size() <= max; }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow write: if isMe(uid);
+      match /groups/{groupId} {
+        allow read, write: if isMe(uid);
+      }
+    }
+
+    match /schools/{schoolId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && shortString(request.resource.data.name, 200);
+      allow update: if signedIn() && onlyCounterStep('memberCount');
+    }
+
+    match /codes/{code} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['groupId']);
+    }
+
+    match /groups/{groupId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.memberCount == 1
+        && shortString(request.resource.data.section, 20);
+      allow update: if signedIn() && (
+        onlyCounterStep('memberCount')
+        || (isMember(groupId)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['whatsappLink'])
+            && (request.resource.data.whatsappLink == null
+                || request.resource.data.whatsappLink.matches('https://chat[.]whatsapp[.]com/[A-Za-z0-9]+')))
+      );
+
+      match /members/{uid} {
+        allow read: if signedIn();
+        allow create: if isMe(uid);
+        allow delete: if isMe(uid);
+      }
+
+      match /messages/{messageId} {
+        allow read: if signedIn() && isMember(groupId);
+        allow create: if signedIn() && isMember(groupId)
+          && request.resource.data.uid == request.auth.uid
+          && shortString(request.resource.data.text, 1000);
+        allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      }
+    }
+  }
+}

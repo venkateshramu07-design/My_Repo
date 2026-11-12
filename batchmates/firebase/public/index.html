@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BatchMates – reunite with your school friends</title>
+<meta property="og:title" content="Your batchmates are waiting 🎓">
+<meta property="og:description" content="Find your school, pick your batch and section, and reunite with old friends. Free.">
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+         background: radial-gradient(circle at 20% 15%, #7C4DFF88, transparent 45%), radial-gradient(circle at 90% 60%, #FF6B6B77, transparent 45%), #0E0B2B; color:#fff; }
+  main { max-width: 420px; padding: 32px 20px; text-align:center; }
+  h1 { font-size: 2.4rem; margin: .2em 0; background: linear-gradient(90deg,#fff,#FFC857,#FF6B6B); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  p { color:#ffffffb3; line-height:1.5; }
+  .cap { font-size:64px; }
+  .code { font-size:1.8rem; letter-spacing:.3em; font-weight:900; background:#ffffff14; border:1px solid #ffffff33; border-radius:16px; padding:12px; margin:16px 0; }
+  a.btn { display:block; margin:12px 0; padding:16px; border-radius:18px; color:#fff; text-decoration:none; font-weight:700;
+          background: linear-gradient(90deg,#7C4DFF,#B24DDB,#FF6B6B); }
+  a.alt { background:#ffffff1a; }
+</style>
+</head>
+<body>
+<main>
+  <div class="cap">🎓</div>
+  <h1>BatchMates</h1>
+  <p id="lead">Find your school, pick your batch &amp; section, and reunite with old friends.</p>
+  <div class="code" id="code" hidden></div>
+  <a class="btn" id="open" href="#">Open in BatchMates</a>
+  <a class="btn alt" id="get" href="https://github.com/">Get the app</a>
+  <p style="font-size:.8rem">Already installed? Tap “Open”. New here? Install, sign in, then enter the code above on the home screen.</p>
+</main>
+<script>
+  // Set this to your Play Store / APK download link once published.
+  const DOWNLOAD_URL = document.getElementById('get').href;
+  const m = location.pathname.match(/\/j\/([A-Za-z0-9]{4,12})/);
+  const open = document.getElementById('open');
+  if (m) {
+    const code = m[1].toUpperCase();
+    document.getElementById('code').textContent = code;
+    document.getElementById('code').hidden = false;
+    document.getElementById('lead').textContent = "You've been invited to join your batch 🎉";
+    open.href = 'intent://j/' + code + '#Intent;scheme=batchmates;package=com.batchmates.app;S.browser_fallback_url=' + encodeURIComponent(DOWNLOAD_URL) + ';end';
+  } else {
+    open.style.display = 'none';
+  }
+</script>
+</body>
+</html>

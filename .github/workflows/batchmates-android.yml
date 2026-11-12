@@ -1,0 +1,40 @@
+name: BatchMates Android build
+
+on:
+  push:
+    paths: ["batchmates/**", ".github/workflows/batchmates-android.yml"]
+  pull_request:
+    paths: ["batchmates/**"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: batchmates
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Optional: add your Firebase config as a repository secret named GOOGLE_SERVICES_JSON
+      # (paste the whole file). Without it the APK runs in Demo mode.
+      - name: Firebase config
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then echo "$GOOGLE_SERVICES_JSON" > app/google-services.json; echo "Live Firebase build"; else echo "Demo build"; fi
+
+      - name: Build APKs
+        run: ./gradlew assembleDebug assembleRelease --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: batchmates-apk
+          path: |
+            batchmates/app/build/outputs/apk/debug/*.apk
+            batchmates/app/build/outputs/apk/release/*.apk
