@@ -155,4 +155,60 @@ class ScreensTest {
         vm.pickField(com.batchmates.app.data.Field.ENGINEERING)
         paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
     }
+
+    // ---------------------------------------------------------------- engagement screens
+
+    /** A lively demo batch: seeded classmates, missing list, throwback answers and reactions. */
+    private fun livelyGroup(): Pair<DemoReunionRepository, String> {
+        val repo = DemoReunionRepository()
+        val id = runBlocking {
+            // Find a demo batch that already has classmates waiting, then join it.
+            val stat = repo.batchStats(school.id).maxBy { it.members }
+            repo.joinBatch(school, BatchKey(school.id, stat.track, stat.year, stat.section), me).getOrThrow().id
+        }
+        return repo to id
+    }
+
+    @Test fun wallTab() {
+        paparazzi.unsafeUpdateConfig(DeviceConfig.PIXEL_6.copy(screenHeight = 6000))
+        val (repo, id) = livelyGroup()
+        paparazzi.snapshot { BatchMatesTheme { GroupScreen(GroupViewModel(repo, me, id), celebrate = false, initialTab = 0) {} } }
+    }
+
+    @Test fun classmatesTab() {
+        paparazzi.unsafeUpdateConfig(DeviceConfig.PIXEL_6.copy(screenHeight = 6000))
+        val (repo, id) = livelyGroup()
+        runBlocking { repo.updateMyCard(id, me, "Bengaluru", "Product designer", "Racing cycles after the last bell 🚲") }
+        paparazzi.snapshot(name = "top") { BatchMatesTheme { GroupScreen(GroupViewModel(repo, me, id), celebrate = false, initialTab = 1) {} } }
+    }
+
+    @Test fun reunionTab() {
+        paparazzi.unsafeUpdateConfig(DeviceConfig.PIXEL_6.copy(screenHeight = 6000))
+        val (repo, id) = livelyGroup()
+        val day = 86_400_000L
+        val now = System.currentTimeMillis()
+        runBlocking {
+            repo.proposeReunion(id, "Our school ground, then dinner in town", listOf(now + 40 * day, now + 47 * day, now + 54 * day), me)
+            repo.vote(id, 1, me); repo.rsvp(id, com.batchmates.app.data.Rsvp.YES, me)
+        }
+        paparazzi.snapshot { BatchMatesTheme { GroupScreen(GroupViewModel(repo, me, id), celebrate = false, initialTab = 2) {} } }
+    }
+
+    @Test fun inviteLanding() {
+        val invite = com.batchmates.app.data.InvitePreview("K7QM2X", "g", "St. Joseph's Higher Secondary School",
+            "12th · Class of 2006 · Section B", "Kumbakonam, Thanjavur, Tamil Nadu, India", 14, listOf("Priya", "Arjun", "Meena", "Karthik", "Divya"))
+        paparazzi.snapshot { BatchMatesTheme { WelcomeScreen(AuthViewModel(DemoAuthRepository()), isDemo = false, invite = invite) } }
+    }
+
+    @Test fun quickSearch() {
+        val vm = FinderViewModel(GeoRepository(paparazzi.context), DemoReunionRepository(), me, startOnMap = false)
+        paparazzi.snapshot { BatchMatesTheme { FinderScreen(vm, {}, {}) } }
+    }
+
+    @Test fun missingPersonIsFoundWhenTheyJoin() {
+        assertTrue(com.batchmates.app.util.SchoolNames.samePerson("Karthik", "Karthikeyan S"))
+        assertTrue(com.batchmates.app.util.SchoolNames.samePerson("Divya R", "Divya Ramesh"))
+        assertTrue(!com.batchmates.app.util.SchoolNames.samePerson("Divya R", "Divya Krishnan"))
+        assertTrue(!com.batchmates.app.util.SchoolNames.samePerson("Arun", "Karthik"))
+    }
 }

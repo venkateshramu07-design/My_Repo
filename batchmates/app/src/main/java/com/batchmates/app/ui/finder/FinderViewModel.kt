@@ -35,7 +35,7 @@ private const val TOWN_RADIUS_KM = 12.0
 private const val DISTRICT_RADIUS_KM = 40.0
 
 enum class Step(val title: String) {
-    COUNTRY("Country"), STATE("State"), DISTRICT("District"), TOWN("Town"), SCHOOL("School"),
+    QUICK("Search"), COUNTRY("Country"), STATE("State"), DISTRICT("District"), TOWN("Town"), SCHOOL("School"),
     MAP("Map"), CREATE("New school"), COURSE("Course"), BATCH("Batch"), SECTION("Section"),
 }
 
@@ -82,6 +82,8 @@ data class FinderState(
     // town
     val town: Place? = null,
     val townResults: Load<List<Place>> = Load.Idle,
+    /** Town-first search anywhere in the world (the quick path). */
+    val anywhereResults: Load<List<Place>> = Load.Idle,
     /** Towns where the district's mapped schools are, most schools first. */
     val townChips: List<Place> = emptyList(),
     val townsLoaded: Boolean = false,
@@ -102,7 +104,7 @@ class FinderViewModel(
     startOnMap: Boolean,
 ) : ViewModel() {
 
-    private val _s = MutableStateFlow(FinderState(step = if (startOnMap) Step.MAP else Step.COUNTRY))
+    private val _s = MutableStateFlow(FinderState(step = if (startOnMap) Step.MAP else Step.QUICK))
     val state: StateFlow<FinderState> = _s
     private val history = ArrayDeque<Step>()
     private val _joined = Channel<String>(Channel.BUFFERED)
@@ -139,6 +141,43 @@ class FinderViewModel(
     }
 
     // ---------- browse path ----------
+
+    // ---------- quick path: type a town, skip country/state/district ----------
+
+    private var anywhereJob: Job? = null
+
+    fun searchAnywhere(text: String) {
+        anywhereJob?.cancel()
+        if (text.trim().length < 2) { _s.update { it.copy(anywhereResults = Load.Idle) }; return }
+        anywhereJob = viewModelScope.launch {
+            delay(300)
+            _s.update { it.copy(anywhereResults = Load.Loading) }
+            val home = _s.value.suggestedCountry
+            val r = runCatching {
+                geo.searchPlaces(text, null, "", bias = home?.let { geo.countryBias(it) })
+                    .sortedByDescending { it.countryCode == home } // your own country first
+            }
+            _s.update { it.copy(anywhereResults = r.fold({ l -> Load.Ready(l) }, { e -> Load.Failed(e.message ?: "Search failed") })) }
+        }
+    }
+
+    fun browse() = go(Step.COUNTRY)
+
+    /** Town picked from the quick search: fill country, state and district for the user, then show schools. */
+    fun pickAnywhere(place: Place) {
+        viewModelScope.launch {
+            val country = _s.value.countries.firstOrNull { it.code == place.countryCode }
+                ?: Country(place.countryCode, place.country, "", emptyList())
+            val district = geo.districtFor(place)
+            _s.update {
+                it.copy(country = country, state = place.state, district = district, town = place,
+                    districtCenter = place.lat to place.lon, schools = Load.Idle, lastQuery = "")
+            }
+            known = emptyList()
+            go(Step.SCHOOL)
+            loadSchools(null)
+        }
+    }
 
     fun pickCountry(c: Country) {
         _s.update { it.copy(country = c, state = null, district = null, districts = Load.Idle, schools = Load.Idle) }

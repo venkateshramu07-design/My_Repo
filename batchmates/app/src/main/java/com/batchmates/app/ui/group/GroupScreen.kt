@@ -44,6 +44,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -77,21 +78,32 @@ import com.batchmates.app.ui.theme.Eyebrow
 import com.batchmates.app.util.Invites
 import com.batchmates.app.util.ShareTarget
 
-@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun GroupScreen(vm: GroupViewModel, celebrate: Boolean, onBack: () -> Unit) {
+fun GroupScreen(vm: GroupViewModel, celebrate: Boolean, initialTab: Int = 0, onBack: () -> Unit) {
     val group by vm.group.collectAsState()
     val members by vm.members.collectAsState()
     val messages by vm.messages.collectAsState()
+    val missing by vm.missing.collectAsState()
+    val reunion by vm.reunion.collectAsState()
+    val prompt by vm.prompt.collectAsState()
     val sending by vm.sending.collectAsState()
     val error by vm.error.collectAsState()
     val context = LocalContext.current
-    var tab by rememberSaveable { mutableIntStateOf(0) }
+    var tab by rememberSaveable { mutableIntStateOf(initialTab) }
     var draft by rememberSaveable { mutableStateOf("") }
     var menu by remember { mutableStateOf(false) }
     var askLeave by remember { mutableStateOf(false) }
     var askWhatsapp by remember { mutableStateOf(false) }
+    var editCard by remember { mutableStateOf(false) }
     BackHandler(onBack = onBack)
+    // Right after joining, ask the one question classmates care about most.
+    LaunchedEffect(celebrate, members.isNotEmpty()) {
+        if (celebrate && members.isNotEmpty()) {
+            kotlinx.coroutines.delay(2_500)
+            if (members.firstOrNull { it.uid == vm.user.uid }?.hasCard != true) editCard = true
+        }
+    }
 
     AuroraBackground(intensity = 0.6f) {
         val g = group
@@ -124,62 +136,31 @@ fun GroupScreen(vm: GroupViewModel, celebrate: Boolean, onBack: () -> Unit) {
                         }
                     }
                 }
-                item { Header(g, members.map { it.name to it.photoUrl }) }
-                item { InviteCard(g) }
-                item {
-                    val link = g.whatsappLink
-                    if (link != null) {
-                        GradientButton(
-                            "Open our class WhatsApp group", { Invites.openUrl(context, link) },
-                            Modifier.fillMaxWidth(), brush = Brush.linearGradient(listOf(Brand.WhatsApp, Color(0xFF128C7E))),
-                        )
-                    } else {
-                        GlassCard(Modifier.fillMaxWidth(), onClick = { askWhatsapp = true }, padding = PaddingValues(16.dp)) {
-                            Text("💬  Already have a WhatsApp group?", style = MaterialTheme.typography.titleMedium)
-                            Text("Link it here so everyone who joins can hop in with one tap.", color = Brand.TextDim, fontSize = 13.sp)
-                        }
-                    }
-                }
-                item {
-                    SecondaryTabRow(tab, containerColor = Color.Transparent) {
+                item { Header(g, members.map { it.name to it.photoUrl }, missing.count { !it.found }) }
+                item { InviteCard(g, vm::sharedInvite) { askWhatsapp = true } }
+                stickyHeader(key = "tabs") {
+                    SecondaryTabRow(tab, containerColor = Brand.Night.copy(alpha = 0.92f)) {
                         Tab(tab == 0, { tab = 0 }, text = { Text("Wall") })
-                        Tab(tab == 1, { tab = 1 }, text = { Text("Batchmates (${members.size})") })
+                        Tab(tab == 1, { tab = 1 }, text = { Text("Classmates") })
+                        Tab(tab == 2, { tab = 2 }, text = { Text(if (reunion?.lockedDate != null) "Reunion 🎉" else "Reunion") })
                     }
                 }
-                if (tab == 0) {
-                    item { Composer(draft, { draft = it }, sending) { vm.send(draft) { draft = "" } } }
-                    error?.let { e -> item { Text(e, color = MaterialTheme.colorScheme.error) } }
-                    if (messages.isEmpty()) item {
-                        EmptyState("👋", "Break the ice", "Post the first memory — a teacher's nickname, the canteen samosa, the annual day disaster…")
-                    }
-                    items(messages, key = { it.id }) { m -> MessageBubble(m, mine = m.uid == vm.user.uid) }
-                } else {
-                    items(members, key = { it.uid }) { m ->
-                        Row(
-                            Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color(0x0FFFFFFF)).padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Avatar(m.name, m.photoUrl, 44.dp)
-                            Spacer(Modifier.width(12.dp))
-                            Column(Modifier.weight(1f)) {
-                                Text(m.name + if (m.uid == vm.user.uid) " (you)" else "", style = MaterialTheme.typography.titleMedium)
-                                if (m.joinedAt > 0) Text("Joined " + DateUtils.getRelativeTimeSpanString(m.joinedAt), color = Brand.TextDim, fontSize = 12.sp)
-                            }
-                            if (m.uid == g.createdBy) Pill("FOUNDER", Brand.Sun)
-                        }
-                    }
-                    item {
-                        Text(
-                            "Someone missing? Every invite brings the reunion closer 🎉",
-                            color = Brand.TextDim, modifier = Modifier.fillMaxWidth().padding(8.dp).navigationBarsPadding(),
-                        )
-                    }
+                error?.let { e -> item { Text(e, color = MaterialTheme.colorScheme.error) } }
+                when (tab) {
+                    0 -> wallTab(vm, messages, prompt, draft, { draft = it }, sending)
+                    1 -> classmatesTab(vm, g, members, missing) { editCard = true }
+                    else -> reunionTab(vm, g, members, reunion)
                 }
+                item { Spacer(Modifier.navigationBarsPadding()) }
             }
             if (celebrate) ConfettiBurst(Modifier.fillMaxSize(), key = g.id)
         }
     }
 
+    if (editCard) {
+        val mine = members.firstOrNull { it.uid == vm.user.uid }
+        CardSheet(mine, onDismiss = { editCard = false }) { city, now, memory -> vm.saveCard(city, now, memory); editCard = false }
+    }
     if (askLeave) AlertDialog(
         onDismissRequest = { askLeave = false },
         title = { Text("Leave this batch?") },
@@ -206,7 +187,7 @@ fun GroupScreen(vm: GroupViewModel, celebrate: Boolean, onBack: () -> Unit) {
 }
 
 @Composable
-private fun Header(g: Group, faces: List<Pair<String, String?>>) {
+private fun Header(g: Group, faces: List<Pair<String, String?>>, missing: Int) {
     Box(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp))
             .background(Brush.linearGradient(listOf(Brand.Violet, Brand.Orchid, Brand.Coral))).padding(22.dp),
@@ -235,7 +216,11 @@ private fun Header(g: Group, faces: List<Pair<String, String?>>) {
                 AvatarStack(faces, g.memberCount)
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    if (g.memberCount <= 1) "You're the first one here!" else "${g.memberCount} batchmates reunited",
+                    when {
+                        g.memberCount <= 1 -> "You're the first one here!"
+                        missing > 0 -> "${g.memberCount} back · $missing still missing"
+                        else -> "${g.memberCount} batchmates reunited"
+                    },
                     color = Color.White, fontWeight = FontWeight.SemiBold,
                 )
             }
@@ -244,79 +229,83 @@ private fun Header(g: Group, faces: List<Pair<String, String?>>) {
 }
 
 @Composable
-private fun InviteCard(g: Group) {
+private fun InviteCard(g: Group, onShared: () -> Unit, onLinkWhatsapp: () -> Unit) {
     val context = LocalContext.current
     var copied by remember { mutableStateOf(false) }
-    GlassCard(Modifier.fillMaxWidth().animateContentSize()) {
-        Text("Bring your batch back", style = MaterialTheme.typography.titleLarge)
-        Text("One message in your old group chat can bring back the whole class.", color = Brand.TextDim, fontSize = 13.sp)
-        Spacer(Modifier.height(16.dp))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            BrandCircle("WhatsApp", { Text("💬", fontSize = 24.sp) }, Brush.linearGradient(listOf(Brand.WhatsApp, Color(0xFF128C7E)))) {
-                Invites.share(context, ShareTarget.WHATSAPP, g)
-            }
-            BrandCircle("Instagram", { Text("📸", fontSize = 24.sp) }, Brand.Instagram) {
-                Invites.share(context, ShareTarget.INSTAGRAM, g)
-            }
-            BrandCircle("Facebook", { Text("f", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.White) },
-                Brush.linearGradient(listOf(Brand.Facebook, Color(0xFF0A58CA)))) {
-                Invites.share(context, ShareTarget.FACEBOOK, g)
-            }
-            BrandCircle("More", { Icon(Icons.Rounded.Share, null, tint = Color.White) }, Brand.Warm) {
-                Invites.share(context, ShareTarget.MORE, g)
-            }
-        }
-        Spacer(Modifier.height(16.dp))
-        Row(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0x22000000))
-                .clickable { Invites.copy(context, Invites.message(g)); copied = true }.padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    // Compact on purpose: the wall, classmates and reunion should start on the first screen.
+    GlassCard(Modifier.fillMaxWidth().animateContentSize(), padding = PaddingValues(14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("INVITE CODE", style = Eyebrow)
-                Text(g.inviteCode, fontSize = 22.sp, fontWeight = FontWeight.Black, letterSpacing = 4.sp)
+                Text("Bring your batch back", style = MaterialTheme.typography.titleMedium)
+                Row(
+                    Modifier.clip(RoundedCornerShape(10.dp)).clickable { Invites.copy(context, Invites.message(g)); copied = true }
+                        .padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("Code ", color = Brand.TextDim, fontSize = 13.sp)
+                    Text(g.inviteCode, fontWeight = FontWeight.Black, letterSpacing = 2.sp, color = Brand.Sun)
+                    Spacer(Modifier.width(6.dp))
+                    Text(if (copied) "Copied ✓" else "Copy", color = if (copied) Brand.Mint else Brand.TextDim, fontSize = 12.sp)
+                }
             }
-            Text(if (copied) "Copied ✓" else "Copy", color = if (copied) Brand.Mint else Brand.TextDim)
-            Spacer(Modifier.width(6.dp))
-            Icon(Icons.Rounded.ContentCopy, null, tint = Brand.TextDim, modifier = Modifier.size(18.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ShareDot(Brush.linearGradient(listOf(Brand.WhatsApp, Color(0xFF128C7E))), "Invite on WhatsApp", {
+                    Invites.share(context, ShareTarget.WHATSAPP, g); onShared()
+                }) { Text("💬", fontSize = 18.sp) }
+                ShareDot(Brand.Instagram, "Invite on Instagram", {
+                    Invites.share(context, ShareTarget.INSTAGRAM, g); onShared()
+                }) { Text("📸", fontSize = 18.sp) }
+                ShareDot(Brush.linearGradient(listOf(Brand.Facebook, Color(0xFF0A58CA))), "Invite on Facebook", {
+                    Invites.share(context, ShareTarget.FACEBOOK, g); onShared()
+                }) { Text("f", fontSize = 20.sp, fontWeight = FontWeight.Black, color = Color.White) }
+                ShareDot(Brand.Warm, "Share", {
+                    Invites.share(context, ShareTarget.MORE, g); onShared()
+                }) { Icon(Icons.Rounded.Share, null, tint = Color.White, modifier = Modifier.size(18.dp)) }
+            }
         }
-    }
-}
-
-@Composable
-private fun Composer(text: String, onText: (String) -> Unit, sending: Boolean, onSend: () -> Unit) {
-    Row(verticalAlignment = Alignment.Bottom) {
-        OutlinedTextField(
-            text, { onText(it.take(1000)) }, Modifier.weight(1f),
-            placeholder = { Text("Share a memory with your batch…") },
-            shape = RoundedCornerShape(18.dp), maxLines = 4,
+        Spacer(Modifier.height(10.dp))
+        val link = g.whatsappLink
+        Text(
+            if (link != null) "💬  Open our class WhatsApp group  →" else "💬  Have a class WhatsApp group? Link it here  →",
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                .background(if (link != null) Brand.WhatsApp.copy(alpha = 0.25f) else Color(0x14FFFFFF))
+                .clickable { if (link != null) Invites.openUrl(context, link) else onLinkWhatsapp() }
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
         )
-        Spacer(Modifier.width(8.dp))
-        Box(
-            Modifier.size(56.dp).clip(RoundedCornerShape(18.dp)).background(Brand.Primary),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (sending) CircularProgressIndicator(Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
-            else IconButton(onSend, enabled = text.isNotBlank()) { Icon(Icons.AutoMirrored.Rounded.Send, "Post", tint = Color.White) }
-        }
     }
 }
 
 @Composable
-private fun MessageBubble(m: Message, mine: Boolean) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = if (mine) Arrangement.End else Arrangement.Start) {
-        if (!mine) { Avatar(m.name, m.photoUrl, 34.dp); Spacer(Modifier.width(8.dp)) }
-        Column(
-            Modifier.widthIn(max = 300.dp).clip(
-                RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = if (mine) 18.dp else 4.dp, bottomEnd = if (mine) 4.dp else 18.dp),
-            ).background(
-                if (mine) Brand.Primary else Brush.linearGradient(listOf(Color(0x26FFFFFF), Color(0x14FFFFFF))),
-            ).padding(12.dp),
-        ) {
-            if (!mine) Text(m.name, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Brand.pair(m.name)[0])
-            Text(m.text)
-            Text(DateUtils.getRelativeTimeSpanString(m.sentAt).toString(), fontSize = 10.sp, color = Color.White.copy(alpha = 0.6f), modifier = Modifier.align(Alignment.End))
+private fun ShareDot(bg: Brush, label: String, onClick: () -> Unit, content: @Composable () -> Unit) {
+    Box(
+        Modifier.size(40.dp).clip(androidx.compose.foundation.shape.CircleShape).background(bg)
+            .clickable(onClickLabel = label, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) { content() }
+}
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun CardSheet(me: com.batchmates.app.data.Member?, onDismiss: () -> Unit, onSave: (String, String, String) -> Unit) {
+    var city by remember { mutableStateOf(me?.city.orEmpty()) }
+    var now by remember { mutableStateOf(me?.now.orEmpty()) }
+    var memory by remember { mutableStateOf(me?.memory.orEmpty()) }
+    androidx.compose.material3.ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = Brand.Deep,
+    ) {
+        Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 24.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text("📍 Where are you now?", style = MaterialTheme.typography.headlineSmall)
+            Text("Your batchmates are dying to know. Share as much or as little as you like.", color = Brand.TextDim)
+            OutlinedTextField(city, { city = it.take(60) }, Modifier.fillMaxWidth(), singleLine = true,
+                label = { Text("City you live in") }, shape = RoundedCornerShape(16.dp))
+            OutlinedTextField(now, { now = it.take(80) }, Modifier.fillMaxWidth(), singleLine = true,
+                label = { Text("What you do now (job, business, studies…)") }, shape = RoundedCornerShape(16.dp))
+            OutlinedTextField(memory, { memory = it.take(200) }, Modifier.fillMaxWidth(), maxLines = 3,
+                label = { Text("A favourite school memory") }, shape = RoundedCornerShape(16.dp))
+            GradientButton("Save my card", { onSave(city, now, memory) }, Modifier.fillMaxWidth())
         }
     }
 }
-

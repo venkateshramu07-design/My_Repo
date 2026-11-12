@@ -10,13 +10,22 @@ import com.batchmates.app.data.InstitutionKind
 import com.batchmates.app.data.Track
 import com.batchmates.app.data.Group
 import com.batchmates.app.data.Member
+import com.batchmates.app.data.InvitePreview
 import com.batchmates.app.data.Message
+import com.batchmates.app.data.MessageKind
+import com.batchmates.app.data.MissingPerson
+import com.batchmates.app.data.Reunion
+import com.batchmates.app.data.Rsvp
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.ReunionRepository
 import com.batchmates.app.data.School
 import com.batchmates.app.data.SchoolSource
 import com.batchmates.app.util.InviteCodes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -108,25 +117,48 @@ class DemoReunionRepository : ReunionRepository {
         return real + fake.filter { f -> real.none { it.track == f.track && it.year == f.year && it.section == f.section } }
     }
 
+    /** Sample "where are they now" cards and memories, so the demo batch feels like a real class. */
+    private val cards = listOf(
+        Triple("Chennai", "Doctor at a city hospital", "Bunking PT period to watch the cricket final 🏏"),
+        Triple("Bengaluru", "Software engineer", "Mr. Raman's surprise physics tests 😅"),
+        Triple("Dubai", "Runs a bakery", "Sharing lunch boxes under the neem tree"),
+        Triple("Kumbakonam", "Teacher — at our own school!", "Annual day drama where the curtain fell 🎭"),
+        Triple("Singapore", "Product manager", ""),
+        Triple("Coimbatore", "", "Cycle races after the last bell"),
+    )
+
     override suspend fun joinBatch(school: School, key: BatchKey, user: AppUser): Result<Group> {
         delay(700)
         val existing = groups.value[key.groupId]
         val stat = batchStats(school.id).firstOrNull { it.track.code == key.track.code && it.year == key.year && it.section == key.section }
-        val seeded = stat?.members ?: 0
+        val seeded = (stat?.members ?: 0).coerceAtMost(friends.size)
         val group = existing ?: Group(
             id = key.groupId, schoolId = school.id, schoolName = school.name, regionLabel = school.region.label,
             track = key.track, year = key.year, section = key.section, inviteCode = InviteCodes.generate(),
-            memberCount = seeded + 1, createdBy = user.uid,
+            memberCount = seeded + 1, createdBy = if (seeded > 0) "f0" else user.uid,
         ).also { g ->
             codes[g.inviteCode] = g.id
             val now = System.currentTimeMillis()
-            members.value = members.value + (g.id to (friends.take(seeded.coerceAtMost(friends.size)).mapIndexed { i, n ->
-                Member("f$i", n, null, now - (i + 1) * 86_400_000L)
+            members.value = members.value + (g.id to (friends.take(seeded).mapIndexed { i, n ->
+                val c = cards.getOrNull(i)
+                Member("f$i", n, null, now - (i + 1) * 86_400_000L, c?.first.orEmpty(), c?.second.orEmpty(), c?.third.orEmpty(),
+                    invites = if (i == 0) 6 else i % 3)
             } + Member(user.uid, user.name, user.photoUrl, now)))
+            val years = 2026 - key.year
             messages.value = messages.value + (g.id to if (seeded > 0) listOf(
-                Message("m1", "f0", friends[0], null, "Can't believe it's been ${2026 - key.year} years! 😍", now - 3_600_000),
-                Message("m2", "f1", friends[1], null, "Who still has the class photo? 📸", now - 1_800_000),
-            ) else emptyList())
+                Message("m1", "f0", friends[0], null, "Can't believe it's been $years years! 😍", now - 3_600_000,
+                    reactions = mapOf("❤️" to listOf("f1", "f2"), "😭" to listOf("f3"))),
+                Message("m2", "f1", friends[1], null, "Mr. Raman, no contest. Still dream about his surprise tests.", now - 2_400_000,
+                    kind = MessageKind.PROMPT, prompt = "Who was the strictest teacher?", reactions = mapOf("😂" to listOf("f0", "f2", "f4"))),
+                Message("m3", "f2", friends[2], null, "Who still has the class photo? 📸", now - 1_800_000),
+                Message("m4", user.uid, user.name, user.photoUrl, "${user.name} joined the batch 👋", now, kind = MessageKind.JOINED),
+            ) else listOf(Message("m4", user.uid, user.name, user.photoUrl, "${user.name} started this batch 🌱", now, kind = MessageKind.JOINED)))
+            if (seeded > 0) missing.value = missing.value + (g.id to listOf(
+                MissingPerson("x1", "Ganesh", "cricket captain, sat on the last bench", "f0", friends[0], invited = 1),
+                MissingPerson("x2", "Fathima R", "class topper, moved to Pune?", "f1", friends[1]),
+                MissingPerson("x3", "Joseph", "always late, always smiling", "f2", friends[2]),
+                MissingPerson("x4", "Revathi", "best handwriting in the class", "f3", friends.getOrElse(3) { friends[0] }),
+            ))
         }
         groups.value = groups.value + (group.id to group)
         if (group.id !in mine.value) mine.value = listOf(group.id) + mine.value
@@ -150,9 +182,12 @@ class DemoReunionRepository : ReunionRepository {
     override fun messages(groupId: String): Flow<List<Message>> =
         messages.map { all -> all[groupId].orEmpty().sortedByDescending { it.sentAt } }
 
-    override suspend fun sendMessage(groupId: String, text: String, user: AppUser): Result<Unit> {
-        val msg = Message(UUID.randomUUID().toString(), user.uid, user.name, user.photoUrl, text.trim(), System.currentTimeMillis())
+    private fun post(groupId: String, msg: Message) {
         messages.value = messages.value + (groupId to (messages.value[groupId].orEmpty() + msg))
+    }
+
+    override suspend fun sendMessage(groupId: String, text: String, user: AppUser): Result<Unit> {
+        post(groupId, Message(UUID.randomUUID().toString(), user.uid, user.name, user.photoUrl, text.trim(), System.currentTimeMillis()))
         return Result.success(Unit)
     }
 
@@ -160,4 +195,99 @@ class DemoReunionRepository : ReunionRepository {
         groups.value[groupId]?.let { groups.value = groups.value + (groupId to it.copy(whatsappLink = link?.ifBlank { null })) }
         return Result.success(Unit)
     }
+
+    // ---- engagement (in memory) ----
+
+    private val missing = MutableStateFlow<Map<String, List<MissingPerson>>>(emptyMap())
+    private val reunions = MutableStateFlow<Map<String, Reunion>>(emptyMap())
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    override suspend fun invitePreview(code: String): InvitePreview? {
+        val g = codes[InviteCodes.normalize(code)]?.let { groups.value[it] } ?: return null
+        return InvitePreview(g.inviteCode, g.id, g.schoolName, g.title, g.regionLabel, g.memberCount,
+            members.value[g.id].orEmpty().map { it.name.substringBefore(' ') })
+    }
+
+    override fun missing(groupId: String): Flow<List<MissingPerson>> = missing.map { it[groupId].orEmpty() }
+
+    override suspend fun addMissing(groupId: String, name: String, note: String, user: AppUser): Result<Unit> {
+        val p = MissingPerson(UUID.randomUUID().toString(), name.trim(), note.trim(), user.uid, user.name)
+        missing.value = missing.value + (groupId to (listOf(p) + missing.value[groupId].orEmpty()))
+        return Result.success(Unit)
+    }
+
+    /** Demo magic: a few seconds after you invite someone, they "join", so the whole loop can be felt. */
+    override suspend fun markInvited(groupId: String, missingId: String): Result<Unit> {
+        updateMissing(groupId, missingId) { it.copy(invited = it.invited + 1) }
+        scope.launch {
+            delay(6_000)
+            val person = missing.value[groupId].orEmpty().firstOrNull { it.id == missingId && !it.found } ?: return@launch
+            val uid = "demo-" + missingId.take(6)
+            updateMissing(groupId, missingId) { it.copy(foundUid = uid) }
+            members.value = members.value + (groupId to (members.value[groupId].orEmpty() +
+                Member(uid, person.name, null, System.currentTimeMillis(), "Hyderabad", "Just joined — say hi!", "")))
+            groups.value[groupId]?.let { g -> groups.value = groups.value + (groupId to g.copy(memberCount = g.memberCount + 1)) }
+            post(groupId, Message(UUID.randomUUID().toString(), uid, person.name, null,
+                "${person.name} is back! 🎉 ${person.addedByName} was looking for them.", System.currentTimeMillis(), kind = MessageKind.FOUND))
+        }
+        return Result.success(Unit)
+    }
+
+    private fun updateMissing(groupId: String, id: String, f: (MissingPerson) -> MissingPerson) {
+        missing.value = missing.value + (groupId to missing.value[groupId].orEmpty().map { if (it.id == id) f(it) else it })
+    }
+
+    override suspend fun removeMissing(groupId: String, missingId: String): Result<Unit> {
+        missing.value = missing.value + (groupId to missing.value[groupId].orEmpty().filter { it.id != missingId })
+        return Result.success(Unit)
+    }
+
+    private fun updateMember(groupId: String, uid: String, f: (Member) -> Member) {
+        members.value = members.value + (groupId to members.value[groupId].orEmpty().map { if (it.uid == uid) f(it) else it })
+    }
+
+    override suspend fun updateMyCard(groupId: String, user: AppUser, city: String, now: String, memory: String): Result<Unit> {
+        updateMember(groupId, user.uid) { it.copy(city = city.trim(), now = now.trim(), memory = memory.trim()) }
+        return Result.success(Unit)
+    }
+
+    override suspend fun recordShare(groupId: String, user: AppUser): Result<Unit> {
+        updateMember(groupId, user.uid) { it.copy(invites = it.invites + 1) }
+        return Result.success(Unit)
+    }
+
+    override suspend fun sendPrompt(groupId: String, prompt: String, answer: String, user: AppUser): Result<Unit> {
+        post(groupId, Message(UUID.randomUUID().toString(), user.uid, user.name, user.photoUrl, answer.trim(),
+            System.currentTimeMillis(), kind = MessageKind.PROMPT, prompt = prompt))
+        return Result.success(Unit)
+    }
+
+    override suspend fun react(groupId: String, messageId: String, emoji: String, user: AppUser, on: Boolean): Result<Unit> {
+        messages.value = messages.value + (groupId to messages.value[groupId].orEmpty().map { m ->
+            if (m.id != messageId) m else {
+                val list = m.reactions[emoji].orEmpty().let { if (on) (it + user.uid).distinct() else it - user.uid }
+                m.copy(reactions = (m.reactions + (emoji to list)).filterValues { it.isNotEmpty() })
+            }
+        })
+        return Result.success(Unit)
+    }
+
+    override fun reunion(groupId: String): Flow<Reunion?> = reunions.map { it[groupId] }
+
+    override suspend fun proposeReunion(groupId: String, place: String, options: List<Long>, user: AppUser): Result<Unit> {
+        // A couple of classmates vote straight away in the demo.
+        val votes = members.value[groupId].orEmpty().filter { it.uid != user.uid }.take(4).mapIndexed { i, m -> m.uid to (i % options.size) }.toMap()
+        val rsvp = members.value[groupId].orEmpty().filter { it.uid != user.uid }.take(3).associate { it.uid to Rsvp.YES }
+        reunions.value = reunions.value + (groupId to Reunion(place.trim(), options.take(3), votes, rsvp, null, user.uid))
+        return Result.success(Unit)
+    }
+
+    private fun updateReunion(groupId: String, f: (Reunion) -> Reunion): Result<Unit> {
+        reunions.value[groupId]?.let { reunions.value = reunions.value + (groupId to f(it)) }
+        return Result.success(Unit)
+    }
+
+    override suspend fun vote(groupId: String, option: Int, user: AppUser) = updateReunion(groupId) { it.copy(votes = it.votes + (user.uid to option)) }
+    override suspend fun rsvp(groupId: String, status: String, user: AppUser) = updateReunion(groupId) { it.copy(rsvp = it.rsvp + (user.uid to status)) }
+    override suspend fun lockReunion(groupId: String, date: Long?) = updateReunion(groupId) { it.copy(lockedDate = date) }
 }

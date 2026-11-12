@@ -14,6 +14,24 @@ in through WhatsApp, Instagram and Facebook invites.
 
 ---
 
+## What makes people come back
+
+| Feature | Why it matters |
+|---|---|
+| 💌 **Invite landing** | A friend taps the WhatsApp link and, *before signing in*, sees the school, the batch and "Priya, Arjun and 12 others are already here". One button: **Join with Google**. |
+| 🔍 **Who's missing?** | Members add classmates they remember ("Ganesh — cricket captain"). Each becomes a personal WhatsApp invite naming who's already back. A progress ring shows "11 back · 4 still missing". When the person joins, the app recognises them (Karthik ≈ Karthikeyan S), ticks them off and posts **"🎉 Karthik is back!"** |
+| 📍 **Where are they now** | After joining you're asked for city, what you do now and a favourite memory; classmates' cards are the most-browsed screen. |
+| 🎲 **Throwbacks & reactions** | One-tap memory prompts ("Who was the strictest teacher?"), ❤️😂😭🙌 reactions, join announcements on the wall. |
+| 🥳 **Reunion planner** | Propose up to 3 dates and a place, everyone votes and RSVPs, the organiser locks the date, a countdown starts, updates go out on WhatsApp. |
+| 🏅 **Badges** | 🌱 Founder, 🔗 Connector (shared the invite 3+ times), ⭐ Early bird (first three). |
+| ⚡ **Town-first search** | "Where did you study? *Kumbakonam*" → schools nearby, closest first. Country, state and district are filled in for you; browsing and the map are still there. |
+
+In **demo mode**, invite someone from the missing list and they "join" 6 seconds later, so the whole loop can be shown in a pitch.
+
+<p>
+  <img src="docs/invite-landing.png" width="200"> <img src="docs/quick-search.png" width="200">
+</p>
+
 ## The user journey
 
 | # | Screen | What happens |

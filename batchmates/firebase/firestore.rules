@@ -41,9 +41,16 @@ service cloud.firestore {
       );
     }
 
+    // Invite codes double as the public invite preview (school, batch title, member count, first names),
+    // so a friend sees who's waiting before signing in. Single-document reads only; no listing.
     match /codes/{code} {
-      allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.keys().hasOnly(['groupId']);
+      allow get: if true;
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['groupId', 'schoolName', 'title', 'regionLabel', 'memberCount', 'faces']);
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount', 'faces'])
+        && request.resource.data.faces.size() <= 500;
     }
 
     match /groups/{groupId} {
@@ -64,6 +71,39 @@ service cloud.firestore {
         allow read: if signedIn();
         allow create: if isMe(uid);
         allow delete: if isMe(uid);
+        // Your own "where are you now" card and your share counter.
+        allow update: if isMe(uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['city', 'now', 'memory', 'invites', 'name', 'photoUrl']);
+      }
+
+      // Classmates someone remembers but who hasn't joined yet.
+      match /missing/{id} {
+        allow read: if signedIn() && isMember(groupId);
+        allow create: if signedIn() && isMember(groupId)
+          && request.resource.data.addedBy == request.auth.uid
+          && shortString(request.resource.data.name, 80);
+        allow update: if signedIn() && (
+          // anyone in the batch can count an invite they sent
+          (isMember(groupId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['invited'])
+            && request.resource.data.invited == resource.data.invited + 1)
+          // the person who was missing marks themselves found
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['foundUid'])
+            && request.resource.data.foundUid == request.auth.uid && resource.data.foundUid == null)
+        );
+        allow delete: if signedIn() && resource.data.addedBy == request.auth.uid;
+      }
+
+      // Reunion plan: members propose; each person may only change their own vote / RSVP; the organiser locks the date.
+      match /meta/reunion {
+        allow read: if signedIn() && isMember(groupId);
+        allow create: if signedIn() && isMember(groupId) && request.resource.data.createdBy == request.auth.uid;
+        allow update: if signedIn() && isMember(groupId) && (
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
+            && request.resource.data.votes.diff(resource.data.votes).affectedKeys().hasOnly([request.auth.uid]))
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rsvp'])
+            && request.resource.data.rsvp.diff(resource.data.rsvp).affectedKeys().hasOnly([request.auth.uid]))
+          || (resource.data.createdBy == request.auth.uid)
+        );
       }
 
       match /messages/{messageId} {
@@ -71,6 +111,9 @@ service cloud.firestore {
         allow create: if signedIn() && isMember(groupId)
           && request.resource.data.uid == request.auth.uid
           && shortString(request.resource.data.text, 1000);
+        // Reactions: each member may only add/remove their own uid.
+        allow update: if signedIn() && isMember(groupId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']);
         allow delete: if signedIn() && resource.data.uid == request.auth.uid;
       }
     }

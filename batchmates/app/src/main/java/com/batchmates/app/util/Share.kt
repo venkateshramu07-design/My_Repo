@@ -29,6 +29,38 @@ object Invites {
             "Join our reunion 👉 ${link(group.inviteCode)}\n" +
             "or open BatchMates and enter code ${group.inviteCode}"
 
+    /** A personal note for someone on the "missing" list: names and faces pull people in far better than a link. */
+    fun missingMessage(group: Group, person: String, from: String, others: List<String>): String {
+        val first = person.trim().substringBefore(' ')
+        val names = others.filter { !it.equals(from, true) }.take(3)
+        val crew = when {
+            names.isEmpty() -> "the gang"
+            group.memberCount > names.size + 1 -> names.joinToString(", ") + " and ${group.memberCount - names.size - 1} others"
+            else -> names.joinToString(" and ")
+        }
+        return "Hey $first! 👋 It's $from from ${group.schoolName}, Class of ${group.year}.\n\n" +
+            "$crew are back together on BatchMates and everyone keeps asking about you 😄\n\n" +
+            "Join us 👉 ${link(group.inviteCode)}  (code ${group.inviteCode})"
+    }
+
+    fun reunionMessage(group: Group, r: com.batchmates.app.data.Reunion, dateText: String): String =
+        "🥳 ${group.schoolName} · Class of ${group.year} REUNION!\n\n" +
+            (if (r.lockedDate != null) "📅 $dateText\n" else "📅 Vote for a date: $dateText\n") +
+            (if (r.place.isNotBlank()) "📍 ${r.place}\n" else "") +
+            "✅ ${r.rsvpCount(com.batchmates.app.data.Rsvp.YES)} coming so far\n\n" +
+            "RSVP in BatchMates 👉 ${link(group.inviteCode)}"
+
+    /** Plain text to a specific app (or the share sheet). */
+    fun shareText(context: Context, target: ShareTarget, text: String) {
+        val base = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text); addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        val installed = target.packages.firstOrNull { isInstalled(context, it) }
+        if (installed != null && runCatching { context.startActivity(Intent(base).setPackage(installed)) }.isSuccess) return
+        if (target == ShareTarget.WHATSAPP) { openUrl(context, "https://wa.me/?text=" + Uri.encode(text)); return }
+        context.startActivity(Intent.createChooser(base, "Share").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
+
     /** Shares straight into the chosen app; gracefully falls back to the web or the system sheet. */
     fun share(context: Context, target: ShareTarget, group: Group) {
         val text = message(group)

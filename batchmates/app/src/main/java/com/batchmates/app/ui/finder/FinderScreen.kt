@@ -125,6 +125,7 @@ fun FinderScreen(vm: FinderViewModel, onExit: () -> Unit, onJoined: (String) -> 
                 modifier = Modifier.weight(1f),
             ) { step ->
                 when (step) {
+                    Step.QUICK -> QuickStep(s, vm)
                     Step.COUNTRY -> CountryStep(s, vm::pickCountry)
                     Step.STATE -> StateStep(s, vm::pickState)
                     Step.DISTRICT -> DistrictStep(s, vm::pickDistrict, vm::loadDistricts)
@@ -157,7 +158,7 @@ private fun TopBar(s: FinderState, onBack: () -> Unit) {
             s.school?.name?.takeIf { s.step.ordinal >= Step.BATCH.ordinal },
             s.track?.takeIf { s.step == Step.SECTION || (s.step == Step.BATCH && it.isCollege) }?.let { t -> listOfNotNull(t.short, s.year?.toString()).joinToString(" · ") },
         )
-        if (crumbs.isNotEmpty() && s.step != Step.COUNTRY) {
+        if (crumbs.isNotEmpty() && s.step != Step.COUNTRY && s.step != Step.QUICK) {
             Row(
                 Modifier.horizontalScroll(rememberScrollState()).padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -167,6 +168,7 @@ private fun TopBar(s: FinderState, onBack: () -> Unit) {
 }
 
 private fun stepEyebrow(step: Step) = when (step) {
+    Step.QUICK -> "FIND YOUR BATCH"
     Step.COUNTRY -> "STEP 1 OF 6 · WORLD"
     Step.STATE -> "STEP 2 OF 6"
     Step.DISTRICT -> "STEP 3 OF 6"
@@ -176,6 +178,7 @@ private fun stepEyebrow(step: Step) = when (step) {
 }
 
 private fun stepTitle(step: Step) = when (step) {
+    Step.QUICK -> "Where did you study?"
     Step.COUNTRY -> "Which country?"
     Step.STATE -> "Which state?"
     Step.DISTRICT -> "Which district?"
@@ -189,6 +192,47 @@ private fun stepTitle(step: Step) = when (step) {
 }
 
 // ------------------------------------------------------------------ steps
+
+/** The fast lane: type the town, get schools. Browsing by country → state → district stays one tap away. */
+@Composable
+private fun QuickStep(s: FinderState, vm: FinderViewModel) {
+    var q by rememberSaveable { mutableStateOf("") }
+    Column(Modifier.fillMaxSize()) {
+        SearchField(q, { q = it; vm.searchAnywhere(it) }, "Town or city — e.g. Kumbakonam, Manchester", Modifier.padding(horizontal = 20.dp))
+        LazyColumn(
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 40.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.imePadding(),
+        ) {
+            when (val r = s.anywhereResults) {
+                Load.Loading -> items(3) { TownSkeleton() }
+                is Load.Failed -> item { Text("Search is busy right now — try again, or browse below.", color = Brand.TextDim) }
+                is Load.Ready -> {
+                    if (r.value.isEmpty()) item { Text("No place called \"${q.trim()}\". Try another spelling, or browse below.", color = Brand.TextDim) }
+                    items(r.value, key = { "a" + it.name + it.lat }) { p ->
+                        val flag = s.countries.firstOrNull { it.code == p.countryCode }?.flag ?: "📍"
+                        Row1(leading = flag, title = p.name, subtitle = p.label) { vm.pickAnywhere(p) }
+                    }
+                }
+                Load.Idle -> item {
+                    GlassCard(Modifier.fillMaxWidth()) {
+                        Text("⚡ Fastest way", style = MaterialTheme.typography.titleMedium)
+                        Text("Type the town or city where your school or college is. We'll list everything nearby, closest first.",
+                            color = Brand.TextDim)
+                    }
+                }
+            }
+            item {
+                Spacer(Modifier.height(10.dp))
+                Text("Or", color = Brand.TextDim, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            }
+            item {
+                Row1(leading = "🌍", title = "Browse by place", subtitle = "Country → State → District → Town") { vm.browse() }
+            }
+            item { Row1(leading = "🗺️", title = "Pick on the map", subtitle = "Find it visually, or pin a missing school") { vm.openMap() } }
+        }
+    }
+}
 
 @Composable
 private fun CountryStep(s: FinderState, onPick: (Country) -> Unit) {

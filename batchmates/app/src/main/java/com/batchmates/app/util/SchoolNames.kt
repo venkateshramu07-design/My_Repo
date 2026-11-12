@@ -61,6 +61,23 @@ object SchoolNames {
                 (lat != null && lon != null && s.lat != null && s.lon != null && km(lat, lon, s.lat, s.lon) < 0.25)
         }.distinctBy { it.id }
 
+    /**
+     * Is "Karthik" (typed from memory) the person who just joined as "Karthikeyan S"?
+     * First names must match closely; initials and surnames may differ.
+     */
+    fun samePerson(remembered: String, joined: String): Boolean {
+        fun parts(n: String) = n.lowercase().split(Regex("[^\\p{L}]+")).filter { it.isNotEmpty() }
+        val a = parts(remembered)
+        val b = parts(joined)
+        val first = a.firstOrNull()?.takeIf { it.length >= 2 } ?: return false
+        fun sameFirst(p: String) = p == first || (first.length >= 5 && p.startsWith(first)) || (p.length >= 5 && first.startsWith(p)) ||
+            (minOf(p.length, first.length) >= 5 && editDistance(p, first) <= 1)
+        val match = b.indexOfFirst(::sameFirst).takeIf { it >= 0 } ?: return false
+        val rest = b.filterIndexed { i, _ -> i != match }
+        // Any surname / initial they remembered must fit one of the joiner's other names.
+        return a.drop(1).all { s -> rest.any { it.startsWith(s) || s.startsWith(it) } }
+    }
+
     fun km(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val r = 6371.0
         val dLat = Math.toRadians(lat2 - lat1)

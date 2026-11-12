@@ -234,11 +234,13 @@ class GeoRepository(private val context: Context) {
     }
 
     /** Towns / villages / areas matching what the user types, near the chosen district. */
-    suspend fun searchPlaces(text: String, near: Pair<Double, Double>?, state: String): List<Place> {
+    suspend fun searchPlaces(text: String, near: Pair<Double, Double>?, state: String, bias: Pair<Double, Double>? = null): List<Place> {
         if (text.trim().length < 2) return emptyList()
         val url = buildString {
-            append(PHOTON).append("?limit=12&osm_tag=place&q=").append(URLEncoder.encode(text.trim(), "UTF-8"))
+            append(PHOTON).append("?limit=15&osm_tag=place&q=").append(URLEncoder.encode(text.trim(), "UTF-8"))
             if (near != null) append("&bbox=").append(bbox(near, 0.75))
+            // Without an area, rank places near the user's own country higher.
+            if (near == null && bias != null) append("&lat=%.2f&lon=%.2f&location_bias_scale=0.2".format(java.util.Locale.US, bias.first, bias.second))
         }
         val features = JSONObject(http.get(url, ttlMs = 30 * Http.DAY, readTimeoutMs = 12_000)).optJSONArray("features") ?: JSONArray()
         return (0 until features.length()).mapNotNull { i ->
@@ -253,9 +255,28 @@ class GeoRepository(private val context: Context) {
                 kind = kind,
                 area = listOf(p.optString("county"), p.optString("district")).firstOrNull { it.isNotBlank() }.orEmpty(),
                 lat = c.getDouble(1), lon = c.getDouble(0),
+                state = p.optString("state"), countryCode = p.optString("countrycode").uppercase(), country = p.optString("country"),
             )
-        }.distinctBy { it.name.lowercase() + it.kind }
+        }.distinctBy { it.name.lowercase() + it.kind + it.state }
     }
+
+    /**
+     * Which district a place belongs to: nearest bundled district centre in the same state (India today),
+     * otherwise the map's county / district name.
+     */
+    suspend fun districtFor(place: Place): String {
+        bundledState(place.countryCode, place.state)
+            ?.filter { it.lat != null && it.lon != null }
+            ?.minByOrNull { SchoolNames.km(place.lat, place.lon, it.lat!!, it.lon!!) }
+            ?.let { return it.name }
+        return place.area.replace(Regex("\\s+(district|county|taluk)$", RegexOption.IGNORE_CASE), "")
+    }
+
+    /** Rough centre of a country, to bias global town search toward the user's own country. */
+    suspend fun countryBias(code: String): Pair<Double, Double>? =
+        bundled()[code.uppercase()]?.values?.flatten()?.filter { it.lat != null }?.let { all ->
+            if (all.isEmpty()) null else all.map { it.lat!! }.average() to all.map { it.lon!! }.average()
+        }
 
     /** Map viewport, fast: one reverse request from the viewport centre. */
     suspend fun schoolsInBoxFast(south: Double, west: Double, north: Double, east: Double): List<School> {

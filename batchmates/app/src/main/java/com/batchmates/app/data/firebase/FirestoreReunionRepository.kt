@@ -8,7 +8,11 @@ import com.batchmates.app.data.InstitutionKind
 import com.batchmates.app.data.Track
 import com.batchmates.app.data.Group
 import com.batchmates.app.data.Member
+import com.batchmates.app.data.InvitePreview
 import com.batchmates.app.data.Message
+import com.batchmates.app.data.MessageKind
+import com.batchmates.app.data.MissingPerson
+import com.batchmates.app.data.Reunion
 import com.batchmates.app.data.Region
 import com.batchmates.app.data.ReunionRepository
 import com.batchmates.app.data.School
@@ -116,7 +120,7 @@ class FirestoreReunionRepository : ReunionRepository {
         var candidate = InviteCodes.generate()
         repeat(3) { if (codes.document(candidate).get().await().exists()) candidate = InviteCodes.generate() }
 
-        db.runTransaction { tx ->
+        val joinedNow = db.runTransaction { tx ->
             val g = tx.get(groupRef)
             val s = tx.get(schoolRef)
             val m = tx.get(groupRef.collection("members").document(user.uid))
@@ -148,29 +152,71 @@ class FirestoreReunionRepository : ReunionRepository {
                         "createdAt" to FieldValue.serverTimestamp(),
                     ),
                 )
-                tx.set(codes.document(code), mapOf("groupId" to key.groupId))
+                tx.set(
+                    codes.document(code),
+                    mapOf(
+                        "groupId" to key.groupId,
+                        "schoolName" to school.name,
+                        "title" to "${key.track.short} · Class of ${key.year} · " +
+                            if (key.section.uppercase() == com.batchmates.app.data.WHOLE_BATCH) "Whole batch" else "Section ${key.section.uppercase()}",
+                        "regionLabel" to school.region.label,
+                        "memberCount" to 1L,
+                        "faces" to listOf(user.firstName()),
+                    ),
+                )
             } else if (isNewMember) {
                 tx.update(groupRef, "memberCount", FieldValue.increment(1))
+                tx.update(codes.document(code), mapOf("memberCount" to FieldValue.increment(1), "faces" to FieldValue.arrayUnion(user.firstName())))
             }
             if (isNewMember) addMember(tx, groupRef.id, user)
+            isNewMember
         }.await()
+        if (joinedNow) afterJoin(key.groupId, user)
         group(key.groupId).firstNonNull()
     }
+
+    private fun AppUser.firstName() = name.trim().substringBefore(' ').take(20)
+
+    /** Announce the newcomer, and if someone had them on the "missing" list, celebrate the find. */
+    private suspend fun afterJoin(groupId: String, user: AppUser) {
+        runCatching {
+            val g = groups.document(groupId)
+            val match = g.collection("missing").whereEqualTo("foundUid", null).limit(300).get().await().documents
+                .firstOrNull { com.batchmates.app.util.SchoolNames.samePerson(it.getString("name").orEmpty(), user.name) }
+            if (match != null) {
+                match.reference.update("foundUid", user.uid).await()
+                g.collection("messages").add(
+                    systemMessage(user, MessageKind.FOUND, "${user.name} is back! 🎉 ${match.getString("addedByName") ?: "A classmate"} was looking for them."),
+                ).await()
+            } else {
+                g.collection("messages").add(systemMessage(user, MessageKind.JOINED, "${user.name} joined the batch 👋")).await()
+            }
+        }
+    }
+
+    private fun systemMessage(user: AppUser, kind: MessageKind, text: String) = mapOf(
+        "uid" to user.uid, "name" to user.name, "photoUrl" to user.photoUrl, "text" to text,
+        "kind" to kind.name, "sentAt" to FieldValue.serverTimestamp(),
+    )
 
     override suspend fun joinByInviteCode(code: String, user: AppUser): Result<Group> = runCatching {
         val groupId = codes.document(InviteCodes.normalize(code)).get().await().getString("groupId")
             ?: error("No batch found for code \"$code\". Double-check it with your friend.")
         val groupRef = groups.document(groupId)
-        db.runTransaction { tx ->
+        val joinedNow = db.runTransaction { tx ->
             val g = tx.get(groupRef)
             check(g.exists()) { "This batch no longer exists." }
             val m = tx.get(groupRef.collection("members").document(user.uid))
             if (!m.exists()) {
                 tx.update(groupRef, "memberCount", FieldValue.increment(1))
                 tx.update(schools.document(g.getString("schoolId")!!), "memberCount", FieldValue.increment(1))
+                tx.update(codes.document(InviteCodes.normalize(code)),
+                    mapOf("memberCount" to FieldValue.increment(1), "faces" to FieldValue.arrayUnion(user.firstName())))
                 addMember(tx, groupId, user)
             }
+            !m.exists()
         }.await()
+        if (joinedNow) afterJoin(groupId, user)
         group(groupId).firstNonNull()
     }
 
@@ -203,6 +249,8 @@ class FirestoreReunionRepository : ReunionRepository {
                 Member(
                     it.id, it.getString("name") ?: "Friend", it.getString("photoUrl"),
                     it.getTimestamp("joinedAt", DocumentSnapshot.ServerTimestampBehavior.ESTIMATE)?.toDate()?.time ?: 0L,
+                    city = it.getString("city").orEmpty(), now = it.getString("now").orEmpty(),
+                    memory = it.getString("memory").orEmpty(), invites = it.getLong("invites")?.toInt() ?: 0,
                 )
             }
         }
@@ -218,6 +266,11 @@ class FirestoreReunionRepository : ReunionRepository {
                     it.getString("text").orEmpty(),
                     it.getTimestamp("sentAt", DocumentSnapshot.ServerTimestampBehavior.ESTIMATE)?.toDate()?.time
                         ?: System.currentTimeMillis(),
+                    kind = it.getString("kind")?.let { k -> runCatching { MessageKind.valueOf(k) }.getOrNull() } ?: MessageKind.TEXT,
+                    prompt = it.getString("prompt"),
+                    reactions = (it.get("reactions") as? Map<*, *>)?.mapNotNull { (k, v) ->
+                        (k as? String)?.let { e -> e to (v as? List<*>)?.filterIsInstance<String>().orEmpty() }
+                    }?.toMap().orEmpty(),
                 )
             }
         }
@@ -234,6 +287,121 @@ class FirestoreReunionRepository : ReunionRepository {
 
     override suspend fun setWhatsappLink(groupId: String, link: String?): Result<Unit> = runCatching {
         groups.document(groupId).set(mapOf("whatsappLink" to link?.trim()?.ifBlank { null }), SetOptions.merge()).await()
+        Unit
+    }
+
+    // ---- engagement ----
+
+    override suspend fun invitePreview(code: String): InvitePreview? = runCatching {
+        val c = InviteCodes.normalize(code)
+        val d = codes.document(c).get().await()
+        if (!d.exists()) return@runCatching null
+        InvitePreview(
+            code = c,
+            groupId = d.getString("groupId").orEmpty(),
+            schoolName = d.getString("schoolName").orEmpty(),
+            title = d.getString("title").orEmpty(),
+            regionLabel = d.getString("regionLabel").orEmpty(),
+            memberCount = d.getLong("memberCount")?.toInt() ?: 0,
+            faces = (d.get("faces") as? List<*>)?.filterIsInstance<String>().orEmpty(),
+        )
+    }.getOrNull()
+
+    override fun missing(groupId: String): Flow<List<MissingPerson>> =
+        listen(groups.document(groupId).collection("missing").orderBy("addedAt", Query.Direction.DESCENDING).limit(300)) { snap ->
+            snap.documents.map {
+                MissingPerson(
+                    it.id, it.getString("name").orEmpty(), it.getString("note").orEmpty(),
+                    it.getString("addedBy").orEmpty(), it.getString("addedByName").orEmpty(),
+                    it.getLong("invited")?.toInt() ?: 0, it.getString("foundUid"),
+                )
+            }
+        }
+
+    override suspend fun addMissing(groupId: String, name: String, note: String, user: AppUser): Result<Unit> = runCatching {
+        groups.document(groupId).collection("missing").add(
+            mapOf(
+                "name" to name.trim().take(80), "note" to note.trim().take(120), "addedBy" to user.uid,
+                "addedByName" to user.name, "invited" to 0L, "foundUid" to null, "addedAt" to FieldValue.serverTimestamp(),
+            ),
+        ).await()
+        Unit
+    }
+
+    override suspend fun markInvited(groupId: String, missingId: String): Result<Unit> = runCatching {
+        groups.document(groupId).collection("missing").document(missingId).update("invited", FieldValue.increment(1)).await()
+        Unit
+    }
+
+    override suspend fun removeMissing(groupId: String, missingId: String): Result<Unit> = runCatching {
+        groups.document(groupId).collection("missing").document(missingId).delete().await()
+        Unit
+    }
+
+    override suspend fun updateMyCard(groupId: String, user: AppUser, city: String, now: String, memory: String): Result<Unit> = runCatching {
+        groups.document(groupId).collection("members").document(user.uid).update(
+            mapOf("city" to city.trim().take(60), "now" to now.trim().take(80), "memory" to memory.trim().take(200)),
+        ).await()
+        Unit
+    }
+
+    override suspend fun recordShare(groupId: String, user: AppUser): Result<Unit> = runCatching {
+        groups.document(groupId).collection("members").document(user.uid).update("invites", FieldValue.increment(1)).await()
+        Unit
+    }
+
+    override suspend fun sendPrompt(groupId: String, prompt: String, answer: String, user: AppUser): Result<Unit> = runCatching {
+        groups.document(groupId).collection("messages").add(
+            mapOf(
+                "uid" to user.uid, "name" to user.name, "photoUrl" to user.photoUrl, "text" to answer.trim().take(1000),
+                "kind" to MessageKind.PROMPT.name, "prompt" to prompt, "sentAt" to FieldValue.serverTimestamp(),
+            ),
+        ).await()
+        Unit
+    }
+
+    override suspend fun react(groupId: String, messageId: String, emoji: String, user: AppUser, on: Boolean): Result<Unit> = runCatching {
+        groups.document(groupId).collection("messages").document(messageId).update(
+            "reactions.$emoji", if (on) FieldValue.arrayUnion(user.uid) else FieldValue.arrayRemove(user.uid),
+        ).await()
+        Unit
+    }
+
+    private fun reunionRef(groupId: String) = groups.document(groupId).collection("meta").document("reunion")
+
+    override fun reunion(groupId: String): Flow<Reunion?> = listenDoc(reunionRef(groupId)) { d ->
+        if (!d.exists()) null else Reunion(
+            place = d.getString("place").orEmpty(),
+            options = (d.get("options") as? List<*>)?.mapNotNull { (it as? Number)?.toLong() }.orEmpty(),
+            votes = (d.get("votes") as? Map<*, *>)?.mapNotNull { (k, v) -> (k as? String)?.let { it to ((v as? Number)?.toInt() ?: 0) } }?.toMap().orEmpty(),
+            rsvp = (d.get("rsvp") as? Map<*, *>)?.mapNotNull { (k, v) -> (k as? String)?.let { it to (v as? String).orEmpty() } }?.toMap().orEmpty(),
+            lockedDate = d.getLong("lockedDate"),
+            createdBy = d.getString("createdBy").orEmpty(),
+        )
+    }
+
+    override suspend fun proposeReunion(groupId: String, place: String, options: List<Long>, user: AppUser): Result<Unit> = runCatching {
+        reunionRef(groupId).set(
+            mapOf(
+                "place" to place.trim().take(120), "options" to options.take(3), "votes" to emptyMap<String, Int>(),
+                "rsvp" to emptyMap<String, String>(), "lockedDate" to null, "createdBy" to user.uid,
+            ),
+        ).await()
+        Unit
+    }
+
+    override suspend fun vote(groupId: String, option: Int, user: AppUser): Result<Unit> = runCatching {
+        reunionRef(groupId).update("votes.${user.uid}", option).await()
+        Unit
+    }
+
+    override suspend fun rsvp(groupId: String, status: String, user: AppUser): Result<Unit> = runCatching {
+        reunionRef(groupId).update("rsvp.${user.uid}", status).await()
+        Unit
+    }
+
+    override suspend fun lockReunion(groupId: String, date: Long?): Result<Unit> = runCatching {
+        reunionRef(groupId).update("lockedDate", date).await()
         Unit
     }
 

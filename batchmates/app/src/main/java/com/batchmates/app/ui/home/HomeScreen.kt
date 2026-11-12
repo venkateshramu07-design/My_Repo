@@ -182,7 +182,7 @@ private fun FindHero(onBrowse: () -> Unit, onMap: () -> Unit) {
             Text("Where did you\nstudy?", style = MaterialTheme.typography.headlineMedium, color = Color.White)
             Spacer(Modifier.height(18.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                HeroChoice("Browse places", Icons.Rounded.Explore, Modifier.weight(1f), onBrowse)
+                HeroChoice("Search my town", Icons.Rounded.Explore, Modifier.weight(1f), onBrowse)
                 HeroChoice("Pick on map", Icons.Rounded.Map, Modifier.weight(1f), onMap)
             }
         }

@@ -56,7 +56,11 @@ class MainActivity : ComponentActivity() {
                 Crossfade(user, label = "auth") { u ->
                     if (u == null) {
                         val vm = viewModel { AuthViewModel(container.auth) }
-                        WelcomeScreen(vm, container.isDemo)
+                        // Invited? Show who's waiting before asking anyone to sign in.
+                        val invite by androidx.compose.runtime.produceState<com.batchmates.app.data.InvitePreview?>(null, code) {
+                            value = code?.let { container.reunion.invitePreview(it) }
+                        }
+                        WelcomeScreen(vm, container.isDemo, invite)
                     } else {
                         AppNav(container, u, code, onCodeUsed = { pendingCode.value = null }) {
                             lifecycleScope.launch { container.auth.signOut() }

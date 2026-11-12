@@ -69,6 +69,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.batchmates.app.data.InvitePreview
 import com.batchmates.app.ui.components.AuroraBackground
 import com.batchmates.app.ui.components.Avatar
 import com.batchmates.app.ui.components.GradientButton
@@ -89,7 +90,7 @@ private val slides = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomeScreen(vm: AuthViewModel, isDemo: Boolean) {
+fun WelcomeScreen(vm: AuthViewModel, isDemo: Boolean, invite: InvitePreview? = null) {
     val state by vm.state.collectAsState()
     val context = LocalContext.current
     var showEmail by rememberSaveable { mutableStateOf(false) }
@@ -110,7 +111,7 @@ fun WelcomeScreen(vm: AuthViewModel, isDemo: Boolean) {
             Spacer(Modifier.height(16.dp))
             if (isDemo) Pill("DEMO MODE · sample data", Brand.Mint)
             Spacer(Modifier.weight(0.4f))
-            OrbitHero()
+            if (invite != null) InviteHero(invite) else OrbitHero()
             Spacer(Modifier.weight(0.3f))
             Text(
                 "BatchMates",
@@ -121,7 +122,7 @@ fun WelcomeScreen(vm: AuthViewModel, isDemo: Boolean) {
             Spacer(Modifier.height(4.dp))
             Text("Your school friends are one tap away", color = Brand.TextDim)
             Spacer(Modifier.height(20.dp))
-            HorizontalPager(pager, Modifier.fillMaxWidth().height(96.dp)) { i ->
+            if (invite == null) HorizontalPager(pager, Modifier.fillMaxWidth().height(96.dp)) { i ->
                 val s = slides[i]
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("${s.emoji}  ${s.title}", style = MaterialTheme.typography.titleLarge)
@@ -129,7 +130,7 @@ fun WelcomeScreen(vm: AuthViewModel, isDemo: Boolean) {
                     Text(s.body, color = Brand.TextDim, textAlign = TextAlign.Center)
                 }
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (invite == null) Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 repeat(slides.size) { i ->
                     val active = pager.currentPage == i
                     Box(
@@ -140,7 +141,7 @@ fun WelcomeScreen(vm: AuthViewModel, isDemo: Boolean) {
             }
             Spacer(Modifier.weight(0.5f))
             GradientButton(
-                "Continue with Google",
+                if (invite != null) "Join with Google" else "Continue with Google",
                 onClick = { vm.google(context) },
                 modifier = Modifier.fillMaxWidth(),
                 loading = state.busy && !showEmail,
@@ -227,6 +228,44 @@ private fun EmailSheet(vm: AuthViewModel) {
         )
         if (tab == 0) {
             TextButton({ vm.reset(email) }, Modifier.align(Alignment.CenterHorizontally)) { Text("Forgot password?") }
+        }
+    }
+}
+
+/** What a friend sees after tapping an invite link: who's waiting, before any sign-in. */
+@Composable
+private fun InviteHero(invite: InvitePreview) {
+    val t = rememberInfiniteTransition(label = "inv")
+    val bob by t.animateFloat(-4f, 4f, infiniteRepeatable(tween(1600), RepeatMode.Reverse), label = "b")
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("🎉", fontSize = 56.sp, modifier = Modifier.offset(y = bob.dp))
+        Text("YOU'RE INVITED", style = com.batchmates.app.ui.theme.Eyebrow)
+        Spacer(Modifier.height(10.dp))
+        Box(
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp))
+                .background(Brush.linearGradient(listOf(Brand.Violet, Brand.Orchid, Brand.Coral))).padding(22.dp),
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                Text(invite.schoolName, style = MaterialTheme.typography.headlineSmall, color = Color.White, textAlign = TextAlign.Center)
+                if (invite.regionLabel.isNotBlank()) Text(invite.regionLabel, color = Color.White.copy(alpha = 0.8f), fontSize = 13.sp, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(8.dp))
+                Text(invite.title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(16.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy((-10).dp)) {
+                    invite.faces.take(5).forEach { Avatar(it, null, 44.dp, ring = Brand.Orchid) }
+                }
+                Spacer(Modifier.height(10.dp))
+                val names = invite.faces.take(2)
+                val others = invite.memberCount - names.size
+                Text(
+                    when {
+                        names.isEmpty() -> "Your batch is waiting for you"
+                        others > 0 -> "${names.joinToString(", ")} and $others other${if (others == 1) "" else "s"} are already here"
+                        else -> "${names.joinToString(" and ")} ${if (names.size == 1) "is" else "are"} already here"
+                    },
+                    color = Color.White, textAlign = TextAlign.Center, fontWeight = FontWeight.SemiBold,
+                )
+            }
         }
     }
 }

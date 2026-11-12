@@ -43,4 +43,27 @@ interface ReunionRepository {
     fun messages(groupId: String): Flow<List<Message>>
     suspend fun sendMessage(groupId: String, text: String, user: AppUser): Result<Unit>
     suspend fun setWhatsappLink(groupId: String, link: String?): Result<Unit>
+
+    // ---- engagement ----
+
+    /** Public preview of an invite (works before sign-in). */
+    suspend fun invitePreview(code: String): InvitePreview?
+
+    fun missing(groupId: String): Flow<List<MissingPerson>>
+    suspend fun addMissing(groupId: String, name: String, note: String, user: AppUser): Result<Unit>
+    suspend fun markInvited(groupId: String, missingId: String): Result<Unit>
+    suspend fun removeMissing(groupId: String, missingId: String): Result<Unit>
+
+    /** "Where are you now" card on your membership. */
+    suspend fun updateMyCard(groupId: String, user: AppUser, city: String, now: String, memory: String): Result<Unit>
+    suspend fun recordShare(groupId: String, user: AppUser): Result<Unit>
+
+    suspend fun sendPrompt(groupId: String, prompt: String, answer: String, user: AppUser): Result<Unit>
+    suspend fun react(groupId: String, messageId: String, emoji: String, user: AppUser, on: Boolean): Result<Unit>
+
+    fun reunion(groupId: String): Flow<Reunion?>
+    suspend fun proposeReunion(groupId: String, place: String, options: List<Long>, user: AppUser): Result<Unit>
+    suspend fun vote(groupId: String, option: Int, user: AppUser): Result<Unit>
+    suspend fun rsvp(groupId: String, status: String, user: AppUser): Result<Unit>
+    suspend fun lockReunion(groupId: String, date: Long?): Result<Unit>
 }

@@ -25,7 +25,19 @@ data class Region(
 }
 
 /** A town / village / area the user picks to narrow the school search. */
-data class Place(val name: String, val kind: String, val area: String, val lat: Double, val lon: Double)
+data class Place(
+    val name: String,
+    val kind: String,
+    val area: String,
+    val lat: Double,
+    val lon: Double,
+    val state: String = "",
+    val countryCode: String = "",
+    val country: String = "",
+) {
+    /** "Kumbakonam, Tamil Nadu, India" for search results. */
+    val label: String get() = listOf(area.takeIf { !it.equals(name, true) }.orEmpty(), state, country).filter { it.isNotBlank() }.distinct().joinToString(", ")
+}
 
 enum class SchoolSource { OSM, CUSTOM }
 
@@ -83,7 +95,22 @@ data class Group(
     fun milestone(currentYear: Int): Int? = (currentYear - year).takeIf { it >= 5 && it % 5 == 0 }
 }
 
-data class Member(val uid: String, val name: String, val photoUrl: String?, val joinedAt: Long)
+data class Member(
+    val uid: String,
+    val name: String,
+    val photoUrl: String?,
+    val joinedAt: Long,
+    /** "Where are they now" card. */
+    val city: String = "",
+    val now: String = "",
+    val memory: String = "",
+    /** How many times they shared the batch invite: drives the Connector badge. */
+    val invites: Int = 0,
+) {
+    val hasCard: Boolean get() = city.isNotBlank() || now.isNotBlank() || memory.isNotBlank()
+}
+
+enum class MessageKind { TEXT, JOINED, PROMPT, FOUND }
 
 data class Message(
     val id: String,
@@ -92,7 +119,51 @@ data class Message(
     val photoUrl: String?,
     val text: String,
     val sentAt: Long,
+    val kind: MessageKind = MessageKind.TEXT,
+    /** For throwback answers: the question being answered. */
+    val prompt: String? = null,
+    /** emoji → uids who reacted. */
+    val reactions: Map<String, List<String>> = emptyMap(),
 )
+
+/** Someone a member remembers but who hasn't joined yet. Every one is a personal invite waiting to happen. */
+data class MissingPerson(
+    val id: String,
+    val name: String,
+    val note: String,
+    val addedBy: String,
+    val addedByName: String,
+    val invited: Int = 0,
+    val foundUid: String? = null,
+) {
+    val found: Boolean get() = foundUid != null
+}
+
+/** What an invite link shows before anyone signs in. */
+data class InvitePreview(
+    val code: String,
+    val groupId: String,
+    val schoolName: String,
+    val title: String,
+    val regionLabel: String,
+    val memberCount: Int,
+    val faces: List<String>,
+)
+
+/** Reunion plan: up to three candidate dates, votes, RSVPs, and a locked date once agreed. */
+data class Reunion(
+    val place: String,
+    val options: List<Long>,
+    val votes: Map<String, Int>,
+    val rsvp: Map<String, String>,
+    val lockedDate: Long?,
+    val createdBy: String,
+) {
+    fun votesFor(i: Int) = votes.values.count { it == i }
+    fun rsvpCount(status: String) = rsvp.values.count { it == status }
+}
+
+object Rsvp { const val YES = "yes"; const val MAYBE = "maybe"; const val NO = "no" }
 
 /** How many classmates already joined a (grade, year, section) at a school. Used to lure people in. */
 data class BatchStat(val track: Track, val year: Int, val section: String, val members: Int)
