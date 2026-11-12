@@ -10,7 +10,7 @@ Output (all gzip-compressed JSON):
   data/schools/<CC>/<latCell>_<lonCell>.json.gz   one file per 0.5° x 0.5° cell (~55 km)
       {"v":1,"s":[[id, name, lat, lon, kind, locality], ...]}      kind: s=school, c=college/university, v=vocational
   data/towns/<CC>.json.gz                          towns & villages that have schools (or are big)
-      {"v":1,"t":[[name, lat, lon, schools, state, district], ...]}    state/district: official hierarchy
+      {"v":1,"t":[[name, lat, lon, schools, state, district, population], ...]}  ranked by schools + size
 
 Inputs: <CC>.parquet (places, see extract) and optionally <CC>_div.parquet (Overture divisions: locality name,
 lat, lon, population, state, district). With divisions, every school is linked to its nearest locality, so towns
@@ -78,7 +78,7 @@ def load_localities(div_parquet):
                       f"FROM '{div_parquet}' WHERE subtype = 'locality' AND name IS NOT NULL").fetchall()
     grid = defaultdict(list)
     for r in rows:
-        if re.search(r"\bdistrict$", r[0], re.I):
+        if re.search(r"\bdistrict$|metropolitan|urban agglomeration|\bregion$|\bdivision$", r[0], re.I):
             continue
         grid[(math.floor(r[1] / 0.05), math.floor(r[2] / 0.05))].append(r)
     return grid
@@ -160,7 +160,7 @@ def build(cc, parquet, out, div_parquet=None):
         for key, loc in info.items():
             n = counts.get(key, 0)
             if n >= 2 or loc[3] >= 20000:
-                entries.append([loc[0], round(loc[1], 4), round(loc[2], 4), n, loc[4], loc[5]])
+                entries.append([loc[0], round(loc[1], 4), round(loc[2], 4), n, loc[4], loc[5], int(loc[3] or 0)])
     else:
         towns = defaultdict(list)
         for r in final:
@@ -172,9 +172,10 @@ def build(cc, parquet, out, div_parquet=None):
                 continue
             lat = sorted(x["lat"] for x in lst)[len(lst) // 2]
             lon = sorted(x["lon"] for x in lst)[len(lst) // 2]
-            entries.append([lst[0]["town"], round(lat, 4), round(lon, 4), len(lst), region, ""])
+            entries.append([lst[0]["town"], round(lat, 4), round(lon, 4), len(lst), region, "", 0])
     entries = [e for e in entries if not re.search(r"\bdistrict$", e[0], re.I)]
-    entries.sort(key=lambda e: -e[3])
+    # Rank: schools found + city size (big cities' schools are spread over many neighbourhood names).
+    entries.sort(key=lambda e: -(e[3] + e[6] / 20000))
     merged = []
     seen = defaultdict(list)
     for e in entries:  # same town name twice nearby -> keep the bigger
