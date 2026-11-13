@@ -16,9 +16,13 @@
    - On 30 October: 18 indexed, 132 crawled but not indexed (125 of them last crawled before the 29 October rewrites), 126 discovered, 24 unknown, 1 redirect error (the KB to MB converter, probably a one-off).
    - All sitemaps were resubmitted on 30 October.
 4. **Never ask the user to do manual work.** The Blogger token (`BLOGGER_TOKEN`, passed only as an environment variable and never saved) is the only exception.
-5. **About 13 November 2026:** re-measure Google indexing and rankings with DataForSEO.
-   - Use per-URL `site:` checks (see `seo/URL_INSPECTION.xlsx` for the priority list) and ranked_keywords.
-   - On 30 October, about 7% of sampled posts were indexed.
+5. **Re-measure done on 13 November 2026** (`seo/REMEASURE_2026_11.md`, $0.98 of DataForSEO credit).
+   - Search Console: **6 of 309 indexed (1.9%)**, down from 18 of 301 (6.0%) on 30 October. None newly indexed; 12 dropped to "crawled, not indexed".
+   - **Redirect errors rose from 1 to 34.** 33 of the 37 pages crawled since 30 October failed on 10 and 11 November (mobile Googlebot).
+   - DataForSEO ranked_keywords: 0 keywords in the top 100 in the US and India (unchanged).
+   - Per-URL `site:` checks found 1 of 300. This isn't reliable: the domain-wide `site:` query also returned nothing. Don't repeat them; use `gsc_inspect.py` (free) plus ranked_keywords ($0.02).
+   - **About 17 November:** run `python3 seo/gsc_inspect.py` to see whether the redirect errors cleared.
+   - **Next full check: about 27 November 2026.**
 6. Status and scripts:
    - `seo/sizes/STATUS.md`: exact-size pages.
    - `seo/publish_u3.py`, `seo/publish_pending.py`: republish batches.
