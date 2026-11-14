@@ -121,3 +121,16 @@ def test_webhook_auth_and_flow(env):
     assert r.status_code == 200 and r.json() == {"received": ["SBIN"]}
     assert eng.store.by_status("BUY_PENDING")
     assert client.get("/health").json()["dry_run"] is True
+
+
+def test_dashboard_and_pause_buttons(env):
+    eng, broker, clock = env
+    eng.handle_signal([("SBIN", 600.0)])
+    client = TestClient(create_app(eng, start_monitor=False))
+    assert client.get("/dashboard?token=bad").status_code == 403
+    page = client.get(f"/dashboard?token={TOKEN}").text
+    assert "SBIN" in page and "PAPER" in page and "Pause new buys" in page
+    r = client.post(f"/pause?token={TOKEN}&ui=1", follow_redirects=False)
+    assert r.status_code == 303 and eng.paused
+    assert "Resume new buys" in client.get(f"/dashboard?token={TOKEN}").text
+    assert client.post(f"/resume?token={TOKEN}").json() == {"paused": False}

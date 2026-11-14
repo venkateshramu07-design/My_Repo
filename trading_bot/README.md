@@ -25,7 +25,20 @@ The 7 % is **gross**: brokerage, taxes and MTF interest come out of it.
 There is **no stop-loss**, as requested. A stock that never rises 7 % is held indefinitely,
 with MTF interest accruing daily and possible margin calls if it falls. Consider adding one.
 
-## Setup
+## Setup from a phone (easiest)
+
+On a server, run this one command as root. It installs everything (Python, HTTPS via
+Caddy + a free `<ip>.sslip.io` address, a systemd service, and a firewall), asks for your
+Groww key, then prints your Chartink webhook URL and a phone dashboard link:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/venkateshramu07-design/My_Repo/ccr-8f94bfa5-5nixv7/trading_bot/deploy/setup.sh)
+```
+
+Re-running it updates the code and keeps your `.env` and trade history.
+Dashboard: `https://<ip>.sslip.io/dashboard?token=<WEBHOOK_TOKEN>` (status, trades, pause button).
+
+## Manual setup
 
 1. **Groww**: subscribe to the Trading API, then on the Cloud API Keys page create a
    **TOTP** key. Put the key and TOTP secret in `.env`.
