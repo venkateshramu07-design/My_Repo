@@ -94,11 +94,12 @@ cat <<DONE
 
  Server static IP (register with Groww if asked):  $IP
 
- Chartink webhook URL:
-   https://$DOMAIN/webhook/chartink?token=$TOKEN
-
  Phone dashboard (bookmark it):
    https://$DOMAIN/dashboard?token=$TOKEN
+
+ Signals: $(grep '^SIGNAL_SOURCE=' "$APP_DIR/.env" | cut -d' ' -f1 || echo 'SIGNAL_SOURCE=groww') (groww = built-in scanner, no Chartink needed)
+ Chartink webhook URL (only if SIGNAL_SOURCE=chartink or both):
+   https://$DOMAIN/webhook/chartink?token=$TOKEN
 
  Mode: $(grep '^DRY_RUN=' "$APP_DIR/.env" | cut -d' ' -f1)  (paper trading until you change it)
 ================================================================

@@ -1,13 +1,34 @@
-# Chartink → Groww MTF trading bot
+# Groww MTF trading bot (built-in screener, Chartink optional)
 
-Buys a stock on Groww (MTF) as soon as your Chartink scan alerts on it, and sells it once
-profit is **greater than 7 % of the total order value**.
+Scans the market itself using Groww data, buys a stock on Groww (MTF) as soon as it meets
+your screener conditions, and sells it once profit is **greater than 7 % of the total order value**.
 
 ```
-Chartink scan alert ──HTTPS webhook──► this bot ──► Groww Trade API
-                                          │
-                                          └─ every 5 s: track fills, check LTP vs target, sell
+built-in scanner (every 5 min, Groww candles) ──┐
+Chartink webhook (optional)  ───────────────────┴─► engine ──► Groww Trade API
+                                                      └─ every 5 s: track fills, check LTP vs target, sell
 ```
+
+## Built-in screener (replaces Chartink)
+
+`SIGNAL_SOURCE=groww` (default). Conditions, all required:
+
+| Check | Timeframes |
+|---|---|
+| SMI %K(10,3,3) > 40, SMI %D(10,3,3,10) > 40, %K > %D | 4 hour, 1 hour, 15 minute (latest, still-forming candle) |
+| Today's volume > 50,000 · close < 1,000 · market cap > 10,000 Cr | – |
+
+How: once a week it checks the market cap of all ~2,700 NSE stocks (`get_quote`, takes ~10 min,
+cached in `universe.json`). At 08:30 each trading day it loads 60 days of 15-minute candles
+per stock. Every 5 minutes from 09:20 to 15:15 it fetches today's 15-minute candles, rebuilds
+1-hour and 4-hour candles aligned to 09:15 (4h = 09:15–13:15, 13:15–15:30), computes SMI,
+and buys the matches.
+
+SMI = 100 × EMA(EMA(close − mid, 3), 3) ÷ (0.5 × EMA(EMA(HH − LL, 3), 3)) over 10 bars;
+%D = EMA(%K, 10). **Compare with Chartink once** before going live:
+`python -m bot.scan SBIN TATASTEEL` prints the values per timeframe, and
+`python -m bot.scan --all` runs a full scan (no orders) to compare with Chartink's results.
+Small differences are normal (data vendor, candle timing); the pass/fail list should mostly agree.
 
 ## Trading rules (all configurable in `.env`)
 

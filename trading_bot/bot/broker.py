@@ -7,9 +7,12 @@ Both expose the same four methods the engine needs:
 """
 from __future__ import annotations
 
+import csv
+import io
 import itertools
 import logging
 import threading
+import time as _time
 from datetime import datetime, timedelta
 from typing import Callable, Iterable, Optional, Protocol
 
@@ -26,6 +29,23 @@ class Broker(Protocol):
     def ltp(self, symbols: Iterable[str]) -> dict[str, float]: ...
 
 
+class RateLimiter:
+    """Allows at most `per_sec` calls per second across threads."""
+
+    def __init__(self, per_sec: float):
+        self._gap = 1.0 / per_sec
+        self._next = 0.0
+        self._lock = threading.Lock()
+
+    def wait(self) -> None:
+        with self._lock:
+            now = _time.monotonic()
+            delay = self._next - now
+            self._next = max(now, self._next) + self._gap
+        if delay > 0:
+            _time.sleep(delay)
+
+
 class GrowwBroker:
     """Thin wrapper over the official `growwapi` SDK (v1.5.0).
 
@@ -35,7 +55,7 @@ class GrowwBroker:
     """
 
     def __init__(self, api_key: str, totp_secret: str = "", api_secret: str = "",
-                 now: Callable[[], datetime] = datetime.now):
+                 now: Callable[[], datetime] = datetime.now, rate_per_sec: float = 8):
         from growwapi import GrowwAPI  # imported lazily so tests don't need it
 
         self._G = GrowwAPI
@@ -46,6 +66,7 @@ class GrowwBroker:
         self._client = None
         self._token_time: Optional[datetime] = None
         self._lock = threading.Lock()
+        self._limit = RateLimiter(rate_per_sec)
 
     # ---------- auth ----------
     def _login(self) -> None:
@@ -70,13 +91,22 @@ class GrowwBroker:
             return self._client
 
     def _call(self, fn: Callable):
-        from growwapi.groww.exceptions import GrowwAPIAuthenticationException
-        try:
-            return fn(self._api())
-        except GrowwAPIAuthenticationException:
-            with self._lock:
-                self._client = None
-            return fn(self._api())
+        from growwapi.groww.exceptions import (GrowwAPIAuthenticationException,
+                                               GrowwAPIRateLimitException)
+        for attempt in range(4):
+            self._limit.wait()
+            try:
+                return fn(self._api())
+            except GrowwAPIAuthenticationException:
+                if attempt:
+                    raise
+                with self._lock:
+                    self._client = None
+            except GrowwAPIRateLimitException:
+                if attempt == 3:
+                    raise
+                _time.sleep(2 ** attempt)
+        raise RuntimeError("unreachable")
 
     # ---------- trading ----------
     def place_order(self, symbol, side, qty, price, product, ref) -> str:
@@ -117,6 +147,43 @@ class GrowwBroker:
                 if v is not None:
                     out[k.split("_", 1)[1]] = float(v)
         return out
+
+
+    # ---------- market data for the built-in scanner ----------
+    def equity_symbols(self) -> list[str]:
+        """All NSE cash-segment stocks (series EQ) from Groww's instrument list."""
+        import requests
+
+        text = requests.get(self._G.INSTRUMENT_CSV_URL, timeout=60).text
+        return sorted({
+            r["trading_symbol"] for r in csv.DictReader(io.StringIO(text))
+            if r["exchange"] == "NSE" and r["segment"] == "CASH"
+            and r["instrument_type"] == "EQ" and r["series"] == "EQ"
+            and r.get("buy_allowed", "1") == "1"
+        })
+
+    def quote(self, symbol: str) -> dict:
+        """Returns {"last_price", "market_cap_cr"} (market cap in Rs crore)."""
+        G = self._G
+        q = self._call(lambda c: c.get_quote(
+            trading_symbol=symbol, exchange=G.EXCHANGE_NSE, segment=G.SEGMENT_CASH, timeout=10))
+        price = float(q.get("last_price") or 0)
+        mcap = float(q.get("market_cap") or 0)
+        # Groww doesn't document the unit. A value in rupees divided by the price gives a
+        # share count (>= 1e5 for any listed company); a value in crores gives far less.
+        if price and mcap / price > 1e5:
+            mcap /= 1e7
+        return {"last_price": price, "market_cap_cr": mcap}
+
+    def candles_15m(self, symbol: str, start: datetime, end: datetime) -> list:
+        """15-minute candles [ts, open, high, low, close, volume] between start and end (IST)."""
+        G = self._G
+        resp = self._call(lambda c: c.get_historical_candles(
+            exchange=G.EXCHANGE_NSE, segment=G.SEGMENT_CASH, groww_symbol=f"NSE-{symbol}",
+            start_time=start.strftime("%Y-%m-%d %H:%M:%S"),
+            end_time=end.strftime("%Y-%m-%d %H:%M:%S"),
+            candle_interval=G.CANDLE_INTERVAL_MIN_15, timeout=20))
+        return (resp or {}).get("candles") or []
 
 
 class PaperBroker:

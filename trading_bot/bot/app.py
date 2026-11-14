@@ -19,6 +19,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from .broker import GrowwBroker, PaperBroker
 from .config import Settings
 from .engine import Engine
+from .scanner import Scanner
 from .store import Store
 
 log = logging.getLogger("bot")
@@ -55,21 +56,24 @@ def parse_chartink(body: bytes, content_type: str = "") -> list[tuple[str, float
     return list(dict.fromkeys(out))
 
 
-def build_engine(settings: Settings) -> Engine:
+def build(settings: Settings) -> tuple[Engine, Scanner | None]:
     live = None
     if settings.groww_api_key:
         live = GrowwBroker(settings.groww_api_key, settings.groww_totp_secret,
-                           settings.groww_api_secret)
+                           settings.groww_api_secret, rate_per_sec=settings.api_rate_per_sec)
     if settings.dry_run:
         broker = PaperBroker(price_source=live.ltp if live else None)
         log.warning("DRY_RUN=true: paper trading, NO real orders will be placed")
     else:
         broker = live
         log.warning("DRY_RUN=false: LIVE trading with product %s", settings.product)
-    return Engine(settings, Store(settings.db_path), broker)
+    engine = Engine(settings, Store(settings.db_path), broker)
+    scanner = Scanner(settings, live, engine) if settings.signal_source != "chartink" else None
+    return engine, scanner
 
 
-def create_app(engine: Engine, start_monitor: bool = True) -> FastAPI:
+def create_app(engine: Engine, start_monitor: bool = True,
+               scanner: Scanner | None = None) -> FastAPI:
     token = engine.s.webhook_token
     stop = threading.Event()
 
@@ -77,6 +81,8 @@ def create_app(engine: Engine, start_monitor: bool = True) -> FastAPI:
     async def lifespan(_app):
         if start_monitor:
             threading.Thread(target=engine.run_forever, args=(stop,), daemon=True).start()
+            if scanner:
+                threading.Thread(target=scanner.run_forever, args=(stop,), daemon=True).start()
         yield
         stop.set()
 
@@ -90,6 +96,8 @@ def create_app(engine: Engine, start_monitor: bool = True) -> FastAPI:
     @app.post("/webhook/chartink")
     async def chartink(request: Request, background: BackgroundTasks):
         check(request)
+        if engine.s.signal_source == "groww":
+            return {"ignored": "SIGNAL_SOURCE=groww (built-in scanner is used)"}
         body = await request.body()
         signals = parse_chartink(body, request.headers.get("content-type", ""))
         log.info("Chartink alert: %s", signals)
@@ -100,7 +108,8 @@ def create_app(engine: Engine, start_monitor: bool = True) -> FastAPI:
     @app.get("/health")
     def health():
         return {"ok": True, "dry_run": engine.s.dry_run, "paused": engine.paused,
-                "product": engine.s.product}
+                "product": engine.s.product, "signal_source": engine.s.signal_source,
+                "scanner": scanner.status() if scanner else None}
 
     @app.get("/trades")
     def trades(request: Request, limit: int = 100):
@@ -125,14 +134,22 @@ def create_app(engine: Engine, start_monitor: bool = True) -> FastAPI:
     @app.get("/dashboard", response_class=HTMLResponse)
     def dashboard(request: Request):
         check(request)
-        return render_dashboard(engine, token)
+        return render_dashboard(engine, token, scanner)
 
     return app
 
 
-def render_dashboard(engine: Engine, token: str) -> str:
+def render_dashboard(engine: Engine, token: str, scanner: Scanner | None = None) -> str:
     """Small phone-friendly status page."""
     e = html.escape
+    if scanner:
+        st = scanner.status()
+        scan_html = (f"Scanner: {st['universe']} stocks &middot; last scan {e(st['last_scan'] or 'not yet')}"
+                     f"<br>Matches: {e(', '.join(st['last_matches']) or 'none')}")
+        if st["last_error"]:
+            scan_html += f"<br><span style='color:#dc2626'>Error: {e(st['last_error'])}</span>"
+    else:
+        scan_html = "Signals: Chartink webhook"
     trades = engine.store.recent(50)
     closed = [t for t in trades if t.status == "CLOSED" and t.sell_price]
     pnl = sum((t.sell_price - t.avg_price) * t.quantity for t in closed)
@@ -160,6 +177,7 @@ table{{width:100%;border-collapse:collapse;font-size:12px}} td,th{{padding:6px 4
 </style></head><body>
 <div class="card"><div class="big">{state} &middot; {mode}</div>
 <div class="muted">Product {e(engine.s.product)} &middot; qty {engine.s.quantity} &middot; target &gt;{engine.s.target_profit_pct}%</div>
+<div class="muted">{scan_html}</div>
 <div class="muted">Closed trades shown: {len(closed)} &middot; gross P&amp;L &#8377;{pnl:,.2f}</div></div>
 <form class="card" method="post" action="/{action}?token={e(token)}&ui=1">
 <button type="submit">{'Resume new buys' if engine.paused else 'Pause new buys'}</button>
@@ -176,7 +194,8 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s",
                         handlers=[logging.StreamHandler(), logging.FileHandler("bot.log")])
     settings = Settings.from_env()
-    app = create_app(build_engine(settings))
+    engine, scanner = build(settings)
+    app = create_app(engine, scanner=scanner)
     uvicorn.run(app, host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", "8000")),
                 access_log=False)  # keep the secret token out of logs
 

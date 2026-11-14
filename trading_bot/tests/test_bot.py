@@ -114,6 +114,7 @@ def test_rejected_buy_marks_failed(env):
 
 def test_webhook_auth_and_flow(env):
     eng, broker, clock = env
+    eng.s.signal_source = "chartink"
     client = TestClient(create_app(eng, start_monitor=False))
     assert client.post("/webhook/chartink?token=bad", json={}).status_code == 403
     r = client.post(f"/webhook/chartink?token={TOKEN}",
@@ -134,3 +135,10 @@ def test_dashboard_and_pause_buttons(env):
     assert r.status_code == 303 and eng.paused
     assert "Resume new buys" in client.get(f"/dashboard?token={TOKEN}").text
     assert client.post(f"/resume?token={TOKEN}").json() == {"paused": False}
+
+
+def test_webhook_ignored_when_using_builtin_scanner(env):
+    eng, broker, clock = env
+    client = TestClient(create_app(eng, start_monitor=False))
+    r = client.post(f"/webhook/chartink?token={TOKEN}", json={"stocks": "SBIN"})
+    assert "ignored" in r.json() and not eng.store.by_status("BUY_PENDING")

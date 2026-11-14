@@ -41,6 +41,23 @@ class Settings:
     max_order_value: float = 50000.0
     allow_reentry_same_day: bool = False
 
+    # Signal source: "groww" = built-in scanner (no Chartink), "chartink" = webhook, or "both"
+    signal_source: str = "groww"
+    scan_interval_minutes: int = 5
+    scan_history_days: int = 60
+    universe_file: str = "universe.json"
+    universe_max_age_days: int = 7
+    api_rate_per_sec: float = 8.0
+    # Screener conditions
+    min_market_cap_cr: float = 10000.0
+    max_close: float = 1000.0
+    min_volume: float = 50000.0
+    smi_k_len: int = 10
+    smi_s1: int = 3
+    smi_s2: int = 3
+    smi_d_len: int = 10
+    smi_threshold: float = 40.0
+
     entry_start: time = field(default_factory=lambda: time(9, 20))
     entry_end: time = field(default_factory=lambda: time(15, 15))
     poll_seconds: float = 5.0
@@ -65,6 +82,20 @@ class Settings:
             max_new_trades_per_day=int(_env("MAX_NEW_TRADES_PER_DAY", "10")),
             max_order_value=float(_env("MAX_ORDER_VALUE", "50000")),
             allow_reentry_same_day=_bool("ALLOW_REENTRY_SAME_DAY", False),
+            signal_source=_env("SIGNAL_SOURCE", "groww").lower(),
+            scan_interval_minutes=int(_env("SCAN_INTERVAL_MINUTES", "5")),
+            scan_history_days=int(_env("SCAN_HISTORY_DAYS", "60")),
+            universe_file=_env("UNIVERSE_FILE", "universe.json"),
+            universe_max_age_days=int(_env("UNIVERSE_MAX_AGE_DAYS", "7")),
+            api_rate_per_sec=float(_env("API_RATE_PER_SEC", "8")),
+            min_market_cap_cr=float(_env("MIN_MARKET_CAP_CR", "10000")),
+            max_close=float(_env("MAX_CLOSE", "1000")),
+            min_volume=float(_env("MIN_VOLUME", "50000")),
+            smi_k_len=int(_env("SMI_K_LEN", "10")),
+            smi_s1=int(_env("SMI_S1", "3")),
+            smi_s2=int(_env("SMI_S2", "3")),
+            smi_d_len=int(_env("SMI_D_LEN", "10")),
+            smi_threshold=float(_env("SMI_THRESHOLD", "40")),
             entry_start=_time("ENTRY_START", "09:20"),
             entry_end=_time("ENTRY_END", "15:15"),
             poll_seconds=float(_env("POLL_SECONDS", "5")),
@@ -78,6 +109,10 @@ class Settings:
             raise ValueError("PRODUCT must be MTF, CNC or MIS")
         if self.sizing_mode not in ("fixed_qty", "capital"):
             raise ValueError("SIZING_MODE must be fixed_qty or capital")
+        if self.signal_source not in ("groww", "chartink", "both"):
+            raise ValueError("SIGNAL_SOURCE must be groww, chartink or both")
+        if self.signal_source != "chartink" and not self.groww_api_key:
+            raise ValueError("GROWW_API_KEY is required for the built-in scanner")
         if not self.webhook_token or len(self.webhook_token) < 16:
             raise ValueError("WEBHOOK_TOKEN must be set (16+ characters)")
         if not self.dry_run and not self.groww_api_key:
