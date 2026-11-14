@@ -1,0 +1,4 @@
+growwapi==1.5.0
+pyotp>=2.9
+fastapi>=0.110
+uvicorn>=0.29
