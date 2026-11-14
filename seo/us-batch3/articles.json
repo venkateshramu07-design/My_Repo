@@ -60,11 +60,12 @@
    "Health & Wellness"
   ],
   "id": "3415575066592460483",
-  "status": "SCHEDULED",
+  "status": "LIVE",
   "links_pending": [
    "nurse-practitioner-salary"
   ],
-  "scheduled": "2026-11-14T08:00:00-05:00"
+  "scheduled": "2026-11-14T08:00:00-05:00",
+  "url": "https://randomthoughtsever.blogspot.com/2026/11/what-is-nurse-practitioner-role.html"
  },
  "adn-degree": {
   "title": "ADN Degree: Cost, Length, NCLEX Pass Rates and ADN vs BSN",
