@@ -148,11 +148,12 @@
    "Personal Finance"
   ],
   "id": "2694176290760961542",
-  "status": "SCHEDULED",
+  "status": "LIVE",
   "links_pending": [
    "tort-law"
   ],
-  "scheduled": "2026-11-13T20:00:00-05:00"
+  "scheduled": "2026-11-13T20:00:00-05:00",
+  "url": "https://randomthoughtsever.blogspot.com/2026/11/contract-law-basics-what-makes.html"
  },
  "tort-law": {
   "title": "Tort Law Explained: Negligence, Intentional Torts and Strict Liability",
