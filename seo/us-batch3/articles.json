@@ -154,7 +154,10 @@
    "tort-law"
   ],
   "scheduled": "2026-11-13T20:00:00-05:00",
-  "url": "https://randomthoughtsever.blogspot.com/2026/11/contract-law-basics-what-makes.html"
+  "url": "https://randomthoughtsever.blogspot.com/2026/11/contract-law-basics-what-makes.html",
+  "links_done": [
+   "tort-law"
+  ]
  },
  "tort-law": {
   "title": "Tort Law Explained: Negligence, Intentional Torts and Strict Liability",
@@ -163,11 +166,15 @@
    "Personal Finance"
   ],
   "id": "6572827092919692955",
-  "status": "SCHEDULED",
+  "status": "LIVE",
   "links_pending": [
    "contract-law"
   ],
-  "scheduled": "2026-11-14T20:00:00-05:00"
+  "scheduled": "2026-11-14T20:00:00-05:00",
+  "url": "https://randomthoughtsever.blogspot.com/2026/11/tort-law-explained-negligence.html",
+  "links_done": [
+   "contract-law"
+  ]
  },
  "employer-sponsored-health-insurance": {
   "title": "Employer-Sponsored Health Insurance: What It Really Costs You in 2026",
