@@ -15,7 +15,12 @@
 //       + at least 2 of 4 quality checks: breakout volume, higher-timeframe
 //         trend, near a new high, SMI not overbought
 //  EXIT = price hits the trailing stop (just below the latest box bottom)
-//       or the trend turns NoGo
+//       or (intraday) the trend turns NoGo
+//  Tuned from a backtest of NIFTY, Bank NIFTY and 18 large caps:
+//   • 5-bar box confirmation on every timeframe
+//   • Daily+: no trend exit, the Darvas trailing stop lets winners run
+//   • Intraday: breakout volume required; 30m and lower also need the
+//     daily trend to be Go
 //  Signals appear only when the candle closes (no repainting).
 // ════════════════════════════════════════════════════════════════════════════
 strategy("DSG Simple Strategy", shorttitle = "DSG Strategy", overlay = true, max_labels_count = 500,
@@ -39,12 +44,17 @@ allowShort = input.bool(false, "Also show SELL (short) signals", group = grpV)
 grpQ = "Signal quality"
 minGrade    = input.string("B", "Signal strictness", options = ["A", "B", "C"], group = grpQ,
      tooltip = "A = strictest, fewest signals. B = balanced (default). C = most signals.")
-exitOnTrend = input.bool(true, "Exit when trend turns against the trade", group = grpQ)
+exitMode    = input.string("Auto", "Exit when trend turns against the trade", options = ["Auto", "On", "Off"], group = grpQ,
+     tooltip = "Auto = Off on daily/weekly/monthly (pure Darvas trailing stop lets winners run), On for intraday.")
+volMode     = input.string("Auto", "Require breakout volume", options = ["Auto", "On", "Off"], group = grpQ,
+     tooltip = "Auto = required on intraday charts, bonus check only on daily and above.")
+dailyMode   = input.string("Auto", "Intraday: require daily trend Go", options = ["Auto", "On", "Off"], group = grpQ,
+     tooltip = "Auto = required on 30m and lower charts: only buy intraday breakouts when the daily trend is Go.")
 exitOnDiv   = input.bool(false, "Exit on opposite SMI divergence", group = grpQ)
 sqOff       = input.bool(false, "Intraday: exit at session end", group = grpQ)
 
 grpE = "Engine (advanced, leave as is)"
-confirmBars  = input.int(3, "Darvas confirmation bars", minval = 1, maxval = 10, group = grpE)
+confirmBars  = input.int(5, "Darvas confirmation bars", minval = 1, maxval = 10, group = grpE)
 minBoxAtr    = input.float(0.5, "Minimum box height (× ATR)", minval = 0, step = 0.1, group = grpE)
 stopBufAtr   = input.float(0.2, "Stop buffer beyond box (× ATR)", minval = 0, step = 0.05, group = grpE)
 volMult      = input.float(1.5, "Breakout volume ≥ × normal", minval = 0.5, step = 0.1, group = grpE)
@@ -82,6 +92,9 @@ htfTf   = htfIn == "" ? autoHtf : htfIn
 hiLen   = hiLenIn > 0 ? hiLenIn : tfSec <= 86400 ? 252 : tfSec <= 604800 ? 52 : 12
 nearPct = nearIn > 0 ? nearIn : isIntra ? 3.0 : tfSec <= 86400 ? 10.0 : tfSec <= 604800 ? 15.0 : 25.0
 refTf   = isIntra ? "D" : timeframe.period
+useTrendExit = exitMode == "On" or (exitMode == "Auto" and isIntra)
+useVolReq    = volMode == "On" or (volMode == "Auto" and isIntra)
+useDaily     = isIntra and (dailyMode == "On" or (dailyMode == "Auto" and tfSec <= 1800))
 
 // ───────────────────────── Helpers ─────────────────────────
 type VolSlot
@@ -274,6 +287,10 @@ htfScore = request.security(syminfo.tickerid, htfTf, f_score()[1], lookahead = b
 htfValid = timeframe.in_seconds(htfTf) > tfSec
 htfBull  = htfValid ? htfScore >= goNeed : trend == 1
 htfBear  = htfValid ? htfScore <= -goNeed : trend == -1
+dScore   = request.security(syminfo.tickerid, "D", f_score()[1], lookahead = barmerge.lookahead_on)
+dailyBull = not useDaily or dScore >= goNeed
+dailyBear = not useDaily or dScore <= -goNeed
+volGate   = not useVolReq or volOK
 
 // ═════════════════════ SIGNALS ═════════════════════
 eodBar = sqOff and isIntra and session.islastbar
@@ -283,8 +300,8 @@ extS   = (volOK ? 1 : 0) + (htfBear ? 1 : 0) + (nearLow ? 1 : 0) + (smi > osLeve
 gradeL = extL >= 3 ? 3 : extL == 2 ? 2 : 1
 gradeS = extS >= 3 ? 3 : extS == 2 ? 2 : 1
 
-buySig  = inDate and barstate.isconfirmed and not eodBar and darvasUp and smiBull and trend == 1 and gradeL >= minNum
-sellSig = inDate and barstate.isconfirmed and not eodBar and allowShort and darvasDn and smiBear and trend == -1 and gradeS >= minNum
+buySig  = inDate and barstate.isconfirmed and not eodBar and darvasUp and smiBull and trend == 1 and gradeL >= minNum and volGate and dailyBull
+sellSig = inDate and barstate.isconfirmed and not eodBar and allowShort and darvasDn and smiBear and trend == -1 and gradeS >= minNum and volGate and dailyBear
 
 // ═════════════════════ POSITION TRACKING ═════════════════════
 var int   pos     = 0
@@ -304,7 +321,7 @@ if pos == 1
     float xPx = na
     if low <= stopPx
         xPx := math.min(open, stopPx)
-    else if barstate.isconfirmed and (sellSig or (exitOnTrend and trend == -1) or (exitOnDiv and bearDiv) or eodBar)
+    else if barstate.isconfirmed and (sellSig or (useTrendExit and trend == -1) or (exitOnDiv and bearDiv) or eodBar)
         xPx := close
     if not na(xPx)
         exitR   := (xPx - entryPx) / riskPx
@@ -316,7 +333,7 @@ else if pos == -1
     float xPx = na
     if high >= stopPx
         xPx := math.max(open, stopPx)
-    else if barstate.isconfirmed and (buySig or (exitOnTrend and trend == 1) or (exitOnDiv and bullDiv) or eodBar)
+    else if barstate.isconfirmed and (buySig or (useTrendExit and trend == 1) or (exitOnDiv and bullDiv) or eodBar)
         xPx := close
     if not na(xPx)
         exitR   := (entryPx - xPx) / riskPx
