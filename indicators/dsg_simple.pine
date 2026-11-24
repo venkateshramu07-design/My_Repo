@@ -496,8 +496,7 @@ if showStatus
 [tr5, sc5, sm5, ds5, ps5, sp5, ev5] = request.security(syminfo.tickerid, tf5, f_mtf())
 [tr6, sc6, sm6, ds6, ps6, sp6, ev6] = request.security(syminfo.tickerid, tf6, f_mtf())
 
-mPos  = mtfPos == "Top right" ? position.top_right : mtfPos == "Top left" ? position.top_left :
-        mtfPos == "Bottom left" ? position.bottom_left : position.bottom_right
+mPos  = mtfPos == "Top right" ? position.top_right : mtfPos == "Top left" ? position.top_left : mtfPos == "Bottom left" ? position.bottom_left : position.bottom_right
 mSize = mtfSize == "Tiny" ? size.tiny : mtfSize == "Normal" ? size.normal : size.small
 var table mtf = table.new(mPos, 5, 8, bgcolor = color.new(color.black, 15), border_color = color.new(color.gray, 70), border_width = 1)
 
@@ -533,10 +532,8 @@ if showMtf and barstate.islast
     mRow(5, useTf5, tf5, tr5, sc5, sm5, ds5, ps5, sp5, ev5)
     mRow(6, useTf6, tf6, tr6, sc6, sm6, ds6, ps6, sp6, ev6)
     int nOn = (useTf1 ? 1 : 0) + (useTf2 ? 1 : 0) + (useTf3 ? 1 : 0) + (useTf4 ? 1 : 0) + (useTf5 ? 1 : 0) + (useTf6 ? 1 : 0)
-    int nGo = (useTf1 and tr1 == 1 ? 1 : 0) + (useTf2 and tr2 == 1 ? 1 : 0) + (useTf3 and tr3 == 1 ? 1 : 0) +
-              (useTf4 and tr4 == 1 ? 1 : 0) + (useTf5 and tr5 == 1 ? 1 : 0) + (useTf6 and tr6 == 1 ? 1 : 0)
-    int nNo = (useTf1 and tr1 == -1 ? 1 : 0) + (useTf2 and tr2 == -1 ? 1 : 0) + (useTf3 and tr3 == -1 ? 1 : 0) +
-              (useTf4 and tr4 == -1 ? 1 : 0) + (useTf5 and tr5 == -1 ? 1 : 0) + (useTf6 and tr6 == -1 ? 1 : 0)
+    int nGo = (useTf1 and tr1 == 1 ? 1 : 0) + (useTf2 and tr2 == 1 ? 1 : 0) + (useTf3 and tr3 == 1 ? 1 : 0) + (useTf4 and tr4 == 1 ? 1 : 0) + (useTf5 and tr5 == 1 ? 1 : 0) + (useTf6 and tr6 == 1 ? 1 : 0)
+    int nNo = (useTf1 and tr1 == -1 ? 1 : 0) + (useTf2 and tr2 == -1 ? 1 : 0) + (useTf3 and tr3 == -1 ? 1 : 0) + (useTf4 and tr4 == -1 ? 1 : 0) + (useTf5 and tr5 == -1 ? 1 : 0) + (useTf6 and tr6 == -1 ? 1 : 0)
     string aTxt = nGo == nOn ? "ALL GO: trend aligned up" : nNo == nOn ? "ALL NOGO: stay out" : nGo > nNo ? "Mostly Go (" + str.tostring(nGo) + "/" + str.tostring(nOn) + ")" : nNo > nGo ? "Mostly NoGo (" + str.tostring(nNo) + "/" + str.tostring(nOn) + ")" : "Mixed"
     color  aCol = nGo == nOn ? color.lime : nNo == nOn ? color.red : nGo > nNo ? color.rgb(102, 204, 255) : nNo > nGo ? color.rgb(255, 102, 178) : color.yellow
     table.cell(mtf, 0, 7, "Alignment", text_color = color.silver, text_size = mSize, text_halign = text.align_left)
