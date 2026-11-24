@@ -1,38 +1,55 @@
 //@version=6
 // ════════════════════════════════════════════════════════════════════════════
 //  DSG Pro: Darvas Box + Stochastic Momentum Index + GoNoGo-style Trend
+//  All-timeframe edition: settings adapt automatically to the chart timeframe
 // ────────────────────────────────────────────────────────────────────────────
 //  Method sources
 //   • Darvas Box: Nicolas Darvas, "How I Made $2,000,000 in the Stock Market"
-//       - Box top: a new high that is NOT exceeded for 3 sessions
-//       - Box bottom: the low after the top that is NOT undercut for 3 sessions
+//       - Box top: a new high that is NOT exceeded for 3 bars
+//       - Box bottom: the low after the top that is NOT undercut for 3 bars
 //       - Buy only when price breaks above a COMPLETED box, on rising volume,
-//         in stocks making new highs; stop just below the box bottom and trail
-//         it up to the bottom of each new, higher box.
+//         near new highs; stop just below the box bottom, trailed up to the
+//         bottom of each new, higher box.
 //   • Stochastic Momentum Index: William Blau, "Momentum, Direction, and
-//     Divergence" (1995). The close is measured against the MIDPOINT of the
-//     high-low range and double-smoothed. ±40 are the traditional OB/OS lines.
-//     Divergences between price and SMI warn of trend exhaustion.
-//   • GoNoGo Trend: by GoNoGo Charts. The official formula is proprietary.
-//     This is a weight-of-evidence approximation on the same −6…+6 scale as
-//     the GoNoGo Oscillator: trend (EMAs), momentum (MACD, RSI), trend
-//     strength (DMI/ADX) and volume (OBV). Hysteresis stops colour flicker.
+//     Divergence" (1995). Close vs. MIDPOINT of the high-low range,
+//     double-smoothed. ±40 are the traditional OB/OS lines.
+//   • GoNoGo Trend: by GoNoGo Charts (formula proprietary). This is a
+//     weight-of-evidence approximation on the same −6…+6 scale.
 //
-//  Signals are evaluated on bar close only (no repainting).
-//  Built-in trade simulator reports win rate, average R and profit factor of
-//  the signals on the loaded history (no commissions or slippage).
+//  Timeframe adaptation (AUTO unless you override in settings)
+//   • Higher-timeframe trend: ≤1m→5m, ≤3m→15m, ≤5m→30m, ≤15m→1H, ≤1H→4H,
+//     ≤4H→D, D→W, W→M, M→3M
+//   • "Near new high": intraday = 20-session high, D = 52 weeks,
+//     W = 52 weeks, M = 12 months
+//   • Volume: intraday compares each bar with the SAME TIME OF DAY over the
+//     last 20 sessions (removes open/close volume spikes); D/W/M use a
+//     50-bar average
+//   • Box size, stops and buffers are measured in ATR, so they scale
+//     with any timeframe and any instrument
+//
+//  Signals are evaluated on bar close only (no repainting). The built-in
+//  trade simulator reports win rate, average R and profit factor on the
+//  loaded history (no commissions or slippage).
 // ════════════════════════════════════════════════════════════════════════════
 indicator("DSG Pro: Darvas + SMI + GoNoGo", shorttitle = "DSG Pro", overlay = false,
      max_boxes_count = 500, max_labels_count = 500, max_lines_count = 500)
 
 // ───────────────────────── Inputs ─────────────────────────
+grpA = "0 · Timeframe adaptation (0 / empty = AUTO)"
+htfIn     = input.timeframe("", "Higher-timeframe trend (empty = auto)", group = grpA)
+hiLenIn   = input.int(0, "New-high lookback, bars (0 = auto, D/W/M charts)", minval = 0, group = grpA)
+intraDays = input.int(20, "Intraday: new-high lookback in sessions", minval = 1, group = grpA)
+nearIn    = input.float(0.0, "Within % of that high (0 = auto)", minval = 0, step = 0.5, group = grpA)
+volSess   = input.int(20, "Intraday: sessions for time-of-day volume", minval = 3, maxval = 100, group = grpA)
+sqOff     = input.bool(false, "Intraday: square off at session end", group = grpA)
+
 grpD = "1 · Darvas Box"
 confirmBars = input.int(3, "Confirmation bars (Darvas used 3)", minval = 1, maxval = 10, group = grpD)
+minBoxAtr   = input.float(0.5, "Minimum box height (× ATR)", minval = 0, step = 0.1, group = grpD,
+     tooltip = "Ignores micro-boxes that form in quiet periods, especially on low timeframes.")
 showBoxes   = input.bool(true, "Draw boxes on price chart", group = grpD)
-volLen      = input.int(50, "Volume average length", minval = 5, group = grpD)
-volMult     = input.float(1.5, "Breakout volume ≥ × average", minval = 0.5, step = 0.1, group = grpD)
-hiLen       = input.int(252, "New-high lookback (252 ≈ 1 year on daily)", minval = 20, group = grpD)
-nearPct     = input.float(10.0, "Within % of that high", minval = 0.5, step = 0.5, group = grpD)
+volLen      = input.int(50, "Volume average length (D/W/M)", minval = 5, group = grpD)
+volMult     = input.float(1.5, "Breakout volume ≥ × normal", minval = 0.5, step = 0.1, group = grpD)
 
 grpS = "2 · Stochastic Momentum Index (Blau)"
 kLen     = input.int(10, "%K periods", minval = 1, group = grpS)
@@ -54,24 +71,37 @@ adxMin       = input.float(20.0, "ADX threshold", group = grpG)
 obvLen       = input.int(21, "OBV EMA length", group = grpG)
 goNeed       = input.int(2, "Score needed for Go / NoGo", minval = 1, maxval = 6, group = grpG)
 trendConfirm = input.int(2, "Bars to confirm a trend change", minval = 1, maxval = 10, group = grpG)
-htfTf        = input.timeframe("W", "Higher-timeframe trend", group = grpG)
 paintBars    = input.bool(true, "Paint price bars with trend colour", group = grpG)
 
 grpX = "4 · Signals & risk"
 minGrade    = input.string("B", "Minimum signal grade", options = ["A", "B", "C"], group = grpX,
      tooltip = "All signals need a Darvas breakout + SMI confirmation + Go trend. Grade adds bonus checks: breakout volume, higher-timeframe trend, near a new high, SMI not overbought. A = 3-4 checks, B = 2, C = 0-1.")
 allowShort  = input.bool(false, "Allow short signals (Darvas traded long only)", group = grpX)
-stopBufPct  = input.float(0.5, "Stop buffer below box bottom (%)", minval = 0, step = 0.1, group = grpX)
+stopBufAtr  = input.float(0.2, "Stop buffer beyond box (× ATR)", minval = 0, step = 0.05, group = grpX)
 useAtrCap   = input.bool(false, "Cap initial risk with ATR", group = grpX)
-atrCap      = input.float(3.0, "Max initial risk (× ATR 14)", minval = 0.5, step = 0.5, group = grpX)
-exitOnTrend = input.bool(true, "Exit when trend turns NoGo / Go against the position", group = grpX)
+atrCap      = input.float(3.0, "Max initial risk (× ATR)", minval = 0.5, step = 0.5, group = grpX)
+exitOnTrend = input.bool(true, "Exit when trend turns against the position", group = grpX)
 exitOnDiv   = input.bool(false, "Exit on opposite SMI divergence", group = grpX)
 
 grpT = "5 · Dashboard"
 showDash = input.bool(true, "Show dashboard", group = grpT)
 dashPos  = input.string("Top right", "Position", options = ["Top right", "Top left", "Bottom right", "Bottom left"], group = grpT)
 
+// ───────────────────────── Timeframe profile ─────────────────────────
+tfSec   = timeframe.in_seconds(timeframe.period)
+isIntra = tfSec < 86400
+autoHtf = tfSec <= 60 ? "5" : tfSec <= 180 ? "15" : tfSec <= 300 ? "30" : tfSec <= 900 ? "60" :
+          tfSec <= 3600 ? "240" : tfSec <= 14400 ? "D" : tfSec <= 86400 ? "W" : tfSec <= 604800 ? "M" : "3M"
+htfTf   = htfIn == "" ? autoHtf : htfIn
+profile = isIntra ? "Intraday" : tfSec <= 86400 ? "Daily" : tfSec <= 604800 ? "Weekly" : "Monthly"
+hiLen   = hiLenIn > 0 ? hiLenIn : tfSec <= 86400 ? 252 : tfSec <= 604800 ? 52 : 12
+nearPct = nearIn > 0 ? nearIn : isIntra ? 3.0 : tfSec <= 86400 ? 10.0 : tfSec <= 604800 ? 15.0 : 25.0
+refTf   = isIntra ? "D" : timeframe.period
+
 // ───────────────────────── Helpers ─────────────────────────
+type VolSlot
+    array<float> v
+
 ma(src, len) =>
     switch maType
         "SMA" => ta.sma(src, len)
@@ -172,7 +202,7 @@ else if dState == 1
             minAge := 0
         else
             minAge += 1
-        if minAge >= confirmBars
+        if minAge >= confirmBars and (candTop - runMin) >= minBoxAtr * atr
             dState  := 2
             boxTop  := candTop
             boxBot  := runMin
@@ -182,15 +212,46 @@ else if dState == 1
                      border_color = color.new(color.blue, 0), border_width = 1,
                      bgcolor = color.new(color.blue, 88), force_overlay = true)
 
-// Darvas context filters
-volAvg   = ta.sma(nz(volume), volLen)
-hasVol   = volAvg > 0
-volRatio = hasVol ? nz(volume) / volAvg : na
+// ── Volume: time-of-day relative volume intraday, moving average otherwise ──
+var map<int, VolSlot> slots = map.new<int, VolSlot>()
+float vol     = nz(volume)
+float slotAvg = na
+if isIntra
+    int key = hour(time, syminfo.timezone) * 60 + minute(time, syminfo.timezone)
+    VolSlot sl = slots.get(key)
+    if na(sl)
+        sl := VolSlot.new(array.new<float>())
+        slots.put(key, sl)
+    if sl.v.size() > 0
+        slotAvg := sl.v.avg()
+    if barstate.isconfirmed
+        sl.v.push(vol)
+        if sl.v.size() > volSess
+            sl.v.shift()
+
+smaVol   = ta.sma(vol, volLen)
+volBase  = isIntra and not na(slotAvg) ? slotAvg : smaVol
+hasVol   = volBase > 0
+volRatio = hasVol ? vol / volBase : na
 volOK    = not hasVol or volRatio >= volMult
-hiN      = ta.highest(high, hiLen)
-loN      = ta.lowest(low, hiLen)
-nearHigh = close >= hiN * (1 - nearPct / 100)
-nearLow  = close <= loN * (1 + nearPct / 100)
+
+// ── Near-new-high reference ──
+dHi = request.security(syminfo.tickerid, refTf, ta.highest(high, intraDays)[1], lookahead = barmerge.lookahead_on)
+dLo = request.security(syminfo.tickerid, refTf, ta.lowest(low, intraDays)[1], lookahead = barmerge.lookahead_on)
+var float sessHi = na
+var float sessLo = na
+if timeframe.change("D")
+    sessHi := high
+    sessLo := low
+else
+    sessHi := math.max(nz(sessHi, high), high)
+    sessLo := math.min(nz(sessLo, low), low)
+barHi    = ta.highest(high, hiLen)
+barLo    = ta.lowest(low, hiLen)
+refHi    = isIntra ? math.max(nz(dHi, sessHi), sessHi) : barHi
+refLo    = isIntra ? math.min(nz(dLo, sessLo), sessLo) : barLo
+nearHigh = close >= refHi * (1 - nearPct / 100)
+nearLow  = close <= refLo * (1 + nearPct / 100)
 
 // ═════════════════════ 2. STOCHASTIC MOMENTUM INDEX ═════════════════════
 hh     = ta.highest(high, kLen)
@@ -262,7 +323,7 @@ else
 
 // Higher timeframe (previous completed HTF bar: no repainting)
 htfScore = request.security(syminfo.tickerid, htfTf, f_score()[1], lookahead = barmerge.lookahead_on)
-htfValid = timeframe.in_seconds(htfTf) > timeframe.in_seconds(timeframe.period)
+htfValid = timeframe.in_seconds(htfTf) > tfSec
 htfBull  = htfValid ? htfScore >= goNeed : trend == 1
 htfBear  = htfValid ? htfScore <= -goNeed : trend == -1
 
@@ -275,6 +336,7 @@ trendCol = trend == 1 and score >= 4 ? color.rgb(0, 102, 255) :     // strong Go
 barcolor(paintBars ? trendCol : na)
 
 // ═════════════════════ CONFLUENCE SIGNALS ═════════════════════
+eodBar = sqOff and isIntra and session.islastbar
 minNum = minGrade == "A" ? 3 : minGrade == "B" ? 2 : 1
 
 extL   = (volOK ? 1 : 0) + (htfBull ? 1 : 0) + (nearHigh ? 1 : 0) + (smi < obLevel ? 1 : 0)
@@ -283,8 +345,8 @@ gradeL = extL >= 3 ? 3 : extL == 2 ? 2 : 1
 gradeS = extS >= 3 ? 3 : extS == 2 ? 2 : 1
 gTxt(g) => g == 3 ? "A" : g == 2 ? "B" : "C"
 
-buySig  = barstate.isconfirmed and darvasUp and smiBull and trend == 1 and gradeL >= minNum
-sellSig = barstate.isconfirmed and allowShort and darvasDn and smiBear and trend == -1 and gradeS >= minNum
+buySig  = barstate.isconfirmed and not eodBar and darvasUp and smiBull and trend == 1 and gradeL >= minNum
+sellSig = barstate.isconfirmed and not eodBar and allowShort and darvasDn and smiBear and trend == -1 and gradeS >= minNum
 
 // ═════════════════════ TRADE SIMULATOR ═════════════════════
 var int   pos      = 0
@@ -303,12 +365,12 @@ bool   didExit = false
 bool   longIn  = false
 bool   shortIn = false
 bool   addLong = false
-float  buf     = stopBufPct / 100
+float  buf     = stopBufAtr * atr
 
 // Manage an open long
 if pos == 1
-    if boxDone and boxBot * (1 - buf) > stopPx
-        stopPx := boxBot * (1 - buf)
+    if boxDone and boxBot - buf > stopPx
+        stopPx := boxBot - buf
     float xPx = na
     if low <= stopPx
         xPx     := math.min(open, stopPx)
@@ -322,6 +384,9 @@ if pos == 1
     else if barstate.isconfirmed and exitOnDiv and bearDiv
         xPx     := close
         exitWhy := "Bear div"
+    else if barstate.isconfirmed and eodBar
+        xPx     := close
+        exitWhy := "EOD"
     if not na(xPx)
         exitR   := (xPx - entryPx) / riskPx
         didExit := true
@@ -329,8 +394,8 @@ if pos == 1
 
 // Manage an open short
 else if pos == -1
-    if boxDone and boxTop * (1 + buf) < stopPx
-        stopPx := boxTop * (1 + buf)
+    if boxDone and boxTop + buf < stopPx
+        stopPx := boxTop + buf
     float xPx = na
     if high >= stopPx
         xPx     := math.max(open, stopPx)
@@ -344,6 +409,9 @@ else if pos == -1
     else if barstate.isconfirmed and exitOnDiv and bullDiv
         xPx     := close
         exitWhy := "Bull div"
+    else if barstate.isconfirmed and eodBar
+        xPx     := close
+        exitWhy := "EOD"
     if not na(xPx)
         exitR   := (entryPx - xPx) / riskPx
         didExit := true
@@ -363,7 +431,7 @@ if didExit
 
 // New entries
 if pos == 0 and buySig
-    float s0 = brokenBot * (1 - buf)
+    float s0 = brokenBot - buf
     float sl = useAtrCap ? math.max(s0, close - atrCap * atr) : s0
     if close - sl > 0
         pos     := 1
@@ -372,7 +440,7 @@ if pos == 0 and buySig
         riskPx  := close - sl
         longIn  := true
 else if pos == 0 and sellSig
-    float s0 = brokenTop * (1 + buf)
+    float s0 = brokenTop + buf
     float sl = useAtrCap ? math.min(s0, close + atrCap * atr) : s0
     if sl - close > 0
         pos     := -1
@@ -409,7 +477,7 @@ plotshape(showDiv and bearDiv, "Bearish divergence", shape.circle, location.top,
 // ═════════════════════ DASHBOARD ═════════════════════
 tPos = dashPos == "Top left" ? position.top_left : dashPos == "Bottom right" ? position.bottom_right :
        dashPos == "Bottom left" ? position.bottom_left : position.top_right
-var table dash = table.new(tPos, 2, 12, bgcolor = color.new(color.black, 15), border_color = color.new(color.gray, 70), border_width = 1)
+var table dash = table.new(tPos, 2, 13, bgcolor = color.new(color.black, 15), border_color = color.new(color.gray, 70), border_width = 1)
 
 row(r, k, v, c) =>
     table.cell(dash, 0, r, k, text_color = color.silver, text_size = size.small, text_halign = text.align_left)
@@ -418,39 +486,42 @@ row(r, k, v, c) =>
 if showDash and barstate.islast
     dTxt = dState == 2 ? "Box " + fmt(boxBot) + " – " + fmt(boxTop) : dState == 1 ? "Top " + fmt(candTop) + ", forming bottom" : "Seeking top"
     tTxt = trend == 1 ? (score >= 4 ? "Strong Go" : "Go") : trend == -1 ? (score <= -4 ? "Strong NoGo" : "NoGo") : "Neutral"
-    hTxt = not htfValid ? "n/a (pick a higher TF)" : htfScore >= goNeed ? "Go (" + str.tostring(htfScore) + ")" : htfScore <= -goNeed ? "NoGo (" + str.tostring(htfScore) + ")" : "Neutral (" + str.tostring(htfScore) + ")"
+    hTxt = not htfValid ? "n/a" : htfScore >= goNeed ? "Go (" + str.tostring(htfScore) + ")" : htfScore <= -goNeed ? "NoGo (" + str.tostring(htfScore) + ")" : "Neutral (" + str.tostring(htfScore) + ")"
     sTxt = str.tostring(smi, "0.0") + (smi > smiSig ? " ▲" : " ▼") + (smi >= obLevel ? " OB" : smi <= osLevel ? " OS" : "")
     divTxt = lastDiv == "None" ? "None" : lastDiv + " (" + str.tostring(bar_index - lastDivBar + pivLen) + " bars ago)"
     pTxt = pos == 1 ? "Long @ " + fmt(entryPx) : pos == -1 ? "Short @ " + fmt(entryPx) : "Flat"
     openR = pos == 1 ? (close - entryPx) / riskPx : pos == -1 ? (entryPx - close) / riskPx : na
     stTxt = pos != 0 ? fmt(stopPx) + "  (" + str.tostring(openR, "+0.0;-0.0") + "R open)" : "–"
+    hiTxt = (isIntra ? str.tostring(intraDays) + "-session" : str.tostring(hiLen) + "-bar") + " high, " + str.tostring(nearPct, "0.#") + "%"
+    vTxt = hasVol ? str.tostring(volRatio, "0.0") + "× " + (isIntra and not na(slotAvg) ? "time-of-day" : "avg") : "n/a"
     wr  = nTrades > 0 ? 100.0 * nWins / nTrades : na
     avR = nTrades > 0 ? sumR / nTrades : na
     pf  = grossL > 0 ? grossW / grossL : na
 
     table.cell(dash, 0, 0, "DSG Pro", text_color = color.white, text_size = size.small)
-    table.cell(dash, 1, 0, syminfo.ticker + " · " + timeframe.period, text_color = color.white, text_size = size.small)
+    table.cell(dash, 1, 0, syminfo.ticker + " · " + timeframe.period + " · " + profile, text_color = color.white, text_size = size.small)
     row(1, "Darvas", dTxt, color.white)
-    row(2, "Volume", hasVol ? str.tostring(volRatio, "0.0") + "× avg" : "n/a", volOK ? color.lime : color.gray)
-    row(3, "SMI", sTxt, smi > smiSig ? color.lime : color.red)
-    row(4, "Divergence", divTxt, lastDiv == "Bullish" ? color.lime : lastDiv == "Bearish" ? color.red : color.gray)
-    row(5, "Trend", tTxt + " (" + str.tostring(score) + ")", trendCol)
-    row(6, "HTF trend " + htfTf, hTxt, htfBull ? color.lime : htfBear ? color.red : color.yellow)
-    row(7, "Position", pTxt, pos == 1 ? color.lime : pos == -1 ? color.red : color.gray)
-    row(8, "Stop", stTxt, color.orange)
-    row(9, "Trades", str.tostring(nTrades), color.white)
-    row(10, "Win rate / Avg R", nTrades > 0 ? str.tostring(wr, "0") + "% / " + str.tostring(avR, "+0.00;-0.00") + "R" : "–", nz(avR) > 0 ? color.lime : color.red)
-    row(11, "Profit factor", na(pf) ? "–" : str.tostring(pf, "0.00"), nz(pf) >= 1 ? color.lime : color.red)
+    row(2, "Volume", vTxt, volOK ? color.lime : color.gray)
+    row(3, "Near high", hiTxt, nearHigh ? color.lime : color.gray)
+    row(4, "SMI", sTxt, smi > smiSig ? color.lime : color.red)
+    row(5, "Divergence", divTxt, lastDiv == "Bullish" ? color.lime : lastDiv == "Bearish" ? color.red : color.gray)
+    row(6, "Trend", tTxt + " (" + str.tostring(score) + ")", trendCol)
+    row(7, "HTF trend " + htfTf, hTxt, htfBull ? color.lime : htfBear ? color.red : color.yellow)
+    row(8, "Position", pTxt, pos == 1 ? color.lime : pos == -1 ? color.red : color.gray)
+    row(9, "Stop", stTxt, color.orange)
+    row(10, "Trades", str.tostring(nTrades), color.white)
+    row(11, "Win rate / Avg R", nTrades > 0 ? str.tostring(wr, "0") + "% / " + str.tostring(avR, "+0.00;-0.00") + "R" : "–", nz(avR) > 0 ? color.lime : color.red)
+    row(12, "Profit factor", na(pf) ? "–" : str.tostring(pf, "0.00"), nz(pf) >= 1 ? color.lime : color.red)
 
 // ═════════════════════ ALERTS ═════════════════════
 if longIn
-    alert("DSG BUY (" + gTxt(gradeL) + ") " + syminfo.ticker + " @ " + fmt(close) + " | stop " + fmt(stopPx), alert.freq_once_per_bar_close)
+    alert("DSG BUY (" + gTxt(gradeL) + ") " + syminfo.ticker + " " + timeframe.period + " @ " + fmt(close) + " | stop " + fmt(stopPx), alert.freq_once_per_bar_close)
 if shortIn
-    alert("DSG SELL (" + gTxt(gradeS) + ") " + syminfo.ticker + " @ " + fmt(close) + " | stop " + fmt(stopPx), alert.freq_once_per_bar_close)
+    alert("DSG SELL (" + gTxt(gradeS) + ") " + syminfo.ticker + " " + timeframe.period + " @ " + fmt(close) + " | stop " + fmt(stopPx), alert.freq_once_per_bar_close)
 if didExit
-    alert("DSG EXIT (" + exitWhy + ") " + syminfo.ticker + " @ " + fmt(close) + " | " + str.tostring(exitR, "+0.0;-0.0") + "R", alert.freq_once_per_bar_close)
+    alert("DSG EXIT (" + exitWhy + ") " + syminfo.ticker + " " + timeframe.period + " @ " + fmt(close) + " | " + str.tostring(exitR, "+0.0;-0.0") + "R", alert.freq_once_per_bar_close)
 if addLong
-    alert("DSG ADD " + syminfo.ticker + ": new Darvas box breakout while long", alert.freq_once_per_bar_close)
+    alert("DSG ADD " + syminfo.ticker + " " + timeframe.period + ": new Darvas box breakout while long", alert.freq_once_per_bar_close)
 
 alertcondition(longIn, "DSG Buy", "DSG Pro buy signal")
 alertcondition(shortIn, "DSG Sell", "DSG Pro sell signal")
