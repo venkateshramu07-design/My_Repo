@@ -369,7 +369,7 @@ if didExit
 plot(showStop and pos != 0 ? stopPx : na, "Stop-loss", color.new(color.orange, 0), 2, plot.style_linebr)
 
 var table status = table.new(position.top_right, 1, 1, bgcolor = color.new(color.black, 20))
-if showStatus and barstate.islast
+if showStatus
     string sTxt = pos == 1 ? "IN BUY · Stop " + fmt(stopPx) : pos == -1 ? "IN SELL · Stop " + fmt(stopPx) : "WAIT · no trade"
     color  sCol = pos == 1 ? color.lime : pos == -1 ? color.red : color.silver
     table.cell(status, 0, 0, sTxt, text_color = sCol, text_size = size.normal)
