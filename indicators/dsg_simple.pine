@@ -8,7 +8,7 @@
 //     EXIT → close the trade
 //  Optional: the trailing stop-loss line and a one-line status box.
 //
-//  BUY  = close above a completed Darvas box  (Darvas: 3-bar top & bottom)
+//  BUY  = close above a completed Darvas box  (Darvas rules, 5-bar confirm)
 //       + SMI above its signal line and rising (Blau SMI 10,3,3,10 EMA)
 //       + trend is Go                          (GoNoGo-style score ≥ +2)
 //       + at least 2 of 4 quality checks: breakout volume, higher-timeframe
