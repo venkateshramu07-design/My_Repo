@@ -87,6 +87,7 @@ class Signal:
     timeframe: str = "1wk"
     market: str = "NSE"
     currency: str = "₹"
+    lot: int | None = None       # F&O lot size, when known
 
     def as_dict(self):
         return asdict(self)

@@ -11,8 +11,48 @@ import yfinance as yf
 UNIVERSE_DIR = Path(__file__).parent / "universe"
 
 
+FNO_URL = "https://nsearchives.nseindia.com/content/fo/fo_mktlots.csv"
+
+
+def refresh_fno() -> bool:
+    """Download NSE's current F&O stock list and lot sizes into universe/.
+
+    NSE adds and removes F&O stocks every few months. On failure the saved
+    lists are kept.
+    """
+    import csv
+    import io
+    import urllib.request
+    try:
+        req = urllib.request.Request(FNO_URL, headers={"User-Agent": "Mozilla/5.0"})
+        text = urllib.request.urlopen(req, timeout=20).read().decode()
+        rows = [[c.strip() for c in r] for r in csv.reader(io.StringIO(text))]
+        i = next(k for k, r in enumerate(rows) if r[0].startswith("Derivatives on Individual"))
+        stocks = [(r[1], r[2]) for r in rows[i + 1:] if len(r) > 2 and r[1] and r[2]]
+        if len(stocks) < 100:          # sanity check: NSE has ~200 F&O stocks
+            return False
+    except Exception:
+        return False
+    (UNIVERSE_DIR / "fno.txt").write_text("\n".join(s for s, _ in stocks) + "\n")
+    (UNIVERSE_DIR / "fno_lots.csv").write_text(
+        "symbol,lot_size\n" + "".join(f"{s},{lot}\n" for s, lot in stocks))
+    return True
+
+
+def fno_lots() -> dict[str, int]:
+    f = UNIVERSE_DIR / "fno_lots.csv"
+    if not f.exists():
+        return {}
+    out = {}
+    for line in f.read_text().splitlines()[1:]:
+        sym, _, lot = line.partition(",")
+        if lot.strip().isdigit():
+            out[sym] = int(lot)
+    return out
+
+
 def load_universe(name_or_symbols: str) -> list[str]:
-    """``nifty50`` / ``nifty100`` / ``nifty500``, a path to a text file,
+    """``fno`` / ``all`` / ``nifty50`` / ``nifty100`` / ``nifty500``, a path to a text file,
     or a comma-separated list such as ``SWIGGY,RELIANCE``."""
     f = UNIVERSE_DIR / f"{name_or_symbols}.txt"
     if not f.exists():

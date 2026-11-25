@@ -30,7 +30,7 @@ The SMI formula matches Yahoo's chart: on SWIGGY's weekly bars it gives -87.44 /
 
 | Market | Instruments | Hours (IST) |
 |---|---|---|
-| NSE | every stock, about 2,600 (EQ and BE series) | 09:15-15:30, Mon-Fri |
+| NSE | **F&O stocks only** (about 220, `universe/fno.txt`); `--universe all` for every stock | 09:15-15:30, Mon-Fri |
 | Forex | EURUSD, GBPUSD, USDJPY, AUDUSD, USDCAD, USDCHF, NZDUSD, EURGBP, EURJPY, GBPJPY, USDINR, EURINR, GBPINR, JPYINR (`universe/forex.txt`) | about 24 h, Mon 03:30 to Sat 03:30 |
 | Gold | COMEX gold futures `GC=F` in $/oz (see note below) | about 24 h, Mon-Fri | Whenever a candle closes and the rules above have just become true, it sends an alert.
 
@@ -47,6 +47,7 @@ Alert example:
   SMI %K 56.95 / %D 67.62 | GoNoGo Go
   swing low 899.15 → 1078.15
 ```
+* **F&O list:** at every start the scanner downloads NSE's current F&O list and lot sizes (`universe/fno.txt`, `fno_lots.csv`), because NSE adds and removes stocks every few months. If the download fails, it uses the saved list. NSE alerts show the lot size, e.g. `| lot 750`. With F&O you can hold a SHORT for days through futures, which isn't possible in the cash market.
 * **Gold spot:** Yahoo Finance has no gold spot series (`XAUUSD=X` returns nothing), so the scanner uses COMEX gold futures (`GC=F`). Futures trade a few dollars above spot, and that gap moves slowly, so SMI and swing-low signals are effectively the same as on a spot chart. For true spot XAU/USD or MCX gold, the data source needs changing (for example, a Twelve Data key or your broker's feed).
 * **Forex:** Yahoo reports no volume for forex, so the volume (OBV) part of GoNoGo counts as neutral, and the other four parts decide Go/NoGo. Forex and gold candles follow UTC hours, so hourly candles run 10:30-11:30 IST and so on. A daily forex candle closes at 05:30 IST (midnight UTC); the weekly candle closes at the Friday close (about 03:30 Saturday IST).
 * **Telegram setup:** in Telegram, open @BotFather and send `/newbot` to get a token. Send your bot any message, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the `chat` → `id`. Without Telegram, alerts still print on screen and go to `alerts_log.csv`.

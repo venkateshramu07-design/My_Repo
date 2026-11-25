@@ -3,13 +3,14 @@
 
 Timeframes: 30m, 1h, 1d, 1wk, 1mo. Every 15 minutes it refreshes prices for
 each market that is open:
-  * NSE stocks  09:15-15:30 IST, Monday to Friday
+  * NSE F&O stocks (about 220) 09:15-15:30 IST, Monday to Friday
   * forex, gold about 24 hours a day, Monday to Friday (Sunday evening to Friday
     evening New York time; roughly 03:30 Monday to 03:30 Saturday IST)
 Whenever a candle closes it checks the video's rules on it and sends an alert
 for each instrument where they have just become true.
 
-  python realtime.py                              # NSE + forex + gold
+  python realtime.py                              # NSE F&O stocks + forex + gold
+  python realtime.py --universe all               # every NSE stock, not only F&O
   python realtime.py --markets forex,gold         # only forex and gold
   python realtime.py --timeframes 1h,1d,1wk       # fewer timeframes
   python realtime.py --universe nifty500          # fewer NSE stocks
@@ -29,7 +30,7 @@ from pathlib import Path
 import pandas as pd
 
 from alerts import Alerter
-from data import load_universe
+from data import fno_lots, load_universe, refresh_fno
 from globalmarket import GlobalMarketData
 from marketdata import ALL_TIMEFRAMES, MarketData, now_ist
 from strategy import Params, evaluate
@@ -41,12 +42,12 @@ MARKETS = ("nse", "forex", "gold")
 
 def _scan_one(job):
     """Runs in a worker process: evaluate one instrument on several timeframes."""
-    name, market, currency, frames, params = job
+    name, market, currency, lot, frames, params = job
     out = []
     for tf, df, provisional in frames:
         s = evaluate(name, df, params, timeframe=tf)
         if s and s.fresh:
-            s.market, s.currency = market, currency
+            s.market, s.currency, s.lot = market, currency, lot
             out.append((s, provisional))
     return out
 
@@ -64,6 +65,10 @@ class Scanner:
             raise SystemExit(f"unknown market(s); choose from {MARKETS}")
         cache = HERE / ".cache"
         self.stores = []
+        if "nse" in markets and args.universe == "fno":
+            log.info("F&O list: %s", "updated from NSE" if refresh_fno()
+                     else "using the saved list (NSE download failed)")
+        self.lots = fno_lots()
         if "nse" in markets:
             self.stores.append(MarketData(load_universe(args.universe), self.timeframes, cache))
         if "forex" in markets:
@@ -105,7 +110,8 @@ class Scanner:
                     self.last_bar[key] = bar
                     frames.append((tf, df, provisional))
             if frames:
-                jobs.append((store.display(sym), store.name, store.currency, frames,
+                lot = self.lots.get(sym) if store.name == "NSE" else None
+                jobs.append((store.display(sym), store.name, store.currency, lot, frames,
                              self.params))
         found = []
         if jobs:
@@ -113,7 +119,7 @@ class Scanner:
                 found.extend(res)
             new = [x for x in found if self.alerter.new(*x)]
             log.info("%s: checked %d candles (%s) on %d instruments in %.0fs: "
-                     "%d setup(s), %d new", store.name, sum(len(j[3]) for j in jobs),
+                     "%d setup(s), %d new", store.name, sum(len(j[4]) for j in jobs),
                      ",".join(tfs), len(jobs), time.time() - t0, len(found), len(new))
         return found
 
@@ -161,8 +167,9 @@ def main() -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--markets", default="nse,forex,gold",
                     help="any of nse, forex, gold (comma separated)")
-    ap.add_argument("--universe", default="all",
-                    help="NSE stocks: all, nifty50/100/500, a file, or SYM1,SYM2")
+    ap.add_argument("--universe", default="fno",
+                    help="NSE stocks: fno (F&O stocks, default), all, nifty50/100/500, "
+                         "a file, or SYM1,SYM2")
     ap.add_argument("--forex", default="forex",
                     help="forex pairs: a file in universe/ or Yahoo tickers like EURUSD=X,USDINR=X")
     ap.add_argument("--gold", default="gold", help="gold ticker(s), default GC=F")

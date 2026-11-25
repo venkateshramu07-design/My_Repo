@@ -29,7 +29,8 @@ def format_signal(s: Signal, provisional: bool) -> str:
     market = "" if s.market == "NSE" else f" · {s.market}"
     c = s.currency
     return (f"{arrow} {s.symbol} [{s.timeframe}{market}]{tag}\n"
-            f"  bar {s.date}{' IST' if ':' in s.date else ''} | close {c}{s.close} | stop {c}{s.stop}\n"
+            f"  bar {s.date}{' IST' if ':' in s.date else ''} | close {c}{s.close} | stop {c}{s.stop}"
+            f"{f' | lot {s.lot}' if s.lot else ''}\n"
             f"  SMI %K {s.smi_k} / %D {s.smi_d} | GoNoGo {s.gonogo}\n"
             f"  swing low {s.prev_swing_low} → {s.cur_swing_low}")
 
@@ -88,10 +89,11 @@ class Alerter:
             if new:
                 w.writerow(["market", "timeframe", "symbol", "side", "bar", "provisional", "close",
                             "stop", "smi_k", "smi_d", "gonogo", "prev_swing_low",
-                            "cur_swing_low"])
+                            "cur_swing_low", "lot"])
             for s, p in items:
                 w.writerow([s.market, s.timeframe, s.symbol, s.side, s.date, p, s.close, s.stop,
-                            s.smi_k, s.smi_d, s.gonogo, s.prev_swing_low, s.cur_swing_low])
+                            s.smi_k, s.smi_d, s.gonogo, s.prev_swing_low, s.cur_swing_low,
+                            s.lot])
 
     def _telegram(self, blocks: list[str]) -> None:
         # Telegram allows 4096 characters per message.
