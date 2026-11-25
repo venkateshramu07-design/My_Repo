@@ -73,7 +73,7 @@ def conditions_at(df: pd.DataFrame, i: int, p: Params) -> dict:
 @dataclass
 class Signal:
     symbol: str
-    date: str
+    date: str            # start time of the bar that produced the signal
     side: str            # LONG / SHORT
     fresh: bool          # conditions became true on this bar
     close: float
@@ -84,25 +84,36 @@ class Signal:
     prev_swing_low: float
     cur_swing_low: float
 
+    timeframe: str = "1wk"
+
     def as_dict(self):
         return asdict(self)
 
 
-def evaluate(symbol: str, df: pd.DataFrame, p: Params) -> Signal | None:
-    """Return a signal for the latest closed bar, or None."""
-    if len(df) < 30:
+MIN_BARS = 25        # SMI(10,3,3) + %D(10) need about this many bars
+MAX_BARS = 400       # older bars barely change the EMAs; trimming keeps scans fast
+
+
+def evaluate(symbol: str, df: pd.DataFrame, p: Params,
+             timeframe: str = "1wk") -> Signal | None:
+    """Return a signal for the last bar of ``df`` (pass closed bars only), or None."""
+    if len(df) < MIN_BARS:
         return None
-    df = add_indicators(df, p)
+    df = add_indicators(df.iloc[-MAX_BARS:], p)
     now = conditions_at(df, len(df) - 1, p)
     before = conditions_at(df, len(df) - 2, p)
     for side in ("long", "short"):
         if now[side]:
             stop = now["cur_swing_low"] if side == "long" else now["cur_swing_high"]
             return Signal(
-                symbol=symbol, date=str(df.index[-1].date()), side=side.upper(),
+                symbol=symbol, date=_fmt(df.index[-1], timeframe), side=side.upper(),
                 fresh=not before[side], close=round(float(df["Close"].iloc[-1]), 2),
                 stop=round(stop, 2) if stop else None,
                 smi_k=now["smi_k"], smi_d=now["smi_d"], gonogo=now["gonogo"],
                 prev_swing_low=round(now["prev_swing_low"], 2),
-                cur_swing_low=round(now["cur_swing_low"], 2))
+                cur_swing_low=round(now["cur_swing_low"], 2), timeframe=timeframe)
     return None
+
+
+def _fmt(ts: pd.Timestamp, timeframe: str) -> str:
+    return str(ts.date()) if timeframe in ("1d", "1wk", "1mo") else ts.strftime("%Y-%m-%d %H:%M")

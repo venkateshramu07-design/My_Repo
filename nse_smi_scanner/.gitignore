@@ -2,3 +2,5 @@ signals.csv
 paper_trades.csv
 backtest_trades.csv
 __pycache__/
+.cache/
+alerts_log.csv

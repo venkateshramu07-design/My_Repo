@@ -95,20 +95,19 @@ def pivots(df: pd.DataFrame, left: int = 2, right: int = 2) -> pd.DataFrame:
     so ``*_confirmed_at`` holds the index position where it becomes known
     (no look-ahead in scans or backtests).
     """
-    lows, highs = df["Low"].values, df["High"].values
-    n = len(df)
-    is_low = np.zeros(n, bool)
-    is_high = np.zeros(n, bool)
-    for i in range(left, n - right):
-        win_l = lows[i - left:i + right + 1]
-        win_h = highs[i - left:i + right + 1]
-        if lows[i] == win_l.min() and (win_l == lows[i]).sum() == 1:
-            is_low[i] = True
-        if highs[i] == win_h.max() and (win_h == highs[i]).sum() == 1:
-            is_high[i] = True
+    low, high = df["Low"], df["High"]
+
+    def strict_extreme(s: pd.Series, better) -> pd.Series:
+        ok = pd.Series(True, index=s.index)
+        for k in range(1, left + 1):
+            ok &= better(s, s.shift(k))
+        for k in range(1, right + 1):
+            ok &= better(s, s.shift(-k))
+        return ok.fillna(False).astype(bool)
+
     out = pd.DataFrame(index=df.index)
-    out["pivot_low"] = is_low
-    out["pivot_high"] = is_high
+    out["pivot_low"] = strict_extreme(low, lambda a, b: a < b)
+    out["pivot_high"] = strict_extreme(high, lambda a, b: a > b)
     return out
 
 

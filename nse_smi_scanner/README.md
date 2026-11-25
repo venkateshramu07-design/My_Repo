@@ -1,4 +1,4 @@
-# NSE SMI + GoNoGo swing scanner (prototype)
+# NSE SMI + GoNoGo scanner and real-time alerts (prototype)
 
 This prototype scans NSE stocks for the setup described in the screen recording of 25 Nov 2026 (SWIGGY.NS on Yahoo Finance, weekly chart). It can also enter the trades it finds.
 
@@ -24,6 +24,38 @@ The SMI formula matches Yahoo's chart: on SWIGGY's weekly bars it gives -87.44 /
 * **Stop loss**: the current swing low for longs, the current swing high for shorts.
 * **Backtest exit**: the stop is hit, %K crosses %D against the trade, or GoNoGo flips.
 * **Closed bars only**: the unfinished current week is ignored until Friday's 15:30 IST close. Use `--include-open-bar` to include it.
+
+## Real-time alerts (all NSE stocks, all timeframes)
+`realtime.py` runs all day and watches every NSE stock (about 2,600 in the EQ and BE series) on **5m, 15m, 30m, 1h, 1d, 1wk and 1mo** candles. Whenever a candle closes and the rules above have just become true, it sends an alert.
+
+```bash
+pip install -r requirements.txt
+set TELEGRAM_BOT_TOKEN=...   &  set TELEGRAM_CHAT_ID=...     (Windows cmd)
+export TELEGRAM_BOT_TOKEN=... TELEGRAM_CHAT_ID=...          (Mac/Linux)
+python realtime.py
+```
+Alert example:
+```
+🟢 LONG BAJFINANCE [1d]
+  bar 2026-11-25 | close ₹1131.35 | stop ₹1078.15
+  SMI %K 56.95 / %D 67.62 | GoNoGo Go
+  swing low 899.15 → 1078.15
+```
+* **Telegram setup:** in Telegram, open @BotFather and send `/newbot` to get a token. Send your bot any message, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the `chat` → `id`. Without Telegram, alerts still print on screen and go to `alerts_log.csv`.
+* **Timing:** prices refresh every 5 minutes from 09:15 to 15:40 IST. A 15m alert arrives within about 2 minutes of the candle closing. Daily alerts come at 15:30, weekly alerts on Friday at 15:30, and monthly alerts on the month's last trading day.
+* **Start-up:** the first run each day downloads history for every stock (about 6 minutes, then cached in `.cache/`). The first scan sends **one summary** of the setups already active, not hundreds of messages. After that you get one alert per new setup, and an alert is never repeated, even after a restart.
+* **Options:** `--timeframes 15m,1h,1d,1wk` (fewer timeframes), `--universe nifty500`, `--early` (also alert while a candle is still forming; it may disappear by the close), `--once` (one scan, then exit).
+* **Load:** in testing on 4 CPU cores, one refresh of all 2,600 stocks took about 90 seconds, and a check of every candle on all 7 timeframes took about 90 seconds. A normal 5-minute cycle checks far fewer candles.
+
+### Where to run it
+The computer must stay on during market hours:
+* **Your own PC:** double-click `run_realtime.bat` (Windows) before 09:00 and leave it open.
+* **A small cloud server** (e.g. Oracle Cloud free tier, AWS Lightsail, DigitalOcean, ₹400–800/month), so it runs without your PC: `nohup python3 realtime.py &`, or set it up as a service.
+
+### Data limits (read this)
+* Prices come from Yahoo Finance, which is free but not an official live feed. Bars can arrive late, and Yahoo may rate-limit heavy use. The scanner retries, but a cycle can still be missed.
+* For tick-accurate real-time data, use your broker's live feed (Zerodha Kite Connect is about ₹500/month and streams up to 3,000 stocks on one connection). Swapping `marketdata.py` to that feed is the natural next step.
+* Alerts are a prompt to look at the chart, not advice. Check the setup on the chart before you trade.
 
 ## Usage
 ```bash
@@ -57,7 +89,10 @@ Longs have a small edge because a few big winners pay for many small losses. Sho
 * `indicators.py`: SMI, GoNoGo approximation, swing pivots
 * `strategy.py`: entry rules and signal object
 * `data.py`: Yahoo Finance NSE data (`.NS`) and symbol lists
-* `scan.py`: scanner and order entry
+* `realtime.py`: real-time scanner for all stocks and timeframes, with alerts
+* `marketdata.py`: live candle store (5m/15m/30m/1h/1d/1wk/1mo)
+* `alerts.py`: Telegram, console and CSV alerts
+* `scan.py`: one-off weekly scanner and order entry
 * `broker.py`: paper broker, Zerodha Kite broker, position sizing
 * `backtest.py`: walk-forward backtest
-* `universe/`: Nifty 50/100/500 symbol lists from NSE archives
+* `universe/`: symbol lists from NSE archives (all NSE stocks, Nifty 50/100/500)
