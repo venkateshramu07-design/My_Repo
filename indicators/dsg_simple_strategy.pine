@@ -1,0 +1,400 @@
+//@version=6
+// ════════════════════════════════════════════════════════════════════════════
+//  DSG Simple STRATEGY: backtest version of DSG Simple
+//  Identical signals; adds TradingView Strategy Tester orders.
+//  Same engine as DSG Pro (Darvas Box + Stochastic Momentum Index +
+//  GoNoGo-style Trend, auto-adapting to every timeframe), with all the
+//  extra drawings removed. The chart shows just two things:
+//     BUY  → enter at the close of that candle (label shows the stop-loss)
+//     EXIT → close the trade
+//  Optional: the trailing stop-loss line and a one-line status box.
+//
+//  BUY  = close above a completed Darvas box  (Darvas rules, 5-bar confirm)
+//       + SMI above its signal line and rising (Blau SMI 10,3,3,10 EMA)
+//       + trend is Go                          (GoNoGo-style score ≥ +2)
+//       + at least 2 of 4 quality checks: breakout volume, higher-timeframe
+//         trend, near a new high, SMI not overbought
+//  EXIT = price hits the trailing stop (just below the latest box bottom)
+//       or (intraday) the trend turns NoGo
+//  Tuned from a backtest of NIFTY, Bank NIFTY and 18 large caps:
+//   • 5-bar box confirmation on every timeframe
+//   • Daily+: no trend exit, the Darvas trailing stop lets winners run
+//   • Intraday: breakout volume required; 30m and lower also need the
+//     daily trend to be Go
+//  Signals appear only when the candle closes (no repainting).
+// ════════════════════════════════════════════════════════════════════════════
+strategy("DSG Simple Strategy", shorttitle = "DSG Strategy", overlay = true, max_labels_count = 500,
+     initial_capital = 100000, currency = currency.NONE,
+     default_qty_type = strategy.percent_of_equity, default_qty_value = 100,
+     commission_type = strategy.commission.percent, commission_value = 0.03,
+     slippage = 1, pyramiding = 0, process_orders_on_close = true)
+
+// ───────────────────────── Inputs ─────────────────────────
+grpB = "Backtest period"
+useDates  = input.bool(false, "Limit backtest to a date range", group = grpB)
+startDate = input.time(timestamp("2020-01-01 00:00"), "Start", group = grpB)
+endDate   = input.time(timestamp("2099-12-31 00:00"), "End", group = grpB)
+inDate    = not useDates or (time >= startDate and time <= endDate)
+
+grpV = "Display"
+showStop   = input.bool(true, "Show trailing stop-loss line", group = grpV)
+showStatus = input.bool(true, "Show status box", group = grpV)
+allowShort = input.bool(false, "Also show SELL (short) signals", group = grpV)
+
+grpQ = "Signal quality"
+minGrade    = input.string("B", "Signal strictness", options = ["A", "B", "C"], group = grpQ,
+     tooltip = "A = strictest, fewest signals. B = balanced (default). C = most signals.")
+exitMode    = input.string("Auto", "Exit when trend turns against the trade", options = ["Auto", "On", "Off"], group = grpQ,
+     tooltip = "Auto = Off on daily/weekly/monthly (pure Darvas trailing stop lets winners run), On for intraday.")
+volMode     = input.string("Auto", "Require breakout volume", options = ["Auto", "On", "Off"], group = grpQ,
+     tooltip = "Auto = required on intraday charts, bonus check only on daily and above.")
+dailyMode   = input.string("Auto", "Intraday: require daily trend Go", options = ["Auto", "On", "Off"], group = grpQ,
+     tooltip = "Auto = required on 30m and lower charts: only buy intraday breakouts when the daily trend is Go.")
+exitOnDiv   = input.bool(false, "Exit on opposite SMI divergence", group = grpQ)
+sqOff       = input.bool(false, "Intraday: exit at session end", group = grpQ)
+
+grpE = "Engine (advanced, leave as is)"
+confirmBars  = input.int(5, "Darvas confirmation bars", minval = 1, maxval = 10, group = grpE)
+minBoxAtr    = input.float(0.5, "Minimum box height (× ATR)", minval = 0, step = 0.1, group = grpE)
+stopBufAtr   = input.float(0.2, "Stop buffer beyond box (× ATR)", minval = 0, step = 0.05, group = grpE)
+volMult      = input.float(1.5, "Breakout volume ≥ × normal", minval = 0.5, step = 0.1, group = grpE)
+volLen       = input.int(50, "Volume average length (D/W/M)", minval = 5, group = grpE)
+volSess      = input.int(20, "Intraday: sessions for time-of-day volume", minval = 3, maxval = 100, group = grpE)
+kLen         = input.int(10, "SMI %K periods", minval = 1, group = grpE)
+kSmooth      = input.int(3, "SMI %K smoothing", minval = 1, group = grpE)
+kDouble      = input.int(3, "SMI %K double smoothing", minval = 1, group = grpE)
+dLen         = input.int(10, "SMI %D periods", minval = 1, group = grpE)
+maType       = input.string("EMA", "SMI MA type", options = ["EMA", "SMA", "WMA", "RMA"], group = grpE)
+obLevel      = input.float(40.0, "SMI overbought", group = grpE)
+osLevel      = input.float(-40.0, "SMI oversold", group = grpE)
+pivLen       = input.int(5, "Divergence pivot length", minval = 2, group = grpE)
+emaFast      = input.int(13, "Trend fast EMA", group = grpE)
+emaSlow      = input.int(21, "Trend slow EMA", group = grpE)
+rsiLen       = input.int(14, "Trend RSI length", group = grpE)
+diLen        = input.int(14, "Trend DMI / ADX length", group = grpE)
+adxMin       = input.float(20.0, "Trend ADX threshold", group = grpE)
+obvLen       = input.int(21, "Trend OBV EMA length", group = grpE)
+goNeed       = input.int(2, "Trend score for Go / NoGo", minval = 1, maxval = 6, group = grpE)
+trendConfirm = input.int(2, "Bars to confirm a trend change", minval = 1, maxval = 10, group = grpE)
+htfIn        = input.timeframe("", "Higher timeframe (empty = auto)", group = grpE)
+hiLenIn      = input.int(0, "New-high lookback, bars (0 = auto)", minval = 0, group = grpE)
+intraDays    = input.int(20, "Intraday: new-high lookback in sessions", minval = 1, group = grpE)
+nearIn       = input.float(0.0, "Within % of that high (0 = auto)", minval = 0, step = 0.5, group = grpE)
+useAtrCap    = input.bool(false, "Cap initial risk with ATR", group = grpE)
+atrCap       = input.float(3.0, "Max initial risk (× ATR)", minval = 0.5, step = 0.5, group = grpE)
+
+// ───────────────────────── Timeframe profile ─────────────────────────
+tfSec   = timeframe.in_seconds(timeframe.period)
+isIntra = tfSec < 86400
+autoHtf = tfSec <= 60 ? "5" : tfSec <= 180 ? "15" : tfSec <= 300 ? "30" : tfSec <= 900 ? "60" :
+          tfSec <= 3600 ? "240" : tfSec <= 14400 ? "D" : tfSec <= 86400 ? "W" : tfSec <= 604800 ? "M" : "3M"
+htfTf   = htfIn == "" ? autoHtf : htfIn
+hiLen   = hiLenIn > 0 ? hiLenIn : tfSec <= 86400 ? 252 : tfSec <= 604800 ? 52 : 12
+nearPct = nearIn > 0 ? nearIn : isIntra ? 3.0 : tfSec <= 86400 ? 10.0 : tfSec <= 604800 ? 15.0 : 25.0
+refTf   = isIntra ? "D" : timeframe.period
+useTrendExit = exitMode == "On" or (exitMode == "Auto" and isIntra)
+useVolReq    = volMode == "On" or (volMode == "Auto" and isIntra)
+useDaily     = isIntra and (dailyMode == "On" or (dailyMode == "Auto" and tfSec <= 1800))
+
+// ───────────────────────── Helpers ─────────────────────────
+type VolSlot
+    array<float> v
+
+ma(src, len) =>
+    switch maType
+        "SMA" => ta.sma(src, len)
+        "WMA" => ta.wma(src, len)
+        "RMA" => ta.rma(src, len)
+        => ta.ema(src, len)
+
+f_score() =>
+    float eF = ta.ema(close, emaFast)
+    float eS = ta.ema(close, emaSlow)
+    [mLine, mSig, mHist] = ta.macd(close, 12, 26, 9)
+    float r = ta.rsi(close, rsiLen)
+    [dPlus, dMinus, adxV] = ta.dmi(diLen, diLen)
+    float obvV = ta.cum(math.sign(ta.change(close)) * nz(volume))
+    float obvE = ta.ema(obvV, obvLen)
+    int s = 0
+    s += close > eS ? 1 : -1
+    s += eF > eS ? 1 : -1
+    s += mHist > 0 ? 1 : -1
+    s += r > 50 ? 1 : -1
+    s += adxV >= adxMin ? (dPlus > dMinus ? 1 : -1) : 0
+    s += nz(volume) > 0 ? (obvV > obvE ? 1 : -1) : 0
+    s
+
+fmt(x) => str.tostring(x, format.mintick)
+
+atr = ta.atr(14)
+
+// ═════════════════════ 1. DARVAS BOX ═════════════════════
+var int   dState  = 0
+var float candTop = na
+var int   topAge  = 0
+var float runMin  = na
+var int   minAge  = 0
+var float boxTop  = na
+var float boxBot  = na
+
+bool  boxDone   = false
+bool  darvasUp  = false
+bool  darvasDn  = false
+float brokenTop = na
+float brokenBot = na
+
+if dState == 2
+    if close > boxTop
+        darvasUp  := true
+        brokenTop := boxTop
+        brokenBot := boxBot
+        dState    := 0
+        candTop   := na
+    else if close < boxBot
+        darvasDn  := true
+        brokenTop := boxTop
+        brokenBot := boxBot
+        dState    := 0
+        candTop   := na
+
+if dState == 0
+    if na(candTop) or high > candTop
+        candTop := high
+        topAge  := 0
+        runMin  := low
+        minAge  := 0
+    else
+        topAge += 1
+        if low < runMin
+            runMin := low
+            minAge := 0
+        else
+            minAge += 1
+        if topAge >= confirmBars
+            dState := 1
+else if dState == 1
+    if high > candTop
+        dState  := 0
+        candTop := high
+        topAge  := 0
+        runMin  := low
+        minAge  := 0
+    else
+        if low < runMin
+            runMin := low
+            minAge := 0
+        else
+            minAge += 1
+        if minAge >= confirmBars and (candTop - runMin) >= minBoxAtr * atr
+            dState  := 2
+            boxTop  := candTop
+            boxBot  := runMin
+            boxDone := true
+
+// Volume: time-of-day relative volume intraday, moving average otherwise
+var map<int, VolSlot> slots = map.new<int, VolSlot>()
+float vol     = nz(volume)
+float slotAvg = na
+if isIntra
+    int key = hour(time, syminfo.timezone) * 60 + minute(time, syminfo.timezone)
+    VolSlot sl = slots.get(key)
+    if na(sl)
+        sl := VolSlot.new(array.new<float>())
+        slots.put(key, sl)
+    if sl.v.size() > 0
+        slotAvg := sl.v.avg()
+    if barstate.isconfirmed
+        sl.v.push(vol)
+        if sl.v.size() > volSess
+            sl.v.shift()
+
+smaVol   = ta.sma(vol, volLen)
+volBase  = isIntra and not na(slotAvg) ? slotAvg : smaVol
+hasVol   = volBase > 0
+volRatio = hasVol ? vol / volBase : na
+volOK    = not hasVol or volRatio >= volMult
+
+// Near-new-high reference
+dHi = request.security(syminfo.tickerid, refTf, ta.highest(high, intraDays)[1], lookahead = barmerge.lookahead_on)
+dLo = request.security(syminfo.tickerid, refTf, ta.lowest(low, intraDays)[1], lookahead = barmerge.lookahead_on)
+var float sessHi = na
+var float sessLo = na
+if timeframe.change("D")
+    sessHi := high
+    sessLo := low
+else
+    sessHi := math.max(nz(sessHi, high), high)
+    sessLo := math.min(nz(sessLo, low), low)
+barHi    = ta.highest(high, hiLen)
+barLo    = ta.lowest(low, hiLen)
+refHi    = isIntra ? math.max(nz(dHi, sessHi), sessHi) : barHi
+refLo    = isIntra ? math.min(nz(dLo, sessLo), sessLo) : barLo
+nearHigh = close >= refHi * (1 - nearPct / 100)
+nearLow  = close <= refLo * (1 + nearPct / 100)
+
+// ═════════════════════ 2. STOCHASTIC MOMENTUM INDEX ═════════════════════
+hh     = ta.highest(high, kLen)
+ll     = ta.lowest(low, kLen)
+num    = ma(ma(close - (hh + ll) / 2, kSmooth), kDouble)
+den    = ma(ma(hh - ll, kSmooth), kDouble) / 2
+smi    = den != 0 ? 100 * num / den : 0.0
+smiSig = ma(smi, dLen)
+
+smiBull = smi > smiSig and smi >= smi[1]
+smiBear = smi < smiSig and smi <= smi[1]
+
+pl = ta.pivotlow(smi, pivLen, pivLen)
+ph = ta.pivothigh(smi, pivLen, pivLen)
+var float plSmi = na
+var float plPx  = na
+var float phSmi = na
+var float phPx  = na
+bool bullDiv = false
+bool bearDiv = false
+if not na(pl)
+    float pxL = low[pivLen]
+    if not na(plSmi) and pxL < plPx and pl > plSmi and pl < 0
+        bullDiv := true
+    plSmi := pl
+    plPx  := pxL
+if not na(ph)
+    float pxH = high[pivLen]
+    if not na(phSmi) and pxH > phPx and ph < phSmi and ph > 0
+        bearDiv := true
+    phSmi := ph
+    phPx  := pxH
+
+// ═════════════════════ 3. GONOGO-STYLE TREND ═════════════════════
+score    = f_score()
+rawTrend = score >= goNeed ? 1 : score <= -goNeed ? -1 : 0
+
+var int trend = 0
+var int pend  = 0
+var int pendN = 0
+if rawTrend != trend
+    if rawTrend == pend
+        pendN += 1
+    else
+        pend  := rawTrend
+        pendN := 1
+    if pendN >= trendConfirm
+        trend := rawTrend
+        pendN := 0
+else
+    pendN := 0
+
+htfScore = request.security(syminfo.tickerid, htfTf, f_score()[1], lookahead = barmerge.lookahead_on)
+htfValid = timeframe.in_seconds(htfTf) > tfSec
+htfBull  = htfValid ? htfScore >= goNeed : trend == 1
+htfBear  = htfValid ? htfScore <= -goNeed : trend == -1
+dScore   = request.security(syminfo.tickerid, "D", f_score()[1], lookahead = barmerge.lookahead_on)
+dailyBull = not useDaily or dScore >= goNeed
+dailyBear = not useDaily or dScore <= -goNeed
+volGate   = not useVolReq or volOK
+
+// ═════════════════════ SIGNALS ═════════════════════
+eodBar = sqOff and isIntra and session.islastbar
+minNum = minGrade == "A" ? 3 : minGrade == "B" ? 2 : 1
+extL   = (volOK ? 1 : 0) + (htfBull ? 1 : 0) + (nearHigh ? 1 : 0) + (smi < obLevel ? 1 : 0)
+extS   = (volOK ? 1 : 0) + (htfBear ? 1 : 0) + (nearLow ? 1 : 0) + (smi > osLevel ? 1 : 0)
+gradeL = extL >= 3 ? 3 : extL == 2 ? 2 : 1
+gradeS = extS >= 3 ? 3 : extS == 2 ? 2 : 1
+
+buySig  = inDate and barstate.isconfirmed and not eodBar and darvasUp and smiBull and trend == 1 and gradeL >= minNum and volGate and dailyBull
+sellSig = inDate and barstate.isconfirmed and not eodBar and allowShort and darvasDn and smiBear and trend == -1 and gradeS >= minNum and volGate and dailyBear
+
+// ═════════════════════ POSITION TRACKING ═════════════════════
+var int   pos     = 0
+var float entryPx = na
+var float stopPx  = na
+var float riskPx  = na
+
+float exitR   = na
+bool  didExit = false
+bool  longIn  = false
+bool  shortIn = false
+float buf     = stopBufAtr * atr
+
+if pos == 1
+    if boxDone and boxBot - buf > stopPx
+        stopPx := boxBot - buf
+    float xPx = na
+    if low <= stopPx
+        xPx := math.min(open, stopPx)
+    else if barstate.isconfirmed and (sellSig or (useTrendExit and trend == -1) or (exitOnDiv and bearDiv) or eodBar)
+        xPx := close
+    if not na(xPx)
+        exitR   := (xPx - entryPx) / riskPx
+        didExit := true
+        pos     := 0
+else if pos == -1
+    if boxDone and boxTop + buf < stopPx
+        stopPx := boxTop + buf
+    float xPx = na
+    if high >= stopPx
+        xPx := math.max(open, stopPx)
+    else if barstate.isconfirmed and (buySig or (useTrendExit and trend == 1) or (exitOnDiv and bullDiv) or eodBar)
+        xPx := close
+    if not na(xPx)
+        exitR   := (entryPx - xPx) / riskPx
+        didExit := true
+        pos     := 0
+
+if pos == 0 and buySig
+    float s0 = brokenBot - buf
+    float sl = useAtrCap ? math.max(s0, close - atrCap * atr) : s0
+    if close - sl > 0
+        pos     := 1
+        entryPx := close
+        stopPx  := sl
+        riskPx  := close - sl
+        longIn  := true
+else if pos == 0 and sellSig
+    float s0 = brokenTop + buf
+    float sl = useAtrCap ? math.min(s0, close + atrCap * atr) : s0
+    if sl - close > 0
+        pos     := -1
+        entryPx := close
+        stopPx  := sl
+        riskPx  := sl - close
+        shortIn := true
+
+// ═════════════════════ STRATEGY ORDERS (mirror the signals) ═════════════════════
+if didExit
+    strategy.close_all(comment = "EXIT")
+if longIn
+    strategy.entry("Long", strategy.long, comment = "BUY")
+if shortIn
+    strategy.entry("Short", strategy.short, comment = "SELL")
+if pos == 1
+    strategy.exit("SL L", from_entry = "Long", stop = stopPx, comment = "EXIT SL")
+if pos == -1
+    strategy.exit("SL S", from_entry = "Short", stop = stopPx, comment = "EXIT SL")
+
+// ═════════════════════ CHART: only BUY / SELL / EXIT ═════════════════════
+if longIn
+    label.new(bar_index, low, "BUY\nSL " + fmt(stopPx), style = label.style_label_up,
+         color = color.new(color.green, 0), textcolor = color.white, size = size.normal)
+if shortIn
+    label.new(bar_index, high, "SELL\nSL " + fmt(stopPx), style = label.style_label_down,
+         color = color.new(color.red, 0), textcolor = color.white, size = size.normal)
+if didExit
+    label.new(bar_index, exitR > 0 ? high : low, "EXIT",
+         style = exitR > 0 ? label.style_label_down : label.style_label_up,
+         color = color.new(exitR > 0 ? color.blue : color.gray, 0), textcolor = color.white, size = size.normal)
+
+plot(showStop and pos != 0 ? stopPx : na, "Stop-loss", color.new(color.orange, 0), 2, plot.style_linebr)
+
+var table status = table.new(position.top_right, 1, 1, bgcolor = color.new(color.black, 20))
+if showStatus
+    string sTxt = pos == 1 ? "IN BUY · Stop " + fmt(stopPx) : pos == -1 ? "IN SELL · Stop " + fmt(stopPx) : "WAIT · no trade"
+    color  sCol = pos == 1 ? color.lime : pos == -1 ? color.red : color.silver
+    table.cell(status, 0, 0, sTxt, text_color = sCol, text_size = size.normal)
+
+// ═════════════════════ ALERTS ═════════════════════
+if longIn
+    alert("BUY " + syminfo.ticker + " " + timeframe.period + " @ " + fmt(close) + " | SL " + fmt(stopPx), alert.freq_once_per_bar_close)
+if shortIn
+    alert("SELL " + syminfo.ticker + " " + timeframe.period + " @ " + fmt(close) + " | SL " + fmt(stopPx), alert.freq_once_per_bar_close)
+if didExit
+    alert("EXIT " + syminfo.ticker + " " + timeframe.period + " @ " + fmt(close), alert.freq_once_per_bar_close)

@@ -1,0 +1,146 @@
+//@version=6
+// Darvas + Stochastic Momentum + GoNoGo Confluence
+// Combines three indicators into one:
+//   1. Darvas Box            -> structure / breakout trigger (drawn on the price chart)
+//   2. Stochastic Momentum   -> momentum confirmation (SMI 10,3,3,10 EMA, drawn in this pane)
+//   3. GoNoGo-style Trend    -> trend filter (paints the price bars)
+// A Buy / Sell signal fires only when all three agree.
+// Note: the official GoNoGo Trend formula is proprietary; section 3 is a
+// weight-of-evidence approximation built from the same family of inputs
+// (EMAs, MACD, RSI, DMI/ADX, OBV).
+indicator("Darvas + SMI + GoNoGo Confluence", shorttitle = "DSG Confluence", overlay = false, max_labels_count = 500)
+
+// ───────────────────────── Inputs ─────────────────────────
+grpD = "Darvas Box"
+boxp      = input.int(5, "Box length", minval = 3, group = grpD)
+showBox   = input.bool(true, "Show box on price chart", group = grpD)
+
+grpS = "Stochastic Momentum (SMI)"
+kLen      = input.int(10, "%K periods", minval = 1, group = grpS)
+kSmooth   = input.int(3, "%K smoothing", minval = 1, group = grpS)
+kDouble   = input.int(3, "%K double smoothing", minval = 1, group = grpS)
+dLen      = input.int(10, "%D periods", minval = 1, group = grpS)
+maType    = input.string("EMA", "MA type", options = ["EMA", "SMA", "WMA", "RMA"], group = grpS)
+obLevel   = input.float(40.0, "Overbought", group = grpS)
+osLevel   = input.float(-40.0, "Oversold", group = grpS)
+blockOB   = input.bool(false, "Block buys when SMI overbought / sells when oversold", group = grpS)
+
+grpG = "GoNoGo Trend (approximation)"
+emaFast   = input.int(13, "Fast EMA", group = grpG)
+emaSlow   = input.int(21, "Slow EMA", group = grpG)
+rsiLen    = input.int(14, "RSI length", group = grpG)
+diLen     = input.int(14, "DMI length", group = grpG)
+adxMin    = input.float(20.0, "ADX threshold (trend present)", group = grpG)
+obvLen    = input.int(21, "OBV EMA length", group = grpG)
+goNeed    = input.int(2, "Minimum score for Go / NoGo", minval = 1, maxval = 6, group = grpG)
+paintBars = input.bool(true, "Paint price bars with trend colour", group = grpG)
+
+// ───────────────────────── Helpers ─────────────────────────
+ma(src, len) =>
+    switch maType
+        "SMA" => ta.sma(src, len)
+        "WMA" => ta.wma(src, len)
+        "RMA" => ta.rma(src, len)
+        => ta.ema(src, len)
+
+// ───────────────────────── 1. Darvas Box ─────────────────────────
+LL     = ta.lowest(low, boxp)
+k1     = ta.highest(high, boxp)
+k2     = ta.highest(high, boxp - 1)
+k3     = ta.highest(high, boxp - 2)
+NH     = ta.valuewhen(high > k1[1], high, 0)
+box1   = k3 < k2
+newBox = ta.barssince(high > k1[1]) == boxp - 2 and box1
+topBox = ta.valuewhen(newBox, NH, 0)
+botBox = ta.valuewhen(newBox, LL, 0)
+
+darvasUp = ta.crossover(close, topBox)
+darvasDn = ta.crossunder(close, botBox)
+
+plot(showBox ? topBox : na, "Darvas Top",    color.new(color.green, 0), 2, plot.style_stepline, force_overlay = true)
+plot(showBox ? botBox : na, "Darvas Bottom", color.new(color.red, 0),   2, plot.style_stepline, force_overlay = true)
+
+// ───────────────────────── 2. Stochastic Momentum Index ─────────────────────────
+hh       = ta.highest(high, kLen)
+lo       = ta.lowest(low, kLen)
+relRange = close - (hh + lo) / 2
+hlRange  = hh - lo
+num      = ma(ma(relRange, kSmooth), kDouble)
+den      = ma(ma(hlRange, kSmooth), kDouble) / 2
+smi      = den != 0 ? 100 * num / den : 0.0
+smiSig   = ma(smi, dLen)
+
+smiBull  = smi > smiSig and (not blockOB or smi < obLevel)
+smiBear  = smi < smiSig and (not blockOB or smi > osLevel)
+
+// ───────────────────────── 3. GoNoGo-style Trend ─────────────────────────
+eF = ta.ema(close, emaFast)
+eS = ta.ema(close, emaSlow)
+[macdLine, macdSignal, macdHist] = ta.macd(close, 12, 26, 9)
+rsi = ta.rsi(close, rsiLen)
+[diPlus, diMinus, adx] = ta.dmi(diLen, diLen)
+obv    = ta.cum(math.sign(ta.change(close)) * nz(volume))
+obvEma = ta.ema(obv, obvLen)
+
+score  = 0
+score += close > eS ? 1 : -1
+score += eF > eS ? 1 : -1
+score += macdHist > 0 ? 1 : -1
+score += rsi > 50 ? 1 : -1
+score += adx >= adxMin ? (diPlus > diMinus ? 1 : -1) : 0
+score += volume > 0 ? (obv > obvEma ? 1 : -1) : 0
+
+strongGo   = score >= 4
+go         = score >= goNeed
+strongNoGo = score <= -4
+noGo       = score <= -goNeed
+
+trendCol = strongGo ? color.rgb(0, 102, 255) :      // bright blue  - strong Go
+           go ? color.rgb(102, 204, 255) :          // light blue   - Go
+           strongNoGo ? color.rgb(128, 0, 160) :    // purple       - strong NoGo
+           noGo ? color.rgb(255, 102, 178) :        // pink         - NoGo
+           color.rgb(255, 191, 0)                   // amber        - neutral
+
+barcolor(paintBars ? trendCol : na)
+
+// ───────────────────────── Confluence ─────────────────────────
+confluence = (close > topBox ? 1 : close < botBox ? -1 : 0) + (smi > smiSig ? 1 : -1) + (go ? 1 : noGo ? -1 : 0)
+
+buySig  = darvasUp and smiBull and go
+sellSig = darvasDn and smiBear and noGo
+
+plotshape(buySig,  "Buy",  shape.labelup,   location.belowbar, color.new(color.green, 0), text = "BUY",  textcolor = color.white, size = size.small, force_overlay = true)
+plotshape(sellSig, "Sell", shape.labeldown, location.abovebar, color.new(color.red, 0),   text = "SELL", textcolor = color.white, size = size.small, force_overlay = true)
+
+// ───────────────────────── Pane: SMI + trend ribbon ─────────────────────────
+plot(smi,    "SMI",        color.new(color.blue, 0), 2)
+plot(smiSig, "SMI Signal", color.new(color.orange, 0), 1)
+hline(obLevel, "Overbought", color.new(color.gray, 40), hline.style_dashed)
+hline(0,       "Zero",       color.new(color.gray, 60), hline.style_dotted)
+hline(osLevel, "Oversold",   color.new(color.gray, 40), hline.style_dashed)
+bgcolor(color.new(trendCol, 85), title = "Trend background")
+plotshape(buySig,  "Buy (pane)",  shape.triangleup,   location.bottom, color.green, size = size.tiny)
+plotshape(sellSig, "Sell (pane)", shape.triangledown, location.top,    color.red,   size = size.tiny)
+
+// ───────────────────────── Dashboard ─────────────────────────
+var table dash = table.new(position.top_right, 2, 5, bgcolor = color.new(color.black, 20), border_width = 1)
+if barstate.islast
+    darvasTxt = close > topBox ? "Above box" : close < botBox ? "Below box" : "Inside box"
+    trendTxt  = strongGo ? "Strong Go" : go ? "Go" : strongNoGo ? "Strong NoGo" : noGo ? "NoGo" : "Neutral"
+    confTxt   = confluence == 3 ? "Full bullish" : confluence == -3 ? "Full bearish" : "Mixed"
+    table.cell(dash, 0, 0, "Darvas",     text_color = color.white)
+    table.cell(dash, 1, 0, darvasTxt,    text_color = color.white)
+    table.cell(dash, 0, 1, "SMI",        text_color = color.white)
+    table.cell(dash, 1, 1, str.tostring(smi, "#.0") + (smi > smiSig ? " ▲" : " ▼"), text_color = smi > smiSig ? color.lime : color.red)
+    table.cell(dash, 0, 2, "Trend",      text_color = color.white)
+    table.cell(dash, 1, 2, trendTxt + " (" + str.tostring(score) + ")", text_color = trendCol)
+    table.cell(dash, 0, 3, "Confluence", text_color = color.white)
+    table.cell(dash, 1, 3, str.tostring(confluence) + " / 3", text_color = confluence > 0 ? color.lime : confluence < 0 ? color.red : color.yellow)
+    table.cell(dash, 0, 4, "State",      text_color = color.white)
+    table.cell(dash, 1, 4, confTxt,      text_color = color.white)
+
+// ───────────────────────── Alerts ─────────────────────────
+alertcondition(buySig,  "DSG Buy",  "Darvas breakout + SMI bullish + GoNoGo Go")
+alertcondition(sellSig, "DSG Sell", "Darvas breakdown + SMI bearish + GoNoGo NoGo")
+alertcondition(darvasUp, "Darvas breakout", "Close crossed above Darvas box top")
+alertcondition(darvasDn, "Darvas breakdown", "Close crossed below Darvas box bottom")
