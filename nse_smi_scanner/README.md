@@ -1,4 +1,4 @@
-# NSE SMI + GoNoGo scanner and real-time alerts (prototype)
+# SMI + GoNoGo scanner and real-time alerts: NSE stocks, forex, gold (prototype)
 
 This prototype scans NSE stocks for the setup described in the screen recording of 25 Nov 2026 (SWIGGY.NS on Yahoo Finance, weekly chart). It can also enter the trades it finds.
 
@@ -25,8 +25,14 @@ The SMI formula matches Yahoo's chart: on SWIGGY's weekly bars it gives -87.44 /
 * **Backtest exit**: the stop is hit, %K crosses %D against the trade, or GoNoGo flips.
 * **Closed bars only**: the unfinished current week is ignored until Friday's 15:30 IST close. Use `--include-open-bar` to include it.
 
-## Real-time alerts (all NSE stocks, all timeframes)
-`realtime.py` runs all day and watches every NSE stock (about 2,600 in the EQ and BE series) on **30m, 1h, 1d, 1wk and 1mo** candles. Timeframes under 30 minutes aren't scanned. Whenever a candle closes and the rules above have just become true, it sends an alert.
+## Real-time alerts (NSE stocks, forex, gold)
+`realtime.py` runs all day and watches **30m, 1h, 1d, 1wk and 1mo** candles (nothing under 30 minutes) for:
+
+| Market | Instruments | Hours (IST) |
+|---|---|---|
+| NSE | every stock, about 2,600 (EQ and BE series) | 09:15-15:30, Mon-Fri |
+| Forex | EURUSD, GBPUSD, USDJPY, AUDUSD, USDCAD, USDCHF, NZDUSD, EURGBP, EURJPY, GBPJPY, USDINR, EURINR, GBPINR, JPYINR (`universe/forex.txt`) | about 24 h, Mon 03:30 to Sat 03:30 |
+| Gold | COMEX gold futures `GC=F` in $/oz (see note below) | about 24 h, Mon-Fri | Whenever a candle closes and the rules above have just become true, it sends an alert.
 
 ```bash
 pip install -r requirements.txt
@@ -41,14 +47,16 @@ Alert example:
   SMI %K 56.95 / %D 67.62 | GoNoGo Go
   swing low 899.15 → 1078.15
 ```
+* **Gold spot:** Yahoo Finance has no gold spot series (`XAUUSD=X` returns nothing), so the scanner uses COMEX gold futures (`GC=F`). Futures trade a few dollars above spot, and that gap moves slowly, so SMI and swing-low signals are effectively the same as on a spot chart. For true spot XAU/USD or MCX gold, the data source needs changing (for example, a Twelve Data key or your broker's feed).
+* **Forex:** Yahoo reports no volume for forex, so the volume (OBV) part of GoNoGo counts as neutral, and the other four parts decide Go/NoGo. Forex and gold candles follow UTC hours, so hourly candles run 10:30-11:30 IST and so on. A daily forex candle closes at 05:30 IST (midnight UTC); the weekly candle closes at the Friday close (about 03:30 Saturday IST).
 * **Telegram setup:** in Telegram, open @BotFather and send `/newbot` to get a token. Send your bot any message, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the `chat` → `id`. Without Telegram, alerts still print on screen and go to `alerts_log.csv`.
-* **Timing:** prices refresh every 15 minutes from 09:15 to 15:40 IST, just after 30m and 1h candles close (09:45, 10:15, 10:45 ...). Alerts arrive within about 2 minutes of the close. Daily alerts come at 15:30, weekly alerts on Friday at 15:30, and monthly alerts on the month's last trading day.
+* **Timing:** prices refresh every 15 minutes while each market is open (NSE 09:15-15:40 IST; forex and gold around the clock on weekdays), just after 30m and 1h candles close (09:45, 10:15, 10:45 ...). Alerts arrive within about 2 minutes of the close. Daily alerts come at 15:30, weekly alerts on Friday at 15:30, and monthly alerts on the month's last trading day.
 * **Start-up:** the first run each day downloads history for every stock (about 5 minutes, then cached in `.cache/`). The first scan sends **one summary** of the setups already active, not hundreds of messages. After that you get one alert per new setup, and an alert is never repeated, even after a restart.
-* **Options:** `--timeframes 1h,1d,1wk` (fewer timeframes; choose from 30m, 1h, 1d, 1wk, 1mo), `--universe nifty500`, `--early` (also alert while a candle is still forming; it may disappear by the close), `--once` (one scan, then exit).
+* **Options:** `--markets forex,gold` (choose any of nse, forex, gold; default all three), `--forex EURUSD=X,USDINR=X` (your own pairs, as Yahoo tickers), `--timeframes 1h,1d,1wk` (fewer timeframes; choose from 30m, 1h, 1d, 1wk, 1mo), `--universe nifty500`, `--early` (also alert while a candle is still forming; it may disappear by the close), `--once` (one scan, then exit).
 * **Load:** in testing on 4 CPU cores, one refresh of all 2,600 stocks took about 90 seconds, and a check of every candle on all timeframes took about 90 seconds. A normal 15-minute cycle checks only the timeframes whose candle just closed.
 
 ### Where to run it
-The computer must stay on during market hours:
+The computer must stay on while the markets you watch are open. Forex and gold trade through the night, so a small cloud server suits them better than a PC:
 * **Your own PC:** double-click `run_realtime.bat` (Windows) before 09:00 and leave it open.
 * **A small cloud server** (e.g. Oracle Cloud free tier, AWS Lightsail, DigitalOcean, ₹400–800/month), so it runs without your PC: `nohup python3 realtime.py &`, or set it up as a service.
 
@@ -91,8 +99,9 @@ Longs have a small edge because a few big winners pay for many small losses. Sho
 * `data.py`: Yahoo Finance NSE data (`.NS`) and symbol lists
 * `realtime.py`: real-time scanner for all stocks and timeframes, with alerts
 * `marketdata.py`: live candle store (30m/1h/1d/1wk/1mo, built from a 15-minute price feed)
+* `globalmarket.py`: candle store for forex and gold (24-hour markets)
 * `alerts.py`: Telegram, console and CSV alerts
 * `scan.py`: one-off weekly scanner and order entry
 * `broker.py`: paper broker, Zerodha Kite broker, position sizing
 * `backtest.py`: walk-forward backtest
-* `universe/`: symbol lists from NSE archives (all NSE stocks, Nifty 50/100/500)
+* `universe/`: NSE symbol lists from NSE archives (all stocks, Nifty 50/100/500), plus `forex.txt` and `gold.txt`

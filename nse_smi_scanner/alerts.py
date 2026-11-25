@@ -26,8 +26,10 @@ TF_ORDER = ["1mo", "1wk", "1d", "1h", "30m"]
 def format_signal(s: Signal, provisional: bool) -> str:
     arrow = "🟢 LONG" if s.side == "LONG" else "🔴 SHORT"
     tag = " (bar still forming)" if provisional else ""
-    return (f"{arrow} {s.symbol} [{s.timeframe}]{tag}\n"
-            f"  bar {s.date} | close ₹{s.close} | stop ₹{s.stop}\n"
+    market = "" if s.market == "NSE" else f" · {s.market}"
+    c = s.currency
+    return (f"{arrow} {s.symbol} [{s.timeframe}{market}]{tag}\n"
+            f"  bar {s.date}{' IST' if ':' in s.date else ''} | close {c}{s.close} | stop {c}{s.stop}\n"
             f"  SMI %K {s.smi_k} / %D {s.smi_d} | GoNoGo {s.gonogo}\n"
             f"  swing low {s.prev_swing_low} → {s.cur_swing_low}")
 
@@ -48,7 +50,7 @@ class Alerter:
 
     @staticmethod
     def key(s: Signal, provisional: bool) -> str:
-        return f"{s.symbol}|{s.timeframe}|{s.side}|{s.date}|{'P' if provisional else 'C'}"
+        return f"{s.market}|{s.symbol}|{s.timeframe}|{s.side}|{s.date}|{'P' if provisional else 'C'}"
 
     def new(self, s: Signal, provisional: bool) -> bool:
         return self.key(s, provisional) not in self.sent
@@ -62,7 +64,7 @@ class Alerter:
         if summary_only:
             counts: dict[str, list[int]] = {}
             for s, _ in items:
-                c = counts.setdefault(s.timeframe, [0, 0])
+                c = counts.setdefault(f"{s.market} {s.timeframe}", [0, 0])
                 c[0 if s.side == "LONG" else 1] += 1
             text = "Setups already active at start-up (saved in alerts_log.csv):\n" + \
                 "\n".join(f"  {tf}: {c[0]} long, {c[1]} short" for tf, c in counts.items()) + \
@@ -84,11 +86,11 @@ class Alerter:
         with self.log_path.open("a", newline="") as f:
             w = csv.writer(f)
             if new:
-                w.writerow(["timeframe", "symbol", "side", "bar", "provisional", "close",
+                w.writerow(["market", "timeframe", "symbol", "side", "bar", "provisional", "close",
                             "stop", "smi_k", "smi_d", "gonogo", "prev_swing_low",
                             "cur_swing_low"])
             for s, p in items:
-                w.writerow([s.timeframe, s.symbol, s.side, s.date, p, s.close, s.stop,
+                w.writerow([s.market, s.timeframe, s.symbol, s.side, s.date, p, s.close, s.stop,
                             s.smi_k, s.smi_d, s.gonogo, s.prev_swing_low, s.cur_swing_low])
 
     def _telegram(self, blocks: list[str]) -> None:

@@ -41,12 +41,12 @@ def now_ist() -> pd.Timestamp:
 
 
 def _download(symbols: list[str], period: str, interval: str, chunk: int = 100,
-              retries: int = 4) -> dict[str, pd.DataFrame]:
+              retries: int = 4, suffix: str = ".NS") -> dict[str, pd.DataFrame]:
     """Batch download from Yahoo; returns naive-IST OHLCV frames per symbol."""
     out: dict[str, pd.DataFrame] = {}
     for start in range(0, len(symbols), chunk):
         batch = symbols[start:start + chunk]
-        tickers = [f"{s}.NS" for s in batch]
+        tickers = [f"{s}{suffix}" for s in batch]
         raw = None
         for attempt in range(retries):
             try:
@@ -92,6 +92,10 @@ def _merge(old: pd.DataFrame | None, new: pd.DataFrame) -> pd.DataFrame:
 
 
 class MarketData:
+    """NSE equities: 09:15-15:30 IST, Monday to Friday."""
+    name = "NSE"
+    currency = "₹"
+
     def __init__(self, symbols: list[str], timeframes: list[str], cache_dir: Path):
         self.symbols = symbols
         self.timeframes = timeframes
@@ -162,11 +166,30 @@ class MarketData:
                 df = _resample_daily(df, tf)
         if df is None or df.empty:
             return None
-        if not include_open_bar and not self.is_closed(df.index[-1], tf):
+        if not include_open_bar and not self.is_closed(symbol, df.index[-1], tf):
             df = df.iloc[:-1]
         return df
 
-    def is_closed(self, start: pd.Timestamp, tf: str) -> bool:
+    def display(self, symbol: str) -> str:
+        return symbol
+
+    def in_session(self, now: pd.Timestamp) -> bool:
+        day = now.normalize()
+        return now.weekday() < 5 and \
+            day + SESSION_OPEN <= now <= day + SESSION_CLOSE + pd.Timedelta(minutes=10)
+
+    def boundary(self, tf: str) -> tuple:
+        """Changes value exactly when a new candle of ``tf`` closes."""
+        de = self.data_end
+        at_close = de >= de.normalize() + SESSION_CLOSE
+        if tf in INTRADAY:
+            return ((de - pd.Timedelta(minutes=15)).floor(f"{INTRADAY[tf]}min"), at_close)
+        return (de.date(), at_close)
+
+    def status(self) -> str:
+        return f"data up to {self.data_end:%d %b %H:%M}"
+
+    def is_closed(self, symbol: str, start: pd.Timestamp, tf: str) -> bool:
         end_data = self.data_end
         day = start.normalize()
         if tf in INTRADAY:

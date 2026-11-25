@@ -85,6 +85,8 @@ class Signal:
     cur_swing_low: float
 
     timeframe: str = "1wk"
+    market: str = "NSE"
+    currency: str = "₹"
 
     def as_dict(self):
         return asdict(self)
@@ -107,12 +109,18 @@ def evaluate(symbol: str, df: pd.DataFrame, p: Params,
             stop = now["cur_swing_low"] if side == "long" else now["cur_swing_high"]
             return Signal(
                 symbol=symbol, date=_fmt(df.index[-1], timeframe), side=side.upper(),
-                fresh=not before[side], close=round(float(df["Close"].iloc[-1]), 2),
-                stop=round(stop, 2) if stop else None,
+                fresh=not before[side], close=px(float(df["Close"].iloc[-1])),
+                stop=px(stop) if stop else None,
                 smi_k=now["smi_k"], smi_d=now["smi_d"], gonogo=now["gonogo"],
-                prev_swing_low=round(now["prev_swing_low"], 2),
-                cur_swing_low=round(now["cur_swing_low"], 2), timeframe=timeframe)
+                prev_swing_low=px(now["prev_swing_low"]),
+                cur_swing_low=px(now["cur_swing_low"]), timeframe=timeframe)
     return None
+
+
+def px(v: float) -> float:
+    """Round a price sensibly: 2 decimals for stocks and gold, 5 for EURUSD-style quotes."""
+    a = abs(v)
+    return round(v, 2 if a >= 100 else 3 if a >= 10 else 5)
 
 
 def _fmt(ts: pd.Timestamp, timeframe: str) -> str:
