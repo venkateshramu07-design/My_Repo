@@ -1,0 +1,4 @@
+signals.csv
+paper_trades.csv
+backtest_trades.csv
+__pycache__/
