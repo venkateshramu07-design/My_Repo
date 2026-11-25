@@ -20,7 +20,7 @@ from pathlib import Path
 from strategy import Signal
 
 log = logging.getLogger("alerts")
-TF_ORDER = ["1mo", "1wk", "1d", "1h", "30m", "15m", "5m"]
+TF_ORDER = ["1mo", "1wk", "1d", "1h", "30m"]
 
 
 def format_signal(s: Signal, provisional: bool) -> str:

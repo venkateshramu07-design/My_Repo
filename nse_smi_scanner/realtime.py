@@ -2,12 +2,12 @@
 """Real-time scanner: every NSE stock, every timeframe, alert on each new setup.
 
 Runs all day. During market hours (09:15-15:30 IST, Mon-Fri) it refreshes
-prices every 5 minutes. Whenever a candle closes on any timeframe, it checks
+prices every 15 minutes. Timeframes: 30m, 1h, 1d, 1wk, 1mo. Whenever a candle closes on any timeframe, it checks
 the video's rules on that candle and sends an alert for each stock where they
 have just become true.
 
   python realtime.py                              # all ~2,600 NSE stocks, all timeframes
-  python realtime.py --timeframes 15m,1h,1d,1wk   # fewer timeframes
+  python realtime.py --timeframes 1h,1d,1wk       # fewer timeframes
   python realtime.py --universe nifty500
   python realtime.py --early                      # also alert while a candle is still forming
   python realtime.py --once                       # one scan now, then exit (testing)
@@ -139,8 +139,9 @@ class Scanner:
                 except Exception:
                     log.exception("cycle failed; will retry next cycle")
                 first = False
-            # wake 30s after each 5-minute mark so Yahoo has the finished candle
-            nxt = (now.floor("5min") + pd.Timedelta(minutes=5, seconds=30))
+            # wake 30s after each 15-minute mark (09:30, 09:45 ...) so Yahoo has the
+            # finished candle; 30m and 1h candles close on these marks (x:15, x:45).
+            nxt = (now.floor("15min") + pd.Timedelta(minutes=15, seconds=30))
             time.sleep(max(5.0, (nxt - now_ist()).total_seconds()))
 
 

@@ -1,13 +1,14 @@
 """Live candle store for many NSE stocks across timeframes, fed by Yahoo Finance.
 
-Start-up downloads (cached on disk, refreshed once per day):
-  * daily bars, 5 years   -> 1d, and resampled to 1wk and 1mo
-  * 15-minute bars, 60 days -> 15m, and resampled to 30m and 1h
-  * 5-minute bars, 5 days -> 5m
+Timeframes: 30m, 1h, 1d, 1wk, 1mo (nothing shorter than 30 minutes).
 
-Every cycle only today's 5-minute bars are downloaded (one small request per
-100 stocks). They update the 5m store, rebuild today's 15m bars and today's
-daily bar, so every timeframe moves in step.
+Start-up downloads (cached on disk, refreshed once per day):
+  * daily bars, 5 years      -> 1d, and resampled to 1wk and 1mo
+  * 15-minute bars, 60 days  -> resampled to 30m and 1h
+
+Every cycle only today's 15-minute bars are downloaded (one small request per
+100 stocks). They update the 15-minute store and today's daily bar, so every
+timeframe moves in step.
 
 Candles follow NSE hours (09:15-15:30 IST). Hourly bars run 09:15, 10:15 ...
 15:15 (the last one is 15 minutes long), the same as most Indian charting sites.
@@ -25,7 +26,8 @@ import yfinance as yf
 
 log = logging.getLogger("marketdata")
 
-INTRADAY = {"5m": 5, "15m": 15, "30m": 30, "1h": 60}
+INTRADAY = {"30m": 30, "1h": 60}
+FEED_MINUTES = 15          # price feed resolution; candles are built from it
 HIGHER = ("1d", "1wk", "1mo")
 ALL_TIMEFRAMES = tuple(INTRADAY) + HIGHER
 SESSION_OPEN = pd.Timedelta(hours=9, minutes=15)
@@ -97,7 +99,6 @@ class MarketData:
         self.cache_dir.mkdir(exist_ok=True)
         self.daily: dict[str, pd.DataFrame] = {}
         self.m15: dict[str, pd.DataFrame] = {}
-        self.m5: dict[str, pd.DataFrame] = {}
         self.data_end = pd.Timestamp.min   # time up to which candles are complete
 
     # ---------- start-up history ----------
@@ -120,22 +121,18 @@ class MarketData:
         tfs = set(self.timeframes)
         if tfs & set(HIGHER):
             self.daily = self._cached("daily", "5y", "1d")
-        if tfs & {"15m", "30m", "1h"}:
-            self.m15 = self._cached("m15", "60d", "15m")
-        if "5m" in tfs or tfs & {"15m", "30m", "1h", "1d", "1wk", "1mo"}:
-            self.m5 = self._cached("m5", "5d", "5m")
+        # 15-minute bars are always needed: they are the live feed.
+        self.m15 = self._cached("m15", "60d", "15m")
         self._set_data_end()
 
     # ---------- every cycle ----------
     def update(self) -> int:
-        """Pull today's 5-minute bars and roll them into every timeframe."""
-        fresh = _download(self.symbols, "1d", "5m")
+        """Pull today's 15-minute bars and roll them into every timeframe."""
+        fresh = _download(self.symbols, "1d", f"{FEED_MINUTES}m")
         for s, df in fresh.items():
-            self.m5[s] = _merge(self.m5.get(s), df).iloc[-2000:]
+            self.m15[s] = _merge(self.m15.get(s), df)
             day = df.index[-1].normalize()
-            today = self.m5[s][self.m5[s].index >= day]
-            if s in self.m15 or {"15m", "30m", "1h"} & set(self.timeframes):
-                self.m15[s] = _merge(self.m15.get(s), _resample_intraday(today, 15))
+            today = self.m15[s][self.m15[s].index >= day]
             if s in self.daily:
                 bar = pd.DataFrame({"Open": today["Open"].iloc[0],
                                     "High": today["High"].max(), "Low": today["Low"].min(),
@@ -146,20 +143,18 @@ class MarketData:
         return len(fresh)
 
     def _set_data_end(self) -> None:
-        last = [df.index[-1] for df in self.m5.values() if len(df)]
+        last = [df.index[-1] for df in self.m15.values() if len(df)]
         if last:
-            end = max(last) + pd.Timedelta(minutes=5)
-            # Yahoo's newest 5m bar is still forming; it counts as done only
+            end = max(last) + pd.Timedelta(minutes=FEED_MINUTES)
+            # Yahoo's newest 15m bar may still be forming; it counts as done only
             # once the clock has passed its end.
             self.data_end = min(end, now_ist())
 
     # ---------- candles ----------
     def candles(self, symbol: str, tf: str, include_open_bar: bool = False) -> pd.DataFrame | None:
-        if tf == "5m":
-            df = self.m5.get(symbol)
-        elif tf in ("15m", "30m", "1h"):
+        if tf in INTRADAY:
             df = self.m15.get(symbol)
-            if df is not None and tf != "15m":
+            if df is not None:
                 df = _resample_intraday(df, INTRADAY[tf])
         else:
             df = self.daily.get(symbol)

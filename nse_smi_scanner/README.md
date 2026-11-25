@@ -26,7 +26,7 @@ The SMI formula matches Yahoo's chart: on SWIGGY's weekly bars it gives -87.44 /
 * **Closed bars only**: the unfinished current week is ignored until Friday's 15:30 IST close. Use `--include-open-bar` to include it.
 
 ## Real-time alerts (all NSE stocks, all timeframes)
-`realtime.py` runs all day and watches every NSE stock (about 2,600 in the EQ and BE series) on **5m, 15m, 30m, 1h, 1d, 1wk and 1mo** candles. Whenever a candle closes and the rules above have just become true, it sends an alert.
+`realtime.py` runs all day and watches every NSE stock (about 2,600 in the EQ and BE series) on **30m, 1h, 1d, 1wk and 1mo** candles. Timeframes under 30 minutes aren't scanned. Whenever a candle closes and the rules above have just become true, it sends an alert.
 
 ```bash
 pip install -r requirements.txt
@@ -42,10 +42,10 @@ Alert example:
   swing low 899.15 → 1078.15
 ```
 * **Telegram setup:** in Telegram, open @BotFather and send `/newbot` to get a token. Send your bot any message, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the `chat` → `id`. Without Telegram, alerts still print on screen and go to `alerts_log.csv`.
-* **Timing:** prices refresh every 5 minutes from 09:15 to 15:40 IST. A 15m alert arrives within about 2 minutes of the candle closing. Daily alerts come at 15:30, weekly alerts on Friday at 15:30, and monthly alerts on the month's last trading day.
-* **Start-up:** the first run each day downloads history for every stock (about 6 minutes, then cached in `.cache/`). The first scan sends **one summary** of the setups already active, not hundreds of messages. After that you get one alert per new setup, and an alert is never repeated, even after a restart.
-* **Options:** `--timeframes 15m,1h,1d,1wk` (fewer timeframes), `--universe nifty500`, `--early` (also alert while a candle is still forming; it may disappear by the close), `--once` (one scan, then exit).
-* **Load:** in testing on 4 CPU cores, one refresh of all 2,600 stocks took about 90 seconds, and a check of every candle on all 7 timeframes took about 90 seconds. A normal 5-minute cycle checks far fewer candles.
+* **Timing:** prices refresh every 15 minutes from 09:15 to 15:40 IST, just after 30m and 1h candles close (09:45, 10:15, 10:45 ...). Alerts arrive within about 2 minutes of the close. Daily alerts come at 15:30, weekly alerts on Friday at 15:30, and monthly alerts on the month's last trading day.
+* **Start-up:** the first run each day downloads history for every stock (about 5 minutes, then cached in `.cache/`). The first scan sends **one summary** of the setups already active, not hundreds of messages. After that you get one alert per new setup, and an alert is never repeated, even after a restart.
+* **Options:** `--timeframes 1h,1d,1wk` (fewer timeframes; choose from 30m, 1h, 1d, 1wk, 1mo), `--universe nifty500`, `--early` (also alert while a candle is still forming; it may disappear by the close), `--once` (one scan, then exit).
+* **Load:** in testing on 4 CPU cores, one refresh of all 2,600 stocks took about 90 seconds, and a check of every candle on all timeframes took about 90 seconds. A normal 15-minute cycle checks only the timeframes whose candle just closed.
 
 ### Where to run it
 The computer must stay on during market hours:
@@ -90,7 +90,7 @@ Longs have a small edge because a few big winners pay for many small losses. Sho
 * `strategy.py`: entry rules and signal object
 * `data.py`: Yahoo Finance NSE data (`.NS`) and symbol lists
 * `realtime.py`: real-time scanner for all stocks and timeframes, with alerts
-* `marketdata.py`: live candle store (5m/15m/30m/1h/1d/1wk/1mo)
+* `marketdata.py`: live candle store (30m/1h/1d/1wk/1mo, built from a 15-minute price feed)
 * `alerts.py`: Telegram, console and CSV alerts
 * `scan.py`: one-off weekly scanner and order entry
 * `broker.py`: paper broker, Zerodha Kite broker, position sizing
