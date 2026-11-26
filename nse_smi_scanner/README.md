@@ -26,7 +26,7 @@ The SMI formula matches Yahoo's chart: on SWIGGY's weekly bars it gives -87.44 /
 * **Closed bars only**: the unfinished current week is ignored until Friday's 15:30 IST close. Use `--include-open-bar` to include it.
 
 ## Real-time alerts (NSE stocks, forex, gold)
-`realtime.py` runs all day and watches **30m, 1h, 1d, 1wk and 1mo** candles (nothing under 30 minutes) for:
+`realtime.py` runs all day and watches **15m, 30m, 1h, 4h, 1d, 1wk and 1mo** candles for these markets. NSE 4-hour candles run 09:15–13:15 and 13:15–15:30; forex and gold 4-hour candles follow UTC 4-hour blocks.
 
 | Market | Instruments | Hours (IST) |
 |---|---|---|
@@ -51,9 +51,9 @@ Alert example:
 * **Gold spot:** Yahoo Finance has no gold spot series (`XAUUSD=X` returns nothing), so the scanner uses COMEX gold futures (`GC=F`). Futures trade a few dollars above spot, and that gap moves slowly, so SMI and swing-low signals are effectively the same as on a spot chart. For true spot XAU/USD or MCX gold, the data source needs changing (for example, a Twelve Data key or your broker's feed).
 * **Forex:** Yahoo reports no volume for forex, so the volume (OBV) part of GoNoGo counts as neutral, and the other four parts decide Go/NoGo. Forex and gold candles follow UTC hours, so hourly candles run 10:30-11:30 IST and so on. A daily forex candle closes at 05:30 IST (midnight UTC); the weekly candle closes at the Friday close (about 03:30 Saturday IST).
 * **Telegram setup:** in Telegram, open @BotFather and send `/newbot` to get a token. Send your bot any message, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the `chat` → `id`. Without Telegram, alerts still print on screen and go to `alerts_log.csv`.
-* **Timing:** prices refresh every 15 minutes while each market is open (NSE 09:15-15:40 IST; forex and gold around the clock on weekdays), just after 30m and 1h candles close (09:45, 10:15, 10:45 ...). Alerts arrive within about 2 minutes of the close. Daily alerts come at 15:30, weekly alerts on Friday at 15:30, and monthly alerts on the month's last trading day.
+* **Timing:** prices refresh every 15 minutes while each market is open (NSE 09:15-15:40 IST; forex and gold around the clock on weekdays), just after each 15-minute mark, when 15m, 30m, 1h and 4h candles close (09:30, 09:45, 10:00 ...). Alerts arrive within about 2 minutes of the close. Daily alerts come at 15:30, weekly alerts on Friday at 15:30, and monthly alerts on the month's last trading day.
 * **Start-up:** the first run each day downloads history for every stock (about 5 minutes, then cached in `.cache/`). The first scan sends **one summary** of the setups already active, not hundreds of messages. After that you get one alert per new setup, and an alert is never repeated, even after a restart.
-* **Options:** `--markets forex,gold` (choose any of nse, forex, gold; default all three), `--forex EURUSD=X,USDINR=X` (your own pairs, as Yahoo tickers), `--timeframes 1h,1d,1wk` (fewer timeframes; choose from 30m, 1h, 1d, 1wk, 1mo), `--universe nifty500`, `--early` (also alert while a candle is still forming; it may disappear by the close), `--once` (one scan, then exit).
+* **Options:** `--markets forex,gold` (choose any of nse, forex, gold; default all three), `--forex EURUSD=X,USDINR=X` (your own pairs, as Yahoo tickers), `--timeframes 1h,1d,1wk` (fewer timeframes; choose from 15m, 30m, 1h, 4h, 1d, 1wk, 1mo; for intraday alerts use `--timeframes 15m,30m,1h,4h --universe all --markets nse`), `--universe nifty500`, `--early` (also alert while a candle is still forming; it may disappear by the close), `--once` (one scan, then exit).
 * **Load:** in testing on 4 CPU cores, one refresh of all 2,600 stocks took about 90 seconds, and a check of every candle on all timeframes took about 90 seconds. A normal 15-minute cycle checks only the timeframes whose candle just closed.
 
 ### Where to run it
@@ -67,7 +67,7 @@ The computer must stay on while the markets you watch are open. Forex and gold t
 * Alerts are a prompt to look at the chart, not advice. Check the setup on the chart before you trade.
 
 ## Ranking stocks right now (`rank.py`)
-`rank.py` checks every stock on all 5 timeframes and ranks them by **trend strength**: a timeframe counts when all the entry conditions are met on it, scored monthly 3, weekly 3, daily 2, 1h 1, 30m 1 (maximum 10).
+`rank.py` checks every stock on the chosen timeframes and ranks them by **trend strength**. A timeframe counts when all the entry conditions are met on it, scored monthly 3, weekly 3, daily 2, 4h 2, 1h 1, 30m 1, 15m 1. The default is 30m, 1h, 1d, 1wk, 1mo (maximum 10); use `--timeframes 15m,30m,1h,4h` for intraday (maximum 5).
 ```bash
 python rank.py                                  # all NSE stocks, buy side, top 25
 python rank.py --max-price 1000 --top 25        # only stocks under Rs 1,000
@@ -112,7 +112,7 @@ Longs have a small edge because a few big winners pay for many small losses. Sho
 * `strategy.py`: entry rules and signal object
 * `data.py`: Yahoo Finance NSE data (`.NS`) and symbol lists
 * `realtime.py`: real-time scanner for all stocks and timeframes, with alerts
-* `marketdata.py`: live candle store (30m/1h/1d/1wk/1mo, built from a 15-minute price feed)
+* `marketdata.py`: live candle store (15m/30m/1h/4h/1d/1wk/1mo, built from a 15-minute price feed)
 * `globalmarket.py`: candle store for forex and gold (24-hour markets)
 * `alerts.py`: Telegram, console and CSV alerts
 * `rank.py`: rank stocks by how strongly they meet the entry conditions now

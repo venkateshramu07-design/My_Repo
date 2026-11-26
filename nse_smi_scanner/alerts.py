@@ -21,7 +21,7 @@ from events import WARN_DAYS, days_until
 from strategy import Signal
 
 log = logging.getLogger("alerts")
-TF_ORDER = ["1mo", "1wk", "1d", "1h", "30m"]
+TF_ORDER = ["1mo", "1wk", "1d", "4h", "1h", "30m", "15m"]
 
 
 def format_signal(s: Signal, provisional: bool) -> str:

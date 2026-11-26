@@ -8,7 +8,8 @@
 
 These markets trade from Sunday evening to Friday evening (New York time), so
 candles follow UTC hours. Times are shown in IST, where each UTC hour starts at
-:30 (an hourly candle runs 10:30-11:30 IST, for example).
+:30 (an hourly candle runs 10:30-11:30 IST, for example; 4-hour candles start at
+01:30, 05:30, 09:30, 13:30, 17:30 and 21:30 IST).
 
 Every cycle downloads the last two days of 15-minute bars and the last five
 daily bars for each instrument; there are only a few, so this is quick.
@@ -33,9 +34,13 @@ NAMES = {"GC=F": "GOLD"}
 
 
 def _resample_utc_hours(df: pd.DataFrame, minutes: int) -> pd.DataFrame:
-    # Data is in IST; offset 30 minutes puts bin edges on whole UTC hours.
+    # Data is in IST (UTC+5:30). Offset 30 minutes puts 15m/30m/1h edges on
+    # whole UTC hours; offset 90 minutes puts 4h edges on 00, 04, 08 ... UTC.
+    if minutes == 15:
+        return df
+    offset = "90min" if minutes == 240 else "30min"
     return df.resample(f"{minutes}min", label="left", closed="left",
-                       offset="30min").agg(AGG).dropna(subset=["Open"])
+                       offset=offset).agg(AGG).dropna(subset=["Open"])
 
 
 class GlobalMarketData:

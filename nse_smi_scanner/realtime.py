@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Real-time scanner: NSE stocks, forex and gold. Alerts on each new setup.
 
-Timeframes: 30m, 1h, 1d, 1wk, 1mo. Every 15 minutes it refreshes prices for
+Timeframes: 15m, 30m, 1h, 4h, 1d, 1wk, 1mo. Every 15 minutes it refreshes prices for
 each market that is open:
   * NSE F&O stocks (about 220) 09:15-15:30 IST, Monday to Friday
   * forex, gold about 24 hours a day, Monday to Friday (Sunday evening to Friday
@@ -13,6 +13,7 @@ for each instrument where they have just become true.
   python realtime.py --universe all               # every NSE stock, not only F&O
   python realtime.py --markets forex,gold         # only forex and gold
   python realtime.py --timeframes 1h,1d,1wk       # fewer timeframes
+  python realtime.py --timeframes 15m,30m,1h,4h --universe all   # intraday alerts
   python realtime.py --universe nifty500          # fewer NSE stocks
   python realtime.py --early                      # also alert while a candle is still forming
   python realtime.py --once                       # one scan now, then exit (testing)
@@ -169,7 +170,7 @@ class Scanner:
             return
         while True:
             # wake 30s after each 15-minute mark so Yahoo has the finished candle;
-            # 30m and 1h candles close on these marks for every market.
+            # 15m, 30m, 1h and 4h candles close on these marks for every market.
             now = now_ist()
             nxt = now.floor("15min") + pd.Timedelta(minutes=15, seconds=30)
             time.sleep(max(5.0, (nxt - now).total_seconds()))

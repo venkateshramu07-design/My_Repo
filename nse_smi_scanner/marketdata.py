@@ -1,17 +1,18 @@
 """Live candle store for many NSE stocks across timeframes, fed by Yahoo Finance.
 
-Timeframes: 30m, 1h, 1d, 1wk, 1mo (nothing shorter than 30 minutes).
+Timeframes: 15m, 30m, 1h, 4h, 1d, 1wk, 1mo.
 
 Start-up downloads (cached on disk, refreshed once per day):
   * daily bars, 5 years      -> 1d, and resampled to 1wk and 1mo
-  * 15-minute bars, 60 days  -> resampled to 30m and 1h
+  * 15-minute bars, 60 days  -> 15m, and resampled to 30m, 1h and 4h
 
 Every cycle only today's 15-minute bars are downloaded (one small request per
 100 stocks). They update the 15-minute store and today's daily bar, so every
 timeframe moves in step.
 
-Candles follow NSE hours (09:15-15:30 IST). Hourly bars run 09:15, 10:15 ...
-15:15 (the last one is 15 minutes long), the same as most Indian charting sites.
+Candles follow NSE hours (09:15-15:30 IST), counted from the 09:15 open, the
+same as most Indian charting sites: hourly bars run 09:15, 10:15 ... 15:15 (the
+last one is 15 minutes long); 4-hour bars run 09:15-13:15 and 13:15-15:30.
 """
 
 from __future__ import annotations
@@ -26,7 +27,7 @@ import yfinance as yf
 
 log = logging.getLogger("marketdata")
 
-INTRADAY = {"30m": 30, "1h": 60}
+INTRADAY = {"15m": 15, "30m": 30, "1h": 60, "4h": 240}
 FEED_MINUTES = 15          # price feed resolution; candles are built from it
 HIGHER = ("1d", "1wk", "1mo")
 ALL_TIMEFRAMES = tuple(INTRADAY) + HIGHER
@@ -74,10 +75,23 @@ def _download(symbols: list[str], period: str, interval: str, chunk: int = 100,
     return out
 
 
+def _session_bin(ts, minutes: int):
+    """Start of the candle containing ``ts``, counting from the 09:15 open."""
+    open_ = ts.normalize() + SESSION_OPEN
+    step = pd.Timedelta(minutes=minutes)
+    return open_ + ((ts - open_) // step) * step
+
+
 def _resample_intraday(df: pd.DataFrame, minutes: int) -> pd.DataFrame:
-    # Bins anchored at 00:15 line up with the 09:15 open for 15m, 30m and 1h.
-    return df.resample(f"{minutes}min", label="left", closed="left",
-                       offset="15min").agg(AGG).dropna(subset=["Open"])
+    if minutes == FEED_MINUTES:
+        return df
+    idx = df.index
+    open_ = idx.normalize() + SESSION_OPEN
+    step = pd.Timedelta(minutes=minutes)
+    key = open_ + ((idx - open_) // step) * step
+    out = df.groupby(key).agg(AGG).dropna(subset=["Open"])
+    out.index.name = df.index.name
+    return out
 
 
 def _resample_daily(df: pd.DataFrame, tf: str) -> pd.DataFrame:
@@ -183,7 +197,7 @@ class MarketData:
         de = self.data_end
         at_close = de >= de.normalize() + SESSION_CLOSE
         if tf in INTRADAY:
-            return ((de - pd.Timedelta(minutes=15)).floor(f"{INTRADAY[tf]}min"), at_close)
+            return (_session_bin(de, INTRADAY[tf]), at_close)
         return (de.date(), at_close)
 
     def status(self) -> str:
