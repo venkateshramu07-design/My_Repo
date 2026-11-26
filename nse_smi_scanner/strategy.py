@@ -88,6 +88,7 @@ class Signal:
     market: str = "NSE"
     currency: str = "₹"
     lot: int | None = None       # F&O lot size, when known
+    results: str | None = None   # next results date (YYYY-MM-DD), when known
 
     def as_dict(self):
         return asdict(self)

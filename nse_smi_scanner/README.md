@@ -66,6 +66,19 @@ The computer must stay on while the markets you watch are open. Forex and gold t
 * For tick-accurate real-time data, use your broker's live feed (Zerodha Kite Connect is about ₹500/month and streams up to 3,000 stocks on one connection). Swapping `marketdata.py` to that feed is the natural next step.
 * Alerts are a prompt to look at the chart, not advice. Check the setup on the chart before you trade.
 
+## Ranking stocks right now (`rank.py`)
+`rank.py` checks every stock on all 5 timeframes and ranks them by **trend strength**: a timeframe counts when all the entry conditions are met on it, scored monthly 3, weekly 3, daily 2, 1h 1, 30m 1 (maximum 10).
+```bash
+python rank.py                                  # all NSE stocks, buy side, top 25
+python rank.py --max-price 1000 --top 25        # only stocks under Rs 1,000
+python rank.py --universe fno --side short      # F&O stocks, sell side
+```
+Default filters: price at least Rs 20, at least Rs 10 crore traded per day (20-day average), and the uptrend still intact (price above its nearest swing low). There's no sector or bank filter. Each pick shows its **next results date**, with ⚠️ when results are within 14 days. The output is saved to `rank.csv`.
+
+* **Results dates** come from Yahoo Finance (`events.py`, cached daily). Dates marked "estimated" are last results + 91 days. Small companies often have no date ("unknown"), so check NSE's Event Calendar before trading.
+* **Exclude list:** symbols in `universe/exclude.txt` (one per line) are skipped by `rank.py` and `realtime.py`, for example stocks your broker blocks under surveillance (ASM/ESM/GSM). TFCILTD is listed already.
+* **Real-time alerts** for NSE stocks also add a `⚠️ results in N days` line when results are 14 days away or less.
+
 ## Usage
 ```bash
 pip install -r requirements.txt
@@ -102,6 +115,8 @@ Longs have a small edge because a few big winners pay for many small losses. Sho
 * `marketdata.py`: live candle store (30m/1h/1d/1wk/1mo, built from a 15-minute price feed)
 * `globalmarket.py`: candle store for forex and gold (24-hour markets)
 * `alerts.py`: Telegram, console and CSV alerts
+* `rank.py`: rank stocks by how strongly they meet the entry conditions now
+* `events.py`: next results dates (Yahoo Finance, cached daily)
 * `scan.py`: one-off weekly scanner and order entry
 * `broker.py`: paper broker, Zerodha Kite broker, position sizing
 * `backtest.py`: walk-forward backtest

@@ -17,6 +17,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+from events import WARN_DAYS, days_until
 from strategy import Signal
 
 log = logging.getLogger("alerts")
@@ -32,7 +33,15 @@ def format_signal(s: Signal, provisional: bool) -> str:
             f"  bar {s.date}{' IST' if ':' in s.date else ''} | close {c}{s.close} | stop {c}{s.stop}"
             f"{f' | lot {s.lot}' if s.lot else ''}\n"
             f"  SMI %K {s.smi_k} / %D {s.smi_d} | GoNoGo {s.gonogo}\n"
-            f"  swing low {s.prev_swing_low} → {s.cur_swing_low}")
+            f"  swing low {s.prev_swing_low} → {s.cur_swing_low}"
+            f"{_results_line(s)}")
+
+
+def _results_line(s: Signal) -> str:
+    n = days_until(s.results)
+    if n is not None and 0 <= n <= WARN_DAYS:
+        return f"\n  ⚠️ results in {n} day{'s' if n != 1 else ''} ({s.results.rstrip('*')})"
+    return ""
 
 
 class Alerter:

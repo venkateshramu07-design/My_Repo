@@ -31,6 +31,7 @@ import pandas as pd
 
 from alerts import Alerter
 from data import fno_lots, load_universe, refresh_fno
+from events import ResultsCalendar
 from globalmarket import GlobalMarketData
 from marketdata import ALL_TIMEFRAMES, MarketData, now_ist
 from strategy import Params, evaluate
@@ -70,7 +71,9 @@ class Scanner:
                      else "using the saved list (NSE download failed)")
         self.lots = fno_lots()
         if "nse" in markets:
-            self.stores.append(MarketData(load_universe(args.universe), self.timeframes, cache))
+            skip = set(load_universe(args.exclude)) if Path(args.exclude).exists() else set()
+            nse = [s for s in load_universe(args.universe) if s not in skip]
+            self.stores.append(MarketData(nse, self.timeframes, cache))
         if "forex" in markets:
             self.stores.append(GlobalMarketData("FOREX", load_universe(args.forex),
                                                 self.timeframes, cache, currency=""))
@@ -78,6 +81,7 @@ class Scanner:
             self.stores.append(GlobalMarketData("GOLD", load_universe(args.gold),
                                                 self.timeframes, cache, currency="$"))
         self.alerter = Alerter(HERE / "alerts_log.csv", cache / "sent.json")
+        self.results = ResultsCalendar()
         self.last_bar: dict[tuple, pd.Timestamp] = {}
         self.last_boundary: dict[tuple, object] = {}
         self.pool = ProcessPoolExecutor(max_workers=args.workers)
@@ -139,6 +143,16 @@ class Scanner:
                 found += self.scan(store)
             except Exception:
                 log.exception("%s cycle failed; will retry next cycle", store.name)
+        # Look up results dates only for NSE stocks about to be alerted.
+        nse_new = sorted({s.symbol for s, p in found if s.market == "NSE" and self.alerter.new(s, p)})
+        if nse_new and not (first and not self.args.once):
+            try:
+                dates = self.results.get_many(nse_new)
+                for s, _ in found:
+                    if s.market == "NSE":
+                        s.results = dates.get(s.symbol)
+            except Exception:
+                log.exception("results-date lookup failed; alerts sent without it")
         # The first scan after start-up finds every setup that is still "fresh" on
         # the latest candle, including old ones (e.g. last month's monthly candle).
         # Send one summary for those instead of hundreds of messages.
@@ -167,6 +181,8 @@ def main() -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--markets", default="nse,forex,gold",
                     help="any of nse, forex, gold (comma separated)")
+    ap.add_argument("--exclude", default=str(HERE / "universe" / "exclude.txt"),
+                    help="file of NSE symbols to skip (e.g. ones your broker blocks)")
     ap.add_argument("--universe", default="fno",
                     help="NSE stocks: fno (F&O stocks, default), all, nifty50/100/500, "
                          "a file, or SYM1,SYM2")
