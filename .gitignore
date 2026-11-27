@@ -1,1 +1,5 @@
 __pycache__/
+.env
+trading_bot/data/
+*.db
+.pytest_cache/
