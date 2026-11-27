@@ -24,7 +24,7 @@ def make_cfg(**over):
     base = dict(
         dry_run=True, trading_enabled=True, webhook_secret=SECRET, groww_api_key="", groww_totp_secret="",
         groww_api_secret="", side="SELL", margin_per_trade=20000, leverage=5, exchange="NSE",
-        entry_start=t("11:00"), entry_end=t("15:00"), square_off_time=t("15:15"), signal_timeout_minutes=6,
+        entry_start=t("11:00"), entry_end=t("15:00"), square_off_time=t("15:15"), signal_timeout_minutes=16,
         telegram_bot_token="", telegram_chat_id="", db_path=":memory:",
     )
     base.update(over)
@@ -74,7 +74,7 @@ def test_wrong_secret_rejected(bot):
 def test_enters_short_100_and_holds_while_signal_repeats(bot):
     bot.at("11:05")
     assert bot.alert("ADANIGREEN", "1000") == "entered SELL ADANIGREEN x100"
-    for minute in ("11:10", "11:15", "11:20"):
+    for minute in ("11:20", "11:35", "11:50"):
         bot.at(minute)
         assert "holding ADANIGREEN" in bot.alert("ADANIGREEN,INFY")
         bot.tick()
@@ -94,10 +94,10 @@ def test_exits_when_alert_no_longer_contains_stock(bot):
 def test_exits_when_signals_stop_arriving(bot):
     bot.at("11:05")
     bot.alert("ADANIGREEN")
-    bot.at("11:11")
+    bot.at("11:21")
     bot.tick()
-    assert bot.active is not None  # exactly 6 min: still in
-    bot.at("11:12")
+    assert bot.active is not None  # exactly 16 min: still in
+    bot.at("11:22")
     bot.tick()
     assert bot.active is None
     assert bot.sides[-1] == ("BUY", "ADANIGREEN", 100)
@@ -124,7 +124,7 @@ def test_entry_window_11_to_3(bot):
 def test_trade_opened_before_3_held_after_3_and_closed_at_315(bot):
     bot.at("14:58")
     bot.alert("ADANIGREEN")
-    for minute in ("15:03", "15:08", "15:13"):
+    for minute in ("15:00", "15:14"):
         bot.at(minute)
         assert "holding" in bot.alert("ADANIGREEN")
         bot.tick()

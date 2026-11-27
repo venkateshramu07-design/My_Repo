@@ -7,7 +7,7 @@
 4. **Hold** for as long as Chartink keeps sending the same stock.
 5. **Exit as soon as the signal stops** (buy back at market). That happens when either:
    - an alert from the same scan arrives **without** the stock, or
-   - no alert has included the stock for `SIGNAL_TIMEOUT_MINUTES` (default 6).
+   - no alert has included the stock for `SIGNAL_TIMEOUT_MINUTES` (default 16, for 15-minute candles).
 6. **No new trades from 15:00.** A trade opened before 15:00 keeps following the signal.
 7. **15:15 IST:** any open trade is closed, whatever the signal says.
 
@@ -35,7 +35,7 @@ Groww's real margin rate differs slightly by stock (your screenshot works out to
 
 ## Important: Chartink alert setup
 The "stay in while the signal is true" rule only works if Chartink **sends the alert repeatedly**: every candle or every few minutes, with all the stocks currently in the scan. When you create the alert:
-- Set the alert to run on your scan's candle timeframe (e.g. every 5 minutes).
+- Set the alert to run on your scan's candle timeframe (15 minutes).
 - Set `SIGNAL_TIMEOUT_MINUTES` to that interval + 1 (5-min alerts → `6`, 1-min alerts → `2`, 15-min alerts → `16`).
 - Webhook URL: `http://<server-ip>:8000/webhook/<WEBHOOK_SECRET>`
 
@@ -90,7 +90,7 @@ Then run `sudo systemctl enable --now tradebot`. Logs: `journalctl -u tradebot -
 | `EXCHANGE` | NSE | NSE or BSE (Chartink scans NSE data) |
 | `ENTRY_START` / `ENTRY_END` | 11:00 / 15:00 | New trades only in this window |
 | `SQUARE_OFF_TIME` | 15:15 | Forced exit |
-| `SIGNAL_TIMEOUT_MINUTES` | 6 | Exit if the stock isn't re-sent within this time |
+| `SIGNAL_TIMEOUT_MINUTES` | 16 | Exit if the stock isn't re-sent within this time |
 | `TRADING_ENABLED` | true | false = log alerts only (kill switch) |
 | `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | – | Optional: a message on every entry, exit and error |
 

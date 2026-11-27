@@ -60,7 +60,7 @@ class Config:
             entry_start=_time("ENTRY_START", "11:00"),
             entry_end=_time("ENTRY_END", "15:00"),
             square_off_time=_time("SQUARE_OFF_TIME", "15:15"),
-            signal_timeout_minutes=float(os.getenv("SIGNAL_TIMEOUT_MINUTES", "6")),
+            signal_timeout_minutes=float(os.getenv("SIGNAL_TIMEOUT_MINUTES", "16")),
             telegram_bot_token=os.getenv("TELEGRAM_BOT_TOKEN", ""),
             telegram_chat_id=os.getenv("TELEGRAM_CHAT_ID", ""),
             db_path=db,
