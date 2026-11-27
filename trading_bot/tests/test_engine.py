@@ -23,7 +23,7 @@ def t(s):
 def make_cfg(**over):
     base = dict(
         dry_run=True, trading_enabled=True, webhook_secret=SECRET, groww_api_key="", groww_totp_secret="",
-        groww_api_secret="", side="SELL", quantity=100, exchange="NSE",
+        groww_api_secret="", side="SELL", margin_per_trade=20000, leverage=5, exchange="NSE",
         entry_start=t("11:00"), entry_end=t("15:00"), square_off_time=t("15:15"), signal_timeout_minutes=6,
         telegram_bot_token="", telegram_chat_id="", db_path=":memory:",
     )
@@ -73,7 +73,7 @@ def test_wrong_secret_rejected(bot):
 
 def test_enters_short_100_and_holds_while_signal_repeats(bot):
     bot.at("11:05")
-    assert bot.alert("ADANIGREEN", "1327.6") == "entered SELL ADANIGREEN x100"
+    assert bot.alert("ADANIGREEN", "1000") == "entered SELL ADANIGREEN x100"
     for minute in ("11:10", "11:15", "11:20"):
         bot.at(minute)
         assert "holding ADANIGREEN" in bot.alert("ADANIGREEN,INFY")
@@ -83,9 +83,9 @@ def test_enters_short_100_and_holds_while_signal_repeats(bot):
 
 def test_exits_when_alert_no_longer_contains_stock(bot):
     bot.at("11:05")
-    bot.alert("ADANIGREEN", "1327.6")
+    bot.alert("ADANIGREEN", "1000")
     bot.at("11:10")
-    bot.alert("INFY", "1500")  # same scan, ADANIGREEN gone -> exit, then INFY is a fresh signal
+    bot.alert("INFY", "1000")  # same scan, ADANIGREEN gone -> exit, then INFY is a fresh signal
     assert bot.sides == [("SELL", "ADANIGREEN", 100), ("BUY", "ADANIGREEN", 100), ("SELL", "INFY", 100)]
     closed = bot.store.trades_on(DAY)[0]
     assert closed["exit_reason"] == "signal no longer true"
@@ -180,9 +180,26 @@ def test_manual_exit_endpoint(bot):
 
 
 def test_buy_side_also_works(monkeypatch):
-    b = Bot(monkeypatch, side="BUY", quantity=10)
+    b = Bot(monkeypatch, side="BUY", margin_per_trade=2000)
     b.at("12:00")
     b.alert("INFY")
     b.at("12:05")
     b.alert("TCS")
     assert b.sides[:2] == [("BUY", "INFY", 10), ("SELL", "INFY", 10)]
+
+
+def test_quantity_from_fixed_margin(monkeypatch):
+    b = Bot(monkeypatch, margin_per_trade=25000, leverage=5)
+    b.at("11:05")
+    assert b.alert("ADANIGREEN", "1327.6") == "entered SELL ADANIGREEN x94"  # 25000*5/1327.6 = 94.1
+    b.at("11:10")
+    b.alert("CHEAPSTOCK", "200")  # ADANIGREEN dropped -> exit; new trade sized at 625
+    assert b.sides[-1] == ("SELL", "CHEAPSTOCK", 625)
+
+
+def test_skips_when_margin_too_small_or_no_price(monkeypatch):
+    b = Bot(monkeypatch, margin_per_trade=100, leverage=5)
+    b.at("11:05")
+    assert "margin too small" in b.alert("MRF", "130000")
+    assert "no price" in b.alert("INFY", "abc")
+    assert b.broker.orders == []

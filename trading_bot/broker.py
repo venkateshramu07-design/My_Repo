@@ -50,6 +50,14 @@ class GrowwBroker:
                 log.info("Logged in to Groww")
             return self._client
 
+    def ltp(self, symbol):
+        """Latest traded price on the configured exchange, or None."""
+        g = self.client()
+        key = f"{self.cfg.exchange}_{symbol}"
+        data = g.get_ltp(exchange_trading_symbols=(key,), segment=g.SEGMENT_CASH, timeout=5)
+        value = data.get(key) if isinstance(data, dict) else None
+        return float(value) if value else None
+
     def market_order(self, symbol, side, qty, ref):
         """Intraday (MIS) market order. Groww applies the intraday margin automatically."""
         g = self.client()
@@ -113,6 +121,9 @@ class PaperBroker:
         self.cfg = cfg
         self.orders = []
         self.positions = {}
+
+    def ltp(self, symbol):
+        return None  # paper mode uses Chartink's trigger price
 
     def market_order(self, symbol, side, qty, ref):
         oid = f"PAPER-{len(self.orders) + 1}"

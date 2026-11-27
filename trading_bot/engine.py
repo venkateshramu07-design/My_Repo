@@ -8,6 +8,7 @@
 * At SQUARE_OFF_TIME, exit no matter what.
 """
 import logging
+import math
 import threading
 import uuid
 from datetime import datetime, timedelta
@@ -90,8 +91,22 @@ class Engine:
             return f"outside entry window {self.cfg.entry_start:%H:%M}-{self.cfg.entry_end:%H:%M}"
         return None
 
-    def enter(self, symbol, price, scan, now):
-        side, qty = self.cfg.side, self.cfg.quantity
+    def quantity(self, price):
+        """Fixed margin per trade: qty = margin x leverage / price, rounded down."""
+        return math.floor(self.cfg.margin_per_trade * self.cfg.leverage / price)
+
+    def enter(self, symbol, alert_price, scan, now):
+        side = self.cfg.side
+        try:
+            price = self.broker.ltp(symbol) or alert_price
+        except Exception as e:
+            log.warning("Live price failed for %s (%s); using Chartink price", symbol, e)
+            price = alert_price
+        if not price:
+            return f"no entry: no price for {symbol}"
+        qty = self.quantity(price)
+        if qty < 1:
+            return f"no entry: margin too small for 1 share of {symbol} @ {price}"
         try:
             order_id = self.broker.market_order(symbol, side, qty, uuid.uuid4().hex[:12])
             filled, avg = self.broker.wait_for_fill(order_id)
@@ -110,7 +125,8 @@ class Engine:
             last_signal_at=now.isoformat(timespec="seconds"), status="OPEN",
         )
         word = "SHORT SOLD" if side == "SELL" else "BOUGHT"
-        self.notify(f"{word} {symbol} x{filled} @ {entry or '?'}" + (" [PAPER]" if self.cfg.dry_run else ""))
+        margin = entry * filled / self.cfg.leverage
+        self.notify(f"{word} {symbol} x{filled} @ {entry:.2f} (margin ~ ₹{margin:,.0f})" + (" [PAPER]" if self.cfg.dry_run else ""))
         return f"entered {side} {symbol} x{filled}"
 
     # ---------- exits ----------

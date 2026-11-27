@@ -30,7 +30,8 @@ class Config:
     groww_totp_secret: str
     groww_api_secret: str
     side: str
-    quantity: int
+    margin_per_trade: float
+    leverage: float
     exchange: str
     entry_start: time
     entry_end: time
@@ -53,7 +54,8 @@ class Config:
             groww_totp_secret=os.getenv("GROWW_TOTP_SECRET", ""),
             groww_api_secret=os.getenv("GROWW_API_SECRET", ""),
             side=os.getenv("SIDE", "SELL").strip().upper(),
-            quantity=int(os.getenv("QUANTITY", "100")),
+            margin_per_trade=float(os.getenv("MARGIN_PER_TRADE", "25000")),
+            leverage=float(os.getenv("LEVERAGE", "5")),
             exchange=os.getenv("EXCHANGE", "NSE").strip().upper(),
             entry_start=_time("ENTRY_START", "11:00"),
             entry_end=_time("ENTRY_END", "15:00"),
@@ -73,8 +75,8 @@ class Config:
             raise ValueError("SIDE must be BUY or SELL")
         if self.exchange not in ("NSE", "BSE"):
             raise ValueError("EXCHANGE must be NSE or BSE")
-        if self.quantity < 1:
-            raise ValueError("QUANTITY must be at least 1")
+        if self.margin_per_trade <= 0 or self.leverage <= 0:
+            raise ValueError("MARGIN_PER_TRADE and LEVERAGE must be positive")
         if self.signal_timeout_minutes <= 0:
             raise ValueError("SIGNAL_TIMEOUT_MINUTES must be positive")
         if not self.dry_run and not self.groww_api_key:

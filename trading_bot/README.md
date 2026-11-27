@@ -2,7 +2,7 @@
 
 ## The rules it follows
 1. **Signal = Chartink alert.** When your Chartink alert sends a stock, the signal is true for that stock.
-2. **Entry:** when a signal arrives between **11:00 and 15:00 IST**, the bot immediately **short sells 100 shares** (intraday/MIS, market order).
+2. **Entry:** when a signal arrives between **11:00 and 15:00 IST**, the bot immediately **short sells** (intraday/MIS, market order). Quantity comes from a fixed margin per trade (see below).
 3. **One trade at a time.** While a trade is open, alerts for other stocks are ignored. If one alert has several stocks, the first one is taken.
 4. **Hold** for as long as Chartink keeps sending the same stock.
 5. **Exit as soon as the signal stops** (buy back at market). That happens when either:
@@ -15,11 +15,23 @@ After an exit, the next signal (before 15:00) opens a new trade, including the s
 
 It starts in **paper mode** (`DRY_RUN=true`). Nothing goes to Groww until you change that.
 
-> Use at your own risk. There is no stop-loss: the exit depends on the signal and the 15:15 cut-off. Test in paper mode, then with small quantity, before trading 100 shares.
+> Use at your own risk. There is no stop-loss: the exit depends on the signal and the 15:15 cut-off. Test in paper mode, then with a small margin, before trading full size.
 
-## Quantity and margin
-The bot sends a fixed `QUANTITY` (default 100) as an intraday (MIS) order. Groww works out and blocks the margin itself, exactly as on your order screen, so you only need enough balance.
-On your screenshot, 100 × ₹1,327.60 ≈ ₹1,32,760 of stock blocked ₹25,463 of margin. That's about 19% of the order value (roughly 5x leverage). The exact % differs from stock to stock, because it's set by the exchange's margin rate for each share.
+## Quantity and margin: fixed margin per trade
+Each trade uses the same amount of margin, `MARGIN_PER_TRADE` (default ₹25,000), at Groww's intraday leverage, `LEVERAGE` (default 5x):
+
+```
+quantity = (MARGIN_PER_TRADE × LEVERAGE) ÷ share price   (rounded down)
+```
+
+| Stock price | Quantity (₹25,000 × 5) | Order value |
+|---|---|---|
+| ₹1,327.60 (Adani Green) | 94 | ≈ ₹1,24,800 |
+| ₹200 | 625 | ₹1,25,000 |
+| ₹5,000 | 25 | ₹1,25,000 |
+
+In live mode the price is Groww's latest traded price at the moment of entry. If that can't be read, it uses Chartink's trigger price. If the margin isn't enough for even 1 share, the trade is skipped.
+Groww's real margin rate differs slightly by stock (your screenshot works out to about 5.2x). So the margin actually blocked will be close to, not exactly, `MARGIN_PER_TRADE`. Keep enough balance above it.
 
 ## Important: Chartink alert setup
 The "stay in while the signal is true" rule only works if Chartink **sends the alert repeatedly**: every candle or every few minutes, with all the stocks currently in the scan. When you create the alert:
@@ -73,7 +85,8 @@ Then run `sudo systemctl enable --now tradebot`. Logs: `journalctl -u tradebot -
 | Setting | Default | Meaning |
 |---|---|---|
 | `SIDE` | SELL | SELL = short sell on signal; BUY = buy on signal |
-| `QUANTITY` | 100 | Shares per trade |
+| `MARGIN_PER_TRADE` | 25000 | ₹ margin used per trade |
+| `LEVERAGE` | 5 | Intraday leverage; qty = margin × leverage ÷ price |
 | `EXCHANGE` | NSE | NSE or BSE (Chartink scans NSE data) |
 | `ENTRY_START` / `ENTRY_END` | 11:00 / 15:00 | New trades only in this window |
 | `SQUARE_OFF_TIME` | 15:15 | Forced exit |
@@ -83,7 +96,7 @@ Then run `sudo systemctl enable --now tradebot`. Logs: `journalctl -u tradebot -
 
 ## Going live
 1. Paper mode for a few days. Check that entries, holds and exits in `/status` match what you see on Chartink.
-2. `DRY_RUN=false` with `QUANTITY=1`. Confirm in the Groww app that the short sell and the buy-back both appear.
-3. Then set `QUANTITY=100`.
+2. `DRY_RUN=false` with a small `MARGIN_PER_TRADE` (e.g. 1000). Confirm in the Groww app that the short sell, the buy-back and the margin blocked look right.
+3. Then set `MARGIN_PER_TRADE` to your real amount.
 
 If an exit order fails, the bot keeps retrying every 5 seconds and sends you an URGENT message once. If the server is down, Groww's own intraday auto square-off is the last backstop.
