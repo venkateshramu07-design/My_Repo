@@ -7,18 +7,18 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS trades (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     day TEXT NOT NULL,
-    created_at TEXT NOT NULL,
     symbol TEXT NOT NULL,
     side TEXT NOT NULL,
     qty INTEGER NOT NULL,
+    scan_name TEXT,
+    entry_time TEXT NOT NULL,
     entry_price REAL,
-    stop_price REAL,
-    target_price REAL,
-    entry_order_id TEXT,
-    oco_id TEXT,
-    status TEXT NOT NULL,   -- PENDING, OPEN, EXITED, SQUARED_OFF, FAILED, NEEDS_ATTENTION
-    note TEXT,
-    scan_name TEXT
+    last_signal_at TEXT NOT NULL,
+    exit_time TEXT,
+    exit_price REAL,
+    exit_reason TEXT,
+    status TEXT NOT NULL,   -- OPEN, CLOSED, FAILED
+    note TEXT
 );
 CREATE TABLE IF NOT EXISTS alerts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,8 +44,9 @@ class Store:
 
     def add_trade(self, **f):
         with self.lock:
-            cols = ", ".join(f)
-            cur = self.db.execute(f"INSERT INTO trades ({cols}) VALUES ({', '.join('?' * len(f))})", tuple(f.values()))
+            cur = self.db.execute(
+                f"INSERT INTO trades ({', '.join(f)}) VALUES ({', '.join('?' * len(f))})", tuple(f.values())
+            )
             self.db.commit()
             return cur.lastrowid
 
@@ -55,20 +56,11 @@ class Store:
             self.db.execute(f"UPDATE trades SET {sets} WHERE id = ?", (*f.values(), trade_id))
             self.db.commit()
 
+    def active_trade(self):
+        with self.lock:
+            row = self.db.execute("SELECT * FROM trades WHERE status = 'OPEN' ORDER BY id DESC LIMIT 1").fetchone()
+            return dict(row) if row else None
+
     def trades_on(self, day):
         with self.lock:
             return [dict(r) for r in self.db.execute("SELECT * FROM trades WHERE day = ? ORDER BY id", (day,))]
-
-    def count_entries(self, day):
-        with self.lock:
-            row = self.db.execute(
-                "SELECT COUNT(*) FROM trades WHERE day = ? AND status != 'FAILED'", (day,)
-            ).fetchone()
-            return row[0]
-
-    def traded_symbol(self, day, symbol):
-        with self.lock:
-            row = self.db.execute(
-                "SELECT 1 FROM trades WHERE day = ? AND symbol = ? AND status != 'FAILED'", (day, symbol)
-            ).fetchone()
-            return row is not None

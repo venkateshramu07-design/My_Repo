@@ -1,6 +1,6 @@
 """Webhook server. Chartink posts alerts to /webhook/<WEBHOOK_SECRET>.
 
-Run with ONE worker (the square-off timer and trade limits live in this process):
+Run with ONE worker (the one-trade rule and the timers live in this process):
     gunicorn -w 1 --threads 8 -b 0.0.0.0:8000 'app:create_app()'
 """
 import hmac
@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 log = logging.getLogger("app")
 
 
-def create_app(cfg=None, broker=None, store=None, start_scheduler=True, background=True):
+def create_app(cfg=None, broker=None, store=None, start_timer=True, background=True):
     cfg = cfg or Config.from_env()
     store = store or Store(cfg.db_path)
     engine = Engine(cfg, broker or make_broker(cfg), store)
@@ -38,14 +38,11 @@ def create_app(cfg=None, broker=None, store=None, start_scheduler=True, backgrou
         if payload is None:  # some senders post form data
             payload = request.form.to_dict() or {}
         store.log_alert(now_ist().isoformat(timespec="seconds"), json.dumps(payload))
-        side = request.args.get("side")
-        if side and side.upper() not in ("BUY", "SELL"):
-            abort(400)
         log.info("Alert %s: %s", payload.get("scan_name"), payload.get("stocks"))
         if background:  # answer Chartink immediately, trade in the background
-            threading.Thread(target=engine.handle_alert, args=(payload, side), daemon=True).start()
+            threading.Thread(target=_safe, args=(engine.handle_alert, payload), daemon=True).start()
             return jsonify(ok=True)
-        return jsonify(ok=True, results=engine.handle_alert(payload, side))
+        return jsonify(ok=True, result=engine.handle_alert(payload))
 
     @app.get("/status/<secret>")
     def status(secret):
@@ -54,36 +51,42 @@ def create_app(cfg=None, broker=None, store=None, start_scheduler=True, backgrou
             dry_run=cfg.dry_run,
             trading_enabled=cfg.trading_enabled,
             now=now_ist().isoformat(timespec="seconds"),
+            active_trade=store.active_trade(),
             trades_today=store.trades_on(now_ist().date().isoformat()),
         )
 
-    @app.post("/squareoff/<secret>")
-    def squareoff(secret):
-        """Manual panic button: close all of today's bot positions now."""
+    @app.post("/exit/<secret>")
+    def manual_exit(secret):
+        """Panic button: close the active trade now."""
         check_secret(secret)
-        engine.square_off_all()
-        return jsonify(ok=True)
+        with engine.lock:
+            active = store.active_trade()
+            ok = engine.exit(active, "manual exit") if active else True
+        return jsonify(ok=ok)
 
     @app.get("/health")
     def health():
         return "ok"
 
-    if start_scheduler:
-        threading.Thread(target=_square_off_loop, args=(engine,), daemon=True).start()
+    if start_timer:
+        threading.Thread(target=_timer_loop, args=(engine,), daemon=True).start()
     return app
 
 
-def _square_off_loop(engine):
+def _safe(fn, *args):
+    try:
+        log.info("Result: %s", fn(*args))
+    except Exception:
+        log.exception("Alert handling failed")
+
+
+def _timer_loop(engine):
     while True:
-        now = now_ist()
-        day = now.date().isoformat()
-        if now.weekday() < 5 and now.time() >= engine.cfg.square_off_time and engine.squared_off_day != day:
-            log.info("Square-off time")
-            try:
-                engine.square_off_all()
-            except Exception:
-                log.exception("Square-off loop error")
-        time.sleep(20)
+        try:
+            engine.tick()
+        except Exception:
+            log.exception("Timer error")
+        time.sleep(5)
 
 
 if __name__ == "__main__":

@@ -12,8 +12,8 @@ FILLED = {"EXECUTED", "COMPLETED"}
 DEAD = {"REJECTED", "FAILED", "CANCELLED"}
 
 
-def round_tick(price, tick=0.05):
-    return round(round(price / tick) * tick, 2)
+def now_ist():
+    return datetime.now(IST)
 
 
 class BrokerError(Exception):
@@ -30,7 +30,7 @@ class GrowwBroker:
     # Groww access tokens expire every day (around 6 AM), so log in again each trading day.
     def client(self):
         with self._lock:
-            today = datetime.now(IST).date()
+            today = now_ist().date()
             if self._client is None or self._token_day != today:
                 from growwapi import GrowwAPI
 
@@ -50,20 +50,14 @@ class GrowwBroker:
                 log.info("Logged in to Groww")
             return self._client
 
-    def ltp(self, symbol):
-        g = self.client()
-        key = f"NSE_{symbol}"
-        data = g.get_ltp(exchange_trading_symbols=(key,), segment=g.SEGMENT_CASH, timeout=5)
-        value = data.get(key) if isinstance(data, dict) else None
-        return float(value) if value else None
-
     def market_order(self, symbol, side, qty, ref):
+        """Intraday (MIS) market order. Groww applies the intraday margin automatically."""
         g = self.client()
         resp = g.place_order(
             trading_symbol=symbol,
             quantity=qty,
             validity=g.VALIDITY_DAY,
-            exchange=g.EXCHANGE_NSE,
+            exchange=self.cfg.exchange,
             segment=g.SEGMENT_CASH,
             product=g.PRODUCT_MIS,
             order_type=g.ORDER_TYPE_MARKET,
@@ -77,7 +71,7 @@ class GrowwBroker:
         return order_id
 
     def wait_for_fill(self, order_id, seconds=15):
-        """Returns (filled_qty, avg_price) once the order is filled; raises if rejected/timeout."""
+        """Returns (filled_qty, avg_price) once filled; raises if rejected or not filled in time."""
         g = self.client()
         deadline = time.time() + seconds
         last = {}
@@ -93,42 +87,6 @@ class GrowwBroker:
                 raise BrokerError(f"Order {order_id} {status}: {last.get('remark', '')}")
             time.sleep(1)
         raise BrokerError(f"Order {order_id} not filled within {seconds}s (last status: {last})")
-
-    def place_oco(self, symbol, exit_side, qty, net_position_qty, target, stop, ref):
-        """One-cancels-other exit: target LIMIT + stop-loss SL-M. Returns the smart order id."""
-        g = self.client()
-        resp = g.create_smart_order(
-            smart_order_type=g.SMART_ORDER_TYPE_OCO,
-            reference_id=ref,
-            segment=g.SEGMENT_CASH,
-            trading_symbol=symbol,
-            quantity=qty,
-            product_type=g.PRODUCT_MIS,
-            exchange=g.EXCHANGE_NSE,
-            duration=g.VALIDITY_DAY,
-            net_position_quantity=net_position_qty,
-            transaction_type=exit_side,
-            target={"trigger_price": f"{target:.2f}", "order_type": g.ORDER_TYPE_LIMIT, "price": f"{target:.2f}"},
-            stop_loss={"trigger_price": f"{stop:.2f}", "order_type": g.ORDER_TYPE_STOP_LOSS_MARKET},
-            timeout=10,
-        )
-        oco_id = resp.get("smart_order_id")
-        if not oco_id:
-            raise BrokerError(f"No smart_order_id in Groww response: {resp}")
-        return oco_id
-
-    def oco_status(self, oco_id):
-        g = self.client()
-        resp = g.get_smart_order(
-            segment=g.SEGMENT_CASH, smart_order_type=g.SMART_ORDER_TYPE_OCO, smart_order_id=oco_id, timeout=5
-        )
-        return str(resp.get("status", "")).upper()
-
-    def cancel_oco(self, oco_id):
-        g = self.client()
-        g.cancel_smart_order(
-            segment=g.SEGMENT_CASH, smart_order_type=g.SMART_ORDER_TYPE_OCO, smart_order_id=oco_id, timeout=10
-        )
 
     def net_position(self, symbol):
         """Net intraday quantity (+long / -short), or None if it can't be read."""
@@ -149,24 +107,15 @@ class GrowwBroker:
 
 
 class PaperBroker:
-    """Pretends to trade. Fills at the alert price so the whole flow can be tested safely."""
+    """Pretends to trade, so the whole flow can be tested safely."""
 
     def __init__(self, cfg):
         self.cfg = cfg
         self.orders = []
         self.positions = {}
-        self.ocos = {}
-        self._n = 0
-
-    def _id(self, prefix):
-        self._n += 1
-        return f"{prefix}-{self._n}"
-
-    def ltp(self, symbol):
-        return None  # caller falls back to Chartink's trigger price
 
     def market_order(self, symbol, side, qty, ref):
-        oid = self._id("PAPER")
+        oid = f"PAPER-{len(self.orders) + 1}"
         self.orders.append({"id": oid, "symbol": symbol, "side": side, "qty": qty})
         self.positions[symbol] = self.positions.get(symbol, 0) + (qty if side == "BUY" else -qty)
         log.info("[PAPER] %s %s x%s", side, symbol, qty)
@@ -174,19 +123,7 @@ class PaperBroker:
 
     def wait_for_fill(self, order_id, seconds=15):
         o = next(o for o in self.orders if o["id"] == order_id)
-        return o["qty"], 0.0  # 0 = unknown; the engine then uses the alert/LTP price
-
-    def place_oco(self, symbol, exit_side, qty, net_position_qty, target, stop, ref):
-        oid = self._id("OCO")
-        self.ocos[oid] = "ACTIVE"
-        log.info("[PAPER] OCO %s %s x%s target=%.2f stop=%.2f", exit_side, symbol, qty, target, stop)
-        return oid
-
-    def oco_status(self, oco_id):
-        return self.ocos.get(oco_id, "")
-
-    def cancel_oco(self, oco_id):
-        self.ocos[oco_id] = "CANCELLED"
+        return o["qty"], 0.0  # 0 = unknown; the engine then uses the alert price
 
     def net_position(self, symbol):
         return self.positions.get(symbol, 0)
@@ -194,8 +131,3 @@ class PaperBroker:
 
 def make_broker(cfg):
     return PaperBroker(cfg) if cfg.dry_run else GrowwBroker(cfg)
-
-
-def now_ist():
-    return datetime.now(IST)
-

@@ -1,21 +1,38 @@
 # Chartink → Groww intraday bot
 
-When your Chartink scan alert fires, Chartink calls this bot's webhook. For each stock, the bot:
+## The rules it follows
+1. **Signal = Chartink alert.** When your Chartink alert sends a stock, the signal is true for that stock.
+2. **Entry:** when a signal arrives between **11:00 and 15:00 IST**, the bot immediately **short sells 100 shares** (intraday/MIS, market order).
+3. **One trade at a time.** While a trade is open, alerts for other stocks are ignored. If one alert has several stocks, the first one is taken.
+4. **Hold** for as long as Chartink keeps sending the same stock.
+5. **Exit as soon as the signal stops** (buy back at market). That happens when either:
+   - an alert from the same scan arrives **without** the stock, or
+   - no alert has included the stock for `SIGNAL_TIMEOUT_MINUTES` (default 6).
+6. **No new trades from 15:00.** A trade opened before 15:00 keeps following the signal.
+7. **15:15 IST:** any open trade is closed, whatever the signal says.
 
-1. Checks the safety rules: entry time window, max trades per day, one trade per stock per day, price range.
-2. Places an **intraday (MIS) market order** on Groww, sized by `CAPITAL_PER_TRADE`.
-3. Right after the fill, places an **OCO exit order** with a stop-loss (SL-M) and a target (LIMIT). When one fills, Groww cancels the other.
-   If the OCO can't be placed, the bot **closes the position immediately**, so you're never left without a stop-loss.
-4. At `SQUARE_OFF_TIME` (default 15:05 IST), cancels any open OCOs and closes the remaining positions.
+After an exit, the next signal (before 15:00) opens a new trade, including the same stock again.
 
 It starts in **paper mode** (`DRY_RUN=true`). Nothing goes to Groww until you change that.
 
-> Use at your own risk. Automated trading can lose money quickly. Test in paper mode, then with 1 share, before trading real size.
+> Use at your own risk. There is no stop-loss: the exit depends on the signal and the 15:15 cut-off. Test in paper mode, then with small quantity, before trading 100 shares.
+
+## Quantity and margin
+The bot sends a fixed `QUANTITY` (default 100) as an intraday (MIS) order. Groww works out and blocks the margin itself, exactly as on your order screen, so you only need enough balance.
+On your screenshot, 100 × ₹1,327.60 ≈ ₹1,32,760 of stock blocked ₹25,463 of margin. That's about 19% of the order value (roughly 5x leverage). The exact % differs from stock to stock, because it's set by the exchange's margin rate for each share.
+
+## Important: Chartink alert setup
+The "stay in while the signal is true" rule only works if Chartink **sends the alert repeatedly**: every candle or every few minutes, with all the stocks currently in the scan. When you create the alert:
+- Set the alert to run on your scan's candle timeframe (e.g. every 5 minutes).
+- Set `SIGNAL_TIMEOUT_MINUTES` to that interval + 1 (5-min alerts → `6`, 1-min alerts → `2`, 15-min alerts → `16`).
+- Webhook URL: `http://<server-ip>:8000/webhook/<WEBHOOK_SECRET>`
+
+You can check this in paper mode: `/status/<secret>` shows `last_signal_at` updating each time Chartink sends the stock again.
 
 ## What you need
 - **Chartink premium plan** (needed for webhook alerts).
 - **Groww Trade API subscription.** Enable it in Groww → Profile → Settings → Trading APIs. Generate an **API key and TOTP secret** there; this lets the bot log in every morning on its own.
-- **A small cloud server with a static IP**, e.g. AWS Lightsail, DigitalOcean or Oracle Cloud free tier, running Ubuntu. Under SEBI's retail algo rules, Groww only accepts API orders from a **whitelisted static IP**. Add the server's IP in Groww's API settings.
+- **A small cloud server with a static IP**, e.g. AWS Lightsail, DigitalOcean or Oracle Cloud, running Ubuntu. Add the server's IP in Groww's API settings; under SEBI's rules, API orders must come from a whitelisted static IP.
 
 ## Setup on the server
 ```bash
@@ -23,12 +40,12 @@ sudo apt update && sudo apt install -y python3-venv git
 git clone <your repo> && cd My_Repo/trading_bot
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env && nano .env          # fill in WEBHOOK_SECRET, risk settings
+cp .env.example .env && nano .env          # fill in WEBHOOK_SECRET etc.
 python -m pytest -q tests                  # should say all passed
 gunicorn -w 1 --threads 8 -b 0.0.0.0:8000 'app:create_app()'
 ```
 Generate a webhook secret with `python3 -c "import secrets; print(secrets.token_urlsafe(24))"`.
-Open port 8000 in the server's firewall. Keep it to **one worker** (`-w 1`), because the trade limits and square-off timer live in that process.
+Open port 8000 in the server firewall. Keep **one worker** (`-w 1`).
 
 To keep it running after reboots, create a systemd service:
 ```ini
@@ -45,42 +62,28 @@ WantedBy=multi-user.target
 ```
 Then run `sudo systemctl enable --now tradebot`. Logs: `journalctl -u tradebot -f`.
 
-Make sure the server clock is right (`timedatectl`). The bot converts all times to IST itself.
-
-## Connect Chartink
-In your scan, click **Create Alert**, choose **Webhook**, and use this URL:
-```
-http://<server-ip>:8000/webhook/<WEBHOOK_SECRET>
-```
-For a bearish/short scan, add `?side=SELL`:
-`http://<server-ip>:8000/webhook/<WEBHOOK_SECRET>?side=SELL`
-
 ## Useful URLs
 | URL | What it does |
 |---|---|
-| `GET /status/<secret>` | Today's trades and whether paper mode is on |
-| `POST /squareoff/<secret>` | Panic button: close all of today's bot positions now (`curl -X POST ...`) |
+| `GET /status/<secret>` | Paper/live mode, the active trade, today's trades with entry/exit and reason |
+| `POST /exit/<secret>` | Panic button: close the active trade now (`curl -X POST ...`) |
 | `GET /health` | Returns `ok` |
-
-## Going live, step by step
-1. **Paper mode for a few days** (`DRY_RUN=true`). Check `/status/<secret>` and the logs: are the right stocks, quantities, SL and targets showing up?
-2. **Live with tiny size:** `DRY_RUN=false`, `CAPITAL_PER_TRADE` around the price of 1 share, `MAX_TRADES_PER_DAY=1`. In the Groww app, confirm the entry order, the OCO (stop-loss + target) and the 15:05 square-off all appear correctly.
-3. Only then raise the size.
-
-Kill switch: set `TRADING_ENABLED=false` and restart. Alerts are still logged but not traded.
 
 ## Settings (`.env`)
 | Setting | Default | Meaning |
 |---|---|---|
-| `CAPITAL_PER_TRADE` | 10000 | ₹ per trade (before intraday leverage); qty = capital ÷ price |
-| `STOP_LOSS_PCT` / `TARGET_PCT` | 1.0 / 2.0 | % from the fill price |
-| `MAX_TRADES_PER_DAY` | 5 | Worst-case daily loss ≈ trades × capital × SL% |
-| `ENTRY_START` / `ENTRY_END` | 09:20 / 14:45 | No new trades outside this window |
-| `SQUARE_OFF_TIME` | 15:05 | Closes everything (before Groww's own auto square-off, which charges extra) |
-| `MIN_PRICE` / `MAX_PRICE` | 20 / 5000 | Skip stocks outside this price range |
-| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | – | Optional: get a message on every trade and error |
+| `SIDE` | SELL | SELL = short sell on signal; BUY = buy on signal |
+| `QUANTITY` | 100 | Shares per trade |
+| `EXCHANGE` | NSE | NSE or BSE (Chartink scans NSE data) |
+| `ENTRY_START` / `ENTRY_END` | 11:00 / 15:00 | New trades only in this window |
+| `SQUARE_OFF_TIME` | 15:15 | Forced exit |
+| `SIGNAL_TIMEOUT_MINUTES` | 6 | Exit if the stock isn't re-sent within this time |
+| `TRADING_ENABLED` | true | false = log alerts only (kill switch) |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | – | Optional: a message on every entry, exit and error |
 
-## Limitations
-- Chartink alerts arrive a little after the candle that triggered them, so fills can differ from the trigger price. The bot uses the live price (LTP) to size the order and the actual fill price to set SL and target.
-- Each stock is traded at most once per day, even if the scan fires again.
-- If the server is down at 15:05, Groww's own auto square-off is the backstop. Check `/status` or Telegram for `NEEDS_ATTENTION` / `URGENT` messages.
+## Going live
+1. Paper mode for a few days. Check that entries, holds and exits in `/status` match what you see on Chartink.
+2. `DRY_RUN=false` with `QUANTITY=1`. Confirm in the Groww app that the short sell and the buy-back both appear.
+3. Then set `QUANTITY=100`.
+
+If an exit order fails, the bot keeps retrying every 5 seconds and sends you an URGENT message once. If the server is down, Groww's own intraday auto square-off is the last backstop.
